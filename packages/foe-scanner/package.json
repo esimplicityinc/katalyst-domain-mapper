@@ -1,0 +1,23 @@
+{
+  "name": "@foe/scanner",
+  "version": "0.1.0",
+  "description": "Flow Optimized Engineering repository scanner - containerized analysis tool",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/flow-optimized-engineering.git",
+    "directory": "packages/foe-scanner"
+  },
+  "keywords": [
+    "foe",
+    "flow-optimized-engineering",
+    "scanner",
+    "devops",
+    "assessment",
+    "ci-cd",
+    "testing",
+    "architecture"
+  ],
+  "author": "FOE Contributors",
+  "license": "MIT"
+}
