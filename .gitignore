@@ -46,5 +46,13 @@ coverage/
 # Docker
 .dockerignore
 
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Package lockfiles
+package-lock.json
+
 # OS
 Thumbs.db
