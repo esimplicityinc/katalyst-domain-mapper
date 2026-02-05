@@ -1,0 +1,26 @@
+{
+  "name": "@foe/field-guide-tools",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "foe-field-guide": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target node --format esm --external @foe/schemas && bun build ./src/cli.ts --outdir ./dist --target node --format esm --external @foe/schemas && chmod +x ./dist/cli.js",
+    "dev": "bun --watch src/cli.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@foe/schemas": "workspace:*",
+    "gray-matter": "^4.0.3",
+    "glob": "^11.0.0",
+    "neo4j-driver": "^5.27.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5"
+  }
+}
