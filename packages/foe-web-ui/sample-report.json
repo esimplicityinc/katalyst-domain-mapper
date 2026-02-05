@@ -1,0 +1,184 @@
+{
+  "version": "1.0",
+  "generated": "2026-02-05T20:45:00Z",
+  "repository": {
+    "name": "flow-optimized-engineering",
+    "path": "/repo",
+    "techStack": ["TypeScript", "React", "Bun", "Docker", "Zod"],
+    "monorepo": true
+  },
+  "dimensions": {
+    "feedback": {
+      "score": 72,
+      "maxScore": 100,
+      "subscores": {
+        "ciSpeed": {
+          "score": 8,
+          "max": 10,
+          "confidence": "high"
+        },
+        "testCoverage": {
+          "score": 15,
+          "max": 20,
+          "confidence": "high"
+        },
+        "deploymentFrequency": {
+          "score": 7,
+          "max": 10,
+          "confidence": "medium"
+        }
+      },
+      "findings": [
+        {
+          "area": "CI Pipeline",
+          "type": "strength",
+          "description": "Fast parallel CI execution with caching",
+          "evidence": ["CI runs complete in under 5 minutes", "Multi-stage Docker builds with layer caching"]
+        },
+        {
+          "area": "Testing",
+          "type": "strength",
+          "description": "Comprehensive test coverage across packages",
+          "evidence": ["Zod schema validation tests", "CLI tool tests"]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Deployment Automation",
+          "currentState": "Manual deployment process",
+          "hypothesis": "Automating deployments would reduce lead time",
+          "recommendation": "Implement CD pipeline with automated deployments",
+          "impact": "medium"
+        }
+      ]
+    },
+    "understanding": {
+      "score": 68,
+      "maxScore": 100,
+      "subscores": {
+        "architecture": {
+          "score": 18,
+          "max": 25,
+          "confidence": "high"
+        },
+        "documentation": {
+          "score": 12,
+          "max": 20,
+          "confidence": "medium"
+        },
+        "domainModeling": {
+          "score": 14,
+          "max": 20,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "Architecture",
+          "type": "strength",
+          "description": "Clear separation with packages and containerization",
+          "evidence": ["Monorepo structure with isolated packages", "Docker multi-stage builds"]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Documentation",
+          "currentState": "Limited architectural documentation",
+          "hypothesis": "Better docs would improve onboarding",
+          "recommendation": "Add ADRs and architecture diagrams",
+          "impact": "high",
+          "foeMethod": "M101"
+        }
+      ]
+    },
+    "confidence": {
+      "score": 55,
+      "maxScore": 100,
+      "subscores": {
+        "testAutomation": {
+          "score": 10,
+          "max": 20,
+          "confidence": "medium"
+        },
+        "staticAnalysis": {
+          "score": 12,
+          "max": 15,
+          "confidence": "high"
+        },
+        "contractTesting": {
+          "score": 3,
+          "max": 15,
+          "confidence": "low"
+        }
+      },
+      "findings": [
+        {
+          "area": "Type Safety",
+          "type": "strength",
+          "description": "Strong type safety with Zod schemas",
+          "evidence": ["Comprehensive Zod validation schemas", "TypeScript strict mode"]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Test Coverage",
+          "currentState": "Limited automated tests",
+          "hypothesis": "More tests would increase deployment confidence",
+          "recommendation": "Expand test suite to cover critical paths",
+          "impact": "high",
+          "foeMethod": "M201"
+        }
+      ]
+    }
+  },
+  "triangleDiagnosis": {
+    "cycleHealth": "practicing",
+    "weakestDimension": "confidence",
+    "weakestScore": 55,
+    "pattern": "Understanding and Feedback are strong, but Confidence lags behind",
+    "intervention": "Focus on expanding test coverage and implementing contract testing to match the quality of architecture and CI pipeline",
+    "belowMinimum": []
+  },
+  "overallScore": 65,
+  "maturityLevel": "practicing",
+  "topStrengths": [
+    {
+      "area": "CI Pipeline Speed",
+      "score": 85,
+      "reason": "Fast parallel execution with excellent caching reduces feedback time significantly"
+    },
+    {
+      "area": "Type Safety",
+      "score": 82,
+      "reason": "Comprehensive Zod schemas provide strong runtime validation and type safety"
+    },
+    {
+      "area": "Architecture Clarity",
+      "score": 78,
+      "reason": "Clean monorepo structure with well-isolated packages and clear boundaries"
+    }
+  ],
+  "topGaps": [
+    {
+      "area": "Test Coverage",
+      "score": 25,
+      "reason": "Expand automated test suite to cover more critical paths and edge cases"
+    },
+    {
+      "area": "Documentation",
+      "score": 35,
+      "reason": "Add architectural decision records and system diagrams to improve understanding"
+    },
+    {
+      "area": "Deployment Automation",
+      "score": 42,
+      "reason": "Implement continuous deployment pipeline to reduce manual deployment overhead"
+    }
+  ],
+  "methodology": {
+    "scanDuration": "8m 32s",
+    "agentsUsed": ["foe-scanner-ci", "foe-scanner-tests", "foe-scanner-arch", "foe-scanner-domain", "foe-scanner-docs"],
+    "filesAnalyzed": 247,
+    "confidenceLevel": "high"
+  }
+}
