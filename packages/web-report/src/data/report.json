@@ -1,0 +1,475 @@
+{
+  "repository": "OPR (Online Passport Renewal)",
+  "scanDate": "2026-02-05",
+  "overallScore": 29,
+  "maturityLevel": "Emerging",
+  "assessmentMode": "critical",
+  
+  "executiveSummary": "This repository has the appearance of mature engineering practices without the substance. The CI pipeline has 12 stages but integration tests are fake (echo \"Integration tests\"). BDD infrastructure exists but only 1 trivial feature file. 19 ADRs exist but the index is out of sync and the practice appears abandoned. OpenAPI spec exists but has only 30 descriptions in 1684 lines.",
+  
+  "dimensions": {
+    "feedback": {
+      "name": "Feedback",
+      "score": 40,
+      "max": 100,
+      "confidence": "high",
+      "color": "#3b82f6",
+      "subscores": [
+        {
+          "name": "CI Pipeline Speed",
+          "score": 8,
+          "max": 25,
+          "evidence": [
+            "GitLab CI detected",
+            "Caching enabled for node_modules and .venv"
+          ],
+          "gaps": [
+            "12 stages is excessive complexity",
+            "No matrix/parallel builds",
+            "apt-get update in multiple jobs adds minutes"
+          ],
+          "deductions": [
+            "-5: Excessive stage count",
+            "-5: No parallelization",
+            "-5: Repeated dependency installation",
+            "-2: No pipeline duration optimization"
+          ]
+        },
+        {
+          "name": "Deployment Frequency",
+          "score": 12,
+          "max": 25,
+          "evidence": [
+            "334 commits in 6 months (before dormancy)",
+            "29 release tags"
+          ],
+          "gaps": [
+            "No commits in 3+ months - project dormant",
+            "Multiple same-day releases suggest hotfixes",
+            "No evidence releases actually deployed to production"
+          ],
+          "deductions": [
+            "-5: Project dormant 3+ months",
+            "-3: Same-day releases suggest hotfixes",
+            "-3: No deployment verification",
+            "-2: Manual production gates"
+          ]
+        },
+        {
+          "name": "Test Coverage",
+          "score": 5,
+          "max": 25,
+          "evidence": [
+            "Coverage tools configured (pytest-cov, @vitest/coverage-v8)"
+          ],
+          "gaps": [
+            "No coverage reports exist - flying blind",
+            "No coverage thresholds enforced",
+            "Cannot verify actual coverage percentages"
+          ],
+          "deductions": [
+            "-10: No coverage reports exist",
+            "-5: No coverage thresholds",
+            "-5: Cannot verify coverage"
+          ]
+        },
+        {
+          "name": "Feedback Loop Investment",
+          "score": 15,
+          "max": 25,
+          "evidence": [
+            "Husky + lint-staged configured",
+            "Formatters: prettier, black, isort",
+            "Linters: eslint, flake8, mypy"
+          ],
+          "gaps": [
+            "Pre-commit can be bypassed",
+            "No pre-push hooks",
+            "No commit message linting"
+          ],
+          "deductions": [
+            "-3: Pre-commit bypassable",
+            "-3: No pre-push hooks",
+            "-2: No commit message linting",
+            "-2: No branch protection visible"
+          ]
+        }
+      ]
+    },
+    "understanding": {
+      "name": "Understanding",
+      "score": 21,
+      "max": 100,
+      "confidence": "high",
+      "color": "#8b5cf6",
+      "subscores": [
+        {
+          "name": "Architecture Clarity",
+          "score": 8,
+          "max": 25,
+          "evidence": [
+            "ADR-003 documents intended structure",
+            "Consistent folder naming"
+          ],
+          "gaps": [
+            "Controllers import models directly (violates claimed layering)",
+            "No dependency enforcement tooling",
+            "ADR describes aspiration, not enforced reality"
+          ],
+          "deductions": [
+            "-5: Controllers violate layering",
+            "-5: No dependency enforcement",
+            "-5: ADR is aspiration only",
+            "-2: No architecture diagram"
+          ]
+        },
+        {
+          "name": "Domain Modeling",
+          "score": 0,
+          "max": 25,
+          "evidence": [
+            "State diagram exists (30 lines)"
+          ],
+          "gaps": [
+            "Zero aggregates - RenewalApplication is ORM model",
+            "Zero value objects - all classes are mutable",
+            "Zero domain events - timestamps are audit logging",
+            "Zero repositories - direct SQLAlchemy usage"
+          ],
+          "deductions": [
+            "-25: Zero DDD tactical patterns"
+          ]
+        },
+        {
+          "name": "Documentation Quality",
+          "score": 5,
+          "max": 25,
+          "evidence": [
+            "19 ADRs exist",
+            "4 SOPs exist",
+            "OpenAPI spec exists"
+          ],
+          "gaps": [
+            "ADR index out of sync, duplicate numbering",
+            "Production deployment is TBD",
+            "Infrastructure setup is TBD",
+            "No CONTRIBUTING.md"
+          ],
+          "deductions": [
+            "-5: ADR maintenance issues",
+            "-5: Production deployment TBD",
+            "-5: Infrastructure setup TBD",
+            "-3: No CONTRIBUTING.md",
+            "-2: OpenAPI has 30 descriptions in 1684 lines"
+          ]
+        },
+        {
+          "name": "Code Organization",
+          "score": 7,
+          "max": 25,
+          "evidence": [
+            "10 modules in api/opr_api/",
+            "Barrel exports exist"
+          ],
+          "gaps": [
+            "God file (application_models.py: 712 lines, 22 classes)",
+            "Thin modules (notification: 41 lines total)",
+            "No internal packages for boundaries"
+          ],
+          "deductions": [
+            "-8: God file with 22 classes",
+            "-5: Thin modules indicate poor domain modeling",
+            "-5: No internal packages"
+          ]
+        }
+      ]
+    },
+    "confidence": {
+      "name": "Confidence",
+      "score": 24,
+      "max": 100,
+      "confidence": "high",
+      "color": "#10b981",
+      "subscores": [
+        {
+          "name": "Test Quality",
+          "score": 10,
+          "max": 25,
+          "evidence": [
+            "API: 785 tests, 1060 assertions (excellent)",
+            "Client: 125 tests (exists)",
+            "E2E: 22 page objects (good architecture)"
+          ],
+          "gaps": [
+            "Client tests not in CI",
+            "E2E tests not in CI",
+            "9 hardcoded waits in E2E (flaky)",
+            "27 TODO/FIXME in tests"
+          ],
+          "deductions": [
+            "-5: Client tests not in CI",
+            "-5: E2E tests not in CI",
+            "-3: Flaky test indicators",
+            "-2: TODO/FIXME in tests"
+          ]
+        },
+        {
+          "name": "Contract Testing",
+          "score": 3,
+          "max": 25,
+          "evidence": [
+            "OpenAPI spec exists (1684 lines)",
+            "Connexion validates requests"
+          ],
+          "gaps": [
+            "No contract validation tests",
+            "No Pact or consumer contracts",
+            "OpenAPI spec not validated against implementation"
+          ],
+          "deductions": [
+            "-10: No contract validation tests",
+            "-7: No consumer contracts",
+            "-5: No spec validation"
+          ]
+        },
+        {
+          "name": "Dependency Health",
+          "score": 5,
+          "max": 25,
+          "evidence": [
+            "Some dependency direction exists"
+          ],
+          "gaps": [
+            "15 vulnerabilities (6 high severity)",
+            "20 outdated npm packages",
+            "No dependency enforcement tooling"
+          ],
+          "deductions": [
+            "-10: 15 vulnerabilities (6 high)",
+            "-5: 20 outdated packages",
+            "-5: No enforcement tooling"
+          ]
+        },
+        {
+          "name": "Change Safety",
+          "score": 6,
+          "max": 25,
+          "evidence": [
+            "CI pipeline exists",
+            "Pre-commit hooks exist"
+          ],
+          "gaps": [
+            "Integration tests are fake",
+            "E2E tests not in CI",
+            "Client tests not in CI",
+            "Container scanning disabled"
+          ],
+          "deductions": [
+            "-8: Fake integration tests",
+            "-5: E2E not in CI",
+            "-3: Client tests not in CI",
+            "-3: Container scanning disabled"
+          ]
+        }
+      ]
+    }
+  },
+  
+  "criticalFailures": [
+    {
+      "id": "cf-1",
+      "area": "CI/CD",
+      "severity": "critical",
+      "title": "Integration Tests Are Fake",
+      "evidence": ".gitlab-ci.yml line 366: echo \"Integration tests\"",
+      "impact": "Zero integration test coverage despite having a dedicated CI stage",
+      "recommendation": "Implement real integration tests or remove the misleading stage",
+      "location": ".gitlab-ci.yml:366"
+    },
+    {
+      "id": "cf-2",
+      "area": "Testing",
+      "severity": "critical",
+      "title": "E2E Tests Never Run in CI",
+      "evidence": "35 Playwright test files exist, playwright.config.ci.ts exists, but no CI job runs them",
+      "impact": "E2E tests provide zero automated confidence - they might as well not exist",
+      "recommendation": "Add E2E test stage to CI pipeline immediately"
+    },
+    {
+      "id": "cf-3",
+      "area": "Testing",
+      "severity": "critical",
+      "title": "Client Tests Not in CI",
+      "evidence": "21 Vitest test files exist but CI only runs 'make test' (API tests)",
+      "impact": "125 client test cases never run automatically",
+      "recommendation": "Add client test step to CI workflow"
+    },
+    {
+      "id": "cf-4",
+      "area": "Security",
+      "severity": "critical",
+      "title": "15 Security Vulnerabilities",
+      "evidence": "npm audit shows 15 vulnerabilities (6 high, 3 moderate, 6 low)",
+      "impact": "Production security risk, potential compliance issues",
+      "recommendation": "Run npm audit fix immediately, update dependencies"
+    },
+    {
+      "id": "cf-5",
+      "area": "Operations",
+      "severity": "critical",
+      "title": "Production Deployment is TBD",
+      "evidence": "docs/SOPs/deploying.md has TBD for production deployment",
+      "impact": "Team cannot deploy to production with documented process",
+      "recommendation": "Document production deployment before going live",
+      "location": "docs/SOPs/deploying.md"
+    },
+    {
+      "id": "cf-6",
+      "area": "Maintenance",
+      "severity": "high",
+      "title": "Project Appears Dormant",
+      "evidence": "Last commit 2025-10-20, no activity in 3+ months",
+      "impact": "All CI/CD metrics are historical, not current practice",
+      "recommendation": "Assess if project is actively maintained"
+    },
+    {
+      "id": "cf-7",
+      "area": "Operations",
+      "severity": "high",
+      "title": "No Incident Runbooks",
+      "evidence": "No incident response documentation exists",
+      "impact": "Team is unprepared for production incidents",
+      "recommendation": "Create runbooks for common failure scenarios"
+    }
+  ],
+  
+  "strengths": [
+    {
+      "id": "s-1",
+      "area": "API Test Density",
+      "evidence": "785 test functions with 1060 assertions for 85 source files",
+      "caveat": "Only API tests run in CI - client and E2E are decoration"
+    },
+    {
+      "id": "s-2",
+      "area": "Pre-commit Hooks",
+      "evidence": "Husky + lint-staged with formatters and linters",
+      "caveat": "Can be bypassed with --no-verify, no enforcement"
+    },
+    {
+      "id": "s-3",
+      "area": "Security Scanning Breadth",
+      "evidence": "SAST, secret detection, dependency scanning enabled",
+      "caveat": "Container scanning is commented out"
+    }
+  ],
+  
+  "gaps": [
+    {
+      "id": "g-1",
+      "area": "BDD Coverage",
+      "severity": "high",
+      "title": "BDD is a Facade",
+      "evidence": "8 step definition files for 1 trivial feature file testing error boundaries",
+      "impact": "Worse than nothing - technical debt that creates false confidence",
+      "recommendation": "Either write real BDD scenarios or remove the infrastructure"
+    },
+    {
+      "id": "g-2",
+      "area": "Domain Modeling",
+      "severity": "medium",
+      "title": "Zero DDD Patterns",
+      "evidence": "No aggregates, no value objects (all mutable), no domain events, no repositories",
+      "impact": "It's a CRUD app with passport field names, not domain-driven design",
+      "recommendation": "Acknowledge this is a CRUD app or invest in proper domain modeling"
+    },
+    {
+      "id": "g-3",
+      "area": "Documentation",
+      "severity": "medium",
+      "title": "ADR Practice Abandoned",
+      "evidence": "Index out of sync, duplicate numbering, 6 months since last update",
+      "impact": "Documentation debt that wastes time and creates confusion",
+      "recommendation": "Update index, add template, establish review process"
+    }
+  ],
+  
+  "recommendations": [
+    {
+      "id": "r-1",
+      "priority": "immediate",
+      "title": "Fix security vulnerabilities",
+      "description": "6 high severity npm vulnerabilities need immediate attention",
+      "impact": "high"
+    },
+    {
+      "id": "r-2",
+      "priority": "immediate",
+      "title": "Add client tests to CI",
+      "description": "125 tests exist but don't run automatically",
+      "impact": "high"
+    },
+    {
+      "id": "r-3",
+      "priority": "immediate",
+      "title": "Add E2E smoke tests to CI",
+      "description": "Critical path coverage for deployment confidence",
+      "impact": "high"
+    },
+    {
+      "id": "r-4",
+      "priority": "short-term",
+      "title": "Remove or implement integration tests",
+      "description": "Fake tests are worse than none - they mislead",
+      "impact": "medium"
+    },
+    {
+      "id": "r-5",
+      "priority": "short-term",
+      "title": "Document production deployment",
+      "description": "TBD is not acceptable for production readiness",
+      "impact": "high"
+    },
+    {
+      "id": "r-6",
+      "priority": "short-term",
+      "title": "Create incident runbooks",
+      "description": "Required for production readiness",
+      "impact": "high"
+    },
+    {
+      "id": "r-7",
+      "priority": "medium-term",
+      "title": "Add dependency enforcement",
+      "description": "import-linter for Python, dependency-cruiser for TS",
+      "impact": "medium"
+    },
+    {
+      "id": "r-8",
+      "priority": "medium-term",
+      "title": "Generate coverage reports",
+      "description": "Can't improve what you can't measure",
+      "impact": "medium"
+    },
+    {
+      "id": "r-9",
+      "priority": "medium-term",
+      "title": "Fix ADR maintenance",
+      "description": "Update index, add template, establish process",
+      "impact": "low"
+    }
+  ],
+  
+  "methodology": {
+    "filesAnalyzed": 299,
+    "testFilesAnalyzed": 85,
+    "adrsAnalyzed": 19,
+    "confidenceNotes": [
+      "CI/CD: High confidence - comprehensive GitLab CI config analysis",
+      "Tests: High confidence - actual test execution verified",
+      "Architecture: High confidence - dependency violations found",
+      "Domain: High confidence - zero DDD patterns confirmed",
+      "Docs: High confidence - TBD sections verified"
+    ]
+  }
+}
