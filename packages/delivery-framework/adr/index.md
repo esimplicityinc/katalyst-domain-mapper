@@ -41,6 +41,16 @@ created: YYYY-MM-DD
 
 | ID | Title | Category | Status |
 |----|-------|----------|--------|
+| [ADR-001](./ADR-001.md) | Bun Workspaces as Package Manager and Runtime | Infrastructure | Accepted |
+| [ADR-002](./ADR-002.md) | Zod as Single Source of Truth for Validation | Architecture | Accepted |
+| [ADR-003](./ADR-003.md) | Hexagonal Architecture (Ports & Adapters) | Architecture | Accepted |
+| [ADR-004](./ADR-004.md) | Elysia + Drizzle ORM on Bun for API Layer | Infrastructure | Accepted |
+| [ADR-005](./ADR-005.md) | Docusaurus as Governance Documentation Platform | Infrastructure | Accepted |
+| [ADR-006](./ADR-006.md) | OpenCode AI Agents for Multi-Agent Development | Architecture | Accepted |
+| [ADR-007](./ADR-007.md) | Docker Multi-Stage Builds with Pre-Baked Indices | Infrastructure | Accepted |
+| [ADR-008](./ADR-008.md) | 8-State Governance Workflow | Architecture | Accepted |
+| [ADR-009](./ADR-009.md) | Markdown Frontmatter as Governance Artifact Format | Architecture | Accepted |
+| [ADR-010](./ADR-010.md) | Progressive Replacement Strategy for Legacy Scripts | Architecture | Accepted |
 
 ## Governance
 

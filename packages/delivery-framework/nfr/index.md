@@ -52,6 +52,13 @@ WCAG compliance, keyboard navigation, and assistive technology support.
 
 | ID | Title | Category | Priority |
 |----|-------|----------|----------|
+| [NFR-PERF-001](./NFR-PERF-001.md) | Governance Index Build Performance | Performance | Must |
+| [NFR-PERF-002](./NFR-PERF-002.md) | API Response Time | Performance | Must |
+| [NFR-SEC-001](./NFR-SEC-001.md) | API Key and Credential Protection | Security | Must |
+| [NFR-A11Y-001](./NFR-A11Y-001.md) | WCAG 2.1 AA Compliance for Web UIs | Accessibility | Should |
+| [NFR-REL-001](./NFR-REL-001.md) | Schema Validation at Boundaries | Reliability | Must |
+| [NFR-MAINT-001](./NFR-MAINT-001.md) | Cross-Reference Referential Integrity | Maintainability | Must |
+| [NFR-MAINT-002](./NFR-MAINT-002.md) | Backward-Compatible CLI | Maintainability | Should |
 
 ## Governance
 

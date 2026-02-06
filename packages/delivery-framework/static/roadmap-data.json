@@ -1,0 +1,638 @@
+{
+  "items": [
+    {
+      "id": "ROAD-001",
+      "title": "Import Governance Infrastructure",
+      "status": "implementing",
+      "phase": 1,
+      "priority": "high",
+      "created": "2026-02-05",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "architecture-inspector",
+          "validated_at": "2026-02-06",
+          "compliance_check": [],
+          "ids": ["ADR-001", "ADR-005", "ADR-008"]
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-001"
+    },
+    {
+      "id": "ROAD-002",
+      "title": "Governance Zod Schemas",
+      "status": "proposed",
+      "phase": 1,
+      "priority": "high",
+      "created": "2026-02-05",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "architecture-inspector",
+          "validated_at": "2026-02-06",
+          "compliance_check": [],
+          "ids": ["ADR-002", "ADR-008", "ADR-009"]
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-REL-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-002"
+    },
+    {
+      "id": "ROAD-003",
+      "title": "DDD Artifact Schemas",
+      "status": "proposed",
+      "phase": 1,
+      "priority": "high",
+      "created": "2026-02-05",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "architecture-inspector",
+          "validated_at": "2026-02-06",
+          "compliance_check": [],
+          "ids": ["ADR-002", "ADR-008", "ADR-009"]
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-REL-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-003"
+    },
+    {
+      "id": "ROAD-004",
+      "title": "Governance Parsers, Index Builder & CLI",
+      "status": "proposed",
+      "phase": 1,
+      "priority": "high",
+      "created": "2026-02-05",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "architecture-inspector",
+          "validated_at": "2026-02-06",
+          "compliance_check": [],
+          "ids": ["ADR-001", "ADR-009"]
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001",
+            "NFR-REL-001",
+            "NFR-MAINT-001",
+            "NFR-MAINT-002"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-004"
+    },
+    {
+      "id": "ROAD-005",
+      "title": "API Governance Domain",
+      "status": "proposed",
+      "phase": 2,
+      "priority": "medium",
+      "created": "2026-02-05",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "architecture-inspector",
+          "validated_at": "2026-02-06",
+          "compliance_check": [],
+          "ids": ["ADR-003", "ADR-004"]
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001",
+            "NFR-PERF-002",
+            "NFR-SEC-001",
+            "NFR-REL-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-005"
+    },
+    {
+      "id": "ROAD-006",
+      "title": "Scanner Governance Agent",
+      "status": "proposed",
+      "phase": 2,
+      "priority": "low",
+      "created": "2026-02-05",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "architecture-inspector",
+          "validated_at": "2026-02-06",
+          "compliance_check": [],
+          "ids": ["ADR-006", "ADR-007"]
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-006"
+    },
+    {
+      "id": "ROAD-007",
+      "title": "BDD Agent Skills",
+      "status": "proposed",
+      "phase": 1,
+      "priority": "medium",
+      "created": "2026-02-05",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "architecture-inspector",
+          "validated_at": "2026-02-06",
+          "compliance_check": [],
+          "ids": ["ADR-006"]
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-007"
+    },
+    {
+      "id": "ROAD-008",
+      "title": "Delivery Framework Integration",
+      "status": "proposed",
+      "phase": 2,
+      "priority": "medium",
+      "created": "2026-02-05",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "architecture-inspector",
+          "validated_at": "2026-02-06",
+          "compliance_check": [],
+          "ids": ["ADR-005", "ADR-009", "ADR-010"]
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-MAINT-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-008"
+    },
+    {
+      "id": "ROAD-009",
+      "title": "Governance & DDD Web Visualization",
+      "status": "proposed",
+      "phase": 3,
+      "priority": "low",
+      "created": "2026-02-05",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "architecture-inspector",
+          "validated_at": "2026-02-06",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001",
+            "NFR-A11Y-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-009"
+    },
+    {
+      "id": "ROAD-010",
+      "title": "Jira Bidirectional Integration",
+      "status": "proposed",
+      "phase": 5,
+      "priority": "medium",
+      "created": "2026-02-05",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-SEC-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [
+        "ROAD-004",
+        "ROAD-005"
+      ],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-010"
+    },
+    {
+      "id": "ROAD-011",
+      "title": "Confluence Bidirectional Integration",
+      "status": "proposed",
+      "phase": 5,
+      "priority": "medium",
+      "created": "2026-02-05",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-SEC-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [
+        "ROAD-004",
+        "ROAD-005"
+      ],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-011"
+    },
+    {
+      "id": "ROAD-012",
+      "title": "GitHub Feedback Integration",
+      "status": "proposed",
+      "phase": 5,
+      "priority": "medium",
+      "created": "2026-02-06",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-SEC-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [
+        "ROAD-004",
+        "ROAD-005"
+      ],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-012"
+    },
+    {
+      "id": "ROAD-013",
+      "title": "GitHub Understanding Integration",
+      "status": "proposed",
+      "phase": 5,
+      "priority": "medium",
+      "created": "2026-02-06",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-SEC-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [
+        "ROAD-004",
+        "ROAD-005"
+      ],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-013"
+    },
+    {
+      "id": "ROAD-014",
+      "title": "GitHub Confidence Integration",
+      "status": "proposed",
+      "phase": 5,
+      "priority": "medium",
+      "created": "2026-02-06",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-SEC-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [
+        "ROAD-004",
+        "ROAD-005"
+      ],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-014"
+    }
+  ],
+  "generatedAt": "2026-02-06T03:02:32.184Z",
+  "validStatuses": [
+    "proposed",
+    "adr_validated",
+    "bdd_pending",
+    "bdd_complete",
+    "implementing",
+    "nfr_validating",
+    "nfr_blocked",
+    "complete"
+  ],
+  "validPriorities": [
+    "high",
+    "medium",
+    "low"
+  ]
+}
