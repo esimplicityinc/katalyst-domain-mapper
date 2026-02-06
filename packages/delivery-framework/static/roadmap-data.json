@@ -617,6 +617,53 @@
       ],
       "blocked_by": [],
       "filePath": "roads/ROAD-014"
+    },
+    {
+      "id": "ROAD-015",
+      "title": "SSE Streaming for Real-time Agent Responses",
+      "status": "proposed",
+      "phase": 3,
+      "priority": "high",
+      "created": "2026-02-06",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001",
+            "NFR-PERF-002",
+            "NFR-REL-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [
+        "ROAD-005"
+      ],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-015"
     }
   ],
   "generatedAt": "2026-02-06T03:02:32.184Z",

@@ -1,0 +1,523 @@
+---
+title: Katalyst Delivery Framework — Roadmap
+description: Consolidated roadmap for the governance pipeline, DDD tooling, and delivery framework.
+---
+
+# Katalyst Delivery Framework — Roadmap
+
+> **Last Updated**: 2026-02-05
+> **Total Items**: 15 | **In Progress**: 1 | **Proposed**: 14 | **Complete**: 0
+
+Turn this monorepo into a **self-governing delivery framework**. Import governance infrastructure, build Zod-validated schemas, create parsers and CLI tooling, add API endpoints, enhance the scanner, and visualize governance health — all while the framework governs its own development.
+
+---
+
+## Status Legend
+
+| Emoji | Status | Description |
+|-------|--------|-------------|
+| 🚧 | `implementing` | Currently being worked on |
+| 🎯 | `proposed` | Requirements defined, not yet started |
+| ✅ | `complete` | All governance gates passed |
+| 🔄 | `nfr_validating` | Implementation done, validating NFRs |
+| ⏸️ | `nfr_blocked` | NFR validation failed, needs fixes |
+| 📋 | `adr_validated` | ADRs approved, ready for BDD |
+| 📝 | `bdd_pending` | BDD scenarios written, awaiting approval |
+| ✏️ | `bdd_complete` | BDD approved, ready for implementation |
+
+---
+
+## Phase 0: Foundation — Import Generic Infrastructure
+
+> **Goal**: Bring prima's governance infrastructure into this repo as `packages/delivery-framework/`, with agents at root, using the domain-mapper's own domain as example content.
+
+### [ROAD-001] Import Governance Infrastructure 🚧
+**Status**: Implementing
+**Priority**: High
+**Phase**: 0 — Foundation
+**Created**: 2026-02-05
+
+Import the generic governance infrastructure from prima-delivery-demonstrator into this monorepo. Establishes the Docusaurus documentation site, React dashboard components, governance scripts, and doc templates.
+
+- ✅ 0.1 — Import Docusaurus site, components, scripts, templates
+- 🎯 0.2 — Import + genericize 16 agents to `.opencode/agents/`
+- 🎯 0.3 — Import + adapt skills to `.opencode/skills/`
+- 🎯 0.4 — Create root configs (`opencode.json`, `Justfile`, `agentspec.md`)
+- 🎯 0.5 — Populate self-referential example domain content
+
+**Dependencies**: None (foundation)
+**Enables**: [ROAD-002](#road-002-governance-zod-schemas-), [ROAD-003](#road-003-ddd-artifact-schemas-), [ROAD-007](#road-007-bdd-agent-skills-)
+
+---
+
+## Phase 1: Core Schemas & Skills
+
+> **Goal**: Create the canonical Zod validation schemas for all governance and DDD artifact types, and install BDD agent skills. Phases 1 schemas are the foundation that parsers, API, and scanner all build upon.
+
+### [ROAD-002] Governance Zod Schemas 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 1 — Core
+**Created**: 2026-02-05
+
+Create Zod validation schemas for all 7 governance artifact types in `@foe/schemas`. Replaces hand-written JS validation in prima's `governance-linter.js` with type-safe, runtime-validated schemas.
+
+- 🎯 Create `common.ts` — shared enums, ID patterns, priority schema
+- 🎯 Create `capability.ts` — CAP-XXX schema with category and tag
+- 🎯 Create `persona.ts` — PER-XXX schema with archetypes and technical profile
+- 🎯 Create `user-story.ts` — US-XXX schema with persona and capability refs
+- 🎯 Create `use-case.ts` — UC-XXX schema with actors and flows
+- 🎯 Create `road-item.ts` — ROAD-XXX schema with 8-state machine and governance block
+- 🎯 Create `adr.ts` — ADR-XXX schema with status and category
+- 🎯 Create `nfr.ts` — NFR-XXX schema with category and threshold
+- 🎯 Create `change-entry.ts` — CHANGE-XXX schema with compliance and signatures
+- 🎯 Create `governance-index.ts` — GovernanceIndexSchema with reverse indices
+- 🎯 Create barrel export `index.ts`
+- 🎯 Unit tests for all schemas
+
+**Requires**: [ROAD-001](#road-001-import-governance-infrastructure-)
+**Enables**: [ROAD-004](#road-004-governance-parsers-index-builder--cli-)
+
+**Detailed Plan**: [01-governance-schemas.md](../plans/governance-schemas.md) | **~500 lines, ~10 files**
+
+---
+
+### [ROAD-003] DDD Artifact Schemas 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 1 — Core
+**Created**: 2026-02-05
+
+Create Zod schemas for 4 DDD artifact types: BoundedContext, Aggregate, ValueObject, and DomainEvent. Formalizes domain model knowledge into validated markdown frontmatter.
+
+- 🎯 Create `bounded-context.ts` — slug, responsibility, communication pattern, upstream/downstream
+- 🎯 Create `aggregate.ts` — root entity, invariants, commands, events published
+- 🎯 Create `value-object.ts` — properties, validation rules, immutability flag
+- 🎯 Create `domain-event.ts` — payload schema, source aggregate, subscriber contexts
+- 🎯 Create DDD barrel export `ddd/index.ts`
+- 🎯 Extend `GovernanceIndexSchema` with DDD collections and reverse indices
+- 🎯 Unit tests for all DDD schemas
+
+**Requires**: [ROAD-001](#road-001-import-governance-infrastructure-)
+**Enables**: [ROAD-004](#road-004-governance-parsers-index-builder--cli-)
+
+**Detailed Plan**: [02-ddd-schemas.md](../plans/ddd-schemas.md) | **~300 lines, ~5 files**
+
+---
+
+### [ROAD-007] BDD Agent Skills 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 1 — Core
+**Created**: 2026-02-05
+
+Install 5 OpenCode agent skills for the `@esimplicity/stack-tests` BDD framework. Pure static markdown reference docs that enable agents to write, run, and troubleshoot BDD tests.
+
+- 🎯 Create `katalyst-bdd-quickstart/SKILL.md` — setup, running tests, tag system
+- 🎯 Create `katalyst-bdd-step-reference/SKILL.md` — complete step catalog (API/UI/TUI/hybrid)
+- 🎯 Create `katalyst-bdd-create-test/SKILL.md` — test creation patterns and examples
+- 🎯 Create `katalyst-bdd-troubleshooting/SKILL.md` — common errors and debugging
+- 🎯 Create `katalyst-bdd-architecture/SKILL.md` — ports & adapters, custom steps
+
+**Requires**: None (independent of governance pipeline)
+**Enables**: None (standalone reference docs)
+
+**Detailed Plan**: [05-katalyst-bdd-skills.md](../plans/katalyst-bdd-skills.md) | **~1,200 lines, ~5 files**
+
+---
+
+## Phase 2: Parsers, Builder & CLI
+
+> **Goal**: Build the tooling that transforms validated schemas into a usable governance pipeline. The governance index builder is the critical convergence point — everything downstream depends on it.
+
+### [ROAD-004] Governance Parsers, Index Builder & CLI 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 2 — Parsers & CLI
+**Created**: 2026-02-05
+
+Extend `@foe/field-guide-tools` with 11 new parsers, a governance index builder with referential integrity validation, and 6 new CLI commands. This is the critical convergence point.
+
+- 🎯 Create 11 parsers (capability, persona, user-story, use-case, road-item, adr, nfr, change-entry, bounded-context, aggregate, value-object, domain-event)
+- 🎯 Create `governance-index.ts` builder with cross-reference validation
+- 🎯 Implement referential integrity checks (orphans, missing targets, circular deps)
+- 🎯 Add CLI: `build:governance` — parse all artifacts to `governance-index.json`
+- 🎯 Add CLI: `build:all` — build methods + observations + governance indices
+- 🎯 Add CLI: `validate:governance` — validate frontmatter without building
+- 🎯 Add CLI: `validate:transitions` — check state machine compliance
+- 🎯 Add CLI: `coverage:capabilities` — capability-to-feature coverage
+- 🎯 Add CLI: `coverage:personas` — persona-to-story coverage
+- 🎯 Unit tests for parsers + integration tests for index builder
+
+**Requires**: [ROAD-002](#road-002-governance-zod-schemas-), [ROAD-003](#road-003-ddd-artifact-schemas-)
+**Enables**: [ROAD-005](#road-005-api-governance-domain-), [ROAD-006](#road-006-scanner-governance-agent-), [ROAD-008](#road-008-delivery-framework-integration-)
+
+**Detailed Plan**: [03-parsers-and-builders.md](../plans/parsers-and-builders.md) | **~1,200 lines, ~14 files**
+
+---
+
+## Phase 3: API, Scanner & Integration
+
+> **Goal**: Three parallel workstreams that consume the governance index. Can all start once Phase 2 is complete.
+
+### [ROAD-005] API Governance Domain 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 3 — API & Services
+**Created**: 2026-02-05
+
+Add governance domain to `@foe/api` (Elysia + SQLite + Drizzle) following hexagonal architecture. Provides REST endpoints for governance snapshot ingestion, trend tracking, and coverage reporting.
+
+- 🎯 Create `GovernanceRepository` port interface
+- 🎯 Create SQLite adapter with 4 Drizzle tables
+- 🎯 Create use cases: IngestSnapshot, QueryState, GetCoverage, GetTrend
+- 🎯 Create 9 HTTP endpoints under `/api/v1/governance/*`
+- 🎯 Database migration for governance tables
+- 🎯 Integration tests for all endpoints
+
+**Requires**: [ROAD-004](#road-004-governance-parsers-index-builder--cli-)
+**Enables**: [ROAD-009](#road-009-governance--ddd-web-visualization-)
+
+**Detailed Plan**: [04-api-governance-domain.md](../plans/api-governance-domain.md) | **~700 lines, ~10 files**
+
+---
+
+### [ROAD-006] Scanner Governance Agent 🎯
+**Status**: Proposed
+**Priority**: Low
+**Phase**: 3 — API & Services
+**Created**: 2026-02-05
+
+Create `foe-scanner-governance.md` specialist agent for governance health analysis. Update Docker build to bake in `governance-index.json`. Modify orchestrator to dispatch governance as 6th specialist.
+
+- 🎯 Create governance agent with 4 subscores (Artifact Completeness, Cross-Reference Integrity, State Machine Compliance, DDD Model Quality)
+- 🎯 Update Docker multi-stage build to include governance index
+- 🎯 Update orchestrator to dispatch governance agent in parallel
+- 🎯 Enhance DDD domain agent to check for formal DDD markdown artifacts
+- 🎯 Graceful zero-score when no governance artifacts found
+
+**Requires**: [ROAD-004](#road-004-governance-parsers-index-builder--cli-)
+**Enables**: None (terminal leaf)
+
+**Detailed Plan**: [05-scanner-agents.md](../plans/scanner-agents.md) | **~400 lines, ~2 files**
+
+---
+
+### [ROAD-008] Delivery Framework Integration 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 3 — API & Services
+**Created**: 2026-02-05
+
+Replace hand-written JS governance scripts with `@foe/schemas` + `@foe/field-guide-tools` CLI. Create self-referential domain content. Migrate Docusaurus plugins to consume `governance-index.json`.
+
+- 🎯 Create self-referential domain content (~40-60 markdown files)
+- 🎯 Create 3 bounded contexts (Scanning, FieldGuide, Reporting)
+- 🎯 Create 4-5 aggregates, 5-6 domain events, 6-8 value objects
+- 🎯 Create 4-6 capabilities (FOE Report Generation, Governance Validation, etc.)
+- 🎯 Update Docusaurus plugins to consume `governance-index.json`
+- 🎯 Update Justfile recipes from `node scripts/*.js` to `bunx foe-field-guide` CLI
+- 🎯 Deprecate old governance scripts (keep for comparison)
+- 🎯 Validate new system output matches old system
+
+**Requires**: [ROAD-004](#road-004-governance-parsers-index-builder--cli-)
+**Enables**: None (validates the pipeline)
+
+**Detailed Plan**: [06-prima-integration.md](../plans/prima-integration.md) | **~200 new lines, ~1,500 deleted**
+
+---
+
+### [ROAD-015] SSE Streaming for Real-time Agent Responses 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 3 — API & Services
+**Created**: 2026-02-06
+
+Server-Sent Events (SSE) endpoint so the UI can display agent output as it's generated — no waiting for the full response. Eliminates perceived latency during 5-15 minute scans and 30+ second governance validations by streaming incremental results in real-time.
+
+- 🎯 Create SSE endpoint `GET /api/v1/stream/:sessionId` with EventSource-compatible protocol
+- 🎯 Implement server-side event emitter for agent output chunks (text, status, progress)
+- 🎯 Define SSE event types: `agent:chunk`, `agent:status`, `agent:complete`, `agent:error`
+- 🎯 Create Elysia SSE plugin/adapter with `Content-Type: text/event-stream` headers
+- 🎯 Add reconnection support with `Last-Event-ID` for resumable streams
+- 🎯 Create React `useSSE` hook and `EventSourceProvider` component for `@foe/web-ui`
+- 🎯 Stream scanner agent output in real-time during FOE assessment
+- 🎯 Stream governance validation progress during CLI and API operations
+- 🎯 Add SSE connection management (heartbeat keep-alive, timeout, max connections)
+- 🎯 Integration tests with SSE client assertions
+
+**Requires**: [ROAD-005](#road-005-api-governance-domain-)
+**Enables**: Real-time user experience for all long-running operations
+**Capabilities**: [CAP-008](#cap-008-real-time-streaming)
+**User Stories**: [US-026](#us-026-stream-agent-responses-via-sse), [US-027](#us-027-view-live-agent-progress-in-ui)
+**BDD Features**: `api/streaming/01_sse_streaming.feature` (8 scenarios), `hybrid/streaming/01_sse_e2e.feature` (2 scenarios)
+
+---
+
+## Phase 4: Web Visualization
+
+> **Goal**: Interactive dashboards for governance health and DDD domain model visualization. Last phase — runs after all others are complete.
+
+### [ROAD-009] Governance & DDD Web Visualization 🎯
+**Status**: Proposed
+**Priority**: Low
+**Phase**: 4 — Visualization
+**Created**: 2026-02-05
+
+Add 2 new report templates to `@foe/web-ui`: a Governance Dashboard (Template 12) and a DDD Context Map (Template 13).
+
+- 🎯 Template 12: Governance Dashboard — health summary, road item Kanban, capability coverage matrix, integrity report
+- 🎯 Template 13: DDD Context Map — context overview cards, SVG context map, aggregate deep dive, event flow diagram, ubiquitous language glossary
+- 🎯 Shared components: `ContextCard.tsx`, `KanbanBoard.tsx`
+- 🎯 Governance + DDD color palette extensions in Tailwind
+- 🎯 Responsive design (mobile, tablet, desktop) + dark mode
+- 🎯 Data from API endpoints or static JSON fallback
+
+**Requires**: [ROAD-005](#road-005-api-governance-domain-)
+**Enables**: None (terminal visualization layer)
+
+**Detailed Plan**: [07-web-visualization.md](../plans/web-visualization.md) | **~2,000 lines, ~4 files**
+
+---
+
+## Phase 5: Advanced Integrations
+
+> **Goal**: Connect the governance pipeline to external project management and documentation tools for bidirectional data flow. Extend scanner data sources beyond repository analysis.
+
+### [ROAD-010] Jira Bidirectional Integration 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 5 — Advanced Integrations
+**Created**: 2026-02-05
+
+Bidirectional sync between the governance pipeline and Jira. Import Jira data (issues, sprints, velocity, cycle time) to assess the Feedback dimension, and push governance artifacts (ROAD items, capabilities, user stories) back to Jira for project management tracking.
+
+- 🎯 Create Jira REST API client with OAuth 2.0 / API token authentication
+- 🎯 Import adapter: pull issues, sprints, velocity, and workflow data
+- 🎯 Map Jira issues → governance artifacts (ROAD items, user stories, capabilities)
+- 🎯 Export adapter: push ROAD items and user stories as Jira issues
+- 🎯 Bidirectional sync engine with conflict resolution strategy
+- 🎯 Scanner enhancement: assess Feedback dimension from Jira metrics (cycle time, WIP, deployment frequency)
+- 🎯 CLI command: `jira:sync` — run bidirectional sync
+- 🎯 CLI command: `jira:import` — one-way import from Jira
+- 🎯 Configuration schema for Jira project mapping (`jira-config.json`)
+- 🎯 Integration tests with Jira API mocks
+
+**Requires**: [ROAD-004](#road-004-governance-parsers-index-builder--cli-), [ROAD-005](#road-005-api-governance-domain-)
+**Enables**: Enhanced Feedback dimension scoring with real project data
+**Capabilities**: [CAP-005](#cap-005-jira-integration)
+**User Stories**: [US-016](#us-016-sync-governance-artifacts-to-jira), [US-017](#us-017-import-jira-metrics-for-scanning)
+**BDD Features**: `api/jira/01_jira_sync.feature` (7 scenarios), `hybrid/integrations/01_jira_e2e.feature` (2 scenarios)
+
+---
+
+### [ROAD-011] Confluence Bidirectional Integration 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 5 — Advanced Integrations
+**Created**: 2026-02-05
+
+Bidirectional sync between the governance pipeline and Confluence. Import Confluence content (wiki pages, ADRs, runbooks, design docs) to assess the Understanding dimension, and publish governance reports, roadmaps, and DDD artifacts back to Confluence for team visibility.
+
+- 🎯 Create Confluence REST API client with OAuth 2.0 / API token authentication
+- 🎯 Import adapter: pull wiki pages, ADRs, runbooks, and design documentation
+- 🎯 Map Confluence pages → governance artifacts (ADRs, documentation coverage metrics)
+- 🎯 Export adapter: publish governance dashboard, roadmap, and DDD context maps to Confluence spaces
+- 🎯 Bidirectional sync engine with conflict resolution and page versioning
+- 🎯 Scanner enhancement: assess Understanding dimension from Confluence content (doc freshness, coverage, quality)
+- 🎯 CLI command: `confluence:sync` — run bidirectional sync
+- 🎯 CLI command: `confluence:import` — one-way import from Confluence
+- 🎯 Configuration schema for Confluence space mapping (`confluence-config.json`)
+- 🎯 Integration tests with Confluence API mocks
+
+**Requires**: [ROAD-004](#road-004-governance-parsers-index-builder--cli-), [ROAD-005](#road-005-api-governance-domain-)
+**Enables**: Enhanced Understanding dimension scoring with real documentation data
+**Capabilities**: [CAP-006](#cap-006-confluence-integration)
+**User Stories**: [US-018](#us-018-sync-documentation-to-confluence), [US-019](#us-019-import-confluence-content-for-scanning)
+**BDD Features**: `api/confluence/01_confluence_sync.feature` (9 scenarios), `hybrid/integrations/01_confluence_e2e.feature` (2 scenarios)
+
+---
+
+### [ROAD-012] GitHub Feedback Integration 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 5 — Advanced Integrations
+**Created**: 2026-02-06
+
+Import GitHub Actions/CI data to enrich the Feedback dimension: workflow run history, deployment frequency, build times, test results, release cadence, and failure rates. Uses GitHub App + PAT authentication.
+
+- 🎯 Create GitHub REST/GraphQL API client with App + PAT authentication
+- 🎯 Import adapter: pull Actions workflow runs, timing, and status
+- 🎯 Calculate deployment frequency from GitHub Releases + deployment events
+- 🎯 Calculate build failure rate and mean time to recovery from workflow data
+- 🎯 Import test result artifacts from Actions workflow runs
+- 🎯 Scanner enhancement: assess Feedback dimension from GitHub CI metrics
+- 🎯 CLI command: `github:import --feedback` — pull CI/deployment data
+- 🎯 Configuration schema for GitHub repo/org mapping (`github-config.json`)
+- 🎯 Integration tests with GitHub API mocks
+
+**Requires**: [ROAD-004](#road-004-governance-parsers-index-builder--cli-), [ROAD-005](#road-005-api-governance-domain-)
+**Enables**: Enhanced Feedback dimension scoring with real CI/CD performance data
+**Capabilities**: [CAP-007](#cap-007-github-integration)
+**User Stories**: [US-020](#us-020-import-github-actions-metrics), [US-021](#us-021-track-deployment-frequency-via-github)
+**BDD Features**: `api/github/01_github_feedback.feature` (7 scenarios), `hybrid/integrations/02_github_feedback_e2e.feature` (2 scenarios)
+
+---
+
+### [ROAD-013] GitHub Understanding Integration 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 5 — Advanced Integrations
+**Created**: 2026-02-06
+
+Import GitHub data to enrich the Understanding dimension: PR descriptions, commit message quality, README/docs presence, repo structure, wiki content, and ADR patterns. Publish governance reports back to GitHub Pages/wiki.
+
+- 🎯 Import adapter: pull PR descriptions, review comments, and discussion threads
+- 🎯 Assess commit message quality (Conventional Commits, linked issues, clarity)
+- 🎯 Assess documentation presence (README, CONTRIBUTING, CHANGELOG, ADRs, wiki)
+- 🎯 Map GitHub Issues/Discussions → documentation gaps and knowledge artifacts
+- 🎯 Export adapter: publish governance reports to GitHub Pages or wiki
+- 🎯 Scanner enhancement: assess Understanding dimension from GitHub docs and PR quality
+- 🎯 CLI command: `github:import --understanding` — pull docs/PR data
+- 🎯 Integration tests with GitHub API mocks
+
+**Requires**: [ROAD-004](#road-004-governance-parsers-index-builder--cli-), [ROAD-005](#road-005-api-governance-domain-)
+**Enables**: Enhanced Understanding dimension scoring with GitHub documentation signals
+**Capabilities**: [CAP-007](#cap-007-github-integration)
+**User Stories**: [US-022](#us-022-import-github-docs-for-scanning), [US-023](#us-023-publish-governance-to-github)
+**BDD Features**: `api/github/02_github_understanding.feature` (7 scenarios), `hybrid/integrations/02_github_understanding_e2e.feature` (2 scenarios)
+
+---
+
+### [ROAD-014] GitHub Confidence Integration 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 5 — Advanced Integrations
+**Created**: 2026-02-06
+
+Import GitHub data to enrich the Confidence dimension: PR review quality, branch protection rules, code scanning/Dependabot alerts, required status checks, and merge policies.
+
+- 🎯 Import adapter: pull PR review data (approval rate, review depth, turnaround time)
+- 🎯 Assess branch protection rules (required reviews, status checks, signed commits)
+- 🎯 Import Dependabot/CodeQL security alerts and resolution metrics
+- 🎯 Assess merge policies (squash/merge/rebase, commit signing, linear history)
+- 🎯 Calculate code review coverage (% of PRs with substantive reviews)
+- 🎯 Scanner enhancement: assess Confidence dimension from GitHub quality gates
+- 🎯 CLI command: `github:import --confidence` — pull review/security data
+- 🎯 Integration tests with GitHub API mocks
+
+**Requires**: [ROAD-004](#road-004-governance-parsers-index-builder--cli-), [ROAD-005](#road-005-api-governance-domain-)
+**Enables**: Enhanced Confidence dimension scoring with GitHub quality and security signals
+**Capabilities**: [CAP-007](#cap-007-github-integration)
+**User Stories**: [US-024](#us-024-import-github-quality-signals), [US-025](#us-025-assess-branch-protection--security)
+**BDD Features**: `api/github/03_github_confidence.feature` (7 scenarios), `hybrid/integrations/02_github_confidence_e2e.feature` (2 scenarios)
+
+---
+
+## Dependency Graph
+
+```
+Phase 0                Phase 1                 Phase 2                Phase 3                Phase 4            Phase 5
+─────────────          ──────────              ──────────             ──────────             ──────────         ──────────
+
+                       ┌──────────┐
+                       │ ROAD-002 │─ Governance
+                       │ Schemas  │─ Zod
+               ┌──────►│          │──────┐
+               │       └──────────┘      │
+┌──────────┐   │                         │     ┌──────────┐     ┌──────────┐                                ┌──────────┐
+│ ROAD-001 │───┤                         ├────►│ ROAD-004 │────►│ ROAD-005 │──► ┌──────────┐  ┌────────────►│ ROAD-010 │
+│ Import   │   │       ┌──────────┐      │     │ Parsers  │  ┌─►│ API      │    │ ROAD-009 │  │             │ Jira     │
+│ Infra    │   ├──────►│ ROAD-003 │──────┘     │ Builder  │  │  └──────────┘───►│ Web Viz  │  │             └──────────┘
+└──────────┘   │       │ DDD      │            │ CLI      │──┤       │   │      └──────────┘  │
+               │       │ Schemas  │            └──────────┘  │  ┌────┴─────┐                  │             ┌──────────┐
+               │       └──────────┘                 │        ├─►│ ROAD-006 │                  └────────────►│ ROAD-011 │
+               │                                    │        │  │ Scanner  │                                │Confluence│
+               │       ┌──────────┐                 │        │  └──────────┘                                └──────────┘
+               └──────►│ ROAD-007 │                 │        │
+                       │ BDD      │                 │        │  ┌──────────┐
+                       │ Skills   │                 │        ├─►│ ROAD-008 │
+                       └──────────┘                 │        │  │ Integr.  │
+                                                    │        │  └──────────┘
+                                                    │        │
+                                                    │        │  ┌──────────┐
+                                                    │        └─►│ ROAD-015 │
+                                                    │           │ SSE      │
+                                                    │           │ Streaming│
+                                                    │           └──────────┘
+                                                    │
+                                                    └──► ROAD-010, ROAD-011, ROAD-012, ROAD-013, ROAD-014 (via ROAD-004 + ROAD-005)
+```
+
+---
+
+## Progressive Release Path
+
+Each release swaps one layer of the old system with the new:
+
+| Release | What Ships | Old System | New System | Agents |
+|---------|-----------|------------|------------|--------|
+| **0.1.0** | ROAD-001: Import infrastructure | All old scripts + agents running | Schemas exist (scan/field-guide only) | Use old conventions |
+| **0.2.0** | ROAD-002 + 003: Governance + DDD schemas | Old scripts still validate | `@foe/schemas/governance` available | No change |
+| **0.3.0** | ROAD-004: Parsers + index builder + CLI | Old scripts + new CLI both run in CI | `foe-field-guide build:governance` produces index | Agents start using `validate:governance` |
+| **0.4.0** | ROAD-005: API governance endpoints | Old Docusaurus plugins still generate JSON | `POST /api/v1/governance` ingests index | Agents can query API |
+| **0.5.0** | ROAD-008: Delivery framework integration | Plugins consume `governance-index.json` | Old plugins replaced | Agents use CLI as primary validation |
+| **0.6.0** | Delete old governance scripts | Gone | New system is sole authority | Agents reference CLI/API exclusively |
+| **0.6.1** | ROAD-015: SSE streaming | N/A | Real-time agent output via SSE, React `useSSE` hook | UI shows live scan progress, no more blank waits |
+| **0.7.0** | ROAD-006 + 009: Scanner + web viz | N/A | Full pipeline: scan → report → governance → viz | Governance agent scores governance health |
+| **0.8.0** | ROAD-010: Jira integration | N/A | Bidirectional Jira sync, Feedback dimension from Jira metrics | Agents can import/export Jira issues |
+| **0.9.0** | ROAD-011: Confluence integration | N/A | Bidirectional Confluence sync, Understanding dimension from wiki | Agents can import/export Confluence pages |
+| **0.10.0** | ROAD-012: GitHub Feedback | N/A | Actions/CI metrics, deployment frequency, build times | Agents import GitHub Actions data for Feedback scoring |
+| **0.11.0** | ROAD-013: GitHub Understanding | N/A | PR/docs quality, wiki import, governance publishing to GitHub | Agents import GitHub docs data for Understanding scoring |
+| **0.12.0** | ROAD-014: GitHub Confidence | N/A | PR reviews, branch protection, Dependabot/CodeQL alerts | Agents import GitHub quality signals for Confidence scoring |
+
+---
+
+## File Count Summary
+
+| Phase | ROAD Items | New Files | Adapted Files | Est. Lines |
+|-------|-----------|-----------|---------------|------------|
+| 0 — Foundation | ROAD-001 | ~75 | ~17 | N/A |
+| 1 — Core Schemas | ROAD-002, 003, 007 | ~20 | ~3 | ~2,000 |
+| 2 — Parsers & CLI | ROAD-004 | ~14 | ~4 | ~1,200 |
+| 3 — API & Services | ROAD-005, 006, 008, 015 | ~78 | ~8 | ~1,800 |
+| 4 — Visualization | ROAD-009 | ~4 | ~1 | ~2,000 |
+| 5 — Advanced Integrations | ROAD-010, 011, 012, 013, 014 | ~35 | ~6 | ~4,200 |
+| **Total** | **15** | **~226** | **~39** | **~11,200** |
+
+---
+
+## Key Principles
+
+1. **The old system is the test oracle.** Until deleted, old governance scripts validate that the new system produces equivalent results.
+
+2. **Agents are the canary.** If agents can create valid artifacts using the new tooling, the migration is working.
+
+3. **Progressive, not big-bang.** Each release replaces one piece. Old and new coexist during transition.
+
+4. **Self-referential domain.** The delivery framework governs its own development. ROAD items track the phases of this plan.
+
+5. **Generic by default.** No domain-specific content in the framework itself. The example domain (FOE scanning/reporting) demonstrates the pattern without coupling to it.
+
+---
+
+## Detailed Plan Documents
+
+| Document | ROAD Items | Scope |
+|----------|-----------|-------|
+| [Master Plan](../plans/master-plan.md) | All | Full vision, end state, progressive release path |
+| [Governance Mapper Overview](../plans/governance-mapper-overview.md) | All | Architecture, cross-reference model, dependency order |
+| [Governance Schemas](../plans/governance-schemas.md) | ROAD-002 | 10 Zod schema files for 7 governance artifact types |
+| [DDD Schemas](../plans/ddd-schemas.md) | ROAD-003 | 5 schema files for 4 DDD artifact types |
+| [Parsers and Builders](../plans/parsers-and-builders.md) | ROAD-004 | 11 parsers, governance index builder, 6 CLI commands |
+| [API Governance Domain](../plans/api-governance-domain.md) | ROAD-005 | API port, adapter, use cases, routes, DB tables |
+| [Scanner Agents](../plans/scanner-agents.md) | ROAD-006 | Governance scanner agent, enhanced DDD agent |
+| [Katalyst BDD Skills](../plans/katalyst-bdd-skills.md) | ROAD-007 | 5 OpenCode agent skills for BDD testing |
+| [Delivery Framework Integration](../plans/prima-integration.md) | ROAD-008 | Progressive migration, self-referential domain |
+| [Web Visualization](../plans/web-visualization.md) | ROAD-009 | Governance dashboard + DDD context map templates |
+| Jira Integration *(plan TBD)* | ROAD-010 | Bidirectional Jira sync, Feedback dimension enhancement |
+| Confluence Integration *(plan TBD)* | ROAD-011 | Bidirectional Confluence sync, Understanding dimension enhancement |
+| GitHub Feedback Integration *(plan TBD)* | ROAD-012 | GitHub Actions/CI metrics, deployment frequency, build times |
+| GitHub Understanding Integration *(plan TBD)* | ROAD-013 | PR/docs quality, wiki import, governance publishing to GitHub |
+| GitHub Confidence Integration *(plan TBD)* | ROAD-014 | PR reviews, branch protection, security alerts |
+| SSE Streaming *(plan TBD)* | ROAD-015 | Real-time agent output, React useSSE hook, connection management |
