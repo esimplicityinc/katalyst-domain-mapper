@@ -44,7 +44,7 @@ coverage/
 .temp/
 
 # Docker
-.dockerignore
+# (Keep .dockerignore tracked — it's needed for builds)
 
 # Next.js
 .next/

@@ -8,7 +8,8 @@
   "scripts": {
     "build": "bun run --filter '*' build",
     "test": "bun test",
-    "dev": "bun run --filter '*' dev"
+    "dev": "bun run --filter '*' dev",
+    "dev:docker": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build"
   },
   "devDependencies": {
     "@types/bun": "latest",

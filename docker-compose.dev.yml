@@ -1,0 +1,48 @@
+# ── Dev overrides — hot reload with source-mounted volumes ───────────────────
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#   or:  bun run dev:docker
+
+services:
+  # ── FOE API (bun --watch) ──────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: packages/foe-api/Dockerfile
+      target: dev
+    volumes:
+      # Mount source code for hot reload — changes on host restart bun automatically
+      - ./packages/foe-api/src:/app/packages/foe-api/src
+      - ./packages/foe-schemas/src:/app/packages/foe-schemas/src
+      - foe-data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    restart: "no"
+
+  # ── FOE Web UI (Vite dev server with HMR) ─────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: packages/foe-web-ui/Dockerfile
+      target: dev
+    ports: !override
+      - "8090:5173"   # Replace base ports: route external 8090 → Vite dev server 5173
+    volumes:
+      # Mount source and config for Vite HMR — edits reflect instantly in the browser
+      - ./packages/foe-web-ui/src:/app/packages/foe-web-ui/src
+      - ./packages/foe-web-ui/public:/app/packages/foe-web-ui/public
+      - ./packages/foe-web-ui/index.html:/app/packages/foe-web-ui/index.html
+      - ./packages/foe-web-ui/vite.config.ts:/app/packages/foe-web-ui/vite.config.ts
+      - ./packages/foe-web-ui/tailwind.config.js:/app/packages/foe-web-ui/tailwind.config.js
+      - ./packages/foe-web-ui/postcss.config.js:/app/packages/foe-web-ui/postcss.config.js
+      - ./packages/foe-web-ui/tsconfig.json:/app/packages/foe-web-ui/tsconfig.json
+      - ./packages/foe-web-ui/tsconfig.node.json:/app/packages/foe-web-ui/tsconfig.node.json
+    environment:
+      - VITE_API_URL=http://localhost:3001
+      - VITE_OPENCODE_URL=http://localhost:4096
+    restart: "no"
+
+  # ── OpenCode Server — no changes needed (already mounts .:/app) ────────────
+
+  # ── Scanner — no changes needed (build-only profile, ephemeral container) ──

@@ -3,7 +3,7 @@ FROM oven/bun:1 AS builder
 WORKDIR /build
 
 # Copy workspace configuration
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 
 # Copy packages needed for build
 COPY packages/foe-schemas ./packages/foe-schemas
