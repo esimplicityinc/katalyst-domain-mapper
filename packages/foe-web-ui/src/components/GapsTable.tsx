@@ -1,6 +1,6 @@
 import { AlertCircle, ChevronDown, ChevronUp, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
-import { MethodLink } from './MethodLink';
+
 import type { TopItem } from '../types/report';
 
 interface GapsTableProps {

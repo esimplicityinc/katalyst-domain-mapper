@@ -20,6 +20,9 @@ export * from './field-guide/index.js';
 // Neo4j graph schemas
 export * from './graph/index.js';
 
+// DDD domain modeling schemas
+export * from './ddd/index.js';
+
 /**
  * Package version
  */

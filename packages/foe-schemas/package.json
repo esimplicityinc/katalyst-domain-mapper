@@ -20,6 +20,10 @@
     "./graph": {
       "types": "./dist/graph/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./ddd": {
+      "types": "./dist/ddd/index.d.ts",
+      "default": "./dist/index.js"
     }
   },
   "scripts": {
