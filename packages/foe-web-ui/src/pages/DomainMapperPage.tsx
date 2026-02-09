@@ -17,10 +17,10 @@ import { GlossaryView } from '../components/domain/GlossaryView';
 import type { DomainModel, DomainModelFull } from '../types/domain';
 
 const SUB_NAV = [
-  { to: 'chat', label: 'Chat', icon: MessageSquare },
-  { to: 'contexts', label: 'Context Map', icon: Layers },
-  { to: 'aggregates', label: 'Aggregates', icon: Box },
-  { to: 'glossary', label: 'Glossary', icon: BookOpen },
+  { to: '/mapper/chat', label: 'Chat', icon: MessageSquare },
+  { to: '/mapper/contexts', label: 'Context Map', icon: Layers },
+  { to: '/mapper/aggregates', label: 'Aggregates', icon: Box },
+  { to: '/mapper/glossary', label: 'Glossary', icon: BookOpen },
 ];
 
 export function DomainMapperPage() {
@@ -157,7 +157,7 @@ export function DomainMapperPage() {
       {/* Sub-route content */}
       <div className="flex-1 overflow-auto">
         <Routes>
-          <Route index element={<Navigate to="chat" replace />} />
+          <Route index element={<Navigate to="/mapper/chat" replace />} />
           <Route
             path="chat"
             element={<DDDChat model={activeModel} onModelUpdated={refreshModel} />}

@@ -51,7 +51,7 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
       const glossary = db.select().from(schema.glossaryTerms)
         .where(eq(schema.glossaryTerms.domainModelId, params.id)).all();
 
-      return { ...model, boundedContexts: contexts, aggregates: aggs, valueObjects: vos, domainEvents: events, glossary };
+      return { ...model, boundedContexts: contexts, aggregates: aggs, valueObjects: vos, domainEvents: events, glossaryTerms: glossary };
     }, {
       params: t.Object({ id: t.String() }),
       detail: { summary: "Get domain model with all artifacts", tags: ["Domain Models"] },

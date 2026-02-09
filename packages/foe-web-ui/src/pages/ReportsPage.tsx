@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ReportUpload } from '../components/ReportUpload';
-import { ApiKeyPrompt } from '../components/ApiKeyPrompt';
 import { OverviewCard } from '../components/OverviewCard';
 import { DimensionCard } from '../components/DimensionCard';
 import { TriangleDiagram } from '../components/TriangleDiagram';
 import { FindingsTable } from '../components/FindingsTable';
 import { GapsTable } from '../components/GapsTable';
-import { FileJson, RotateCcw, Loader2 } from 'lucide-react';
-import { api } from '../api/client';
+import { FileJson, RotateCcw } from 'lucide-react';
 import type { FOEReport } from '../types/report';
 
 const DIMENSION_COLORS = {
@@ -16,49 +14,12 @@ const DIMENSION_COLORS = {
   confidence: '#10b981',
 };
 
-type PageState = 'loading' | 'needs-key' | 'ready';
-
 export function ReportsPage() {
   const [report, setReport] = useState<FOEReport | null>(null);
-  const [pageState, setPageState] = useState<PageState>('loading');
-
-  useEffect(() => {
-    checkConfig();
-  }, []);
-
-  const checkConfig = async () => {
-    setPageState('loading');
-    try {
-      const status = await api.getConfigStatus();
-      setPageState(status.anthropicApiKey ? 'ready' : 'needs-key');
-    } catch {
-      setPageState('ready');
-    }
-  };
 
   const handleReset = () => {
     setReport(null);
   };
-
-  if (pageState === 'loading') {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-          <p className="text-sm text-gray-500 dark:text-gray-400">Connecting...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (pageState === 'needs-key') {
-    return (
-      <ApiKeyPrompt
-        onConfigured={() => setPageState('ready')}
-        onSkip={() => setPageState('ready')}
-      />
-    );
-  }
 
   if (!report) {
     return <ReportUpload onReportLoaded={setReport} />;

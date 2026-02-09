@@ -24,21 +24,21 @@ const apiBdd = defineBddProject({
   name: 'api',
   features: 'features/api/**/*.feature',
   steps: 'features/steps/**/*.ts',
-  tags: '@api',
+  tags: '@api and not @wip',
 });
 
 const uiBdd = defineBddProject({
   name: 'ui',
   features: 'features/ui/**/*.feature',
   steps: 'features/steps/**/*.ts',
-  tags: '@ui',
+  tags: '@ui and not @wip',
 });
 
 const hybridBdd = defineBddProject({
   name: 'hybrid',
   features: 'features/hybrid/**/*.feature',
   steps: 'features/steps/**/*.ts',
-  tags: '@hybrid',
+  tags: '@hybrid and not @wip',
 });
 
 export default defineConfig({

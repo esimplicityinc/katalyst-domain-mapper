@@ -47,11 +47,12 @@ export function ApiKeyPrompt({ onConfigured, onSkip }: ApiKeyPromptProps) {
             <Key className="w-8 h-8 text-blue-600 dark:text-blue-400" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Set Up Scanner
+            Welcome to Katalyst
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-sm">
-            An Anthropic API key is needed to run FOE scans. You can still upload
-            and view existing reports without one.
+            An Anthropic API key is needed to power FOE scans and the AI domain
+            mapping assistant. You can still upload and view existing reports
+            without one.
           </p>
         </div>
 

@@ -19,9 +19,11 @@ WORKDIR /app/packages/foe-api
 # Create data directory for SQLite
 RUN mkdir -p /app/data
 
-# Install docker CLI so scans can be triggered in dev mode too
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    docker.io \
+# Install Docker CLI (static binary)
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+  && ARCH=$(uname -m | sed 's/aarch64/aarch64/;s/x86_64/x86_64/') \
+  && curl -fsSL "https://download.docker.com/linux/static/stable/${ARCH}/docker-27.5.1.tgz" \
+     | tar xz --strip-components=1 -C /usr/local/bin docker/docker \
   && rm -rf /var/lib/apt/lists/*
 
 ENV DATABASE_URL=/app/data/foe.db
@@ -65,10 +67,13 @@ COPY --from=builder /build/node_modules ./node_modules
 COPY --from=builder /build/packages/foe-schemas ./packages/foe-schemas
 COPY --from=builder /build/packages/foe-api ./packages/foe-api
 
-# Install docker CLI for scan orchestration
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    docker.io \
-  && rm -rf /var/lib/apt/lists/*
+# Install Docker CLI (static binary — docker.io pkg no longer includes the CLI in Debian Trixie)
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+  && ARCH=$(uname -m | sed 's/aarch64/aarch64/;s/x86_64/x86_64/') \
+  && curl -fsSL "https://download.docker.com/linux/static/stable/${ARCH}/docker-27.5.1.tgz" \
+     | tar xz --strip-components=1 -C /usr/local/bin docker/docker \
+  && rm -rf /var/lib/apt/lists/* \
+  && docker --version
 
 WORKDIR /app/packages/foe-api
 

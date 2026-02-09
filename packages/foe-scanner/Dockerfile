@@ -1,50 +1,40 @@
-# Stage 1: Build Field Guide tools and generate methods index
-FROM oven/bun:1 AS builder
-WORKDIR /build
+# ═══════════════════════════════════════════════════════════════════════════════
+# FOE Scanner — AI-powered repository analysis container
+# ═══════════════════════════════════════════════════════════════════════════════
+# Spawned by the API to scan repositories via `docker run`.
+# Uses OpenCode + Claude to analyze codebases and produce FOE reports.
+#
+# Usage (standalone):
+#   docker run -v /path/to/repo:/repo -e ANTHROPIC_API_KEY=sk-ant-... foe-scanner
+# ═══════════════════════════════════════════════════════════════════════════════
 
-# Copy workspace configuration
-COPY package.json bun.lock ./
-
-# Copy packages needed for build
-COPY packages/foe-schemas ./packages/foe-schemas
-COPY packages/foe-field-guide-tools ./packages/foe-field-guide-tools
-
-# Copy field guide documentation (needed to build index)
-COPY docs/docs ./docs/docs
-
-# Install dependencies
-RUN bun install
-
-# Build schemas package
-WORKDIR /build/packages/foe-schemas
-RUN bun run build
-
-# Build field guide tools and generate methods index
-WORKDIR /build/packages/foe-field-guide-tools
-RUN bun run build
-
-# Stage 2: Runtime with OpenCode
-FROM node:22-slim
+FROM debian:bookworm-slim
 WORKDIR /app
 
-# Install OpenCode globally
-RUN npm install -g opencode@latest
+# Install minimal runtime dependencies + download OpenCode CLI
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      curl ca-certificates git bash \
+  && ARCH=$(uname -m) \
+  && OPENCODE_ARCH=$([ "$ARCH" = "aarch64" ] && echo "arm64" || echo "x64") \
+  && curl -fsSL "https://github.com/anomalyco/opencode/releases/latest/download/opencode-linux-${OPENCODE_ARCH}.tar.gz" \
+     | tar xz -C /usr/local/bin \
+  && rm -rf /var/lib/apt/lists/* \
+  && opencode --version
 
 # Copy agent definitions
 COPY packages/foe-scanner/.opencode ./.opencode
+
+# Copy pre-built Field Guide indices (already built by foe-field-guide-tools)
+COPY packages/foe-field-guide-tools/dist/methods-index.json ./data/
+COPY packages/foe-field-guide-tools/dist/observations-index.json ./data/
 
 # Copy entrypoint script
 COPY packages/foe-scanner/entrypoint.sh ./
 RUN chmod +x ./entrypoint.sh
 
-# Bake in methods index from builder stage
-COPY --from=builder /build/packages/foe-field-guide-tools/dist/methods-index.json ./data/
-COPY --from=builder /build/packages/foe-field-guide-tools/dist/observations-index.json ./data/
-
 # Set environment variables
 ENV FOE_METHODS_INDEX=/app/data/methods-index.json
 ENV FOE_OBSERVATIONS_INDEX=/app/data/observations-index.json
-ENV NODE_ENV=production
 
 # Default to scanning /repo
 VOLUME ["/repo"]

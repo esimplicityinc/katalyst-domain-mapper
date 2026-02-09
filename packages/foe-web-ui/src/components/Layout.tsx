@@ -1,5 +1,8 @@
+import { useState, useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { FileJson, Map, Hexagon } from 'lucide-react';
+import { FileJson, Map, Hexagon, Loader2 } from 'lucide-react';
+import { ApiKeyPrompt } from './ApiKeyPrompt';
+import { api } from '../api/client';
 
 const NAV_ITEMS = [
   {
@@ -16,7 +19,46 @@ const NAV_ITEMS = [
   },
 ];
 
+type GateState = 'loading' | 'needs-key' | 'ready';
+
 export function Layout() {
+  const [gate, setGate] = useState<GateState>('loading');
+
+  useEffect(() => {
+    checkApiKey();
+  }, []);
+
+  const checkApiKey = async () => {
+    setGate('loading');
+    try {
+      const status = await api.getConfigStatus();
+      setGate(status.anthropicApiKey ? 'ready' : 'needs-key');
+    } catch {
+      // Backend unreachable — let user through (graceful degradation)
+      setGate('ready');
+    }
+  };
+
+  if (gate === 'loading') {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+          <p className="text-sm text-gray-500 dark:text-gray-400">Connecting...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (gate === 'needs-key') {
+    return (
+      <ApiKeyPrompt
+        onConfigured={() => setGate('ready')}
+        onSkip={() => setGate('ready')}
+      />
+    );
+  }
+
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}

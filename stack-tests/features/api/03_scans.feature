@@ -17,3 +17,18 @@ Feature: FOE Scan Jobs
   Scenario: Get non-existent scan returns 404
     When I GET "/api/v1/scans/non-existent-scan-id"
     Then the response status should be 404
+
+  Scenario: Filter scan jobs by queued status
+    When I GET "/api/v1/scans?status=queued"
+    Then the response status should be 200
+    And the response should be a JSON array
+
+  Scenario: Filter scan jobs by failed status
+    When I GET "/api/v1/scans?status=failed"
+    Then the response status should be 200
+    And the response should be a JSON array
+
+  Scenario: Filter scan jobs by running status
+    When I GET "/api/v1/scans?status=running"
+    Then the response status should be 200
+    And the response should be a JSON array

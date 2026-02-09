@@ -11,6 +11,33 @@ import { createRepositoryRoutes } from "./routes/v1/repositories.js";
 import { createConfigRoutes } from "./routes/v1/config.js";
 import { createDomainModelRoutes } from "./routes/v1/domain-models.js";
 import type { Container } from "../bootstrap/container.js";
+import * as path from "node:path";
+import * as fs from "node:fs";
+
+// ── Static file MIME types ──────────────────────────────────────────────────
+const MIME_TYPES: Record<string, string> = {
+  ".html": "text/html",
+  ".js": "application/javascript",
+  ".css": "text/css",
+  ".json": "application/json",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+  ".ttf": "font/ttf",
+  ".eot": "application/vnd.ms-fontobject",
+  ".map": "application/json",
+};
+
+// ── OpenCode proxy target ───────────────────────────────────────────────────
+const OPENCODE_URL = process.env.OPENCODE_INTERNAL_URL ?? "http://127.0.0.1:4096";
+
+// ── Web UI dist directory ───────────────────────────────────────────────────
+const WEB_DIST_DIR = process.env.WEB_DIST_DIR ?? path.resolve(import.meta.dirname ?? ".", "../../web-dist");
 
 export function createServer(container: Container) {
   const app = new Elysia()
@@ -86,7 +113,91 @@ export function createServer(container: Container) {
             db: container.db,
           })
         )
-    );
+    )
+
+    // ── Static file serving + SPA fallback + OpenCode proxy ────────────────
+    .all("/*", async ({ request }) => {
+      const url = new URL(request.url);
+
+      // ── OpenCode proxy (/opencode/* → internal :4096) ───────────────────
+      if (url.pathname.startsWith("/opencode")) {
+        const targetPath = url.pathname.replace(/^\/opencode/, "") || "/";
+        const targetUrl = `${OPENCODE_URL}${targetPath}${url.search}`;
+
+        try {
+          // Build clean headers for the upstream request (strip hop-by-hop)
+          const upstreamHeaders = new Headers();
+          upstreamHeaders.set("Content-Type", request.headers.get("Content-Type") ?? "application/json");
+          upstreamHeaders.set("Accept", request.headers.get("Accept") ?? "application/json");
+
+          // Read body for non-GET/HEAD methods
+          let body: string | undefined;
+          if (request.method !== "GET" && request.method !== "HEAD") {
+            body = await request.text();
+          }
+
+          const proxyRes = await fetch(targetUrl, {
+            method: request.method,
+            headers: upstreamHeaders,
+            body,
+          });
+
+          // Build clean response headers (don't forward internal CORS/hop-by-hop)
+          const resHeaders = new Headers();
+          const contentType = proxyRes.headers.get("Content-Type");
+          if (contentType) resHeaders.set("Content-Type", contentType);
+          const contentLength = proxyRes.headers.get("Content-Length");
+          if (contentLength) resHeaders.set("Content-Length", contentLength);
+
+          return new Response(proxyRes.body, {
+            status: proxyRes.status,
+            statusText: proxyRes.statusText,
+            headers: resHeaders,
+          });
+        } catch {
+          return new Response(
+            JSON.stringify({ error: "OpenCode server not available" }),
+            { status: 502, headers: { "Content-Type": "application/json" } }
+          );
+        }
+      }
+
+      // ── Static file serving + SPA fallback ──────────────────────────────
+      let filePath = path.join(WEB_DIST_DIR, url.pathname);
+
+      // Security: prevent directory traversal
+      if (!filePath.startsWith(WEB_DIST_DIR)) {
+        return new Response("Forbidden", { status: 403 });
+      }
+
+      // Try the exact file
+      if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+        const ext = path.extname(filePath);
+        const contentType = MIME_TYPES[ext] ?? "application/octet-stream";
+        const cacheControl = ext === ".html"
+          ? "no-cache"
+          : "public, max-age=31536000, immutable";
+        return new Response(Bun.file(filePath), {
+          headers: {
+            "Content-Type": contentType,
+            "Cache-Control": cacheControl,
+          },
+        });
+      }
+
+      // SPA fallback — serve index.html for all unmatched routes
+      const indexPath = path.join(WEB_DIST_DIR, "index.html");
+      if (fs.existsSync(indexPath)) {
+        return new Response(Bun.file(indexPath), {
+          headers: {
+            "Content-Type": "text/html",
+            "Cache-Control": "no-cache",
+          },
+        });
+      }
+
+      return new Response("Not Found", { status: 404 });
+    });
 
   return app;
 }

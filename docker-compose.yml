@@ -1,13 +1,13 @@
 services:
-  # ── FOE API ────────────────────────────────────────────────────────────────
-  api:
+  # ── Katalyst Domain Mapper (unified single container) ──────────────────────
+  app:
     build:
       context: .
-      dockerfile: packages/foe-api/Dockerfile
+      dockerfile: Dockerfile
     ports:
-      - "3001:3001"
+      - "8090:8090"
     environment:
-      - PORT=3001
+      - PORT=8090
       - DATABASE_URL=/app/data/foe.db
       - SCANNER_IMAGE=foe-scanner
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
@@ -16,36 +16,7 @@ services:
     volumes:
       - foe-data:/app/data
       - /var/run/docker.sock:/var/run/docker.sock  # Needed to spawn scanner containers
-    restart: unless-stopped
-
-  # ── OpenCode Server (AI chat backend for domain mapping) ──────────────────
-  opencode:
-    image: ghcr.io/anomalyco/opencode:latest
-    command: ["serve", "--port", "4096", "--hostname", "0.0.0.0", "--cors", "http://localhost:8090", "--cors", "http://localhost:5173"]
-    ports:
-      - "4096:4096"
-    environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
-    volumes:
-      - .:/app  # Mount project root so OpenCode can read agents and project context
-    working_dir: /app
-    restart: unless-stopped
-
-  # ── FOE Web UI ─────────────────────────────────────────────────────────────
-  web:
-    build:
-      context: .
-      dockerfile: packages/foe-web-ui/Dockerfile
-      args:
-        # The browser connects to the API on the host — not inside Docker networking.
-        # This is a build-time arg baked into the JS bundle.
-        VITE_API_URL: http://localhost:3001
-        VITE_OPENCODE_URL: http://localhost:4096
-    ports:
-      - "8090:3000"
-    depends_on:
-      - api
-      - opencode
+      - ${HOME}/Documents/Projects:/projects:ro     # Mount host projects for OpenCode to read
     restart: unless-stopped
 
   # ── FOE Scanner (pre-built image, used by the API to run scans) ────────────
