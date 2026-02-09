@@ -15,6 +15,13 @@
       "when": 1770338235497,
       "tag": "0001_unique_psylocke",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1770659049275,
+      "tag": "0002_hard_gargoyle",
+      "breakpoints": true
     }
   ]
 }

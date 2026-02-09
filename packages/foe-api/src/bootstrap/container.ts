@@ -4,10 +4,12 @@ import type { Logger } from "../ports/Logger.js";
 import type { ReportRepository } from "../ports/ReportRepository.js";
 import type { ScanJobRepository } from "../ports/ScanJobRepository.js";
 import type { ScanRunner } from "../ports/ScanRunner.js";
+import type { GovernanceRepository } from "../ports/GovernanceRepository.js";
 import { StructuredLogger } from "../observability/logging.js";
 import { createDatabase, type DrizzleDB } from "../db/client.js";
 import { ReportRepositorySQLite } from "../adapters/sqlite/ReportRepositorySQLite.js";
 import { ScanJobRepositorySQLite } from "../adapters/sqlite/ScanJobRepositorySQLite.js";
+import { GovernanceRepositorySQLite } from "../adapters/sqlite/GovernanceRepositorySQLite.js";
 import { DockerScanRunner } from "../adapters/docker/DockerScanRunner.js";
 import { IngestReport } from "../usecases/report/IngestReport.js";
 import { GetReport } from "../usecases/report/GetReport.js";
@@ -15,6 +17,11 @@ import { ListReports } from "../usecases/report/ListReports.js";
 import { CompareReports } from "../usecases/report/CompareReports.js";
 import { TriggerScan } from "../usecases/scan/TriggerScan.js";
 import { GetScanStatus } from "../usecases/scan/GetScanStatus.js";
+import { IngestGovernanceSnapshot } from "../usecases/governance/IngestGovernanceSnapshot.js";
+import { QueryGovernanceState } from "../usecases/governance/QueryGovernanceState.js";
+import { GetCapabilityCoverage } from "../usecases/governance/GetCapabilityCoverage.js";
+import { GetGovernanceTrend } from "../usecases/governance/GetGovernanceTrend.js";
+import { ValidateTransition } from "../usecases/governance/ValidateTransition.js";
 
 export interface Container {
   config: AppConfig;
@@ -23,12 +30,18 @@ export interface Container {
   reportRepo: ReportRepository;
   scanJobRepo: ScanJobRepository;
   scanRunner: ScanRunner;
+  governanceRepo: GovernanceRepository;
   ingestReport: IngestReport;
   getReport: GetReport;
   listReports: ListReports;
   compareReports: CompareReports;
   triggerScan: TriggerScan;
   getScanStatus: GetScanStatus;
+  ingestGovernanceSnapshot: IngestGovernanceSnapshot;
+  queryGovernanceState: QueryGovernanceState;
+  getCapabilityCoverage: GetCapabilityCoverage;
+  getGovernanceTrend: GetGovernanceTrend;
+  validateTransition: ValidateTransition;
   healthCheck: () => boolean;
   shutdown: () => void;
   getAnthropicApiKey: () => string | undefined;
@@ -53,6 +66,7 @@ export function createContainer(config: AppConfig): Container {
   // Repositories (adapters)
   const reportRepo = new ReportRepositorySQLite(db);
   const scanJobRepo = new ScanJobRepositorySQLite(db);
+  const governanceRepo = new GovernanceRepositorySQLite(db);
 
   // Scan runner
   const scanRunner = new DockerScanRunner(
@@ -68,6 +82,11 @@ export function createContainer(config: AppConfig): Container {
   const compareReports = new CompareReports(reportRepo);
   const triggerScan = new TriggerScan(scanJobRepo, logger.child({ usecase: "trigger-scan" }));
   const getScanStatus = new GetScanStatus(scanJobRepo);
+  const ingestGovernanceSnapshot = new IngestGovernanceSnapshot(governanceRepo, logger.child({ usecase: "ingest-governance" }));
+  const queryGovernanceState = new QueryGovernanceState(governanceRepo);
+  const getCapabilityCoverage = new GetCapabilityCoverage(governanceRepo);
+  const getGovernanceTrend = new GetGovernanceTrend(governanceRepo);
+  const validateTransitionUseCase = new ValidateTransition();
 
   // Health check
   const healthCheck = (): boolean => {
@@ -92,12 +111,18 @@ export function createContainer(config: AppConfig): Container {
     reportRepo,
     scanJobRepo,
     scanRunner,
+    governanceRepo,
     ingestReport,
     getReport,
     listReports,
     compareReports,
     triggerScan,
     getScanStatus,
+    ingestGovernanceSnapshot,
+    queryGovernanceState,
+    getCapabilityCoverage,
+    getGovernanceTrend,
+    validateTransition: validateTransitionUseCase,
     healthCheck,
     shutdown,
     getAnthropicApiKey,

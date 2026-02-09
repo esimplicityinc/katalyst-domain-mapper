@@ -277,3 +277,48 @@ export const scanJobs = sqliteTable("scan_jobs", {
   startedAt: text("started_at"),
   completedAt: text("completed_at"),
 });
+
+// ── Governance Snapshots ────────────────────────────────────────────────────
+
+export const governanceSnapshots = sqliteTable("governance_snapshots", {
+  id: text("id").primaryKey(),
+  project: text("project").notNull(),
+  version: text("version").notNull(),
+  generated: text("generated").notNull(),
+  rawIndex: text("raw_index", { mode: "json" }).$type<Record<string, unknown>>().notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
+export const governanceCapabilities = sqliteTable("governance_capabilities", {
+  id: text("id").primaryKey(), // CAP-XXX
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => governanceSnapshots.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  status: text("status").notNull(),
+  roadCount: integer("road_count").notNull().default(0),
+  storyCount: integer("story_count").notNull().default(0),
+});
+
+export const governanceRoadItems = sqliteTable("governance_road_items", {
+  id: text("id").primaryKey(), // composite: snapshotId + ROAD-XXX
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => governanceSnapshots.id, { onDelete: "cascade" }),
+  roadId: text("road_id").notNull(),
+  title: text("title").notNull(),
+  status: text("status").notNull(),
+  phase: integer("phase").notNull().default(0),
+  priority: text("priority").notNull().default("medium"),
+});
+
+export const governanceContexts = sqliteTable("governance_contexts", {
+  id: text("id").primaryKey(), // composite: snapshotId + slug
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => governanceSnapshots.id, { onDelete: "cascade" }),
+  slug: text("slug").notNull(),
+  title: text("title").notNull(),
+  aggregateCount: integer("aggregate_count").notNull().default(0),
+  eventCount: integer("event_count").notNull().default(0),
+});

@@ -10,6 +10,7 @@ import { createScanRoutes } from "./routes/v1/scans.js";
 import { createRepositoryRoutes } from "./routes/v1/repositories.js";
 import { createConfigRoutes } from "./routes/v1/config.js";
 import { createDomainModelRoutes } from "./routes/v1/domain-models.js";
+import { createGovernanceRoutes } from "./routes/v1/governance.js";
 import type { Container } from "../bootstrap/container.js";
 import * as path from "node:path";
 import * as fs from "node:fs";
@@ -63,6 +64,7 @@ export function createServer(container: Container) {
             { name: "Scans", description: "Scan job orchestration" },
             { name: "Repositories", description: "Repository tracking" },
             { name: "Domain Models", description: "DDD domain modeling" },
+            { name: "Governance", description: "Governance index management" },
           ],
         },
         path: "/swagger",
@@ -111,6 +113,16 @@ export function createServer(container: Container) {
         .use(
           createDomainModelRoutes({
             db: container.db,
+          })
+        )
+        .use(
+          createGovernanceRoutes({
+            ingestGovernanceSnapshot: container.ingestGovernanceSnapshot,
+            queryGovernanceState: container.queryGovernanceState,
+            getCapabilityCoverage: container.getCapabilityCoverage,
+            getGovernanceTrend: container.getGovernanceTrend,
+            governanceRepo: container.governanceRepo,
+            validateTransition: container.validateTransition,
           })
         )
     )

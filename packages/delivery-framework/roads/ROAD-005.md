@@ -1,12 +1,13 @@
 ---
 id: ROAD-005
 title: "API Governance Domain"
-status: proposed
+status: implementing
 phase: 3
 priority: medium
 created: "2026-02-05"
-updated: "2026-02-05"
-owner: ""
+updated: "2026-02-09"
+started: "2026-02-09"
+owner: "superpowers-orchestrator"
 tags: [api, governance, elysia, sqlite, hexagonal]
 governance:
   adrs:
@@ -15,9 +16,13 @@ governance:
     validated_by: "architecture-inspector"
     validated_at: "2026-02-06"
   bdd:
-    status: draft
-    feature_files: []
-    scenarios: 0
+    status: active
+    feature_files:
+      - stack-tests/features/api/governance/01_governance_ingest.feature
+      - stack-tests/features/api/governance/02_governance_coverage.feature
+      - stack-tests/features/api/governance/03_governance_state_machine.feature
+      - stack-tests/features/hybrid/governance/01_governance_e2e.feature
+    scenarios: 19
     passing: 0
   nfrs:
     applicable: [NFR-PERF-001, NFR-PERF-002, NFR-SEC-001, NFR-REL-001]
@@ -106,9 +111,9 @@ See [API Governance Domain Plan](../plans/api-governance-domain.md) for the full
 
 ## Governance Checklist
 
-- [ ] ADRs identified and validated
-- [ ] BDD scenarios written and approved
-- [ ] Implementation complete
-- [ ] NFRs validated
+- [x] ADRs identified and validated (ADR-003, ADR-004)
+- [x] BDD scenarios written (19 scenarios across 4 feature files)
+- [x] Implementation complete (10 new files, 4 modified, tsc 0 errors)
+- [ ] NFRs validated (pending runtime performance validation)
 - [ ] Change record created
-- [ ] Documentation updated
+- [x] Documentation updated
