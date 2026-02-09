@@ -10,3 +10,6 @@ export * from './builders/index.js';
 
 // Re-export types from schemas for convenience
 export type { Method, Observation, MethodsIndex } from '@foe/schemas/field-guide';
+
+// Re-export governance types (via namespace)
+export type { governance } from '@foe/schemas';

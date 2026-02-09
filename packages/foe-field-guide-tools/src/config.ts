@@ -74,6 +74,13 @@ export const STOP_WORDS = new Set([
   "only",
 ]);
 
+// Governance documentation paths
+export const GOVERNANCE_ROOT = process.env.FOE_GOVERNANCE_ROOT
+  || join(PROJECT_ROOT, 'packages', 'delivery-framework');
+
+// Governance output
+export const GOVERNANCE_INDEX_PATH = join(OUTPUT_DIR, 'governance-index.json');
+
 // Neo4j configuration (optional)
 export const NEO4J_URI = process.env.NEO4J_URI || "bolt://localhost:7687";
 export const NEO4J_USER = process.env.NEO4J_USER || "neo4j";
