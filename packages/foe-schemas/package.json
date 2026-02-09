@@ -24,6 +24,10 @@
     "./ddd": {
       "types": "./dist/ddd/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./governance": {
+      "types": "./dist/governance/index.d.ts",
+      "default": "./dist/index.js"
     }
   },
   "scripts": {

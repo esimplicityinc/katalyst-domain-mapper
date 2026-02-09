@@ -1,17 +1,17 @@
 ---
 id: ROAD-003
 title: "DDD Artifact Schemas"
-status: proposed
+status: complete
 phase: 1
 priority: high
 created: "2026-02-05"
-updated: "2026-02-05"
+updated: "2026-02-09"
 owner: ""
 tags: [schemas, zod, ddd, domain-modeling]
 governance:
   adrs:
     validated: true
-    ids: [ADR-002, ADR-008, ADR-009]
+    ids: [ADR-002, ADR-008, ADR-009, ADR-012]
     validated_by: "architecture-inspector"
     validated_at: "2026-02-06"
   bdd:
@@ -45,7 +45,7 @@ Domain knowledge becomes a first-class, validated artifact rather than prose tra
 3. `AggregateSchema` with invariants, commands, events published, bounded context reference
 4. `ValueObjectSchema` with properties, validation rules, equality definition
 5. `DomainEventSchema` with payload schema, source aggregate, subscriber contexts
-6. Cross-reference IDs validated by format (e.g., `z.string().regex(/^CTX-\w+$/)`)
+6. Cross-reference IDs use slugs (`z.string().regex(/^[a-z0-9-]+$/)`) per ADR-012
 7. Referential integrity deferred to index builder (ROAD-004)
 8. Existing `@foe/schemas` build still passes
 
@@ -56,10 +56,10 @@ Domain knowledge becomes a first-class, validated artifact rather than prose tra
 ```
 packages/foe-schemas/src/governance/ddd/
 ├── index.ts                    # Re-exports
-├── bounded-context.ts          # CTX-xxx schema
-├── aggregate.ts                # AGG-xxx schema
-├── value-object.ts             # VO-xxx schema
-└── domain-event.ts             # EVT-xxx schema
+├── bounded-context.ts          # Slug-based bounded context schema
+├── aggregate.ts                # Slug-based aggregate schema
+├── value-object.ts             # Slug-based value object schema
+└── domain-event.ts             # Slug-based domain event schema
 ```
 
 ### Key Schema Fields
@@ -106,9 +106,18 @@ See [DDD Schemas Plan](../plans/ddd-schemas.md) for the full spec.
 
 ## Governance Checklist
 
-- [ ] ADRs identified and validated
-- [ ] BDD scenarios written and approved
-- [ ] Implementation complete
-- [ ] NFRs validated
+- [x] ADRs identified and validated (ADR-002, ADR-008, ADR-009, ADR-012)
+- [ ] BDD scenarios written and approved (deferred — schema-only, validated via tsc + build)
+- [x] Implementation complete (5 files in governance/ddd/, 2026-02-09)
+- [ ] NFRs validated (NFR-REL-001 pending)
 - [ ] Change record created
-- [ ] Documentation updated
+- [x] Documentation updated
+
+## Quality Gate Results
+
+| Gate | Status | Agent | Score |
+|------|--------|-------|-------|
+| Architecture Review | ✅ CONDITIONAL PASS | @architecture-inspector | 92/100 |
+| DDD Alignment | ✅ CONDITIONAL PASS | @ddd-aligner | — |
+| TypeScript Check | ✅ PASS | tsc --noEmit | 0 errors |
+| Build | ✅ PASS | bun build | 55 modules, 167.27 KB |

@@ -23,6 +23,9 @@ export * from './graph/index.js';
 // DDD domain modeling schemas
 export * from './ddd/index.js';
 
+// Governance schemas (namespaced to avoid conflicts with existing ddd/ exports)
+export * as governance from './governance/index.js';
+
 /**
  * Package version
  */
