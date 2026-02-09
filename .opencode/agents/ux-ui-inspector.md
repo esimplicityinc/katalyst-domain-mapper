@@ -140,14 +140,14 @@ if (!displayName) {
 **Example**:
 ```typescript
 // ✅ Good loading state
-function BotRegistrationForm() {
-  const registerBot = useMutation(api.botIdentity.registerBot);
+function ReportUploadForm() {
+  const uploadReport = useMutation(api.reports.ingest);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      await registerBot({ displayName });
+      await uploadReport({ reportData });
     } finally {
       setIsLoading(false);
     }
@@ -155,7 +155,7 @@ function BotRegistrationForm() {
 
   return (
     <button disabled={isLoading}>
-      {isLoading ? <Spinner /> : 'Register Bot'}
+      {isLoading ? <Spinner /> : 'Upload Report'}
     </button>
   );
 }
@@ -394,16 +394,16 @@ Micro-interactions:
 ### Issues Found Report
 
 ```
-⚠️ UX/UI Inspection: Bot Registration Flow - ISSUES FOUND
+⚠️ UX/UI Inspection: Report Upload Flow - ISSUES FOUND
 
 Critical Issues (Fix Required):
-  ❌ API key copy button not keyboard-accessible
+  ❌ Report download button not keyboard-accessible
      - Missing onKeyDown handler for Enter/Space
-     - File: components/bot-identity/BotRegistrationForm.tsx:145
+     - File: packages/foe-web-ui/src/components/ReportUpload.tsx:145
 
   ❌ Error message not announced to screen reader
      - Missing aria-live="assertive" on error div
-     - File: components/bot-identity/BotRegistrationForm.tsx:78
+     - File: packages/foe-web-ui/src/components/ReportUpload.tsx:78
 
   ❌ Contrast ratio too low on secondary text
      - Current: 3.2:1, Required: 4.5:1

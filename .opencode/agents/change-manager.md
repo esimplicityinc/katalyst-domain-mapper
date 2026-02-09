@@ -382,5 +382,5 @@ just validate-changes
 
 ---
 
-**Maintained By**: Prima Delivery Team  
+**Maintained By**: Katalyst Development Team  
 **Related**: [Agent Specification](../../agentspec.md)

@@ -80,7 +80,7 @@ just lint
 just lint-fix
 
 # Check specific files
-just lint src/bot-identity/**/*.ts
+just lint packages/foe-api/src/**/*.ts
 ```
 
 ### Type Checking
@@ -218,8 +218,8 @@ just test-coverage
 
 **Example Error**:
 ```
-src/bot-identity/domain/BotAccount.ts:42:5
-  Property 'displayName' is missing in type 'BotAccount'
+packages/foe-api/src/domain/normalize.ts:42:5
+  Property 'overallScore' is missing in type 'FOEReport'
 ```
 
 **Action**:
@@ -232,7 +232,7 @@ src/bot-identity/domain/BotAccount.ts:42:5
 
 **Example Error**:
 ```
-src/bot-identity/domain/BotAccount.ts:15:10
+packages/foe-api/src/domain/normalize.ts:15:10
   'unused-var' is assigned a value but never used
 ```
 
@@ -245,8 +245,8 @@ src/bot-identity/domain/BotAccount.ts:15:10
 
 **Example**:
 ```
-FAIL src/bot-identity/domain/BotAccount.test.ts
-  ✕ should enforce display name length (5ms)
+FAIL packages/foe-schemas/src/scan/report.test.ts
+  ✕ should enforce score range 0-100 (5ms)
     Expected error to be thrown
 ```
 
@@ -254,7 +254,7 @@ FAIL src/bot-identity/domain/BotAccount.test.ts
 1. Read test file
 2. Read implementation
 3. Identify discrepancy
-4. Report to code-writer: "Test expects error for long display names, but BotAccount doesn't validate"
+4. Report to code-writer: "Test expects error for scores above 100, but FOEReport doesn't validate"
 
 ## Coverage Requirements
 
@@ -273,8 +273,8 @@ File                    | % Stmts | % Branch | % Funcs | % Lines |
 ------------------------|---------|----------|---------|---------|
 All files              |   85.2  |   78.4   |   90.1  |   85.2  |
  domain/               |   92.3  |   88.7   |   95.0  |   92.3  |
-  BotAccount.ts        |   100   |   100    |   100   |   100   |
-  TokenAmount.ts       |   100   |   100    |   100   |   100   |
+   FOEReport.ts         |   100   |   100    |   100   |   100   |
+   DimensionScore.ts    |   100   |   100    |   100   |   100   |
  application/          |   78.5  |   65.2   |   80.0  |   78.5  |
 ```
 
@@ -344,21 +344,21 @@ Ready to commit/push/merge!
 
 Type Checking:
   ❌ 3 errors found
-     - src/bot-identity/domain/BotAccount.ts:42
-       Property 'id' is missing
+     - packages/foe-api/src/domain/normalize.ts:42
+       Property 'overallScore' is missing
 
 Linting:
   ⚠️ 1 error, 5 warnings
-     - src/promise-market/domain/Promise.ts:15
-       'Promise' is already declared (rename class)
+     - packages/foe-api/src/usecases/IngestReport.ts:15
+       'Report' shadows built-in type (rename to FOEReport)
 
 Formatting:
   ✅ All files formatted
 
 Tests:
   ❌ Unit: 140/142 passed (2 failures)
-     - BotAccount.test.ts: "should validate display name"
-     - TokenAmount.test.ts: "should handle negative amounts"
+     - normalize.test.ts: "should validate dimension weights"
+     - DimensionScore.test.ts: "should reject scores above 100"
   ✅ Integration: 45/45 passed
 
 Coverage:
@@ -366,15 +366,15 @@ Coverage:
 
 Action Required:
   1. Fix TypeScript errors
-  2. Rename Promise class to avoid conflict
+   2. Rename Report class to FOEReport to avoid shadowing
   3. Fix 2 failing unit tests
-  4. Increase test coverage in promise-market context
+   4. Increase test coverage in scanning use cases
 ```
 
 ## Integration with Other Agents
 
 ### To Code Writer
-- "TypeScript errors in BotAccount.ts - needs domain layer fix"
+- "TypeScript errors in normalize.ts - needs domain layer fix"
 - "2 unit tests failing after your changes"
 
 ### To BDD Runner

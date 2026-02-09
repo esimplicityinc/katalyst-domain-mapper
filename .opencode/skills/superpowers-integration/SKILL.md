@@ -413,7 +413,7 @@ Task 6: Run CI
 
 **Direct execution:**
 ```
-@code-writer add loading spinner to BotRegistrationButton
+@code-writer add loading spinner to ReportUploadButton
 - Add isLoading prop
 - Show spinner when loading
 - Disable button during loading
@@ -633,7 +633,7 @@ Task involves...
 
 ### Pattern 1: Multi-Context Feature
 
-**Example:** Advertisement bot needs both `bot-identity` and new `advertising` context.
+**Example:** Jira integration needs both `governance` and new `jira-sync` context.
 
 **Workflow:**
 ```
@@ -643,10 +643,10 @@ Identify two bounded contexts needed
   ↓
 /superpowers:write-plan
   ↓
-Task 1: Define advertising context boundaries (@ddd-aligner)
+Task 1: Define jira-sync context boundaries (@ddd-aligner)
 Task 2: Create shared kernel if needed (@code-writer)
-Task 3: Implement bot-identity changes (@code-writer)
-Task 4: Implement advertising context (@code-writer)
+Task 3: Implement governance changes (@code-writer)
+Task 4: Implement jira-sync context (@code-writer)
 Task 5: Create anti-corruption layer (@code-writer)
 Task 6: Write cross-context BDD (@bdd-writer)
 ...

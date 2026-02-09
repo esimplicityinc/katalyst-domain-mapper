@@ -48,36 +48,36 @@ metadata:
 
 The project has 4 bounded contexts:
 
-1. **Bot Identity & Reputation**
-   - Core: Bot registration, authentication, reputation scoring
-   - Location: `src/bot-identity/`
+1. **Scanning**
+   - Core: Repository analysis, dimension scoring, AI-powered assessment
+   - Location: `packages/foe-scanner/`
 
-2. **Promise Market**
-   - Core: Promise creation, listing, matching, order book
-   - Location: `src/promise-market/`
+2. **Field Guide**
+   - Core: Method/observation indexing, keyword extraction, external frameworks
+   - Location: `packages/foe-field-guide-tools/`
 
-3. **Token Management**
-   - Core: Wallets, transfers, escrow, stakes
-   - Location: `src/token-management/`
+3. **Reporting**
+   - Core: Report visualization, trend tracking, report persistence
+   - Location: `packages/foe-api/` + `packages/foe-web-ui/`
 
-4. **Settlement & Verification**
-   - Core: Execution verification, disputes, settlement
-   - Location: `src/settlement-verification/`
+4. **Governance**
+   - Core: Road items, capabilities, personas, NFRs, change tracking
+   - Location: `packages/delivery-framework/`
 
 **Rule**: Contexts communicate via Domain Events, not direct calls
 
 ### Ubiquitous Language
 
-**Source of Truth**: `docs/ddd/03-ubiquitous-language.md`
+**Source of Truth**: `docs/ddd/ubiquitous-language.md` (in delivery-framework)
 
 **Key Terms**:
-- **Bot** (not "user", "agent", "client")
-- **Promise** (not "offer", "deal", "contract")
-- **Provider** (bot offering compute)
-- **Consumer** (bot requesting compute)
-- **Reputation Score** (0-1000, not "rating", "trust level")
-- **Stake** (tokens locked by provider)
-- **Escrow** (tokens locked by consumer)
+- **FOE Report** (not "scan result", "output", "assessment result")
+- **Dimension** (Feedback, Understanding, Confidence — not "category", "pillar")
+- **Cognitive Triangle** (not "health triangle", "score triangle")
+- **Method** (not "practice", "technique", "approach")
+- **Observation** (not "finding", "note", "insight")
+- **Maturity Level** (Hypothesized/Emerging/Practicing/Optimized — not "grade", "tier")
+- **Governance Artifact** (not "document", "file", "deliverable")
 
 **Verification**:
 - Code must use exact terms from ubiquitous language
@@ -90,49 +90,49 @@ The project has 4 bounded contexts:
 
 **Key Aggregates** (from `docs/ddd/04-aggregates-entities.md`):
 
-1. **BotAccount** (Identity)
-   - Root: BotAccount
+1. **FOEReport** (Scanning)
+   - Root: FOEReport
    - Entities: N/A
-   - Value Objects: BotId, ReputationScore, ApiKey
+   - Value Objects: ReportId, DimensionScore, MaturityLevel, TriangleDiagnosis
    - Invariants:
-     - Display name must be unique
-     - Reputation 0-1000
-     - API key SHA-256 hashed
+     - Overall score 0-100
+     - Dimension weights sum to 1.0
+     - Minimum 3 findings per report
 
-2. **Promise** (Market)
-   - Root: Promise
+2. **ScanJob** (Scanning)
+   - Root: ScanJob
    - Entities: N/A
-   - Value Objects: PromiseId, ModelName, PricingTerms, PromiseState
+   - Value Objects: ScanJobId, ScanStatus
    - Invariants:
-     - Can only accept if Listed
-     - Can't modify after Accepted
-     - Provider must have sufficient stake
+     - Can only complete if all agents finished
+     - Can't modify after completed
+     - Must target a valid repository
 
-3. **Wallet** (Token)
-   - Root: Wallet
-   - Entities: Transaction
-   - Value Objects: TokenAmount, TransactionId
+3. **MethodIndex** (Field Guide)
+   - Root: MethodIndex
+   - Entities: Method, Observation
+   - Value Objects: Keyword, FrameworkRef
    - Invariants:
-     - Balance >= 0
-     - Locked balance <= total balance
-     - Can't transfer more than available
+     - All methods validated against schema
+     - Keyword count > 0
+     - No duplicate method slugs
 
-4. **EscrowAccount** (Token)
-   - Root: EscrowAccount
-   - Value Objects: TokenAmount, EscrowState
+4. **GovernanceSnapshot** (Governance)
+   - Root: GovernanceSnapshot
+   - Value Objects: ArtifactCounts, IntegrityResult
    - Invariants:
-     - Can only be created with Promise
-     - Amount must match promise price
-     - Can't release without verification
+     - Snapshot must reference existing road items
+     - Cross-references must pass integrity check
+     - Timestamp must be after previous snapshot
 
-5. **SettlementCase** (Settlement)
-   - Root: SettlementCase
-   - Entities: Dispute, Evidence
-   - Value Objects: VerificationResult, SettlementDecision
+5. **DomainModel** (Reporting)
+   - Root: DomainModel
+   - Entities: BoundedContext, Aggregate, ValueObject, DomainEvent, GlossaryTerm
+   - Value Objects: ContextName, AggregateSlug
    - Invariants:
-     - Requires execution proof
-     - Dispute must have evidence
-     - Final decision is immutable
+     - Context names unique
+     - Slug format enforced
+     - All cross-references resolve
 
 ### Value Objects
 
@@ -144,29 +144,29 @@ The project has 4 bounded contexts:
 **Examples**:
 ```typescript
 // ✅ Good Value Object
-export class TokenAmount {
+export class DimensionScore {
   private readonly value: number;
 
   constructor(value: number) {
-    if (value < 0) throw new Error("Cannot be negative");
+    if (value < 0 || value > 100) throw new Error("Score must be 0-100");
     this.value = value;
   }
 
-  add(other: TokenAmount): TokenAmount {
-    return new TokenAmount(this.value + other.value);  // New instance
+  weighted(factor: number): DimensionScore {
+    return new DimensionScore(Math.round(this.value * factor));  // New instance
   }
 
-  equals(other: TokenAmount): boolean {
+  equals(other: DimensionScore): boolean {
     return this.value === other.value;  // Value-based equality
   }
 }
 
 // ❌ Bad Value Object (mutable)
-export class TokenAmount {
+export class DimensionScore {
   public value: number;  // Public and mutable
 
-  add(amount: number) {
-    this.value += amount;  // Mutates
+  adjust(delta: number) {
+    this.value += delta;  // Mutates
   }
 }
 ```
@@ -176,15 +176,15 @@ export class TokenAmount {
 **Source**: `docs/ddd/06-domain-events.md`
 
 **Event Naming**: Past tense (what happened)
-- ✅ `BotRegistered`, `PromiseAccepted`, `TokensEscrowed`
-- ❌ `RegisterBot`, `AcceptPromise`, `EscrowTokens`
+- ✅ `ScanCompleted`, `ReportIngested`, `GovernanceSnapshotCreated`
+- ❌ `CompleteScan`, `IngestReport`, `CreateSnapshot`
 
 **Event Structure**:
 ```typescript
-export class BotRegistered {
+export class ScanCompleted {
   constructor(
-    public readonly botId: BotId,
-    public readonly displayName: string,
+    public readonly scanJobId: ScanJobId,
+    public readonly repositoryUrl: string,
     public readonly occurredAt: Date
   ) {}
 }
@@ -193,13 +193,13 @@ export class BotRegistered {
 **Publishing**: After successful state change, before saving
 ```typescript
 // ✅ Good
-const bot = await BotAccount.create(displayName);
-await repository.save(bot);
-await eventPublisher.publish(new BotRegistered(bot.id, displayName, new Date()));
+const report = FOEReport.create(rawReport);
+await repository.save(report);
+await eventPublisher.publish(new ReportIngested(report.id, new Date()));
 
 // ❌ Bad (published before saved)
-await eventPublisher.publish(new BotRegistered(...));
-await repository.save(bot);  // What if this fails?
+await eventPublisher.publish(new ReportIngested(...));
+await repository.save(report);  // What if this fails?
 ```
 
 ## Alignment Checks
@@ -210,38 +210,38 @@ Check code for terminology mismatches:
 
 ```bash
 # Find incorrect terms
-grep -r "user" src/  # Should be "bot"
-grep -r "offer" src/  # Should be "promise"
-grep -r "rating" src/  # Should be "reputation score"
+grep -r "scan result" src/  # Should be "foe report"
+grep -r "practice" src/  # Should be "method"
+grep -r "finding" src/  # Should be "observation" (in Field Guide context)
 ```
 
 ### 2. Aggregate Boundary Verification
 
 Ensure aggregates don't cross boundaries:
 
-❌ **Bad**: Promise directly modifying Wallet
+❌ **Bad**: ScanJob directly modifying DomainModel
 ```typescript
-class Promise {
-  accept(consumerWallet: Wallet) {
-    consumerWallet.deduct(this.price);  // Crosses boundary
+class ScanJob {
+  complete(domainModel: DomainModel) {
+    domainModel.updateFromScan(this.results);  // Crosses boundary
   }
 }
 ```
 
 ✅ **Good**: Use domain event
 ```typescript
-class Promise {
-  accept() {
-    this.state = PromiseState.Accepted;
-    return new PromiseAccepted(this.id, this.price);
+class ScanJob {
+  complete() {
+    this.status = ScanStatus.Completed;
+    return new ScanCompleted(this.id, this.repositoryUrl);
   }
 }
 
-// Event handler in Token Management context
-onPromiseAccepted(event: PromiseAccepted) {
-  const wallet = await walletRepo.findByBotId(event.consumerBotId);
-  wallet.lock(event.price);
-  await walletRepo.save(wallet);
+// Event handler in Reporting context
+onScanCompleted(event: ScanCompleted) {
+  const report = await reportRepo.findByScanJobId(event.scanJobId);
+  report.ingest(event);
+  await reportRepo.save(report);
 }
 ```
 
@@ -251,24 +251,24 @@ Check that business rules are enforced:
 
 ```typescript
 // ✅ Invariant enforced in aggregate
-export class BotAccount {
+export class FOEReport {
   private constructor(
-    private id: BotId,
-    private displayName: string,
-    private reputationScore: ReputationScore
+    private id: ReportId,
+    private overallScore: DimensionScore,
+    private findings: Finding[]
   ) {
-    if (displayName.length > 50) {
-      throw new Error("Display name too long");  // Invariant
+    if (findings.length < 3) {
+      throw new Error("Minimum 3 findings required");  // Invariant
     }
   }
 }
 
 // ❌ Invariant enforced outside aggregate
-const displayName = args.displayName;
-if (displayName.length > 50) {
-  throw new Error("Too long");  // Should be in BotAccount
+const findings = args.findings;
+if (findings.length < 3) {
+  throw new Error("Not enough findings");  // Should be in FOEReport
 }
-const bot = new BotAccount(displayName);
+const report = new FOEReport(findings);
 ```
 
 ### 4. Context Isolation
@@ -277,14 +277,14 @@ Verify bounded contexts don't leak:
 
 ❌ **Bad**: Direct import across contexts
 ```typescript
-// In promise-market context
-import { Wallet } from '../token-management/domain/Wallet';  // Crosses boundary
+// In reporting context
+import { ScanJob } from '../foe-scanner/domain/ScanJob';  // Crosses boundary
 ```
 
 ✅ **Good**: Use domain events or read models
 ```typescript
-// In promise-market context
-import { TokenAmount } from '@/shared/domain/value-objects/TokenAmount';  // Shared kernel OK
+// In reporting context
+import { DimensionScore } from '@/shared/domain/value-objects/DimensionScore';  // Shared kernel OK
 ```
 
 ## Documentation Sync
@@ -344,23 +344,23 @@ If domain evolves, update docs:
 
 ❌ **Problem**: Domain objects are just data containers
 ```typescript
-export class BotAccount {
+export class FOEReport {
   public id: string;
-  public displayName: string;
-  public reputationScore: number;
+  public overallScore: number;
+  public maturityLevel: string;
   // No behavior!
 }
 ```
 
 ✅ **Fix**: Add behavior
 ```typescript
-export class BotAccount {
-  updateReputation(delta: number): void {
-    const newScore = this.reputationScore.adjust(delta);
-    if (newScore.isInvalid()) {
-      throw new Error("Reputation out of bounds");
+export class FOEReport {
+  diagnoseTriangle(): TriangleDiagnosis {
+    const belowThreshold = this.dimensions.filter(d => d.isBelowMinimum());
+    if (belowThreshold.length > 0) {
+      return TriangleDiagnosis.unhealthy(belowThreshold);
     }
-    this.reputationScore = newScore;
+    return TriangleDiagnosis.healthy();
   }
 }
 ```
@@ -369,13 +369,14 @@ export class BotAccount {
 
 ❌ **Problem**: Business logic in UI components
 ```typescript
-function BotRegistrationForm() {
-  const register = async (displayName: string) => {
-    if (displayName.length > 50) {  // Business rule in UI
-      setError("Too long");
+function ReportUploadForm() {
+  const upload = async (reportJson: string) => {
+    const data = JSON.parse(reportJson);
+    if (data.overallScore < 0 || data.overallScore > 100) {  // Business rule in UI
+      setError("Invalid score");
       return;
     }
-    await api.post('/bots', { displayName });
+    await api.post('/reports', data);
   };
 }
 ```
@@ -383,13 +384,13 @@ function BotRegistrationForm() {
 ✅ **Fix**: Move to domain
 ```typescript
 // Domain enforces rule
-const bot = await BotAccount.create(displayName);  // Throws if invalid
+const report = FOEReport.create(rawReport);  // Throws if invalid
 
 // UI just handles presentation
-function BotRegistrationForm() {
-  const register = async (displayName: string) => {
+function ReportUploadForm() {
+  const upload = async (reportJson: string) => {
     try {
-      await registerBot.mutate({ displayName });
+      await ingestReport.mutate({ reportJson });
     } catch (error) {
       setError(error.message);  // Display domain error
     }
@@ -407,7 +408,7 @@ Ubiquitous Language:
   ✅ No deprecated terms found
 
 Aggregates:
-  ✅ 5 aggregates match documentation
+   ✅ All aggregates match documentation
   ✅ All invariants enforced in aggregates
   ✅ No boundary violations
 

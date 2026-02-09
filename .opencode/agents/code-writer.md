@@ -73,11 +73,11 @@ src/
 
 **Ports** (Interfaces):
 - `domain/ports/` - Define what domain needs
-- Example: `BotRepository`, `EventPublisher`
+- Example: `ReportRepository`, `ScanRunner`
 
 **Adapters** (Implementations):
 - `infrastructure/adapters/` - Concrete implementations
-- Example: `SqliteReportRepository`, `InMemoryEventPublisher`
+- Example: `SqliteReportRepository`, `InMemoryReportRepository`
 
 **Flow**:
 ```
@@ -94,16 +94,16 @@ UI → Application Service → Domain (via ports) → Adapter → Database
 ### 2. Start with Domain
 ```typescript
 // Example: Value Object
-export class TokenAmount {
+export class DimensionScore {
   private readonly value: number;
 
   constructor(value: number) {
-    if (value < 0) throw new Error("Cannot be negative");
+    if (value < 0 || value > 100) throw new Error("Score must be 0-100");
     this.value = value;
   }
 
-  add(other: TokenAmount): TokenAmount {
-    return new TokenAmount(this.value + other.value);
+  weighted(factor: number): DimensionScore {
+    return new DimensionScore(Math.round(this.value * factor));
   }
 }
 ```
@@ -111,35 +111,35 @@ export class TokenAmount {
 ### 3. Create Application Service
 ```typescript
 // Example: Application Service
-export class RegisterBotService {
+export class IngestReportService {
   constructor(
-    private botRepository: BotRepository,
+    private reportRepository: ReportRepository,
     private eventPublisher: EventPublisher
   ) {}
 
-  async execute(displayName: string): Promise<BotId> {
-    const bot = await BotAccount.create(displayName);
-    await this.botRepository.save(bot);
-    await this.eventPublisher.publish(new BotRegistered(bot.id));
-    return bot.id;
+  async execute(rawReport: RawFOEReport): Promise<ReportId> {
+    const report = FOEReport.create(rawReport);
+    await this.reportRepository.save(report);
+    await this.eventPublisher.publish(new ReportIngested(report.id));
+    return report.id;
   }
 }
 ```
 
 ### 4. Wire Up Infrastructure
 ```typescript
-// infrastructure/adapters/bot-repository.ts
-export class SqliteBotRepository implements BotRepository {
+// infrastructure/adapters/report-repository.ts
+export class SqliteReportRepository implements ReportRepository {
   constructor(private db: Database) {}
 
-  async save(bot: BotAccount): Promise<void> {
-    const data = BotMapper.toPersistence(bot);
-    await this.db.insert('bots', data);
+  async save(report: FOEReport): Promise<void> {
+    const data = ReportMapper.toPersistence(report);
+    await this.db.insert('reports', data);
   }
 
-  async findById(id: BotId): Promise<BotAccount | null> {
-    const row = await this.db.query('bots').where({ id: id.value }).first();
-    return row ? BotMapper.toDomain(row) : null;
+  async findById(id: ReportId): Promise<FOEReport | null> {
+    const row = await this.db.query('reports').where({ id: id.value }).first();
+    return row ? ReportMapper.toDomain(row) : null;
   }
 }
 ```
@@ -153,10 +153,10 @@ export class SqliteBotRepository implements BotRepository {
 - Prefer `const` over `let`
 
 ### Naming Conventions
-- Aggregates: `PascalCase` (e.g., `BotAccount`)
-- Value Objects: `PascalCase` (e.g., `TokenAmount`)
-- Functions: `camelCase` (e.g., `registerBot`)
-- Constants: `SCREAMING_SNAKE_CASE` (e.g., `MAX_DISPLAY_NAME_LENGTH`)
+- Aggregates: `PascalCase` (e.g., `FOEReport`)
+- Value Objects: `PascalCase` (e.g., `DimensionScore`)
+- Functions: `camelCase` (e.g., `ingestReport`)
+- Constants: `SCREAMING_SNAKE_CASE` (e.g., `MAX_DIMENSION_SCORE`)
 
 ### Documentation
 - JSDoc for public APIs
@@ -199,13 +199,13 @@ export class SqliteBotRepository implements BotRepository {
 
 | Type | Location | Example |
 |------|----------|---------|
-| Aggregate | `src/{context}/domain/aggregates/` | `BotAccount.ts` |
-| Value Object | `src/shared/domain/value-objects/` | `TokenAmount.ts` |
-| Domain Event | `src/{context}/domain/events/` | `BotRegistered.ts` |
-| Application Service | `src/{context}/application/` | `RegisterBotService.ts` |
-| Repository Port | `src/{context}/domain/ports/` | `BotRepository.ts` |
-| DB Adapter | `infrastructure/adapters/` | `ReportRepository.ts` |
-| React Component | `components/{context}/` | `BotRegistrationForm.tsx` |
+| Aggregate | `src/{context}/domain/aggregates/` | `FOEReport.ts` |
+| Value Object | `src/shared/domain/value-objects/` | `DimensionScore.ts` |
+| Domain Event | `src/{context}/domain/events/` | `ScanCompleted.ts` |
+| Application Service | `src/{context}/application/` | `IngestReportService.ts` |
+| Repository Port | `src/{context}/domain/ports/` | `ReportRepository.ts` |
+| DB Adapter | `infrastructure/adapters/` | `ReportRepositorySQLite.ts` |
+| React Component | `components/{context}/` | `ReportUpload.tsx` |
 
 ## TDD/BDD Integration with Superpowers
 
@@ -283,41 +283,43 @@ When invoked by `/superpowers:execute-plan`:
 
 **Given BDD Scenario:**
 ```gherkin
-Scenario: Bot sends advertisement
-  Given a registered advertisement bot
-  When the bot sends an advertisement to "discord"
-  Then the advertisement is recorded
-  And the bot's last activity is updated
+Scenario: Ingest a completed FOE report
+  Given a completed scan job
+  When the report is ingested into the system
+  Then the FOE report is persisted
+  And the cognitive triangle diagnosis is calculated
 ```
 
 **GREEN Phase Implementation:**
 ```typescript
 // 1. Domain Layer - Minimal implementation
-export class AdvertisementBot {
-  private lastActivityAt: Date;
+export class FOEReport {
+  private triangleDiagnosis: TriangleDiagnosis;
   
-  sendAdvertisement(channel: string): AdvertisementSent {
-    this.lastActivityAt = new Date();
-    return new AdvertisementSent(this.id, channel, this.lastActivityAt);
+  static create(rawReport: RawFOEReport): FOEReport {
+    const report = new FOEReport(rawReport);
+    report.triangleDiagnosis = report.diagnoseTriangle();
+    return report;
   }
 }
 
 // 2. Application Layer - Minimal service
-export class AdvertisementService {
-  async send(botId: BotId, channel: string): Promise<void> {
-    const bot = await this.repo.findById(botId);
-    const event = bot.sendAdvertisement(channel);
-    await this.repo.save(bot);
-    await this.publisher.publish(event);
+export class IngestReportService {
+  async execute(rawReport: RawFOEReport): Promise<ReportId> {
+    const report = FOEReport.create(rawReport);
+    await this.reportRepo.save(report);
+    await this.publisher.publish(new ReportIngested(report.id));
+    return report.id;
   }
 }
 
 // 3. Infrastructure - Minimal adapter
-export const sendAdvertisement = mutation({
-  args: { botId: v.string(), channel: v.string() },
+export const ingestReport = mutation({
+  args: { reportJson: v.string() },
   handler: async (ctx, args) => {
-    const service = new AdvertisementService(...);
-    await service.execute(new BotId(args.botId), args.channel);
+    const service = new IngestReportService(...);
+    const rawReport = JSON.parse(args.reportJson);
+    return await service.execute(rawReport);
   }
 });
 ```

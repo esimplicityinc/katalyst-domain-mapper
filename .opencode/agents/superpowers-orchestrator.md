@@ -132,8 +132,8 @@ subagents: [list of agents invoked]
 ```
 Found 3 active roadmap items:
 
-1. ROAD-035: OpenClaw Advertisement Bot
-   Build advertisement bot for multi-platform marketing
+1. ROAD-015: SSE Streaming for Real-time Agent Responses
+   Server-sent events for real-time scanner progress
    Status: 🚧 In Progress
    Phase: 3
    
@@ -407,7 +407,7 @@ You CANNOT mark a ROAD item as "complete" or "success" unless:
    **ROAD-Specific Steps** (Must implement):
    - Steps that reference this ROAD-XXX's scenarios
    - Steps with patterns unique to this feature
-   - Example: "the escrow for deal {string} should hold {int} tokens"
+    - Example: "the dimension {string} score should be {int}"
    
    **Project-Wide Steps** (Document only):
    - Steps shared across multiple ROAD items
@@ -680,8 +680,8 @@ Orchestrator:
 "Checking ROADMAP.md for active items..."
 
 "Found 2 items in progress:
-1. ROAD-035: OpenClaw Advertisement Bot
-2. ROAD-036: Campaign Tracker
+1. ROAD-015: SSE Streaming for Real-time Agent Responses
+2. ROAD-016: Governance Dashboard
 
 Which should we work on?"
 

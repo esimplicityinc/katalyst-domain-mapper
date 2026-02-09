@@ -80,11 +80,11 @@ just bdd-tag @CAP-002
 just bdd-tag "@CAP-001 and @CAP-002"
 
 # Run by context
-just bdd-tag @bot-identity
-just bdd-tag @promise-market
+just bdd-tag @report-gen
+just bdd-tag @domain-models
 
 # Run specific feature file
-cd stack-tests && npx playwright test features/api/bot-identity/01_bot_registration.feature
+cd stack-tests && npx playwright test features/api/reporting/05_foe_dimension_scores.feature
 ```
 
 ### Headed Mode (See Browser)
@@ -102,7 +102,7 @@ cd stack-tests && HEADLESS=false npm test -- --project=ui
 
 BDD tests can be parallelized by:
 1. **Layer** (api, ui, hybrid run concurrently)
-2. **Context** (bot-identity, token, market, settlement)
+2. **Context** (reporting, domain-models, scanning, governance)
 3. **Feature File** (Playwright runs files in parallel by default)
 
 ### Configuration
@@ -242,7 +242,7 @@ Coverage: 5/7 capabilities (71%)
 ✅ CAP-002: Audit Logging (8 scenarios)
 ❌ CAP-003: Real-time Notifications (0 scenarios - planned capability)
 ✅ CAP-004: Rate Limiting (5 scenarios)
-✅ CAP-005: Escrow Management (15 scenarios)
+✅ CAP-005: FOE Report Generation (16 scenarios)
 ✅ CAP-006: Reputation Calculation (6 scenarios)
 ❌ CAP-007: Oracle Verification (0 scenarios - planned capability)
 ```
@@ -327,10 +327,10 @@ By Layer:
   ✅ Hybrid Tests: 18/18 passed (2m 50s)
 
 By Context:
-  ✅ Bot Identity: 35 scenarios
-  ✅ Token Management: 28 scenarios
-  ✅ Promise Market: 45 scenarios
-  ✅ Settlement: 19 scenarios
+  ✅ Reporting: 16 scenarios
+  ✅ Domain Models: 25 scenarios
+  ✅ Scanning: 12 scenarios
+  ✅ Governance: 8 scenarios
 
 Smoke Tests: 15/15 passed ✅
 
@@ -350,48 +350,48 @@ Summary:
 
 Failed Scenarios:
 
-1. Bot Authentication - Successful authentication with valid API key
-   Location: features/api/bot-identity/02_bot_authentication.feature:11
+1. Report Dimension Scores - Retrieve dimension scores for a report
+   Location: features/api/reporting/05_foe_dimension_scores.feature:11
    Step: Then the response status should be 200
    Error: Expected 200, received 404
-   Reason: Endpoint /api/bots/me not implemented
+   Reason: Endpoint /api/v1/reports/:id/dimensions not implemented
    → Action: Report to Code Writer
 
-2. Promise Creation - Create promise with valid parameters
-   Location: features/api/promise-market/01_promise_creation.feature:15
-   Step: And the promise should be in "Draft" state
+2. Domain Model CRUD - Create domain model with valid parameters
+   Location: features/api/domain-models/01_domain_model_crud.feature:15
+   Step: And the domain model should be in "Draft" state
    Error: Cannot read property 'state' of undefined
-   Reason: Promise not saved to database
+   Reason: Domain model not saved to database
    → Action: Code bug, report to Code Writer
 
-3. Wallet Operations - Transfer tokens between bots
-   Location: features/api/token-management/01_wallet_operations.feature:42
-   Step: Then the recipient wallet balance should be 150
-   Error: Expected 150, received 50
-   Reason: Transfer logic incorrect
+3. Report Comparison - Compare two scan reports
+   Location: features/api/reporting/06_report_comparison.feature:42
+   Step: Then the delta score for Understanding dimension should be 15
+   Error: Expected 15, received 0
+   Reason: Comparison calculation incorrect
    → Action: Code bug, report to Code Writer
 
-4. Registration UI - Successfully register a new bot via UI
-   Location: features/ui/01_bot_registration_ui.feature:11
-   Step: When I click the "Register Bot" button
+4. Report Upload UI - Successfully upload a report via UI
+   Location: features/ui/reporting/01_report_upload_viewer.feature:11
+   Step: When I click the "Upload Report" button
    Error: Timeout waiting for selector 'button[type="submit"]'
    Reason: Button selector changed or server not running
    → Action: Check server (Site Keeper), then verify test (BDD Writer)
 
 Passing by Context:
-  ✅ Bot Identity: 33/35 scenarios (2 failed)
-  ✅ Token Management: 27/28 scenarios (1 failed)
-  ✅ Promise Market: 45/45 scenarios
-  ✅ Settlement: 19/19 scenarios
-  ❌ UI Tests: 41/42 scenarios (1 failed)
+  ✅ Reporting: 14/16 scenarios (2 failed)
+  ✅ Domain Models: 24/25 scenarios (1 failed)
+  ✅ Scanning: 12/12 scenarios
+  ✅ Governance: 8/8 scenarios
+  ❌ UI Tests: 5/6 scenarios (1 failed)
 
 Smoke Tests: 14/15 passed (1 failed) ⚠️
 
 Next Steps:
   1. Verify dev servers are running
-  2. Implement /api/bots/me endpoint
-  3. Fix promise creation database save
-  4. Fix token transfer logic
+  2. Implement /api/v1/reports/:id/dimensions endpoint
+  3. Fix domain model database save
+  4. Fix report comparison calculation
   5. Update UI test selectors
 
 Report: stack-tests/cucumber-report/index.html

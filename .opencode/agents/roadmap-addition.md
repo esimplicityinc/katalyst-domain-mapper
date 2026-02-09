@@ -120,15 +120,13 @@ interface RoadmapItem {
 
 | Phase | Name | Description |
 |-------|------|-------------|
-| 0 | Foundation | Core infrastructure and architecture |
-| 1 | Bot Identity & Authentication | Bot registration and authentication |
-| 2 | Token Management | Token operations for trading |
-| 3 | Promise Market | Core marketplace for promise trading |
-| 4 | Settlement & Verification | Verify promises and settle payments |
-| 5 | User Experience | Polished, production-ready UI/UX |
-| 6 | Testing & Quality | Comprehensive test coverage |
-| 7 | Production Readiness | Deploy to production |
-| 8 | Advanced Features | Enhance platform capabilities |
+| 0 | Foundation | Import governance infrastructure |
+| 1 | Core Schemas & Skills | Zod schemas for governance and DDD artifacts |
+| 2 | Parsers & CLI | Governance parsers, index builder, CLI commands |
+| 3 | API & Services | Governance API, scanner agent, SSE streaming |
+| 4 | Visualization | Governance dashboard, DDD context map |
+| 5 | Advanced Integrations | Jira, Confluence, GitHub integrations |
+| 6 | Domain Viz & Export | Interactive context maps, markdown export, static site |
 
 ## Workflow
 
@@ -397,7 +395,7 @@ When adding a roadmap item, understand the relationship between document types:
 │                                                              │
 │  CAPABILITIES (Infrastructure)                               │
 │  ├── Cross-cutting system abilities                          │
-│  ├── Examples: Authentication, Audit Logging, Escrow         │
+│  ├── Examples: FOE Report Generation, Governance Validation, Domain Visualization │
 │  └── Create when: Building new infrastructure                │
 │         ↓                                                    │
 │  USER STORIES (User Needs)                                   │
@@ -450,8 +448,8 @@ Is this work:
 - Agent: "This is an NFR fix. Let's create ROAD-029 referencing NFR-PERF-001"
 
 **Example 4: Combination**
-- User: "I want to add escrow and let users create promises with it"
-- Agent: "This involves both. Let's create CAP-005 (Escrow), then US-002 (Promise Creation), then ROAD-009 and ROAD-012"
+- User: "I want to add Jira integration and let teams sync governance artifacts"
+- Agent: "This involves both. Let's create CAP-005 (Jira Integration), then US-016 (Sync Governance to Jira), then ROAD-010"
 
 If any of the following occur, ask the user for clarification:
 

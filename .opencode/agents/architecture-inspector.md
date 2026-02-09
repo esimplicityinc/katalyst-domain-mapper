@@ -54,7 +54,7 @@ metadata:
 **Ports** (Interfaces):
 - Define what domain needs from outside
 - Located in `domain/ports/`
-- Examples: `BotRepository`, `EventPublisher`, `EmailService`
+- Examples: `ReportRepository`, `EventPublisher`, `ScanRunner`
 
 **Adapters** (Implementations):
 - Implement ports for specific technologies
@@ -110,13 +110,13 @@ UI → Application → Domain ← Infrastructure
 
 ```typescript
 // ✅ Good Port
-export interface BotRepository {
-  save(bot: BotAccount): Promise<void>;
-  findById(id: BotId): Promise<BotAccount | null>;
+export interface ReportRepository {
+  save(report: FOEReport): Promise<void>;
+  findById(id: ReportId): Promise<FOEReport | null>;
 }
 
 // ❌ Bad Port (too specific to database technology)
-export interface BotRepository {
+export interface ReportRepository {
   insertToDb(doc: DbRecord): Promise<string>;
   queryFromTable(id: string): Promise<DbRecord>;
 }
@@ -150,27 +150,27 @@ export interface BotRepository {
 
 ```typescript
 // ✅ Good Application Service
-export class RegisterBotService {
+export class IngestReportService {
   constructor(
-    private botRepo: BotRepository,  // Port, not adapter
+    private reportRepo: ReportRepository,  // Port, not adapter
     private eventPub: EventPublisher
   ) {}
 
-  async execute(displayName: string): Promise<BotId> {
-    const bot = await BotAccount.create(displayName);  // Domain logic
-    await this.botRepo.save(bot);
-    await this.eventPub.publish(new BotRegistered(bot.id));
-    return bot.id;
+  async execute(scanData: ScanData): Promise<ReportId> {
+    const report = FOEReport.create(scanData);  // Domain logic
+    await this.reportRepo.save(report);
+    await this.eventPub.publish(new ReportIngested(report.id));
+    return report.id;
   }
 }
 
 // ❌ Bad Application Service (skips domain)
-export class RegisterBotService {
+export class IngestReportService {
   constructor(private db: Database) {}
 
-  async execute(displayName: string): Promise<string> {
+  async execute(scanData: ScanData): Promise<string> {
     const id = generateId();
-    await this.db.insert('bots', { id, displayName });  // Skips domain
+    await this.db.insert('reports', { id, ...scanData });  // Skips domain
     return id;
   }
 }
@@ -221,20 +221,20 @@ export class ScanJob {
 ✅ **Fix**:
 ```typescript
 // 1. Create port
-// src/bot-identity/domain/ports/BotRepository.ts
-export interface BotRepository {
-  save(bot: BotAccount): Promise<void>;
+// packages/foe-api/src/ports/ReportRepository.ts
+export interface ReportRepository {
+  save(report: FOEReport): Promise<void>;
 }
 
 // 2. Remove save() from domain object
-// src/bot-identity/domain/BotAccount.ts
-export class BotAccount {
+// packages/foe-api/src/domain/FOEReport.ts
+export class FOEReport {
   // Just business logic, no persistence
 }
 
 // 3. Use repository in application layer
-// src/bot-identity/application/RegisterBotService.ts
-await botRepository.save(bot);
+// packages/foe-api/src/usecases/IngestReport.ts
+await reportRepository.save(report);
 ```
 
 ### Violation #2: Business Logic in Adapter
@@ -312,7 +312,7 @@ Domain Layer:
 
 Ports:
   ⚠️ Missing port for email sending
-     - Suggested: src/bot-identity/domain/ports/EmailService.ts
+     - Suggested: packages/foe-api/src/ports/ScanRunner.ts
 
 Adapters:
   ❌ infrastructure/adapters/report-handler.ts
@@ -321,7 +321,7 @@ Adapters:
 
 Recommendations:
   1. Extract validation from adapter to Report.create()
-  2. Create EmailService port
+   2. Create ScanRunner port
   3. Remove infrastructure imports from domain
 ```
 

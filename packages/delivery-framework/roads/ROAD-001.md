@@ -1,23 +1,28 @@
 ---
 id: ROAD-001
 title: "Import Governance Infrastructure"
-status: implementing
+status: complete
 phase: 0
 priority: high
 created: "2026-02-05"
-updated: "2026-02-05"
+updated: "2026-02-09"
 owner: ""
 tags: [infrastructure, governance, docusaurus, agents]
 governance:
   adrs:
     validated: true
-    ids: [ADR-001, ADR-005, ADR-008]
+    ids: [ADR-001, ADR-005, ADR-008, ADR-011, ADR-012]
     validated_by: "architecture-inspector"
     validated_at: "2026-02-06"
   bdd:
-    status: draft
-    feature_files: []
-    scenarios: 0
+    status: active
+    feature_files:
+      - api/reporting/05_foe_dimension_scores.feature
+      - api/reporting/06_report_comparison.feature
+      - api/reporting/07_report_raw_retrieval.feature
+      - api/reporting/08_report_filtering_pagination.feature
+      - ui/reporting/01_report_upload_viewer.feature
+    scenarios: 18
     passing: 0
   nfrs:
     applicable: []
@@ -57,10 +62,10 @@ Provides a unified documentation and governance platform for the Katalyst Domain
 | Subtask | Description | Status |
 |---------|-------------|--------|
 | 0.1 | Import Docusaurus site, components, scripts, templates | Complete |
-| 0.2 | Import + genericize agents to `.opencode/agents/` | Pending (user-owned) |
-| 0.3 | Import + adapt skills to `.opencode/skills/` | Pending (user-owned) |
-| 0.4 | Create root configs (`opencode.json`, `Justfile`, `agentspec.md`) | Pending |
-| 0.5 | Populate self-referential example domain content | Pending |
+| 0.2 | Import + genericize agents to `.opencode/agents/` | Complete |
+| 0.3 | Import + adapt skills to `.opencode/skills/` | Complete |
+| 0.4 | Create root configs (`opencode.json`, `Justfile`, `agentspec.md`) | Complete |
+| 0.5 | Populate self-referential example domain content | Complete |
 
 ### What Was Imported (Subtask 0.1)
 

@@ -89,30 +89,28 @@ Feature: Feature Name
 
 Every scenario MUST have:
 1. **Layer tag**: `@api`, `@ui`, or `@hybrid`
-2. **Context tag**: `@bot-identity`, `@promise-market`, `@token-management`, or `@settlement`
+2. **Capability context tag**: `@report-gen`, `@gov-validation`, `@field-guide-indexing`, or `@repo-scanning`
 3. **Roadmap tag**: `@ROAD-XXX` (maps to roadmap item)
 4. **Capability tag**: `@CAP-XXX` (maps to system capability being tested)
 
 ### Capability Tags
 
 All scenarios must be tagged with the capability they test:
-- `@CAP-001` - Authentication
-- `@CAP-002` - Audit Logging  
-- `@CAP-003` - Real-time Notifications
-- `@CAP-004` - Rate Limiting
-- `@CAP-005` - Escrow Management
-- `@CAP-006` - Reputation Calculation
-- `@CAP-007` - Oracle Verification
+- `@CAP-001` - FOE Report Generation (scanning, dimension scoring, cognitive triangle)
+- `@CAP-002` - Governance Validation (schemas, cross-references, state machine, coverage)
+- `@CAP-003` - Field Guide Indexing (methods, observations, keywords, frameworks)
+- `@CAP-004` - Repository Scanning (Docker container, agent dispatch, parallel analysis)
 
 **Multiple capabilities**: If a scenario tests multiple capabilities, include all relevant tags:
 ```gherkin
-@CAP-001 @CAP-002 @ROAD-005
-Scenario: Failed authentication is logged
+@CAP-002 @CAP-003 @ROAD-004
+Scenario: Build governance index with referential integrity check
 ```
 
 ### Optional Tags
 
 - **@smoke**: Critical path scenarios (run on every commit)
+- **@wip**: Work in progress — scenarios for not-yet-implemented endpoints (skipped in CI)
 - **@e2e**: Full end-to-end flow
 - **@validation**: Input validation tests
 - **@event**: Domain event tests
@@ -121,30 +119,35 @@ Scenario: Failed authentication is logged
 
 ### Feature-Specific Tags
 
-- `@registration`, `@authentication`, `@reputation`
-- `@wallet`, `@stake`, `@escrow`
-- `@promise`, `@listing`, `@order-book`, `@acceptance`, `@execution`
-- `@verification`, `@dispute`
+- `@ingest`, `@snapshot`, `@trend` (governance data lifecycle)
+- `@coverage`, `@integrity`, `@transitions` (governance validation checks)
+- `@dimension`, `@triangle`, `@maturity` (FOE scoring)
+- `@context-map`, `@aggregate`, `@domain-event` (DDD visualization)
+- `@kanban`, `@dashboard` (governance UI)
 
 ## Ubiquitous Language
 
-**Source**: `docs/ddd/03-ubiquitous-language.md`
+**Source**: `packages/delivery-framework/ddd/ubiquitous-language.md`
 
 ✅ **Use These Terms**:
-- Bot (not user, agent)
-- Promise (not offer, deal)
-- Provider (not seller)
-- Consumer (not buyer)
-- Reputation Score (not rating)
-- Stake (provider's locked tokens)
-- Escrow (consumer's locked tokens)
+- Dimension (Understanding, Feedback, Confidence — not "category" or "area")
+- Subscore (not "sub-metric" or "component score")
+- Finding (evidence-based observation — not "issue" or "problem")
+- Gap (improvement opportunity — not "deficiency" or "weakness")
+- Maturity Level (Hypothesized, Emerging, Practicing, Optimized — not "grade" or "tier")
+- Cognitive Triangle (not "radar chart" or "triangle diagram")
+- Governance Index (the built JSON artifact — not "governance report")
+- Road Item (not "ticket", "task", or "issue")
+- Capability (system function — not "feature" or "module")
+- Persona (actor archetype — not "user type" or "role")
+- Referential Integrity (cross-reference validity — not "link checking")
+- Bounded Context (DDD boundary — not "module" or "service")
+- Aggregate (DDD cluster — not "entity group")
 
 ❌ **Don't Use**:
-- User, client, customer
-- Offer, contract, deal
-- Seller, buyer
-- Rating, trust score
-- Deposit, collateral (unless in correct context)
+- User, client, customer (use Persona names: Team Lead, Platform Engineer, etc.)
+- Bug, defect (use Gap or Finding)
+- Sprint, epic (use Phase, Road Item)
 
 ## Scenario Writing Guidelines
 
@@ -152,15 +155,15 @@ Scenario: Failed authentication is logged
 
 ❌ **Vague**:
 ```gherkin
-Given a bot exists
+Given a report exists
 When I do something
 Then it works
 ```
 
 ✅ **Specific**:
 ```gherkin
-Given a bot exists with display name "test-bot-alpha"
-  And the bot has a wallet with balance of 1000 tokens
+Given a FOE report exists for repository "test-repo-alpha"
+  And the report has an overall score of 75
 When I POST "/api/promises" with:
   """
   {
@@ -276,11 +279,12 @@ User says: "Write BDD scenarios for ROAD-005 Bot Authentication"
 
 ### 2. Research Context
 
-- Read `docs/roads/ROAD-XXX.md` - Find roadmap item details
-- Read `docs/ddd/07-use-cases.md` - Find relevant use cases
-- Read `docs/capabilities/CAP-XXX.md` - Identify which capabilities are involved
-- Read `docs/user-stories/US-XXX.md` - Understand user needs being tested
-- Read `docs/ddd/03-ubiquitous-language.md` - Verify terminology
+- Read `packages/delivery-framework/roads/ROAD-XXX.md` - Find roadmap item details
+- Read `packages/delivery-framework/user-stories/US-XXX.md` - Understand user needs being tested
+- Read `packages/delivery-framework/capabilities/CAP-XXX.md` - Identify which capabilities are involved
+- Read `packages/delivery-framework/personas/PER-XXX.md` - Understand the persona's goals
+- Read `packages/delivery-framework/ddd/ubiquitous-language.md` - Verify terminology
+- Read `packages/delivery-framework/ddd/use-cases.md` - Find relevant use cases
 
 ### 3. Draft Scenarios
 
@@ -305,7 +309,7 @@ I've drafted BDD scenarios for ROAD-005 Bot Authentication:
 5. Publish AuthenticationSucceeded event
 
 Would you like me to create these scenarios in:
-  stack-tests/features/api/bot-identity/02_bot_authentication.feature
+  stack-tests/features/api/reporting/05_foe_dimension_scores.feature
 
 [Show first 2 scenarios as preview]
 ```
@@ -324,26 +328,28 @@ Only after user says "yes", "go ahead", "create them":
 ```
 stack-tests/features/
 ├── api/
-│   ├── bot-identity/
-│   │   ├── 01_bot_registration.feature       @ROAD-004
-│   │   ├── 02_bot_authentication.feature     @ROAD-005
-│   │   └── 03_bot_reputation.feature         @ROAD-007
-│   ├── token-management/
-│   │   ├── 01_wallet_operations.feature      @ROAD-008
-│   │   ├── 02_stake_management.feature       @ROAD-010
-│   │   └── 03_escrow_system.feature          @ROAD-009
-│   ├── promise-market/
-│   │   ├── 01_promise_creation.feature       @ROAD-012
-│   │   ├── 02_promise_listing.feature        @ROAD-013
+│   ├── reporting/
+│   │   ├── 05_foe_dimension_scores.feature   @ROAD-001 @CAP-001
 │   │   └── ...
-│   └── settlement/
-│       ├── 01_verification.feature           @ROAD-018
-│       └── ...
+│   ├── governance/
+│   │   ├── 01_governance_ingest.feature      @ROAD-005 @CAP-002
+│   │   ├── 02_governance_coverage.feature    @ROAD-005 @CAP-002
+│   │   ├── 03_governance_state_machine.feature @ROAD-002 @CAP-002
+│   │   └── ...
+│   ├── scanning/
+│   │   ├── 01_scan_governance_scoring.feature @ROAD-006 @CAP-004
+│   │   └── ...
+│   └── (existing health/reports/scans/config features)
 ├── ui/
-│   ├── 01_bot_registration_ui.feature        @ROAD-004
-│   └── ...
+│   ├── reporting/
+│   │   ├── 01_report_upload_viewer.feature   @ROAD-001 @CAP-001
+│   │   └── ...
+│   └── (existing UI examples)
 └── hybrid/
-    └── 01_end_to_end_promise_flow.feature    Multiple roadmap items
+    ├── governance/
+    │   ├── 01_governance_e2e.feature         @ROAD-005 @ROAD-008 @CAP-002
+    │   └── ...
+    └── (existing hybrid examples)
 ```
 
 ## Quality Checklist
@@ -366,42 +372,42 @@ Before requesting approval, verify:
 ## Example: Complete Feature File
 
 ```gherkin
-@api @bot-identity @ROAD-005
-Feature: Bot Authentication
-  As a registered bot
-  I want to authenticate using my API key
-  So that I can access the platform securely
+@api @gov-validation @ROAD-005 @CAP-002
+Feature: Governance Index Ingestion
+  As a Platform Engineer
+  I want to ingest governance index snapshots via the API
+  So that governance state is persisted for trend tracking and dashboard visualization
 
-  Background:
-    Given the API is available
-
-  @smoke @authentication
-  Scenario: Successful authentication with valid API key
-    Given a registered bot exists with API key
-    When I set the header "Authorization" to "Bearer {apiKey}"
-      And I GET "/api/bots/me"
+  @smoke @ingest
+  Scenario: Ingest a valid governance index snapshot
+    When I POST "/api/v1/governance" with JSON body:
+      """
+      {
+        "version": "1.0.0",
+        "generated": "2026-02-05T10:00:00Z",
+        "project": "katalyst-domain-mapper",
+        "stats": { "capabilities": 4, "personas": 5, "roadItems": 9, "integrity": "pass" }
+      }
+      """
     Then the response status should be 200
-      And the response should contain my bot details
+    And the response should be a JSON object
+    And I store the value at "id" as "snapshotId"
+    Given I register cleanup DELETE "/api/v1/governance/{snapshotId}"
 
-  @authentication @validation
-  Scenario: Reject authentication with invalid API key
-    When I set the header "Authorization" to "Bearer invalid-key-12345"
-      And I GET "/api/bots/me"
-    Then the response status should be 401
-      And the response should contain "Invalid API key"
+  @snapshot
+  Scenario: Retrieve latest governance snapshot
+    When I GET "/api/v1/governance"
+    Then the response status should be 200
+    And the response should be a JSON object
+    And the value at "project" should equal "katalyst-domain-mapper"
 
-  @authentication @validation
-  Scenario: Reject authentication with missing API key
-    When I GET "/api/bots/me" without authentication
-    Then the response status should be 401
-      And the response should contain "API key required"
-
-  @authentication @security
-  Scenario: Rate limit authentication attempts
-    Given I have made 100 failed authentication attempts in the last minute
-    When I attempt to authenticate again
-    Then the response status should be 429
-      And the response should contain "Rate limit exceeded"
+  @validation
+  Scenario: Reject invalid governance payload
+    When I POST "/api/v1/governance" with JSON body:
+      """
+      { "invalid": true }
+      """
+    Then the response status should be 400
 ```
 
 ## Collaboration
