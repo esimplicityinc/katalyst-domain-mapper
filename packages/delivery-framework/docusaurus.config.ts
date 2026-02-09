@@ -30,7 +30,7 @@ const config: Config = {
           routeBasePath: 'docs',
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/esimplicity/katalyst-domain-mapper/tree/main/packages/delivery-framework/',
-          include: ['ddd/**/*.md', 'ddd/**/*.mdx', 'bdd/**/*.md', 'bdd/**/*.mdx', 'plans/**/*.md', 'plans/**/*.mdx', 'roads/**/*.md', 'roads/**/*.mdx', 'changes/**/*.md', 'changes/**/*.mdx', 'agents/**/*.md', 'agents/**/*.mdx', 'adr/**/*.md', 'adr/**/*.mdx', 'nfr/**/*.md', 'nfr/**/*.mdx', 'index.md', 'index.mdx'],
+          include: ['ddd/**/*.md', 'ddd/**/*.mdx', 'bdd/**/*.md', 'bdd/**/*.mdx', 'plans/**/*.md', 'plans/**/*.mdx', 'roads/**/*.md', 'roads/**/*.mdx', 'changes/**/*.md', 'changes/**/*.mdx', 'agents/**/*.md', 'agents/**/*.mdx', 'adr/**/*.md', 'adr/**/*.mdx', 'nfr/**/*.md', 'nfr/**/*.mdx', 'personas/**/*.md', 'personas/**/*.mdx', 'capabilities/**/*.md', 'capabilities/**/*.mdx', 'user-stories/**/*.md', 'user-stories/**/*.mdx', 'index.md', 'index.mdx'],
         },
         blog: false,
         theme: {
@@ -90,6 +90,24 @@ const config: Config = {
           sidebarId: 'agentsSidebar',
           position: 'left',
           label: 'Agents',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'personasSidebar',
+          position: 'left',
+          label: 'Personas',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'capabilitiesSidebar',
+          position: 'left',
+          label: 'Capabilities',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'storiesSidebar',
+          position: 'left',
+          label: 'Stories',
         },
         {
           type: 'docSidebar',

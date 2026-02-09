@@ -5,8 +5,8 @@ description: Consolidated roadmap for the governance pipeline, DDD tooling, and 
 
 # Katalyst Delivery Framework — Roadmap
 
-> **Last Updated**: 2026-02-05
-> **Total Items**: 15 | **In Progress**: 1 | **Proposed**: 14 | **Complete**: 0
+> **Last Updated**: 2026-02-06
+> **Total Items**: 23 | **In Progress**: 1 | **Proposed**: 22 | **Complete**: 0
 
 Turn this monorepo into a **self-governing delivery framework**. Import governance infrastructure, build Zod-validated schemas, create parsers and CLI tooling, add API endpoints, enhance the scanner, and visualize governance health — all while the framework governs its own development.
 
@@ -156,9 +156,9 @@ Extend `@foe/field-guide-tools` with 11 new parsers, a governance index builder 
 
 ---
 
-## Phase 3: API, Scanner & Integration
+## Phase 3: API, Scanner, Visualization & Domain Tooling
 
-> **Goal**: Three parallel workstreams that consume the governance index. Can all start once Phase 2 is complete.
+> **Goal**: Multiple parallel workstreams that consume the governance index: API endpoints, scanner agents, delivery framework integration, SSE streaming, governance dashboards, interactive DDD visualizations, export pipelines, and onboarding. Can all start once Phase 2 is complete.
 
 ### [ROAD-005] API Governance Domain 🎯
 **Status**: Proposed
@@ -254,14 +254,10 @@ Server-Sent Events (SSE) endpoint so the UI can display agent output as it's gen
 
 ---
 
-## Phase 4: Web Visualization
-
-> **Goal**: Interactive dashboards for governance health and DDD domain model visualization. Last phase — runs after all others are complete.
-
 ### [ROAD-009] Governance & DDD Web Visualization 🎯
 **Status**: Proposed
 **Priority**: Low
-**Phase**: 4 — Visualization
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
 **Created**: 2026-02-05
 
 Add 2 new report templates to `@foe/web-ui`: a Governance Dashboard (Template 12) and a DDD Context Map (Template 13).
@@ -274,20 +270,203 @@ Add 2 new report templates to `@foe/web-ui`: a Governance Dashboard (Template 12
 - 🎯 Data from API endpoints or static JSON fallback
 
 **Requires**: [ROAD-005](#road-005-api-governance-domain-)
-**Enables**: None (terminal visualization layer)
+**Enables**: [ROAD-016](#road-016-interactive-context-map-diagram-), [ROAD-017](#road-017-aggregate-tree-hierarchy-view-), [ROAD-018](#road-018-domain-event-flow-visualization-), [ROAD-019](#road-019-application-lifecycle-state-machine-view-), [ROAD-020](#road-020-subdomain-classification-system-), [ROAD-021](#road-021-markdown-documentation-export-), [ROAD-023](#road-023-onboarding--how-it-works-experience-)
+
+> **Note**: The DDD visualization scope (Template 13) has been decomposed into 8 focused deliverables. ROAD-009 now focuses on **Template 12 (Governance Dashboard)** and the foundational DDD visualization infrastructure. The focused deliverables (ROAD-016..023) follow immediately in this same phase.
 
 **Detailed Plan**: [07-web-visualization.md](../plans/web-visualization.md) | **~2,000 lines, ~4 files**
 
 ---
 
-## Phase 5: Advanced Integrations
+### [ROAD-020] Subdomain Classification System 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-06
+
+Add subdomain type classification (Core/Supporting/Generic) to bounded contexts. API schema extension, UI form controls, color coding across views, and strategic investment guidance.
+
+- 🎯 Add `subdomainType` field to bounded context DB schema and API model
+- 🎯 Add subdomain type dropdown to context creation/edit forms
+- 🎯 Build classification overview card with investment guidance
+- 🎯 Integrate color coding in context list
+- 🎯 Build-vs-buy recommendation hints
+
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-)
+**Enables**: [ROAD-016](#road-016-interactive-context-map-diagram-), [ROAD-021](#road-021-markdown-documentation-export-)
+**Capabilities**: [CAP-011](#cap-011-subdomain-classification)
+**User Stories**: [US-037](#us-037-classify-bounded-contexts-by-subdomain-type)
+
+---
+
+### [ROAD-016] Interactive Context Map Diagram 🎯
+**Status**: Proposed
+**Priority**: Critical
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-06
+
+SVG-based interactive context map with colored nodes, relationship paths with DDD pattern labels, hover highlighting, click-to-select detail panels, and subdomain-based color coding.
+
+- 🎯 Build reusable SVG canvas component with pan/zoom
+- 🎯 Implement auto-layout algorithm for context node positioning
+- 🎯 Render relationship paths with DDD pattern labels (Customer-Supplier, Conformist, ACL, etc.)
+- 🎯 Add hover highlighting (dim unrelated, brighten connected)
+- 🎯 Add click-to-select with detail panel (description, relationships, artifact counts)
+- 🎯 Color-code by subdomain type (Core=blue, Supporting=green, Generic=gray, External=dark)
+- 🎯 Support dark mode and keyboard navigation with ARIA labels
+
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-), [ROAD-020](#road-020-subdomain-classification-system-)
+**Enables**: [ROAD-022](#road-022-static-documentation-site-generator-)
+**Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine)
+**User Stories**: [US-033](#us-033-visualize-context-map-as-interactive-svg-diagram)
+
+---
+
+### [ROAD-017] Aggregate Tree Hierarchy View 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-06
+
+Collapsible tree view for aggregate structure exploration. Shows hierarchical relationships between roots, entities, value objects, and fields with type badges, optional indicators, and hover descriptions.
+
+- 🎯 Build recursive tree node component with expand/collapse
+- 🎯 Color-coded type badges (Aggregate=blue, Entity=purple, Value Object=green, List=amber)
+- 🎯 Inline data type annotations (`: str`, `: UUID`, `: date`)
+- 🎯 Optional field indicators and hover descriptions
+- 🎯 Expand All / Collapse All controls
+- 🎯 Group by bounded context with context headers
+- 🎯 Dark mode support
+
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-)
+**Enables**: [ROAD-022](#road-022-static-documentation-site-generator-)
+**Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine)
+**User Stories**: [US-034](#us-034-explore-aggregate-hierarchy-as-collapsible-tree)
+
+---
+
+### [ROAD-018] Domain Event Flow Visualization 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-06
+
+Step-by-step event flow timeline with category color coding, sync/async filtering, and click-to-expand detail cards. Includes summary grid of all events.
+
+- 🎯 Build horizontal step-based event flow component
+- 🎯 Category color coding derived from bounded context association
+- 🎯 Filter toggle: All / Synchronous / Asynchronous
+- 🎯 Click-to-expand detail panel (trigger, effect, timing, payload, consumers)
+- 🎯 Async badge on batch-processed events
+- 🎯 Summary grid with all events as clickable chips
+- 🎯 Dark mode support
+
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-)
+**Enables**: [ROAD-022](#road-022-static-documentation-site-generator-)
+**Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine)
+**User Stories**: [US-036](#us-036-browse-domain-events-as-flow-timeline)
+
+---
+
+### [ROAD-019] Application Lifecycle State Machine View 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-06
+
+SVG state machine visualization for domain workflows with positioned state nodes, transition arrows, sync/async distinction, terminal/error marking, and interactive detail panels. Requires new DomainWorkflow API entity.
+
+- 🎯 Design DomainWorkflow API model (states, transitions, sync/async, terminal/error)
+- 🎯 Add API endpoints for workflow CRUD
+- 🎯 Build SVG state machine renderer with positioned nodes
+- 🎯 Solid lines for sync transitions, dashed for async
+- 🎯 Terminal/error state badges
+- 🎯 Hover highlighting and click detail panels
+- 🎯 Dark mode support
+
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-)
+**Enables**: [ROAD-022](#road-022-static-documentation-site-generator-)
+**Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine)
+**User Stories**: [US-035](#us-035-view-application-lifecycle-state-machine)
+
+---
+
+### [ROAD-021] Markdown Documentation Export 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-06
+
+Export the domain model as a downloadable zip of professional-quality markdown documentation files (glossary, subdomains, context-map, bounded-contexts, aggregates, domain-events).
+
+- 🎯 Build markdown generation engine for each document type
+- 🎯 Generate ASCII art context map diagram
+- 🎯 Add "Export as Markdown" button to UI
+- 🎯 Generate zip with JSZip (client-side)
+- 🎯 Include generated-by header with timestamp
+- 🎯 Ensure CommonMark validity with proper heading hierarchy
+
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-), [ROAD-020](#road-020-subdomain-classification-system-)
+**Enables**: [ROAD-022](#road-022-static-documentation-site-generator-)
+**Capabilities**: [CAP-012](#cap-012-domain-model-export-pipeline)
+**User Stories**: [US-038](#us-038-export-domain-model-as-markdown-documentation)
+
+---
+
+### [ROAD-022] Static Documentation Site Generator 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-06
+
+Generate a standalone Vite + React + Tailwind site from a domain model with interactive visualizations, deployable to any static host. Capstone feature that combines all visualization components.
+
+- 🎯 Create site template project (Vite + React + Tailwind)
+- 🎯 Build data injection pipeline (bake domain model JSON into template)
+- 🎯 Port visualization components as self-contained, data-driven modules
+- 🎯 Add "Generate Site" button to Katalyst UI
+- 🎯 Include "How It Was Generated" page
+- 🎯 Include deployment instructions (Netlify, Vercel, GitHub Pages)
+- 🎯 Ensure build output under 5MB
+
+**Requires**: [ROAD-016](#road-016-interactive-context-map-diagram-), [ROAD-017](#road-017-aggregate-tree-hierarchy-view-), [ROAD-018](#road-018-domain-event-flow-visualization-), [ROAD-019](#road-019-application-lifecycle-state-machine-view-), [ROAD-020](#road-020-subdomain-classification-system-), [ROAD-021](#road-021-markdown-documentation-export-)
+**Enables**: None (capstone)
+**Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine), [CAP-012](#cap-012-domain-model-export-pipeline)
+**User Stories**: [US-039](#us-039-generate-standalone-static-documentation-site)
+
+---
+
+### [ROAD-023] Onboarding & How It Works Experience 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-06
+
+"How It Works" page explaining the 4-phase Domain Mapper workflow (Intake, Discovery, Facilitation, Documentation), Human-in-the-Loop rationale, output artifacts, and quick-start guidance.
+
+- 🎯 Build "How It Works" page with 4-phase visual workflow
+- 🎯 Expandable phase detail sections
+- 🎯 "Why Human-in-the-Loop?" explanation section
+- 🎯 Output artifacts list
+- 🎯 Quick-start guidance panel
+- 🎯 First-visit banner detection
+- 🎯 Add to sidebar navigation
+
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-)
+**Enables**: None (standalone UX improvement)
+**Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine)
+**User Stories**: [US-040](#us-040-view-domain-mapper-onboarding-and-workflow-guide)
+
+---
+
+## Phase 4: Advanced External Integrations
 
 > **Goal**: Connect the governance pipeline to external project management and documentation tools for bidirectional data flow. Extend scanner data sources beyond repository analysis.
 
 ### [ROAD-010] Jira Bidirectional Integration 🎯
 **Status**: Proposed
 **Priority**: Medium
-**Phase**: 5 — Advanced Integrations
+**Phase**: 4 — Advanced External Integrations
 **Created**: 2026-02-05
 
 Bidirectional sync between the governance pipeline and Jira. Import Jira data (issues, sprints, velocity, cycle time) to assess the Feedback dimension, and push governance artifacts (ROAD items, capabilities, user stories) back to Jira for project management tracking.
@@ -314,7 +493,7 @@ Bidirectional sync between the governance pipeline and Jira. Import Jira data (i
 ### [ROAD-011] Confluence Bidirectional Integration 🎯
 **Status**: Proposed
 **Priority**: Medium
-**Phase**: 5 — Advanced Integrations
+**Phase**: 4 — Advanced External Integrations
 **Created**: 2026-02-05
 
 Bidirectional sync between the governance pipeline and Confluence. Import Confluence content (wiki pages, ADRs, runbooks, design docs) to assess the Understanding dimension, and publish governance reports, roadmaps, and DDD artifacts back to Confluence for team visibility.
@@ -341,7 +520,7 @@ Bidirectional sync between the governance pipeline and Confluence. Import Conflu
 ### [ROAD-012] GitHub Feedback Integration 🎯
 **Status**: Proposed
 **Priority**: Medium
-**Phase**: 5 — Advanced Integrations
+**Phase**: 4 — Advanced External Integrations
 **Created**: 2026-02-06
 
 Import GitHub Actions/CI data to enrich the Feedback dimension: workflow run history, deployment frequency, build times, test results, release cadence, and failure rates. Uses GitHub App + PAT authentication.
@@ -367,7 +546,7 @@ Import GitHub Actions/CI data to enrich the Feedback dimension: workflow run his
 ### [ROAD-013] GitHub Understanding Integration 🎯
 **Status**: Proposed
 **Priority**: Medium
-**Phase**: 5 — Advanced Integrations
+**Phase**: 4 — Advanced External Integrations
 **Created**: 2026-02-06
 
 Import GitHub data to enrich the Understanding dimension: PR descriptions, commit message quality, README/docs presence, repo structure, wiki content, and ADR patterns. Publish governance reports back to GitHub Pages/wiki.
@@ -392,7 +571,7 @@ Import GitHub data to enrich the Understanding dimension: PR descriptions, commi
 ### [ROAD-014] GitHub Confidence Integration 🎯
 **Status**: Proposed
 **Priority**: Medium
-**Phase**: 5 — Advanced Integrations
+**Phase**: 4 — Advanced External Integrations
 **Created**: 2026-02-06
 
 Import GitHub data to enrich the Confidence dimension: PR review quality, branch protection rules, code scanning/Dependabot alerts, required status checks, and merge policies.
@@ -417,43 +596,56 @@ Import GitHub data to enrich the Confidence dimension: PR review quality, branch
 ## Dependency Graph
 
 ```
-Phase 0                Phase 1                 Phase 2                Phase 3                Phase 4            Phase 5
-─────────────          ──────────              ──────────             ──────────             ──────────         ──────────
+Phase 0          Phase 1          Phase 2          Phase 3 (API, Scanner, Viz & Domain Tooling)        Phase 4
+─────────        ──────────       ──────────       ──────────────────────────────────────────────       ──────────
 
-                       ┌──────────┐
-                       │ ROAD-002 │─ Governance
-                       │ Schemas  │─ Zod
-               ┌──────►│          │──────┐
-               │       └──────────┘      │
-┌──────────┐   │                         │     ┌──────────┐     ┌──────────┐                                ┌──────────┐
-│ ROAD-001 │───┤                         ├────►│ ROAD-004 │────►│ ROAD-005 │──► ┌──────────┐  ┌────────────►│ ROAD-010 │
-│ Import   │   │       ┌──────────┐      │     │ Parsers  │  ┌─►│ API      │    │ ROAD-009 │  │             │ Jira     │
-│ Infra    │   ├──────►│ ROAD-003 │──────┘     │ Builder  │  │  └──────────┘───►│ Web Viz  │  │             └──────────┘
-└──────────┘   │       │ DDD      │            │ CLI      │──┤       │   │      └──────────┘  │
-               │       │ Schemas  │            └──────────┘  │  ┌────┴─────┐                  │             ┌──────────┐
-               │       └──────────┘                 │        ├─►│ ROAD-006 │                  └────────────►│ ROAD-011 │
-               │                                    │        │  │ Scanner  │                                │Confluence│
-               │       ┌──────────┐                 │        │  └──────────┘                                └──────────┘
-               └──────►│ ROAD-007 │                 │        │
-                       │ BDD      │                 │        │  ┌──────────┐
-                       │ Skills   │                 │        ├─►│ ROAD-008 │
-                       └──────────┘                 │        │  │ Integr.  │
-                                                    │        │  └──────────┘
-                                                    │        │
-                                                    │        │  ┌──────────┐
-                                                    │        └─►│ ROAD-015 │
-                                                    │           │ SSE      │
-                                                    │           │ Streaming│
-                                                    │           └──────────┘
-                                                    │
-                                                    └──► ROAD-010, ROAD-011, ROAD-012, ROAD-013, ROAD-014 (via ROAD-004 + ROAD-005)
+                 ┌──────────┐
+                 │ ROAD-002 │
+                 │ Schemas  │
+         ┌──────►│          │──────┐
+         │       └──────────┘      │
+┌────────┐│                        │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌─────────────┐
+│ROAD-001│┤                        ├─►│ ROAD-004 │─►│ ROAD-005 │─►│ ROAD-009 │─►│  ROAD-020   │
+│Import  ││  ┌──────────┐          │  │ Parsers  │  │ API      │  │ Web Viz  │  │  Subdomain  │
+│Infra   │├─►│ ROAD-003 │──────────┘  │ CLI      │  └──────────┘  └──────────┘  │  Classif.   │
+└────────┘│  │ DDD      │             └──────────┘─┐      │                     └──────┬──────┘
+          │  └──────────┘                  │       ├►ROAD-006 Scanner                  │
+          │                                │       ├►ROAD-008 Integr.     ┌────────────┼──────────┐
+          │  ┌──────────┐                  │       ├►ROAD-015 SSE         ▼            ▼          ▼
+          └─►│ ROAD-007 │                  │       │                ┌──────────┐ ┌──────────┐ ┌──────────┐
+             │ BDD      │                  │       │                │ ROAD-016 │ │ ROAD-017 │ │ ROAD-021 │
+             └──────────┘                  │       │                │ Ctx Map  │ │ Agg Tree │ │ MD Export│
+                                           │       │                └────┬─────┘ └────┬─────┘ └────┬─────┘
+                                           │       │                     │            │            │
+                                           │       │                ┌────┴─────┐ ┌───┴──────┐     │
+                                           │       │                │ ROAD-018 │ │ ROAD-019 │     │
+                                           │       │                │ Evt Flow │ │ State M. │     │
+                                           │       │                └────┬─────┘ └────┬─────┘     │
+                                           │       │                     └─────┬──────┘           │
+                                           │       │                           ▼                  │
+                                           │       │                     ┌──────────┐             │
+                                           │       │                     │ ROAD-022 │◄────────────┘
+                                           │       │                     │ Static   │
+                                           │       │                     │ Site Gen │
+                                           │       │                     └──────────┘
+                                           │       │
+                                           │       │   ┌──────────┐                        ┌──────────┐
+                                           │       │   │ ROAD-023 │  Onboarding            │ ROAD-010 │
+                                           │       │   │ How It   │  (standalone)           │ Jira     │
+                                           │       │   │ Works    │                         └──────────┘
+                                           │       │   └──────────┘                        ┌──────────┐
+                                           │       │                                       │ ROAD-011 │
+                                           │       │                                       │Confluence│
+                                           └───────┴──────────────────────────────────────►└──────────┘
+                                                                                           ROAD-012..014
+                                                                                           (GitHub ×3)
 ```
 
 ---
 
 ## Progressive Release Path
 
-Each release swaps one layer of the old system with the new:
+Each release swaps one layer of the old system with the new. Domain visualization and export are now integrated into Phase 3 for early delivery:
 
 | Release | What Ships | Old System | New System | Agents |
 |---------|-----------|------------|------------|--------|
@@ -462,14 +654,16 @@ Each release swaps one layer of the old system with the new:
 | **0.3.0** | ROAD-004: Parsers + index builder + CLI | Old scripts + new CLI both run in CI | `foe-field-guide build:governance` produces index | Agents start using `validate:governance` |
 | **0.4.0** | ROAD-005: API governance endpoints | Old Docusaurus plugins still generate JSON | `POST /api/v1/governance` ingests index | Agents can query API |
 | **0.5.0** | ROAD-008: Delivery framework integration | Plugins consume `governance-index.json` | Old plugins replaced | Agents use CLI as primary validation |
-| **0.6.0** | Delete old governance scripts | Gone | New system is sole authority | Agents reference CLI/API exclusively |
-| **0.6.1** | ROAD-015: SSE streaming | N/A | Real-time agent output via SSE, React `useSSE` hook | UI shows live scan progress, no more blank waits |
-| **0.7.0** | ROAD-006 + 009: Scanner + web viz | N/A | Full pipeline: scan → report → governance → viz | Governance agent scores governance health |
-| **0.8.0** | ROAD-010: Jira integration | N/A | Bidirectional Jira sync, Feedback dimension from Jira metrics | Agents can import/export Jira issues |
-| **0.9.0** | ROAD-011: Confluence integration | N/A | Bidirectional Confluence sync, Understanding dimension from wiki | Agents can import/export Confluence pages |
-| **0.10.0** | ROAD-012: GitHub Feedback | N/A | Actions/CI metrics, deployment frequency, build times | Agents import GitHub Actions data for Feedback scoring |
-| **0.11.0** | ROAD-013: GitHub Understanding | N/A | PR/docs quality, wiki import, governance publishing to GitHub | Agents import GitHub docs data for Understanding scoring |
-| **0.12.0** | ROAD-014: GitHub Confidence | N/A | PR reviews, branch protection, Dependabot/CodeQL alerts | Agents import GitHub quality signals for Confidence scoring |
+| **0.6.0** | Delete old governance scripts + ROAD-015 SSE | Gone | New system is sole authority, real-time streaming | Agents reference CLI/API exclusively, live progress |
+| **0.7.0** | ROAD-006 + 009: Scanner + web viz foundation | N/A | Full pipeline: scan → report → governance → viz | Governance agent scores governance health |
+| **0.7.1** | ROAD-020: Subdomain classification | N/A | Subdomain types on bounded contexts, color coding | Context map diagram uses subdomain colors |
+| **0.8.0** | ROAD-016 + 017: Context map + Aggregate tree | N/A | Interactive SVG context map, collapsible aggregate tree | DDD visualizations replace flat lists |
+| **0.8.1** | ROAD-023: Onboarding experience | N/A | How It Works page, quick-start guidance | New user guidance improves adoption |
+| **0.9.0** | ROAD-018 + 019: Event flow + State machine | N/A | Event timeline, lifecycle state machine | Full DDD visualization suite |
+| **0.10.0** | ROAD-021 + 022: Export pipeline + Static site | N/A | Markdown export, standalone React site generator | Domain docs in git, capstone feature |
+| **0.11.0** | ROAD-010: Jira integration | N/A | Bidirectional Jira sync, Feedback dimension from Jira metrics | Agents can import/export Jira issues |
+| **0.12.0** | ROAD-011: Confluence integration | N/A | Bidirectional Confluence sync, Understanding dimension from wiki | Agents can import/export Confluence pages |
+| **0.13.0** | ROAD-012 + 013 + 014: GitHub integrations | N/A | Feedback + Understanding + Confidence from GitHub | Full GitHub signal integration |
 
 ---
 
@@ -480,10 +674,9 @@ Each release swaps one layer of the old system with the new:
 | 0 — Foundation | ROAD-001 | ~75 | ~17 | N/A |
 | 1 — Core Schemas | ROAD-002, 003, 007 | ~20 | ~3 | ~2,000 |
 | 2 — Parsers & CLI | ROAD-004 | ~14 | ~4 | ~1,200 |
-| 3 — API & Services | ROAD-005, 006, 008, 015 | ~78 | ~8 | ~1,800 |
-| 4 — Visualization | ROAD-009 | ~4 | ~1 | ~2,000 |
-| 5 — Advanced Integrations | ROAD-010, 011, 012, 013, 014 | ~35 | ~6 | ~4,200 |
-| **Total** | **15** | **~226** | **~39** | **~11,200** |
+| 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023 | ~100 | ~15 | ~8,300 |
+| 4 — Advanced External Integrations | ROAD-010, 011, 012, 013, 014 | ~35 | ~6 | ~4,200 |
+| **Total** | **23** | **~244** | **~45** | **~15,700** |
 
 ---
 
@@ -521,3 +714,11 @@ Each release swaps one layer of the old system with the new:
 | GitHub Understanding Integration *(plan TBD)* | ROAD-013 | PR/docs quality, wiki import, governance publishing to GitHub |
 | GitHub Confidence Integration *(plan TBD)* | ROAD-014 | PR reviews, branch protection, security alerts |
 | SSE Streaming *(plan TBD)* | ROAD-015 | Real-time agent output, React useSSE hook, connection management |
+| Interactive Context Map *(plan TBD)* | ROAD-016 | SVG context map with DDD pattern labels, hover/click, subdomain colors |
+| Aggregate Tree *(plan TBD)* | ROAD-017 | Collapsible tree view for aggregate hierarchy exploration |
+| Domain Event Flow *(plan TBD)* | ROAD-018 | Step-based event flow timeline with category color coding |
+| Application Lifecycle State Machine *(plan TBD)* | ROAD-019 | SVG state machine with workflow states, transitions, sync/async |
+| Subdomain Classification *(plan TBD)* | ROAD-020 | Core/Supporting/Generic classification for bounded contexts |
+| Markdown Documentation Export *(plan TBD)* | ROAD-021 | Export domain model as downloadable markdown zip |
+| Static Documentation Site Generator *(plan TBD)* | ROAD-022 | Generate standalone Vite + React + Tailwind site from domain model |
+| Onboarding & How It Works *(plan TBD)* | ROAD-023 | 4-phase workflow guide, Human-in-the-Loop rationale, quick-start |

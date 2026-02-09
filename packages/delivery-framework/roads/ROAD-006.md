@@ -2,7 +2,7 @@
 id: ROAD-006
 title: "Scanner Governance Agent"
 status: proposed
-phase: 2
+phase: 3
 priority: low
 created: "2026-02-05"
 updated: "2026-02-05"

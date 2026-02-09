@@ -25,7 +25,7 @@ governance:
     results: {}
 dependencies:
   requires: [ROAD-005]
-  enables: []
+  enables: [ROAD-016, ROAD-017, ROAD-018, ROAD-019, ROAD-020, ROAD-021, ROAD-023]
 ---
 
 # ROAD-009: Governance & DDD Web Visualization
@@ -92,7 +92,24 @@ DDD:         purple-500 (contexts) → indigo-500 (aggregates) → teal-500 (eve
 ## Dependencies
 
 - **Requires**: ROAD-005 (API endpoints for data)
-- **Enables**: None (terminal visualization layer)
+- **Enables**: ROAD-016, ROAD-017, ROAD-018, ROAD-019, ROAD-020, ROAD-021, ROAD-023 (Phase 6 decomposition)
+
+## Phase 6 Decomposition
+
+> **Note**: The DDD visualization scope of this item (Template 13) has been decomposed into 8 focused deliverables in Phase 6.
+> ROAD-009 now focuses on **Template 12 (Governance Dashboard)** and the foundational DDD visualization infrastructure.
+> The following Phase 6 items deliver the rich DDD visualizations originally scoped here:
+>
+> | Phase 6 Item | What It Delivers | Original ROAD-009 Scope |
+> |---|---|---|
+> | [ROAD-020](ROAD-020.md) | Subdomain classification (Core/Supporting/Generic) | Part of context map color coding |
+> | [ROAD-016](ROAD-016.md) | Interactive SVG context map with DDD patterns | Template 13: SVG context map |
+> | [ROAD-017](ROAD-017.md) | Collapsible aggregate tree hierarchy | Template 13: Aggregate deep dive |
+> | [ROAD-018](ROAD-018.md) | Domain event flow timeline | Template 13: Event flow diagram |
+> | [ROAD-019](ROAD-019.md) | Application lifecycle state machine | New scope (not in original) |
+> | [ROAD-021](ROAD-021.md) | Markdown documentation export | New scope (not in original) |
+> | [ROAD-022](ROAD-022.md) | Static documentation site generator | New scope (not in original) |
+> | [ROAD-023](ROAD-023.md) | Onboarding & How It Works page | New scope (not in original) |
 
 ## Detailed Plan
 

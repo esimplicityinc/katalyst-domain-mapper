@@ -2,7 +2,7 @@
 id: ROAD-005
 title: "API Governance Domain"
 status: proposed
-phase: 2
+phase: 3
 priority: medium
 created: "2026-02-05"
 updated: "2026-02-05"

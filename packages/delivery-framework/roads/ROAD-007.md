@@ -5,7 +5,7 @@ status: proposed
 phase: 1
 priority: medium
 created: "2026-02-05"
-updated: "2026-02-05"
+updated: "2026-02-09"
 owner: ""
 tags: [bdd, skills, agents, testing, playwright]
 governance:

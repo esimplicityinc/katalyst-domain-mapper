@@ -2,7 +2,7 @@
 id: ROAD-008
 title: "Delivery Framework Integration"
 status: proposed
-phase: 2
+phase: 3
 priority: medium
 created: "2026-02-05"
 updated: "2026-02-05"

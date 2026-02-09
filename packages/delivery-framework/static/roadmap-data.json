@@ -15,7 +15,11 @@
           "validated_by": "architecture-inspector",
           "validated_at": "2026-02-06",
           "compliance_check": [],
-          "ids": ["ADR-001", "ADR-005", "ADR-008"]
+          "ids": [
+            "ADR-001",
+            "ADR-005",
+            "ADR-008"
+          ]
         },
         "bdd": {
           "status": "draft",
@@ -56,7 +60,11 @@
           "validated_by": "architecture-inspector",
           "validated_at": "2026-02-06",
           "compliance_check": [],
-          "ids": ["ADR-002", "ADR-008", "ADR-009"]
+          "ids": [
+            "ADR-002",
+            "ADR-008",
+            "ADR-009"
+          ]
         },
         "bdd": {
           "status": "draft",
@@ -99,7 +107,11 @@
           "validated_by": "architecture-inspector",
           "validated_at": "2026-02-06",
           "compliance_check": [],
-          "ids": ["ADR-002", "ADR-008", "ADR-009"]
+          "ids": [
+            "ADR-002",
+            "ADR-008",
+            "ADR-009"
+          ]
         },
         "bdd": {
           "status": "draft",
@@ -142,7 +154,10 @@
           "validated_by": "architecture-inspector",
           "validated_at": "2026-02-06",
           "compliance_check": [],
-          "ids": ["ADR-001", "ADR-009"]
+          "ids": [
+            "ADR-001",
+            "ADR-009"
+          ]
         },
         "bdd": {
           "status": "draft",
@@ -188,7 +203,10 @@
           "validated_by": "architecture-inspector",
           "validated_at": "2026-02-06",
           "compliance_check": [],
-          "ids": ["ADR-003", "ADR-004"]
+          "ids": [
+            "ADR-003",
+            "ADR-004"
+          ]
         },
         "bdd": {
           "status": "draft",
@@ -234,7 +252,10 @@
           "validated_by": "architecture-inspector",
           "validated_at": "2026-02-06",
           "compliance_check": [],
-          "ids": ["ADR-006", "ADR-007"]
+          "ids": [
+            "ADR-006",
+            "ADR-007"
+          ]
         },
         "bdd": {
           "status": "draft",
@@ -275,7 +296,9 @@
           "validated_by": "architecture-inspector",
           "validated_at": "2026-02-06",
           "compliance_check": [],
-          "ids": ["ADR-006"]
+          "ids": [
+            "ADR-006"
+          ]
         },
         "bdd": {
           "status": "draft",
@@ -316,7 +339,11 @@
           "validated_by": "architecture-inspector",
           "validated_at": "2026-02-06",
           "compliance_check": [],
-          "ids": ["ADR-005", "ADR-009", "ADR-010"]
+          "ids": [
+            "ADR-005",
+            "ADR-009",
+            "ADR-010"
+          ]
         },
         "bdd": {
           "status": "draft",
@@ -387,286 +414,9 @@
       "depends_on": [],
       "blocked_by": [],
       "filePath": "roads/ROAD-009"
-    },
-    {
-      "id": "ROAD-010",
-      "title": "Jira Bidirectional Integration",
-      "status": "proposed",
-      "phase": 5,
-      "priority": "medium",
-      "created": "2026-02-05",
-      "started": "",
-      "completed": "",
-      "governance": {
-        "adrs": {
-          "validated": false,
-          "validated_by": "",
-          "validated_at": "",
-          "compliance_check": [],
-          "ids": []
-        },
-        "bdd": {
-          "status": "draft",
-          "approved_by": [],
-          "test_results": {
-            "total": 0,
-            "passed": 0,
-            "failed": 0,
-            "coverage": "0%"
-          },
-          "feature_files": [],
-          "scenarios": 0,
-          "passing": 0
-        },
-        "nfrs": {
-          "applicable": [
-            "NFR-SEC-001"
-          ],
-          "status": "pending",
-          "results": {}
-        }
-      },
-      "blocks": [],
-      "depends_on": [
-        "ROAD-004",
-        "ROAD-005"
-      ],
-      "blocked_by": [],
-      "filePath": "roads/ROAD-010"
-    },
-    {
-      "id": "ROAD-011",
-      "title": "Confluence Bidirectional Integration",
-      "status": "proposed",
-      "phase": 5,
-      "priority": "medium",
-      "created": "2026-02-05",
-      "started": "",
-      "completed": "",
-      "governance": {
-        "adrs": {
-          "validated": false,
-          "validated_by": "",
-          "validated_at": "",
-          "compliance_check": [],
-          "ids": []
-        },
-        "bdd": {
-          "status": "draft",
-          "approved_by": [],
-          "test_results": {
-            "total": 0,
-            "passed": 0,
-            "failed": 0,
-            "coverage": "0%"
-          },
-          "feature_files": [],
-          "scenarios": 0,
-          "passing": 0
-        },
-        "nfrs": {
-          "applicable": [
-            "NFR-SEC-001"
-          ],
-          "status": "pending",
-          "results": {}
-        }
-      },
-      "blocks": [],
-      "depends_on": [
-        "ROAD-004",
-        "ROAD-005"
-      ],
-      "blocked_by": [],
-      "filePath": "roads/ROAD-011"
-    },
-    {
-      "id": "ROAD-012",
-      "title": "GitHub Feedback Integration",
-      "status": "proposed",
-      "phase": 5,
-      "priority": "medium",
-      "created": "2026-02-06",
-      "started": "",
-      "completed": "",
-      "governance": {
-        "adrs": {
-          "validated": false,
-          "validated_by": "",
-          "validated_at": "",
-          "compliance_check": [],
-          "ids": []
-        },
-        "bdd": {
-          "status": "draft",
-          "approved_by": [],
-          "test_results": {
-            "total": 0,
-            "passed": 0,
-            "failed": 0,
-            "coverage": "0%"
-          },
-          "feature_files": [],
-          "scenarios": 0,
-          "passing": 0
-        },
-        "nfrs": {
-          "applicable": [
-            "NFR-SEC-001"
-          ],
-          "status": "pending",
-          "results": {}
-        }
-      },
-      "blocks": [],
-      "depends_on": [
-        "ROAD-004",
-        "ROAD-005"
-      ],
-      "blocked_by": [],
-      "filePath": "roads/ROAD-012"
-    },
-    {
-      "id": "ROAD-013",
-      "title": "GitHub Understanding Integration",
-      "status": "proposed",
-      "phase": 5,
-      "priority": "medium",
-      "created": "2026-02-06",
-      "started": "",
-      "completed": "",
-      "governance": {
-        "adrs": {
-          "validated": false,
-          "validated_by": "",
-          "validated_at": "",
-          "compliance_check": [],
-          "ids": []
-        },
-        "bdd": {
-          "status": "draft",
-          "approved_by": [],
-          "test_results": {
-            "total": 0,
-            "passed": 0,
-            "failed": 0,
-            "coverage": "0%"
-          },
-          "feature_files": [],
-          "scenarios": 0,
-          "passing": 0
-        },
-        "nfrs": {
-          "applicable": [
-            "NFR-SEC-001"
-          ],
-          "status": "pending",
-          "results": {}
-        }
-      },
-      "blocks": [],
-      "depends_on": [
-        "ROAD-004",
-        "ROAD-005"
-      ],
-      "blocked_by": [],
-      "filePath": "roads/ROAD-013"
-    },
-    {
-      "id": "ROAD-014",
-      "title": "GitHub Confidence Integration",
-      "status": "proposed",
-      "phase": 5,
-      "priority": "medium",
-      "created": "2026-02-06",
-      "started": "",
-      "completed": "",
-      "governance": {
-        "adrs": {
-          "validated": false,
-          "validated_by": "",
-          "validated_at": "",
-          "compliance_check": [],
-          "ids": []
-        },
-        "bdd": {
-          "status": "draft",
-          "approved_by": [],
-          "test_results": {
-            "total": 0,
-            "passed": 0,
-            "failed": 0,
-            "coverage": "0%"
-          },
-          "feature_files": [],
-          "scenarios": 0,
-          "passing": 0
-        },
-        "nfrs": {
-          "applicable": [
-            "NFR-SEC-001"
-          ],
-          "status": "pending",
-          "results": {}
-        }
-      },
-      "blocks": [],
-      "depends_on": [
-        "ROAD-004",
-        "ROAD-005"
-      ],
-      "blocked_by": [],
-      "filePath": "roads/ROAD-014"
-    },
-    {
-      "id": "ROAD-015",
-      "title": "SSE Streaming for Real-time Agent Responses",
-      "status": "proposed",
-      "phase": 3,
-      "priority": "high",
-      "created": "2026-02-06",
-      "started": "",
-      "completed": "",
-      "governance": {
-        "adrs": {
-          "validated": false,
-          "validated_by": "",
-          "validated_at": "",
-          "compliance_check": [],
-          "ids": []
-        },
-        "bdd": {
-          "status": "draft",
-          "approved_by": [],
-          "test_results": {
-            "total": 0,
-            "passed": 0,
-            "failed": 0,
-            "coverage": "0%"
-          },
-          "feature_files": [],
-          "scenarios": 0,
-          "passing": 0
-        },
-        "nfrs": {
-          "applicable": [
-            "NFR-PERF-001",
-            "NFR-PERF-002",
-            "NFR-REL-001"
-          ],
-          "status": "pending",
-          "results": {}
-        }
-      },
-      "blocks": [],
-      "depends_on": [
-        "ROAD-005"
-      ],
-      "blocked_by": [],
-      "filePath": "roads/ROAD-015"
     }
   ],
-  "generatedAt": "2026-02-06T03:02:32.184Z",
+  "generatedAt": "2026-02-06T13:03:13.644Z",
   "validStatuses": [
     "proposed",
     "adr_validated",

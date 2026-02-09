@@ -18,6 +18,7 @@ stack-tests/features/
     confluence/       # CAP-006: Confluence Bidirectional Integration
     github/           # CAP-007: GitHub Integration (Feedback, Understanding, Confidence)
     streaming/        # CAP-008: Real-time SSE Streaming
+    domain-models/    # CAP-009: DDD Domain Modeling API
     (root)            # Existing health, reports, repositories, scans, config
   ui/
     reporting/        # CAP-001: Report viewer & dashboards
@@ -26,6 +27,7 @@ stack-tests/features/
     governance/       # CAP-002 + CAP-003: Cross-layer governance flows
     integrations/     # CAP-005 + CAP-006: Cross-layer Jira & Confluence flows
     streaming/        # CAP-008: Real-time SSE Streaming E2E
+    domain-models/    # CAP-009: DDD Domain Modeling E2E
     (root)            # Existing hybrid examples
 ```
 
@@ -53,15 +55,18 @@ Scenarios tagged `@wip` are excluded from normal test runs. They represent BDD-f
 |------|---------|-----------|------|
 | `api/00_api_examples.feature` | Health & Readiness | 2 | `@api` |
 | `api/01_reports.feature` | Report Management (CRUD) | 5 | `@api` |
-| `api/02_repositories.feature` | Repository Listing | 2 | `@api` |
-| `api/03_scans.feature` | Scan Jobs | 3 | `@api` |
-| `api/04_config.feature` | Configuration | 1 | `@api` |
+| `api/02_repositories.feature` | Repository Tracking | 5 | `@api` |
+| `api/03_scans.feature` | Scan Jobs | 6 | `@api` |
+| `api/04_config.feature` | Configuration | 4 | `@api` |
 
 ### New: Reporting (CAP-001)
 
 | File | Feature | Scenarios | User Stories | Tags |
 |------|---------|-----------|-------------|------|
 | `api/reporting/05_foe_dimension_scores.feature` | Dimension Scores & Triangle | 3 | US-001 | `@api @report-gen @ROAD-001 @CAP-001` |
+| `api/reporting/06_report_comparison.feature` | Report Comparison | 4 | US-030 | `@api @report-gen @ROAD-001 @CAP-001` |
+| `api/reporting/07_report_raw_retrieval.feature` | Raw Report Retrieval | 3 | US-001 | `@api @report-gen @ROAD-001 @CAP-001` |
+| `api/reporting/08_report_filtering_pagination.feature` | Report Filtering & Pagination | 6 | US-031 | `@api @report-gen @ROAD-001 @CAP-001` |
 
 ### New: Governance (CAP-002) -- @wip
 
@@ -102,6 +107,14 @@ Scenarios tagged `@wip` are excluded from normal test runs. They represent BDD-f
 | File | Feature | Scenarios | User Stories | Tags |
 |------|---------|-----------|-------------|------|
 | `api/streaming/01_sse_streaming.feature` | SSE Streaming for Agent Responses | 8 | US-026 | `@api @sse-streaming @ROAD-015 @CAP-008 @wip` |
+
+### New: DDD Domain Modeling (CAP-009)
+
+| File | Feature | Scenarios | User Stories | Tags |
+|------|---------|-----------|-------------|------|
+| `api/domain-models/01_domain_model_crud.feature` | Domain Model CRUD | 9 | US-028 | `@api @ddd-modeling @ROAD-008 @CAP-009` |
+| `api/domain-models/02_bounded_context_management.feature` | Bounded Context Management | 6 | US-028 | `@api @ddd-modeling @ROAD-008 @CAP-009` |
+| `api/domain-models/03_domain_artifacts.feature` | Domain Artifacts (Aggregates, Events, VOs, Glossary) | 8 | US-028 | `@api @ddd-modeling @ROAD-008 @CAP-009` |
 
 ---
 
@@ -151,6 +164,12 @@ Scenarios tagged `@wip` are excluded from normal test runs. They represent BDD-f
 |------|---------|-----------|-------------|------|
 | `hybrid/streaming/01_sse_e2e.feature` | SSE Streaming E2E | 2 | US-026, US-027 | `@hybrid @sse-streaming @ROAD-015 @CAP-008 @wip` |
 
+### New: DDD Domain Modeling (CAP-009) -- @wip
+
+| File | Feature | Scenarios | User Stories | Tags |
+|------|---------|-----------|-------------|------|
+| `hybrid/domain-models/01_domain_model_e2e.feature` | DDD Domain Model E2E | 2 | US-028, US-029 | `@hybrid @ddd-modeling @ROAD-008 @ROAD-009 @CAP-009 @wip` |
+
 ---
 
 ## User Story Coverage
@@ -184,5 +203,10 @@ Scenarios tagged `@wip` are excluded from normal test runs. They represent BDD-f
 | US-025: Branch Protection & Security | `03_github_confidence`, `02_github_confidence_e2e` | API + Hybrid | @wip |
 | US-026: Stream Agent Responses via SSE | `01_sse_streaming`, `01_sse_e2e` | API + Hybrid | @wip |
 | US-027: View Live Agent Progress in UI | `01_sse_e2e` | Hybrid | @wip |
+| US-028: Manage DDD Domain Models via API | `01_domain_model_crud`, `02_bounded_context_management`, `03_domain_artifacts`, `01_domain_model_e2e` | API + Hybrid | Runnable (API) / @wip (Hybrid) |
+| US-029: View Domain Model in Context Map UI | `01_domain_model_e2e` | Hybrid | @wip |
+| US-030: Compare FOE Reports | `06_report_comparison` | API | Runnable |
+| US-031: Filter & Paginate Reports | `08_report_filtering_pagination` | API | Runnable |
+| US-032: Configure API Key & Scanner | `04_config` | API | Runnable |
 
-**Summary**: 22 of 27 user stories have BDD feature coverage. The remaining 5 (US-003, US-004, US-007, US-008, US-012, US-013, US-015) are tooling/schema stories tested via unit and integration tests rather than BDD.
+**Summary**: 27 of 32 user stories have BDD feature coverage. The remaining 5 (US-003, US-004, US-007, US-008, US-012, US-013, US-015) are tooling/schema stories tested via unit and integration tests rather than BDD.
