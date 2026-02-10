@@ -1,4 +1,8 @@
-import type { ReportRepository, StoredReport, ReportListFilter } from "../../ports/ReportRepository.js";
+import type {
+  ReportRepository,
+  StoredReport,
+  ReportListFilter,
+} from "../../ports/ReportRepository.js";
 
 export class ListReports {
   constructor(private reportRepo: ReportRepository) {}

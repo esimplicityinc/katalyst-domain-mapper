@@ -26,7 +26,9 @@ export const scans = sqliteTable("scans", {
   scanDate: text("scan_date").notNull(), // ISO 8601
   scanDuration: integer("scan_duration").notNull(), // milliseconds
   scannerVersion: text("scanner_version").notNull(),
-  rawReport: text("raw_report", { mode: "json" }).$type<Record<string, unknown>>().notNull(),
+  rawReport: text("raw_report", { mode: "json" })
+    .$type<Record<string, unknown>>()
+    .notNull(),
   createdAt: text("created_at").notNull(),
 });
 
@@ -133,7 +135,9 @@ export const methodologies = sqliteTable("methodologies", {
   testFilesAnalyzed: integer("test_files_analyzed").notNull(),
   adrsAnalyzed: integer("adrs_analyzed").notNull(),
   coverageReportFound: integer("coverage_report_found", { mode: "boolean" }),
-  confidenceNotes: text("confidence_notes", { mode: "json" }).$type<string[]>().default([]),
+  confidenceNotes: text("confidence_notes", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
 });
 
 // ── Domain Models (DDD workspace) ─────────────────────────────────────────────
@@ -158,8 +162,10 @@ export const boundedContexts = sqliteTable("bounded_contexts", {
   sourceDirectory: text("source_directory"),
   teamOwnership: text("team_ownership"),
   status: text("status").notNull().default("draft"),
-  subdomainType: text("subdomain_type"),  // 'core' | 'supporting' | 'generic' | null
-  relationships: text("relationships", { mode: "json" }).$type<unknown[]>().default([]),
+  subdomainType: text("subdomain_type"), // 'core' | 'supporting' | 'generic' | null
+  relationships: text("relationships", { mode: "json" })
+    .$type<unknown[]>()
+    .default([]),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });
@@ -176,10 +182,14 @@ export const aggregates = sqliteTable("aggregates", {
   title: text("title").notNull(),
   rootEntity: text("root_entity").notNull(),
   entities: text("entities", { mode: "json" }).$type<string[]>().default([]),
-  valueObjects: text("value_objects", { mode: "json" }).$type<string[]>().default([]),
+  valueObjects: text("value_objects", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
   events: text("events", { mode: "json" }).$type<string[]>().default([]),
   commands: text("commands", { mode: "json" }).$type<string[]>().default([]),
-  invariants: text("invariants", { mode: "json" }).$type<unknown[]>().default([]),
+  invariants: text("invariants", { mode: "json" })
+    .$type<unknown[]>()
+    .default([]),
   sourceFile: text("source_file"),
   status: text("status").notNull().default("draft"),
   createdAt: text("created_at").notNull(),
@@ -197,8 +207,12 @@ export const valueObjects = sqliteTable("value_objects", {
   slug: text("slug").notNull(),
   title: text("title").notNull(),
   description: text("description"),
-  properties: text("properties", { mode: "json" }).$type<unknown[]>().default([]),
-  validationRules: text("validation_rules", { mode: "json" }).$type<string[]>().default([]),
+  properties: text("properties", { mode: "json" })
+    .$type<unknown[]>()
+    .default([]),
+  validationRules: text("validation_rules", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
   immutable: integer("immutable", { mode: "boolean" }).default(true),
   sourceFile: text("source_file"),
   createdAt: text("created_at").notNull(),
@@ -213,15 +227,20 @@ export const domainEvents = sqliteTable("domain_events", {
   contextId: text("context_id")
     .notNull()
     .references(() => boundedContexts.id, { onDelete: "cascade" }),
-  aggregateId: text("aggregate_id")
-    .references(() => aggregates.id, { onDelete: "set null" }),
+  aggregateId: text("aggregate_id").references(() => aggregates.id, {
+    onDelete: "set null",
+  }),
   slug: text("slug").notNull(),
   title: text("title").notNull(),
   description: text("description"),
   payload: text("payload", { mode: "json" }).$type<unknown[]>().default([]),
-  consumedBy: text("consumed_by", { mode: "json" }).$type<string[]>().default([]),
+  consumedBy: text("consumed_by", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
   triggers: text("triggers", { mode: "json" }).$type<string[]>().default([]),
-  sideEffects: text("side_effects", { mode: "json" }).$type<string[]>().default([]),
+  sideEffects: text("side_effects", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
   sourceFile: text("source_file"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
@@ -232,13 +251,16 @@ export const glossaryTerms = sqliteTable("glossary_terms", {
   domainModelId: text("domain_model_id")
     .notNull()
     .references(() => domainModels.id, { onDelete: "cascade" }),
-  contextId: text("context_id")
-    .references(() => boundedContexts.id, { onDelete: "set null" }),
+  contextId: text("context_id").references(() => boundedContexts.id, {
+    onDelete: "set null",
+  }),
   term: text("term").notNull(),
   definition: text("definition").notNull(),
   aliases: text("aliases", { mode: "json" }).$type<string[]>().default([]),
   examples: text("examples", { mode: "json" }).$type<string[]>().default([]),
-  relatedTerms: text("related_terms", { mode: "json" }).$type<string[]>().default([]),
+  relatedTerms: text("related_terms", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
   source: text("source"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
@@ -248,8 +270,9 @@ export const glossaryTerms = sqliteTable("glossary_terms", {
 
 export const chatSessions = sqliteTable("chat_sessions", {
   id: text("id").primaryKey(),
-  domainModelId: text("domain_model_id")
-    .references(() => domainModels.id, { onDelete: "cascade" }),
+  domainModelId: text("domain_model_id").references(() => domainModels.id, {
+    onDelete: "cascade",
+  }),
   title: text("title").notNull(),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
@@ -286,7 +309,9 @@ export const governanceSnapshots = sqliteTable("governance_snapshots", {
   project: text("project").notNull(),
   version: text("version").notNull(),
   generated: text("generated").notNull(),
-  rawIndex: text("raw_index", { mode: "json" }).$type<Record<string, unknown>>().notNull(),
+  rawIndex: text("raw_index", { mode: "json" })
+    .$type<Record<string, unknown>>()
+    .notNull(),
   createdAt: text("created_at").notNull(),
 });
 

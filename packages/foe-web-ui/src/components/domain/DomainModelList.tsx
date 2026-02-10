@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Plus, Trash2, Loader2, Hexagon, ArrowRight } from 'lucide-react';
-import { api } from '../../api/client';
-import type { DomainModel } from '../../types/domain';
+import { useState } from "react";
+import { Plus, Trash2, Loader2, Hexagon, ArrowRight } from "lucide-react";
+import { api } from "../../api/client";
+import type { DomainModel } from "../../types/domain";
 
 interface DomainModelListProps {
   models: DomainModel[];
@@ -18,8 +18,8 @@ export function DomainModelList({
 }: DomainModelListProps) {
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -34,24 +34,24 @@ export function DomainModelList({
         description: description.trim() || undefined,
       });
       onCreated(model);
-      setName('');
-      setDescription('');
+      setName("");
+      setDescription("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create model');
+      setError(err instanceof Error ? err.message : "Failed to create model");
     } finally {
       setCreating(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this domain model and all its artifacts?')) return;
+    if (!confirm("Delete this domain model and all its artifacts?")) return;
 
     setDeleting(id);
     try {
       await api.deleteDomainModel(id);
       onDeleted(id);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete');
+      setError(err instanceof Error ? err.message : "Failed to delete");
     } finally {
       setDeleting(null);
     }
@@ -114,7 +114,9 @@ export function DomainModelList({
       {/* Model list */}
       {models.length === 0 ? (
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-          <p className="text-sm">No domain models yet. Create one to get started.</p>
+          <p className="text-sm">
+            No domain models yet. Create one to get started.
+          </p>
         </div>
       ) : (
         <div className="space-y-3">

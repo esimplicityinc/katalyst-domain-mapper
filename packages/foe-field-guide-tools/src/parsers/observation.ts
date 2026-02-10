@@ -1,10 +1,7 @@
-import type { Observation } from '@foe/schemas/field-guide';
-import { ObservationSchema } from '@foe/schemas/field-guide';
-import { readFile } from 'node:fs/promises';
-import { 
-  parseFrontmatter,
-  makeRelativePath,
-} from './frontmatter.js';
+import type { Observation } from "@foe/schemas/field-guide";
+import { ObservationSchema } from "@foe/schemas/field-guide";
+import { readFile } from "node:fs/promises";
+import { parseFrontmatter, makeRelativePath } from "./frontmatter.js";
 
 /**
  * Observation frontmatter shape (before validation)
@@ -12,8 +9,8 @@ import {
 interface ObservationFrontmatter {
   observationId: string;
   title: string;
-  status: 'in-progress' | 'completed';
-  source_type: 'internal' | 'external';
+  status: "in-progress" | "completed";
+  source_type: "internal" | "external";
   source?: {
     authors?: string[];
     organization?: string;
@@ -30,10 +27,12 @@ interface ObservationFrontmatter {
 /**
  * Parse an observation markdown file
  */
-export async function parseObservationFile(filePath: string): Promise<Observation> {
-  const fileContent = await readFile(filePath, 'utf-8');
+export async function parseObservationFile(
+  filePath: string,
+): Promise<Observation> {
+  const fileContent = await readFile(filePath, "utf-8");
   const { data } = parseFrontmatter(fileContent);
-  
+
   // Build observation object
   const observation: Partial<Observation> = {
     observationId: data.observationId,
@@ -47,11 +46,13 @@ export async function parseObservationFile(filePath: string): Promise<Observatio
     dateDocumented: data.dateDocumented,
     observers: data.observers,
   };
-  
+
   // Validate against schema
   try {
     return ObservationSchema.parse(observation);
   } catch (err: any) {
-    throw new Error(`Observation ${data.observationId} validation failed in ${filePath}: ${err.message}`);
+    throw new Error(
+      `Observation ${data.observationId} validation failed in ${filePath}: ${err.message}`,
+    );
   }
 }

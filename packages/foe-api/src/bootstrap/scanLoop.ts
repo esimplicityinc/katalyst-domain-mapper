@@ -28,7 +28,10 @@ export function startScanLoop(deps: {
       const job = queued[0];
 
       if (job) {
-        logger.info("Processing scan job", { jobId: job.id, repoPath: job.repositoryPath });
+        logger.info("Processing scan job", {
+          jobId: job.id,
+          repoPath: job.repositoryPath,
+        });
 
         // Mark as running
         await scanJobRepo.update(job.id, {
@@ -63,7 +66,10 @@ export function startScanLoop(deps: {
               errorMessage: `Report normalization failed: ${message}`,
               completedAt: new Date().toISOString(),
             });
-            logger.error("Scan produced invalid report", { jobId: job.id, error: message });
+            logger.error("Scan produced invalid report", {
+              jobId: job.id,
+              error: message,
+            });
           }
         } else {
           await scanJobRepo.update(job.id, {
@@ -71,7 +77,10 @@ export function startScanLoop(deps: {
             errorMessage: result.error ?? "Unknown scanner error",
             completedAt: new Date().toISOString(),
           });
-          logger.error("Scan job failed", { jobId: job.id, error: result.error });
+          logger.error("Scan job failed", {
+            jobId: job.id,
+            error: result.error,
+          });
         }
       }
     } catch (err) {

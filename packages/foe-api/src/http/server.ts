@@ -35,20 +35,24 @@ const MIME_TYPES: Record<string, string> = {
 };
 
 // ── OpenCode proxy target ───────────────────────────────────────────────────
-const OPENCODE_URL = process.env.OPENCODE_INTERNAL_URL ?? "http://127.0.0.1:4096";
+const OPENCODE_URL =
+  process.env.OPENCODE_INTERNAL_URL ?? "http://127.0.0.1:4096";
 
 // ── Web UI dist directory ───────────────────────────────────────────────────
-const WEB_DIST_DIR = process.env.WEB_DIST_DIR ?? path.resolve(import.meta.dirname ?? ".", "../../web-dist");
+const WEB_DIST_DIR =
+  process.env.WEB_DIST_DIR ??
+  path.resolve(import.meta.dirname ?? ".", "../../web-dist");
 
 export function createServer(container: Container) {
   const app = new Elysia()
     .use(
       cors({
-        origin: process.env.CORS_ORIGINS?.split(",").map((s) => s.trim()) ?? true,
+        origin:
+          process.env.CORS_ORIGINS?.split(",").map((s) => s.trim()) ?? true,
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "X-Request-ID", "Authorization"],
         maxAge: 86400,
-      })
+      }),
     )
     .use(
       swagger({
@@ -68,7 +72,7 @@ export function createServer(container: Container) {
           ],
         },
         path: "/swagger",
-      })
+      }),
     )
     .use(requestIdMiddleware)
     .use(createLoggingMiddleware(container.logger))
@@ -76,9 +80,7 @@ export function createServer(container: Container) {
 
     // Health/ready endpoints
     .group("/api/v1", (app) =>
-      app
-        .use(healthRoute)
-        .use(createReadyRoute(container.healthCheck))
+      app.use(healthRoute).use(createReadyRoute(container.healthCheck)),
     )
 
     // Main API routes
@@ -91,29 +93,29 @@ export function createServer(container: Container) {
             listReports: container.listReports,
             compareReports: container.compareReports,
             reportRepo: container.reportRepo,
-          })
+          }),
         )
         .use(
           createScanRoutes({
             triggerScan: container.triggerScan,
             getScanStatus: container.getScanStatus,
-          })
+          }),
         )
         .use(
           createRepositoryRoutes({
             reportRepo: container.reportRepo,
-          })
+          }),
         )
         .use(
           createConfigRoutes({
             getAnthropicApiKey: container.getAnthropicApiKey,
             setAnthropicApiKey: container.setAnthropicApiKey,
-          })
+          }),
         )
         .use(
           createDomainModelRoutes({
             db: container.db,
-          })
+          }),
         )
         .use(
           createGovernanceRoutes({
@@ -123,8 +125,8 @@ export function createServer(container: Container) {
             getGovernanceTrend: container.getGovernanceTrend,
             governanceRepo: container.governanceRepo,
             validateTransition: container.validateTransition,
-          })
-        )
+          }),
+        ),
     )
 
     // ── Static file serving + SPA fallback + OpenCode proxy ────────────────
@@ -139,8 +141,14 @@ export function createServer(container: Container) {
         try {
           // Build clean headers for the upstream request (strip hop-by-hop)
           const upstreamHeaders = new Headers();
-          upstreamHeaders.set("Content-Type", request.headers.get("Content-Type") ?? "application/json");
-          upstreamHeaders.set("Accept", request.headers.get("Accept") ?? "application/json");
+          upstreamHeaders.set(
+            "Content-Type",
+            request.headers.get("Content-Type") ?? "application/json",
+          );
+          upstreamHeaders.set(
+            "Accept",
+            request.headers.get("Accept") ?? "application/json",
+          );
 
           // Read body for non-GET/HEAD methods
           let body: string | undefined;
@@ -169,7 +177,7 @@ export function createServer(container: Container) {
         } catch {
           return new Response(
             JSON.stringify({ error: "OpenCode server not available" }),
-            { status: 502, headers: { "Content-Type": "application/json" } }
+            { status: 502, headers: { "Content-Type": "application/json" } },
           );
         }
       }
@@ -186,9 +194,8 @@ export function createServer(container: Container) {
       if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
         const ext = path.extname(filePath);
         const contentType = MIME_TYPES[ext] ?? "application/octet-stream";
-        const cacheControl = ext === ".html"
-          ? "no-cache"
-          : "public, max-age=31536000, immutable";
+        const cacheControl =
+          ext === ".html" ? "no-cache" : "public, max-age=31536000, immutable";
         return new Response(Bun.file(filePath), {
           headers: {
             "Content-Type": contentType,

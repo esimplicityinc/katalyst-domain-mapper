@@ -43,21 +43,27 @@ export class ValidateTransition {
     // proposed → adr_validated requires ADR validation
     if (current === "proposed" && target === "adr_validated") {
       if (!input.governance?.adrs?.validated) {
-        gateErrors.push("ADR must be validated before advancing to adr_validated");
+        gateErrors.push(
+          "ADR must be validated before advancing to adr_validated",
+        );
       }
     }
 
     // bdd_complete → implementing requires BDD approval
     if (current === "bdd_complete" && target === "implementing") {
       if (input.governance?.bdd?.status !== "approved") {
-        gateErrors.push("BDD scenarios must be approved before advancing to implementing");
+        gateErrors.push(
+          "BDD scenarios must be approved before advancing to implementing",
+        );
       }
     }
 
     // nfr_validating → complete requires NFR pass
     if (current === "nfr_validating" && target === "complete") {
       if (input.governance?.nfrs?.status !== "pass") {
-        gateErrors.push("NFRs must pass validation before advancing to complete");
+        gateErrors.push(
+          "NFRs must pass validation before advancing to complete",
+        );
       }
     }
 

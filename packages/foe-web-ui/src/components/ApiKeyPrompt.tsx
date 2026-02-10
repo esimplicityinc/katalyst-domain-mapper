@@ -1,6 +1,13 @@
-import { useState } from 'react';
-import { Key, AlertCircle, Loader2, Eye, EyeOff, ArrowRight } from 'lucide-react';
-import { api } from '../api/client';
+import { useState } from "react";
+import {
+  Key,
+  AlertCircle,
+  Loader2,
+  Eye,
+  EyeOff,
+  ArrowRight,
+} from "lucide-react";
+import { api } from "../api/client";
 
 interface ApiKeyPromptProps {
   onConfigured: () => void;
@@ -8,7 +15,7 @@ interface ApiKeyPromptProps {
 }
 
 export function ApiKeyPrompt({ onConfigured, onSkip }: ApiKeyPromptProps) {
-  const [apiKey, setApiKey] = useState('');
+  const [apiKey, setApiKey] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showKey, setShowKey] = useState(false);
@@ -19,12 +26,12 @@ export function ApiKeyPrompt({ onConfigured, onSkip }: ApiKeyPromptProps) {
 
     const trimmed = apiKey.trim();
     if (!trimmed) {
-      setError('Please enter an API key');
+      setError("Please enter an API key");
       return;
     }
 
-    if (!trimmed.startsWith('sk-ant-')) {
-      setError('Key should start with sk-ant-');
+    if (!trimmed.startsWith("sk-ant-")) {
+      setError("Key should start with sk-ant-");
       return;
     }
 
@@ -33,7 +40,7 @@ export function ApiKeyPrompt({ onConfigured, onSkip }: ApiKeyPromptProps) {
       await api.setApiKey(trimmed);
       onConfigured();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to set API key');
+      setError(err instanceof Error ? err.message : "Failed to set API key");
     } finally {
       setSubmitting(false);
     }
@@ -67,7 +74,7 @@ export function ApiKeyPrompt({ onConfigured, onSkip }: ApiKeyPromptProps) {
             <div className="relative">
               <input
                 id="apiKey"
-                type={showKey ? 'text' : 'password'}
+                type={showKey ? "text" : "password"}
                 value={apiKey}
                 onChange={(e) => {
                   setApiKey(e.target.value);
@@ -82,7 +89,11 @@ export function ApiKeyPrompt({ onConfigured, onSkip }: ApiKeyPromptProps) {
                 onClick={() => setShowKey(!showKey)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
-                {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showKey ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
               </button>
             </div>
             <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
@@ -107,7 +118,7 @@ export function ApiKeyPrompt({ onConfigured, onSkip }: ApiKeyPromptProps) {
             ) : (
               <Key className="w-4 h-4" />
             )}
-            {submitting ? 'Configuring...' : 'Save & Continue'}
+            {submitting ? "Configuring..." : "Save & Continue"}
           </button>
         </form>
 

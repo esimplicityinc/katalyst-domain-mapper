@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   RadarChart as RechartsRadar,
@@ -8,7 +8,7 @@ import {
   Radar,
   ResponsiveContainer,
   Tooltip,
-} from 'recharts';
+} from "recharts";
 
 interface RadarChartProps {
   data: {
@@ -25,14 +25,14 @@ export function RadarChart({ data, height = 300 }: RadarChartProps) {
     <ResponsiveContainer width="100%" height={height}>
       <RechartsRadar data={data}>
         <PolarGrid stroke="#e5e7eb" />
-        <PolarAngleAxis 
-          dataKey="dimension" 
-          tick={{ fill: '#6b7280', fontSize: 12 }}
+        <PolarAngleAxis
+          dataKey="dimension"
+          tick={{ fill: "#6b7280", fontSize: 12 }}
         />
-        <PolarRadiusAxis 
-          angle={90} 
-          domain={[0, 100]} 
-          tick={{ fill: '#9ca3af', fontSize: 10 }}
+        <PolarRadiusAxis
+          angle={90}
+          domain={[0, 100]}
+          tick={{ fill: "#9ca3af", fontSize: 10 }}
         />
         <Radar
           name="Score"
@@ -42,14 +42,14 @@ export function RadarChart({ data, height = 300 }: RadarChartProps) {
           fillOpacity={0.3}
           strokeWidth={2}
         />
-        <Tooltip 
-          contentStyle={{ 
-            backgroundColor: '#fff', 
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "#fff",
+            border: "1px solid #e5e7eb",
+            borderRadius: "8px",
+            boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
           }}
-          formatter={(value: number) => [`${value}/100`, 'Score']}
+          formatter={(value: number) => [`${value}/100`, "Score"]}
         />
       </RechartsRadar>
     </ResponsiveContainer>

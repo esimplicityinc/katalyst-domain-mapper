@@ -7,7 +7,7 @@ import * as path from "node:path";
 export class TriggerScan {
   constructor(
     private scanJobRepo: ScanJobRepository,
-    private logger: Logger
+    private logger: Logger,
   ) {}
 
   async execute(repositoryPath: string): Promise<ScanJob> {

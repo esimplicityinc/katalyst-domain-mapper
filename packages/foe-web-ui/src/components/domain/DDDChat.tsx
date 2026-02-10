@@ -1,6 +1,15 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Loader2, Bot, User, AlertCircle, RefreshCw, CheckCircle2, X } from 'lucide-react';
-import Markdown from 'react-markdown';
+import { useState, useRef, useEffect, useCallback } from "react";
+import {
+  Send,
+  Loader2,
+  Bot,
+  User,
+  AlertCircle,
+  RefreshCw,
+  CheckCircle2,
+  X,
+} from "lucide-react";
+import Markdown from "react-markdown";
 import {
   createDDDSession,
   sendPromptAsync,
@@ -8,9 +17,13 @@ import {
   subscribeToEvents,
   replyToQuestion,
   rejectQuestion,
-} from '../../api/opencode-client';
-import type { SSEEvent, QuestionRequest, QuestionInfo } from '../../api/opencode-client';
-import type { DomainModelFull } from '../../types/domain';
+} from "../../api/opencode-client";
+import type {
+  SSEEvent,
+  QuestionRequest,
+  QuestionInfo,
+} from "../../api/opencode-client";
+import type { DomainModelFull } from "../../types/domain";
 
 interface DDDChatProps {
   model: DomainModelFull;
@@ -20,7 +33,7 @@ interface DDDChatProps {
 // A chat message can be text or a question card
 interface ChatMessage {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp: Date;
   streaming?: boolean;
@@ -36,15 +49,20 @@ interface PendingQuestion {
 
 export function DDDChat({ model }: DDDChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [connected, setConnected] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [pendingQuestion, setPendingQuestion] = useState<PendingQuestion | null>(null);
+  const [pendingQuestion, setPendingQuestion] =
+    useState<PendingQuestion | null>(null);
   // Track selected options per question index: Map<questionIndex, Set<label>>
-  const [selectedOptions, setSelectedOptions] = useState<Map<number, Set<string>>>(new Map());
-  const [customInputs, setCustomInputs] = useState<Map<number, string>>(new Map());
+  const [selectedOptions, setSelectedOptions] = useState<
+    Map<number, Set<string>>
+  >(new Map());
+  const [customInputs, setCustomInputs] = useState<Map<number, string>>(
+    new Map(),
+  );
   const [submittingQuestion, setSubmittingQuestion] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -65,13 +83,13 @@ export function DDDChat({ model }: DDDChatProps) {
 
   // Auto-scroll to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, pendingQuestion]);
 
   const buildContextPreamble = () => {
-    return `[Context: You are helping map the domain model "${model.name}"${model.description ? ` — ${model.description}` : ''}.
+    return `[Context: You are helping map the domain model "${model.name}"${model.description ? ` — ${model.description}` : ""}.
 DOMAIN_MODEL_ID: ${model.id}
-Current state: ${model.boundedContexts.length} bounded contexts (${model.boundedContexts.map((c) => c.title).join(', ') || 'none yet'}), ${model.aggregates.length} aggregates, ${model.domainEvents.length} domain events, ${model.glossaryTerms.length} glossary terms.
+Current state: ${model.boundedContexts.length} bounded contexts (${model.boundedContexts.map((c) => c.title).join(", ") || "none yet"}), ${model.aggregates.length} aggregates, ${model.domainEvents.length} domain events, ${model.glossaryTerms.length} glossary terms.
 IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_MODEL_ID above. Create bounded contexts first, then aggregates and events using the context IDs from the responses.]
 
 `;
@@ -101,110 +119,127 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
         setSessionId(session.id);
       }
     } catch (err) {
-      console.error('Failed to create session:', err);
-      setError('Failed to create chat session. Try again.');
+      console.error("Failed to create session:", err);
+      setError("Failed to create chat session. Try again.");
     }
   };
 
-  const handleSSEEvent = useCallback((event: SSEEvent, targetSessionId: string) => {
-    // ── Track assistant message IDs from message.updated events ─────────
-    if (event.type === 'message.updated') {
-      const info = (event.properties as { info?: { id: string; sessionID: string; role: string } }).info;
-      if (info?.sessionID === targetSessionId && info.role === 'assistant') {
-        assistantMsgIdsRef.current.add(info.id);
-      }
-      return;
-    }
-
-    // ── Text streaming ─────────────────────────────────────────────────
-    if (event.type === 'message.part.updated') {
-      const { part, delta } = event.properties as {
-        part: { id: string; sessionID: string; messageID: string; type: string; text?: string };
-        delta?: string;
-      };
-
-      if (part.sessionID !== targetSessionId || part.type !== 'text') return;
-
-      // Only render text for assistant messages (skip echoed user messages)
-      if (!assistantMsgIdsRef.current.has(part.messageID)) return;
-
-      const msgId = part.messageID;
-
-      if (delta) {
-        const current = streamingTextRef.current.get(msgId) ?? '';
-        streamingTextRef.current.set(msgId, current + delta);
-      } else if (part.text) {
-        streamingTextRef.current.set(msgId, part.text);
-      }
-
-      const text = streamingTextRef.current.get(msgId) ?? '';
-      if (!text.trim()) return;
-
-      setMessages((prev) => {
-        const existing = prev.find((m) => m.id === msgId);
-        if (existing) {
-          return prev.map((m) =>
-            m.id === msgId ? { ...m, content: text } : m
-          );
+  const handleSSEEvent = useCallback(
+    (event: SSEEvent, targetSessionId: string) => {
+      // ── Track assistant message IDs from message.updated events ─────────
+      if (event.type === "message.updated") {
+        const info = (
+          event.properties as {
+            info?: { id: string; sessionID: string; role: string };
+          }
+        ).info;
+        if (info?.sessionID === targetSessionId && info.role === "assistant") {
+          assistantMsgIdsRef.current.add(info.id);
         }
-        return [
-          ...prev,
-          {
-            id: msgId,
-            role: 'assistant' as const,
-            content: text,
-            timestamp: new Date(),
-            streaming: true,
-          },
-        ];
-      });
-    }
+        return;
+      }
 
-    // ── Question tool asked ────────────────────────────────────────────
-    if (event.type === 'question.asked') {
-      const req = event.properties as QuestionRequest;
-      if (req.sessionID !== targetSessionId) return;
+      // ── Text streaming ─────────────────────────────────────────────────
+      if (event.type === "message.part.updated") {
+        const { part, delta } = event.properties as {
+          part: {
+            id: string;
+            sessionID: string;
+            messageID: string;
+            type: string;
+            text?: string;
+          };
+          delta?: string;
+        };
 
-      setPendingQuestion({
-        requestId: req.id,
-        sessionID: req.sessionID,
-        questions: req.questions,
-        answered: false,
-      });
-      setSelectedOptions(new Map());
-      setCustomInputs(new Map());
-    }
+        if (part.sessionID !== targetSessionId || part.type !== "text") return;
 
-    // ── Session idle ───────────────────────────────────────────────────
-    if (event.type === 'session.idle') {
-      const { sessionID } = event.properties as { sessionID: string };
-      if (sessionID !== targetSessionId) return;
+        // Only render text for assistant messages (skip echoed user messages)
+        if (!assistantMsgIdsRef.current.has(part.messageID)) return;
 
-      setMessages((prev) =>
-        prev.map((m) => (m.streaming ? { ...m, streaming: false } : m))
-      );
-      setSending(false);
-      streamingTextRef.current.clear();
-      // Don't abort SSE here — keep it open if there's a question pending
-      // The question handler will need the SSE to stream the follow-up response
-      if (!pendingQuestion || pendingQuestion.answered) {
+        const msgId = part.messageID;
+
+        if (delta) {
+          const current = streamingTextRef.current.get(msgId) ?? "";
+          streamingTextRef.current.set(msgId, current + delta);
+        } else if (part.text) {
+          streamingTextRef.current.set(msgId, part.text);
+        }
+
+        const text = streamingTextRef.current.get(msgId) ?? "";
+        if (!text.trim()) return;
+
+        setMessages((prev) => {
+          const existing = prev.find((m) => m.id === msgId);
+          if (existing) {
+            return prev.map((m) =>
+              m.id === msgId ? { ...m, content: text } : m,
+            );
+          }
+          return [
+            ...prev,
+            {
+              id: msgId,
+              role: "assistant" as const,
+              content: text,
+              timestamp: new Date(),
+              streaming: true,
+            },
+          ];
+        });
+      }
+
+      // ── Question tool asked ────────────────────────────────────────────
+      if (event.type === "question.asked") {
+        const req = event.properties as QuestionRequest;
+        if (req.sessionID !== targetSessionId) return;
+
+        setPendingQuestion({
+          requestId: req.id,
+          sessionID: req.sessionID,
+          questions: req.questions,
+          answered: false,
+        });
+        setSelectedOptions(new Map());
+        setCustomInputs(new Map());
+      }
+
+      // ── Session idle ───────────────────────────────────────────────────
+      if (event.type === "session.idle") {
+        const { sessionID } = event.properties as { sessionID: string };
+        if (sessionID !== targetSessionId) return;
+
+        setMessages((prev) =>
+          prev.map((m) => (m.streaming ? { ...m, streaming: false } : m)),
+        );
+        setSending(false);
+        streamingTextRef.current.clear();
+        // Don't abort SSE here — keep it open if there's a question pending
+        // The question handler will need the SSE to stream the follow-up response
+        if (!pendingQuestion || pendingQuestion.answered) {
+          sseAbortRef.current?.abort();
+        }
+        inputRef.current?.focus();
+      }
+
+      // ── Session error ──────────────────────────────────────────────────
+      if (event.type === "session.error") {
+        const props = event.properties as { sessionID: string; error: string };
+        if (props.sessionID !== targetSessionId) return;
+        setError(props.error || "An error occurred");
+        setSending(false);
         sseAbortRef.current?.abort();
       }
-      inputRef.current?.focus();
-    }
-
-    // ── Session error ──────────────────────────────────────────────────
-    if (event.type === 'session.error') {
-      const props = event.properties as { sessionID: string; error: string };
-      if (props.sessionID !== targetSessionId) return;
-      setError(props.error || 'An error occurred');
-      setSending(false);
-      sseAbortRef.current?.abort();
-    }
-  }, [pendingQuestion]);
+    },
+    [pendingQuestion],
+  );
 
   // ── Toggle option selection ────────────────────────────────────────────
-  const toggleOption = (questionIdx: number, label: string, multiple: boolean) => {
+  const toggleOption = (
+    questionIdx: number,
+    label: string,
+    multiple: boolean,
+  ) => {
     setSelectedOptions((prev) => {
       const next = new Map(prev);
       const current = next.get(questionIdx) ?? new Set<string>();
@@ -242,7 +277,7 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
       // Validate: each question should have at least one answer
       const hasEmpty = answers.some((a) => a.length === 0);
       if (hasEmpty) {
-        setError('Please select or type an answer for each question.');
+        setError("Please select or type an answer for each question.");
         setSubmittingQuestion(false);
         return;
       }
@@ -251,19 +286,19 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
 
       // Show what was selected as a user message
       const answerText = pendingQuestion.questions
-        .map((q, i) => `**${q.header}**: ${answers[i].join(', ')}`)
-        .join('\n');
+        .map((q, i) => `**${q.header}**: ${answers[i].join(", ")}`)
+        .join("\n");
       setMessages((prev) => [
         ...prev,
         {
           id: `answer-${Date.now()}`,
-          role: 'user',
+          role: "user",
           content: answerText,
           timestamp: new Date(),
         },
       ]);
 
-      setPendingQuestion((prev) => prev ? { ...prev, answered: true } : null);
+      setPendingQuestion((prev) => (prev ? { ...prev, answered: true } : null));
       setSending(true); // The LLM will continue responding after the answer
 
       // After replying, the LLM continues — SSE should still be open.
@@ -278,7 +313,7 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
         );
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit answer');
+      setError(err instanceof Error ? err.message : "Failed to submit answer");
     } finally {
       setSubmittingQuestion(false);
       setPendingQuestion(null);
@@ -307,14 +342,14 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
     const text = input.trim();
     if (!text || !sessionId || sending) return;
 
-    setInput('');
+    setInput("");
     setError(null);
     setSending(true);
     streamingTextRef.current.clear();
 
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
-      role: 'user',
+      role: "user",
       content: text,
       timestamp: new Date(),
     };
@@ -337,24 +372,30 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
         isFirstMessageRef.current = false;
       }
 
-      await sendPromptAsync(sessionId, promptText, 'ddd-domain-mapper');
+      await sendPromptAsync(sessionId, promptText, "ddd-domain-mapper");
 
       // Safety timeout
-      setTimeout(() => {
-        if (sseAbortRef.current === abortController && !abortController.signal.aborted) {
-          abortController.abort();
-          setSending(false);
-        }
-      }, 5 * 60 * 1000);
+      setTimeout(
+        () => {
+          if (
+            sseAbortRef.current === abortController &&
+            !abortController.signal.aborted
+          ) {
+            abortController.abort();
+            setSending(false);
+          }
+        },
+        5 * 60 * 1000,
+      );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send message');
+      setError(err instanceof Error ? err.message : "Failed to send message");
       setSending(false);
       sseAbortRef.current?.abort();
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -369,10 +410,10 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
           AI Agent Not Available
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md mb-4">
-          The OpenCode server is not reachable. Make sure it&apos;s running with{' '}
+          The OpenCode server is not reachable. Make sure it&apos;s running with{" "}
           <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">
             opencode serve
-          </code>{' '}
+          </code>{" "}
           or via Docker Compose.
         </p>
         <button
@@ -406,15 +447,15 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
               Domain Discovery Chat
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-              Start a conversation to explore your domain. Ask about bounded contexts,
-              aggregates, domain events, or paste code for analysis.
+              Start a conversation to explore your domain. Ask about bounded
+              contexts, aggregates, domain events, or paste code for analysis.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               {[
-                'What bounded contexts exist in this system?',
-                'Help me identify the core domain',
-                'What are the key domain events?',
-                'Build a ubiquitous language glossary',
+                "What bounded contexts exist in this system?",
+                "Help me identify the core domain",
+                "What are the key domain events?",
+                "Build a ubiquitous language glossary",
               ].map((suggestion) => (
                 <button
                   key={suggestion}
@@ -434,26 +475,28 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}
+            className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}
           >
-            {msg.role === 'assistant' && (
+            {msg.role === "assistant" && (
               <div className="w-7 h-7 flex-shrink-0 flex items-center justify-center bg-purple-100 dark:bg-purple-900/30 rounded-full">
                 <Bot className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               </div>
             )}
             <div
               className={`max-w-[75%] rounded-lg px-4 py-3 text-sm ${
-                msg.role === 'user'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+                msg.role === "user"
+                  ? "bg-purple-600 text-white"
+                  : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
               }`}
             >
-              {msg.role === 'assistant' ? (
+              {msg.role === "assistant" ? (
                 <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-headings:my-2 prose-pre:my-2 prose-code:text-purple-600 dark:prose-code:text-purple-400 prose-code:before:content-none prose-code:after:content-none">
                   <Markdown>{msg.content}</Markdown>
                 </div>
               ) : (
-                <div className="whitespace-pre-wrap break-words">{msg.content}</div>
+                <div className="whitespace-pre-wrap break-words">
+                  {msg.content}
+                </div>
               )}
               {msg.streaming && (
                 <div className="mt-1 flex items-center gap-1.5">
@@ -462,7 +505,7 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
                 </div>
               )}
             </div>
-            {msg.role === 'user' && (
+            {msg.role === "user" && (
               <div className="w-7 h-7 flex-shrink-0 flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-full">
                 <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </div>
@@ -478,7 +521,14 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
             </div>
             <div className="max-w-[85%] rounded-lg border-2 border-purple-300 dark:border-purple-700 bg-white dark:bg-gray-800 overflow-hidden">
               {pendingQuestion.questions.map((q, qIdx) => (
-                <div key={qIdx} className={qIdx > 0 ? 'border-t border-gray-200 dark:border-gray-700' : ''}>
+                <div
+                  key={qIdx}
+                  className={
+                    qIdx > 0
+                      ? "border-t border-gray-200 dark:border-gray-700"
+                      : ""
+                  }
+                >
                   <div className="px-4 pt-3 pb-2">
                     <div className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-1">
                       {q.header}
@@ -488,30 +538,39 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
                     </div>
                     <div className="space-y-1.5">
                       {q.options.map((opt) => {
-                        const isSelected = selectedOptions.get(qIdx)?.has(opt.label) ?? false;
+                        const isSelected =
+                          selectedOptions.get(qIdx)?.has(opt.label) ?? false;
                         return (
                           <button
                             key={opt.label}
-                            onClick={() => toggleOption(qIdx, opt.label, q.multiple ?? false)}
+                            onClick={() =>
+                              toggleOption(qIdx, opt.label, q.multiple ?? false)
+                            }
                             disabled={submittingQuestion}
                             className={`w-full text-left px-3 py-2 rounded-md border text-sm transition-colors ${
                               isSelected
-                                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 text-purple-900 dark:text-purple-100'
-                                : 'border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                ? "border-purple-500 bg-purple-50 dark:bg-purple-900/30 text-purple-900 dark:text-purple-100"
+                                : "border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                             }`}
                           >
                             <div className="flex items-start gap-2">
-                              <div className={`mt-0.5 w-4 h-4 rounded-sm border flex items-center justify-center flex-shrink-0 ${
-                                isSelected
-                                  ? 'bg-purple-500 border-purple-500'
-                                  : 'border-gray-300 dark:border-gray-500'
-                              }`}>
-                                {isSelected && <CheckCircle2 className="w-3 h-3 text-white" />}
+                              <div
+                                className={`mt-0.5 w-4 h-4 rounded-sm border flex items-center justify-center flex-shrink-0 ${
+                                  isSelected
+                                    ? "bg-purple-500 border-purple-500"
+                                    : "border-gray-300 dark:border-gray-500"
+                                }`}
+                              >
+                                {isSelected && (
+                                  <CheckCircle2 className="w-3 h-3 text-white" />
+                                )}
                               </div>
                               <div>
                                 <div className="font-medium">{opt.label}</div>
                                 {opt.description && (
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{opt.description}</div>
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                    {opt.description}
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -524,7 +583,7 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
                       <div className="mt-2">
                         <input
                           type="text"
-                          value={customInputs.get(qIdx) ?? ''}
+                          value={customInputs.get(qIdx) ?? ""}
                           onChange={(e) => {
                             setCustomInputs((prev) => {
                               const next = new Map(prev);
@@ -533,7 +592,7 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
                             });
                           }}
                           onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
+                            if (e.key === "Enter" && !e.shiftKey) {
                               e.preventDefault();
                               handleQuestionSubmit();
                             }
@@ -606,14 +665,18 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={pendingQuestion ? 'Answer the question above, or type here...' : 'Ask about your domain...'}
+            placeholder={
+              pendingQuestion
+                ? "Answer the question above, or type here..."
+                : "Ask about your domain..."
+            }
             rows={1}
             disabled={!!pendingQuestion}
             className="flex-1 px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ minHeight: '42px', maxHeight: '120px' }}
+            style={{ minHeight: "42px", maxHeight: "120px" }}
             onInput={(e) => {
               const target = e.target as HTMLTextAreaElement;
-              target.style.height = 'auto';
+              target.style.height = "auto";
               target.style.height = `${Math.min(target.scrollHeight, 120)}px`;
             }}
           />

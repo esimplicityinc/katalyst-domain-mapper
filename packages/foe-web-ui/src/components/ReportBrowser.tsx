@@ -1,24 +1,33 @@
-import { useState, useEffect } from 'react';
-import { Database, RefreshCw, AlertCircle, Loader2, Server } from 'lucide-react';
-import { api, type ReportSummary } from '../api/client';
-import type { FOEReport } from '../types/report';
+import { useState, useEffect } from "react";
+import {
+  Database,
+  RefreshCw,
+  AlertCircle,
+  Loader2,
+  Server,
+} from "lucide-react";
+import { api, type ReportSummary } from "../api/client";
+import type { FOEReport } from "../types/report";
 
 interface ReportBrowserProps {
   onReportLoaded: (report: FOEReport) => void;
 }
 
 const MATURITY_COLORS: Record<string, string> = {
-  Optimized: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-  Practicing: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-  Emerging: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-  Hypothesized: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+  Optimized:
+    "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+  Practicing:
+    "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+  Emerging:
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+  Hypothesized: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
 };
 
 function scoreColor(score: number): string {
-  if (score >= 76) return 'text-green-600 dark:text-green-400';
-  if (score >= 51) return 'text-blue-600 dark:text-blue-400';
-  if (score >= 26) return 'text-yellow-600 dark:text-yellow-400';
-  return 'text-red-600 dark:text-red-400';
+  if (score >= 76) return "text-green-600 dark:text-green-400";
+  if (score >= 51) return "text-blue-600 dark:text-blue-400";
+  if (score >= 26) return "text-yellow-600 dark:text-yellow-400";
+  return "text-red-600 dark:text-red-400";
 }
 
 export function ReportBrowser({ onReportLoaded }: ReportBrowserProps) {
@@ -35,13 +44,15 @@ export function ReportBrowser({ onReportLoaded }: ReportBrowserProps) {
       const healthy = await api.isHealthy();
       setApiAvailable(healthy);
       if (!healthy) {
-        setError('API is not reachable. Make sure the FOE API is running on the configured URL.');
+        setError(
+          "API is not reachable. Make sure the FOE API is running on the configured URL.",
+        );
         return;
       }
       const data = await api.listReports({ limit: 50 });
       setReports(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch reports');
+      setError(err instanceof Error ? err.message : "Failed to fetch reports");
       setApiAvailable(false);
     } finally {
       setLoading(false);
@@ -58,7 +69,7 @@ export function ReportBrowser({ onReportLoaded }: ReportBrowserProps) {
     try {
       // Try to get the raw report first (scanner format matches web-ui types)
       const raw = await api.getReportRaw(id);
-      if (raw && typeof raw === 'object') {
+      if (raw && typeof raw === "object") {
         onReportLoaded(raw as FOEReport);
         return;
       }
@@ -66,7 +77,7 @@ export function ReportBrowser({ onReportLoaded }: ReportBrowserProps) {
       const report = await api.getReport(id);
       onReportLoaded(report as FOEReport);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load report');
+      setError(err instanceof Error ? err.message : "Failed to load report");
     } finally {
       setLoadingReport(null);
     }
@@ -76,7 +87,9 @@ export function ReportBrowser({ onReportLoaded }: ReportBrowserProps) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-4" />
-        <p className="text-gray-600 dark:text-gray-400">Connecting to FOE API...</p>
+        <p className="text-gray-600 dark:text-gray-400">
+          Connecting to FOE API...
+        </p>
       </div>
     );
   }
@@ -111,7 +124,7 @@ export function ReportBrowser({ onReportLoaded }: ReportBrowserProps) {
         <div className="flex items-center gap-2">
           <Database className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {reports.length} report{reports.length !== 1 ? 's' : ''} available
+            {reports.length} report{reports.length !== 1 ? "s" : ""} available
           </h3>
         </div>
         <button
@@ -154,19 +167,22 @@ export function ReportBrowser({ onReportLoaded }: ReportBrowserProps) {
                     </span>
                     <span
                       className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-                        MATURITY_COLORS[report.maturityLevel] ?? 'bg-gray-100 text-gray-600'
+                        MATURITY_COLORS[report.maturityLevel] ??
+                        "bg-gray-100 text-gray-600"
                       }`}
                     >
                       {report.maturityLevel}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Scanned {new Date(report.scanDate).toLocaleDateString()} at{' '}
+                    Scanned {new Date(report.scanDate).toLocaleDateString()} at{" "}
                     {new Date(report.scanDate).toLocaleTimeString()}
                   </p>
                 </div>
                 <div className="flex items-center gap-3 ml-4">
-                  <span className={`text-2xl font-bold tabular-nums ${scoreColor(report.overallScore)}`}>
+                  <span
+                    className={`text-2xl font-bold tabular-nums ${scoreColor(report.overallScore)}`}
+                  >
                     {Math.round(report.overallScore)}
                   </span>
                   {loadingReport === report.id && (

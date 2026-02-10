@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import Link from 'next/link';
+import { useState, useMemo } from "react";
+import Link from "next/link";
 import {
   Filter,
   Search,
@@ -22,26 +22,31 @@ import {
   CheckCircle,
   ChevronLeft,
   ChevronRight,
-} from 'lucide-react';
-import { clsx } from 'clsx';
-import report from '@/data/report.json';
-import type { FOEReport, Finding, Recommendation, Severity } from '@/data/types';
+} from "lucide-react";
+import { clsx } from "clsx";
+import report from "@/data/report.json";
+import type {
+  FOEReport,
+  Finding,
+  Recommendation,
+  Severity,
+} from "@/data/types";
 
 const typedReport = report as FOEReport;
 
 // Types for filters and sorting
-type SeverityFilter = 'all' | Severity;
-type DimensionFilter = 'all' | 'feedback' | 'understanding' | 'confidence';
-type StatusFilter = 'all' | 'failures' | 'gaps' | 'recommendations';
-type SortField = 'severity' | 'area' | 'title' | 'type';
-type SortDirection = 'asc' | 'desc';
-type TabId = 'overview' | 'findings' | 'recommendations' | 'methodology';
+type SeverityFilter = "all" | Severity;
+type DimensionFilter = "all" | "feedback" | "understanding" | "confidence";
+type StatusFilter = "all" | "failures" | "gaps" | "recommendations";
+type SortField = "severity" | "area" | "title" | "type";
+type SortDirection = "asc" | "desc";
+type TabId = "overview" | "findings" | "recommendations" | "methodology";
 
 // Unified finding type for the table
 interface UnifiedFinding {
   id: string;
-  type: 'failure' | 'gap' | 'recommendation';
-  severity: Severity | 'info';
+  type: "failure" | "gap" | "recommendation";
+  severity: Severity | "info";
   area: string;
   title: string;
   description: string;
@@ -62,7 +67,7 @@ function getUnifiedFindings(): UnifiedFinding[] {
   typedReport.criticalFailures.forEach((f) => {
     findings.push({
       id: f.id,
-      type: 'failure',
+      type: "failure",
       severity: f.severity,
       area: f.area,
       title: f.title,
@@ -80,7 +85,7 @@ function getUnifiedFindings(): UnifiedFinding[] {
   typedReport.gaps.forEach((g) => {
     findings.push({
       id: g.id,
-      type: 'gap',
+      type: "gap",
       severity: g.severity,
       area: g.area,
       title: g.title,
@@ -96,15 +101,15 @@ function getUnifiedFindings(): UnifiedFinding[] {
   // Add recommendations
   typedReport.recommendations.forEach((r) => {
     const severityMap: Record<string, Severity> = {
-      immediate: 'critical',
-      'short-term': 'high',
-      'medium-term': 'medium',
+      immediate: "critical",
+      "short-term": "high",
+      "medium-term": "medium",
     };
     findings.push({
       id: r.id,
-      type: 'recommendation',
-      severity: severityMap[r.priority] || 'low',
-      area: 'Improvement',
+      type: "recommendation",
+      severity: severityMap[r.priority] || "low",
+      area: "Improvement",
       title: r.title,
       description: r.description,
       details: {
@@ -118,19 +123,48 @@ function getUnifiedFindings(): UnifiedFinding[] {
 }
 
 // Severity badge component
-function SeverityBadge({ severity }: { severity: Severity | 'info' }) {
-  const config: Record<Severity | 'info', { bg: string; text: string; icon: React.ElementType }> = {
-    critical: { bg: 'bg-red-100 border-red-300', text: 'text-red-700', icon: AlertCircle },
-    high: { bg: 'bg-orange-100 border-orange-300', text: 'text-orange-700', icon: AlertTriangle },
-    medium: { bg: 'bg-amber-100 border-amber-300', text: 'text-amber-700', icon: Info },
-    low: { bg: 'bg-blue-100 border-blue-300', text: 'text-blue-700', icon: Info },
-    info: { bg: 'bg-slate-100 border-slate-300', text: 'text-slate-700', icon: Info },
+function SeverityBadge({ severity }: { severity: Severity | "info" }) {
+  const config: Record<
+    Severity | "info",
+    { bg: string; text: string; icon: React.ElementType }
+  > = {
+    critical: {
+      bg: "bg-red-100 border-red-300",
+      text: "text-red-700",
+      icon: AlertCircle,
+    },
+    high: {
+      bg: "bg-orange-100 border-orange-300",
+      text: "text-orange-700",
+      icon: AlertTriangle,
+    },
+    medium: {
+      bg: "bg-amber-100 border-amber-300",
+      text: "text-amber-700",
+      icon: Info,
+    },
+    low: {
+      bg: "bg-blue-100 border-blue-300",
+      text: "text-blue-700",
+      icon: Info,
+    },
+    info: {
+      bg: "bg-slate-100 border-slate-300",
+      text: "text-slate-700",
+      icon: Info,
+    },
   };
 
   const { bg, text, icon: Icon } = config[severity];
 
   return (
-    <span className={clsx('inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-medium', bg, text)}>
+    <span
+      className={clsx(
+        "inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-medium",
+        bg,
+        text,
+      )}
+    >
       <Icon className="w-3 h-3" />
       {severity.toUpperCase()}
     </span>
@@ -138,17 +172,22 @@ function SeverityBadge({ severity }: { severity: Severity | 'info' }) {
 }
 
 // Type badge component
-function TypeBadge({ type }: { type: 'failure' | 'gap' | 'recommendation' }) {
+function TypeBadge({ type }: { type: "failure" | "gap" | "recommendation" }) {
   const config = {
-    failure: { bg: 'bg-red-500', text: 'Failure' },
-    gap: { bg: 'bg-amber-500', text: 'Gap' },
-    recommendation: { bg: 'bg-emerald-500', text: 'Recommendation' },
+    failure: { bg: "bg-red-500", text: "Failure" },
+    gap: { bg: "bg-amber-500", text: "Gap" },
+    recommendation: { bg: "bg-emerald-500", text: "Recommendation" },
   };
 
   const { bg, text } = config[type];
 
   return (
-    <span className={clsx('inline-flex items-center px-2 py-0.5 rounded text-xs font-medium text-white', bg)}>
+    <span
+      className={clsx(
+        "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium text-white",
+        bg,
+      )}
+    >
       {text}
     </span>
   );
@@ -206,7 +245,7 @@ function StatCard({
           <p className="text-2xl font-bold text-slate-900">{value}</p>
           {change && <p className="text-xs text-slate-400 mt-1">{change}</p>}
         </div>
-        <div className={clsx('p-3 rounded-lg', color)}>
+        <div className={clsx("p-3 rounded-lg", color)}>
           <Icon className="w-6 h-6 text-white" />
         </div>
       </div>
@@ -228,14 +267,18 @@ function ExpandableRow({
     <>
       <tr
         className={clsx(
-          'cursor-pointer hover:bg-slate-50 transition-colors',
-          isExpanded && 'bg-blue-50'
+          "cursor-pointer hover:bg-slate-50 transition-colors",
+          isExpanded && "bg-blue-50",
         )}
         onClick={onToggle}
       >
         <td className="px-4 py-3">
           <button className="text-slate-400 hover:text-slate-600">
-            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {isExpanded ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
           </button>
         </td>
         <td className="px-4 py-3">
@@ -245,7 +288,9 @@ function ExpandableRow({
           <TypeBadge type={finding.type} />
         </td>
         <td className="px-4 py-3 text-sm text-slate-600">{finding.area}</td>
-        <td className="px-4 py-3 text-sm font-medium text-slate-900">{finding.title}</td>
+        <td className="px-4 py-3 text-sm font-medium text-slate-900">
+          {finding.title}
+        </td>
       </tr>
       {isExpanded && (
         <tr className="bg-blue-50">
@@ -257,7 +302,9 @@ function ExpandableRow({
                     <h5 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
                       Evidence
                     </h5>
-                    <p className="text-sm text-slate-700">{finding.details.evidence}</p>
+                    <p className="text-sm text-slate-700">
+                      {finding.details.evidence}
+                    </p>
                   </div>
                 )}
                 {finding.details.impact && (
@@ -265,7 +312,9 @@ function ExpandableRow({
                     <h5 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
                       Impact
                     </h5>
-                    <p className="text-sm text-slate-700">{finding.details.impact}</p>
+                    <p className="text-sm text-slate-700">
+                      {finding.details.impact}
+                    </p>
                   </div>
                 )}
                 {finding.details.recommendation && (
@@ -273,7 +322,9 @@ function ExpandableRow({
                     <h5 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
                       Recommendation
                     </h5>
-                    <p className="text-sm text-slate-700">{finding.details.recommendation}</p>
+                    <p className="text-sm text-slate-700">
+                      {finding.details.recommendation}
+                    </p>
                   </div>
                 )}
                 {finding.details.location && (
@@ -281,7 +332,9 @@ function ExpandableRow({
                     <h5 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
                       Location
                     </h5>
-                    <p className="text-sm font-mono text-slate-600">{finding.details.location}</p>
+                    <p className="text-sm font-mono text-slate-600">
+                      {finding.details.location}
+                    </p>
                   </div>
                 )}
                 {finding.details.priority && (
@@ -289,7 +342,9 @@ function ExpandableRow({
                     <h5 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
                       Priority
                     </h5>
-                    <p className="text-sm text-slate-700 capitalize">{finding.details.priority}</p>
+                    <p className="text-sm text-slate-700 capitalize">
+                      {finding.details.priority}
+                    </p>
                   </div>
                 )}
               </div>
@@ -321,10 +376,10 @@ function Pagination({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className={clsx(
-            'p-2 rounded-lg border',
+            "p-2 rounded-lg border",
             currentPage === 1
-              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-              : 'bg-white text-slate-600 hover:bg-slate-50'
+              ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+              : "bg-white text-slate-600 hover:bg-slate-50",
           )}
         >
           <ChevronLeft className="w-4 h-4" />
@@ -334,10 +389,10 @@ function Pagination({
             key={page}
             onClick={() => onPageChange(page)}
             className={clsx(
-              'px-3 py-1 rounded-lg text-sm font-medium',
+              "px-3 py-1 rounded-lg text-sm font-medium",
               page === currentPage
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-slate-600 hover:bg-slate-50 border'
+                ? "bg-blue-600 text-white"
+                : "bg-white text-slate-600 hover:bg-slate-50 border",
             )}
           >
             {page}
@@ -347,10 +402,10 @@ function Pagination({
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className={clsx(
-            'p-2 rounded-lg border',
+            "p-2 rounded-lg border",
             currentPage === totalPages
-              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-              : 'bg-white text-slate-600 hover:bg-slate-50'
+              ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+              : "bg-white text-slate-600 hover:bg-slate-50",
           )}
         >
           <ChevronRight className="w-4 h-4" />
@@ -378,10 +433,10 @@ function TabButton({
     <button
       onClick={onClick}
       className={clsx(
-        'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
         isActive
-          ? 'bg-blue-600 text-white'
-          : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+          ? "bg-blue-600 text-white"
+          : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200",
       )}
     >
       <Icon className="w-4 h-4" />
@@ -393,31 +448,37 @@ function TabButton({
 // Overview tab content
 function OverviewTab() {
   const dimensions = [
-    { key: 'feedback', ...typedReport.dimensions.feedback },
-    { key: 'understanding', ...typedReport.dimensions.understanding },
-    { key: 'confidence', ...typedReport.dimensions.confidence },
+    { key: "feedback", ...typedReport.dimensions.feedback },
+    { key: "understanding", ...typedReport.dimensions.understanding },
+    { key: "confidence", ...typedReport.dimensions.confidence },
   ];
 
   return (
     <div className="space-y-6">
       {/* Executive Summary */}
       <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
-        <h3 className="text-lg font-bold text-slate-900 mb-4">Executive Summary</h3>
-        <p className="text-slate-700 leading-relaxed">{typedReport.executiveSummary}</p>
+        <h3 className="text-lg font-bold text-slate-900 mb-4">
+          Executive Summary
+        </h3>
+        <p className="text-slate-700 leading-relaxed">
+          {typedReport.executiveSummary}
+        </p>
       </div>
 
       {/* Dimension Scores */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {dimensions.map((dim) => (
-          <div key={dim.key} className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+          <div
+            key={dim.key}
+            className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm"
+          >
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-semibold text-slate-900">{dim.name}</h4>
-              <span
-                className="text-2xl font-bold"
-                style={{ color: dim.color }}
-              >
+              <span className="text-2xl font-bold" style={{ color: dim.color }}>
                 {dim.score}
-                <span className="text-sm text-slate-400 font-normal">/{dim.max}</span>
+                <span className="text-sm text-slate-400 font-normal">
+                  /{dim.max}
+                </span>
               </span>
             </div>
             <div className="w-full bg-slate-200 rounded-full h-2 mb-4">
@@ -431,7 +492,10 @@ function OverviewTab() {
             </div>
             <div className="space-y-2">
               {dim.subscores.map((sub) => (
-                <div key={sub.name} className="flex items-center justify-between text-sm">
+                <div
+                  key={sub.name}
+                  className="flex items-center justify-between text-sm"
+                >
                   <span className="text-slate-600">{sub.name}</span>
                   <span className="text-slate-900 font-medium">
                     {sub.score}/{sub.max}
@@ -451,7 +515,10 @@ function OverviewTab() {
         </h3>
         <div className="space-y-4">
           {typedReport.strengths.map((s) => (
-            <div key={s.id} className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+            <div
+              key={s.id}
+              className="bg-emerald-50 border border-emerald-200 rounded-lg p-4"
+            >
               <div className="flex items-start justify-between">
                 <div>
                   <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wide">
@@ -459,7 +526,9 @@ function OverviewTab() {
                   </span>
                   <p className="text-slate-700 mt-1">{s.evidence}</p>
                   {s.caveat && (
-                    <p className="text-sm text-slate-500 mt-2 italic">Caveat: {s.caveat}</p>
+                    <p className="text-sm text-slate-500 mt-2 italic">
+                      Caveat: {s.caveat}
+                    </p>
                   )}
                 </div>
               </div>
@@ -497,16 +566,16 @@ function FindingsTab({
     let filtered = [...allFindings];
 
     // Apply severity filter
-    if (severityFilter !== 'all') {
+    if (severityFilter !== "all") {
       filtered = filtered.filter((f) => f.severity === severityFilter);
     }
 
     // Apply status filter
-    if (statusFilter !== 'all') {
+    if (statusFilter !== "all") {
       const typeMap: Record<string, string> = {
-        failures: 'failure',
-        gaps: 'gap',
-        recommendations: 'recommendation',
+        failures: "failure",
+        gaps: "gap",
+        recommendations: "recommendation",
       };
       filtered = filtered.filter((f) => f.type === typeMap[statusFilter]);
     }
@@ -518,41 +587,60 @@ function FindingsTab({
         (f) =>
           f.title.toLowerCase().includes(query) ||
           f.description.toLowerCase().includes(query) ||
-          f.area.toLowerCase().includes(query)
+          f.area.toLowerCase().includes(query),
       );
     }
 
     // Apply sorting
-    const severityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
+    const severityOrder: Record<string, number> = {
+      critical: 0,
+      high: 1,
+      medium: 2,
+      low: 3,
+      info: 4,
+    };
     filtered.sort((a, b) => {
       let comparison = 0;
       switch (sortField) {
-        case 'severity':
+        case "severity":
           comparison = severityOrder[a.severity] - severityOrder[b.severity];
           break;
-        case 'area':
+        case "area":
           comparison = a.area.localeCompare(b.area);
           break;
-        case 'title':
+        case "title":
           comparison = a.title.localeCompare(b.title);
           break;
-        case 'type':
+        case "type":
           comparison = a.type.localeCompare(b.type);
           break;
       }
-      return sortDirection === 'asc' ? comparison : -comparison;
+      return sortDirection === "asc" ? comparison : -comparison;
     });
 
     return filtered;
-  }, [allFindings, severityFilter, statusFilter, searchQuery, sortField, sortDirection]);
+  }, [
+    allFindings,
+    severityFilter,
+    statusFilter,
+    searchQuery,
+    sortField,
+    sortDirection,
+  ]);
 
   const totalPages = Math.ceil(filteredFindings.length / itemsPerPage);
   const paginatedFindings = filteredFindings.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
-  const SortHeader = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
+  const SortHeader = ({
+    field,
+    children,
+  }: {
+    field: SortField;
+    children: React.ReactNode;
+  }) => (
     <th
       className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide cursor-pointer hover:bg-slate-100"
       onClick={() => onSortChange(field)}
@@ -560,7 +648,7 @@ function FindingsTab({
       <div className="flex items-center gap-1">
         {children}
         {sortField === field &&
-          (sortDirection === 'asc' ? (
+          (sortDirection === "asc" ? (
             <SortAsc className="w-3 h-3" />
           ) : (
             <SortDesc className="w-3 h-3" />
@@ -588,12 +676,17 @@ function FindingsTab({
                 key={finding.id}
                 finding={finding}
                 isExpanded={expandedId === finding.id}
-                onToggle={() => setExpandedId(expandedId === finding.id ? null : finding.id)}
+                onToggle={() =>
+                  setExpandedId(expandedId === finding.id ? null : finding.id)
+                }
               />
             ))}
             {paginatedFindings.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                <td
+                  colSpan={5}
+                  className="px-4 py-8 text-center text-slate-500"
+                >
                   No findings match your current filters.
                 </td>
               </tr>
@@ -614,9 +707,15 @@ function FindingsTab({
 
 // Recommendations tab content
 function RecommendationsTab() {
-  const immediate = typedReport.recommendations.filter((r) => r.priority === 'immediate');
-  const shortTerm = typedReport.recommendations.filter((r) => r.priority === 'short-term');
-  const mediumTerm = typedReport.recommendations.filter((r) => r.priority === 'medium-term');
+  const immediate = typedReport.recommendations.filter(
+    (r) => r.priority === "immediate",
+  );
+  const shortTerm = typedReport.recommendations.filter(
+    (r) => r.priority === "short-term",
+  );
+  const mediumTerm = typedReport.recommendations.filter(
+    (r) => r.priority === "medium-term",
+  );
 
   const PrioritySection = ({
     title,
@@ -629,7 +728,9 @@ function RecommendationsTab() {
   }) => (
     <div className="mb-6">
       <h4
-        className={clsx('text-sm font-bold uppercase tracking-wide mb-3 px-3 py-1 rounded inline-block text-white')}
+        className={clsx(
+          "text-sm font-bold uppercase tracking-wide mb-3 px-3 py-1 rounded inline-block text-white",
+        )}
         style={{ backgroundColor: color }}
       >
         {title}
@@ -647,10 +748,10 @@ function RecommendationsTab() {
               </div>
               <span
                 className={clsx(
-                  'px-2 py-0.5 rounded text-xs font-medium',
-                  r.impact === 'high' && 'bg-red-100 text-red-700',
-                  r.impact === 'medium' && 'bg-amber-100 text-amber-700',
-                  r.impact === 'low' && 'bg-blue-100 text-blue-700'
+                  "px-2 py-0.5 rounded text-xs font-medium",
+                  r.impact === "high" && "bg-red-100 text-red-700",
+                  r.impact === "medium" && "bg-amber-100 text-amber-700",
+                  r.impact === "low" && "bg-blue-100 text-blue-700",
                 )}
               >
                 {r.impact.toUpperCase()} IMPACT
@@ -664,7 +765,9 @@ function RecommendationsTab() {
 
   return (
     <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
-      <h3 className="text-lg font-bold text-slate-900 mb-6">Prioritized Recommendations</h3>
+      <h3 className="text-lg font-bold text-slate-900 mb-6">
+        Prioritized Recommendations
+      </h3>
       {immediate.length > 0 && (
         <PrioritySection title="Immediate" items={immediate} color="#dc2626" />
       )}
@@ -672,7 +775,11 @@ function RecommendationsTab() {
         <PrioritySection title="Short-term" items={shortTerm} color="#f59e0b" />
       )}
       {mediumTerm.length > 0 && (
-        <PrioritySection title="Medium-term" items={mediumTerm} color="#3b82f6" />
+        <PrioritySection
+          title="Medium-term"
+          items={mediumTerm}
+          color="#3b82f6"
+        />
       )}
     </div>
   );
@@ -683,25 +790,35 @@ function MethodologyTab() {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
-        <h3 className="text-lg font-bold text-slate-900 mb-4">Assessment Methodology</h3>
+        <h3 className="text-lg font-bold text-slate-900 mb-4">
+          Assessment Methodology
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="text-center p-4 bg-slate-50 rounded-lg">
-            <p className="text-3xl font-bold text-blue-600">{typedReport.methodology.filesAnalyzed}</p>
+            <p className="text-3xl font-bold text-blue-600">
+              {typedReport.methodology.filesAnalyzed}
+            </p>
             <p className="text-sm text-slate-600">Files Analyzed</p>
           </div>
           <div className="text-center p-4 bg-slate-50 rounded-lg">
-            <p className="text-3xl font-bold text-purple-600">{typedReport.methodology.testFilesAnalyzed}</p>
+            <p className="text-3xl font-bold text-purple-600">
+              {typedReport.methodology.testFilesAnalyzed}
+            </p>
             <p className="text-sm text-slate-600">Test Files Analyzed</p>
           </div>
           <div className="text-center p-4 bg-slate-50 rounded-lg">
-            <p className="text-3xl font-bold text-emerald-600">{typedReport.methodology.adrsAnalyzed}</p>
+            <p className="text-3xl font-bold text-emerald-600">
+              {typedReport.methodology.adrsAnalyzed}
+            </p>
             <p className="text-sm text-slate-600">ADRs Reviewed</p>
           </div>
         </div>
       </div>
 
       <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
-        <h3 className="text-lg font-bold text-slate-900 mb-4">Confidence Notes</h3>
+        <h3 className="text-lg font-bold text-slate-900 mb-4">
+          Confidence Notes
+        </h3>
         <ul className="space-y-3">
           {typedReport.methodology.confidenceNotes.map((note, idx) => (
             <li key={idx} className="flex items-start gap-3 text-slate-700">
@@ -713,27 +830,34 @@ function MethodologyTab() {
       </div>
 
       <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
-        <h3 className="text-lg font-bold text-slate-900 mb-4">Scoring Dimensions</h3>
+        <h3 className="text-lg font-bold text-slate-900 mb-4">
+          Scoring Dimensions
+        </h3>
         <div className="space-y-4">
           <div>
             <h4 className="font-semibold text-blue-600 mb-2">Feedback</h4>
             <p className="text-sm text-slate-600">
-              Measures how quickly and effectively the team receives signals about their work. Includes
-              CI/CD pipeline speed, deployment frequency, test coverage, and feedback loop investments.
+              Measures how quickly and effectively the team receives signals
+              about their work. Includes CI/CD pipeline speed, deployment
+              frequency, test coverage, and feedback loop investments.
             </p>
           </div>
           <div>
-            <h4 className="font-semibold text-purple-600 mb-2">Understanding</h4>
+            <h4 className="font-semibold text-purple-600 mb-2">
+              Understanding
+            </h4>
             <p className="text-sm text-slate-600">
-              Measures how well the codebase communicates its intent and design. Includes architecture
-              clarity, domain modeling, documentation quality, and code organization.
+              Measures how well the codebase communicates its intent and design.
+              Includes architecture clarity, domain modeling, documentation
+              quality, and code organization.
             </p>
           </div>
           <div>
             <h4 className="font-semibold text-emerald-600 mb-2">Confidence</h4>
             <p className="text-sm text-slate-600">
-              Measures how safely and reliably changes can be made. Includes test quality, contract
-              testing, dependency health, and change safety mechanisms.
+              Measures how safely and reliably changes can be made. Includes
+              test quality, contract testing, dependency health, and change
+              safety mechanisms.
             </p>
           </div>
         </div>
@@ -745,31 +869,32 @@ function MethodologyTab() {
 // Main Page Component
 export default function InteractiveScorecardPage() {
   // Filter states
-  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>('all');
-  const [dimensionFilter, setDimensionFilter] = useState<DimensionFilter>('all');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  
+  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
+  const [dimensionFilter, setDimensionFilter] =
+    useState<DimensionFilter>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+
   // Sort states
-  const [sortField, setSortField] = useState<SortField>('severity');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
-  
+  const [sortField, setSortField] = useState<SortField>("severity");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+
   // Tab state
-  const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const [activeTab, setActiveTab] = useState<TabId>("overview");
 
   // Computed stats based on filters
   const allFindings = useMemo(() => getUnifiedFindings(), []);
   const filteredStats = useMemo(() => {
     let filtered = [...allFindings];
 
-    if (severityFilter !== 'all') {
+    if (severityFilter !== "all") {
       filtered = filtered.filter((f) => f.severity === severityFilter);
     }
-    if (statusFilter !== 'all') {
+    if (statusFilter !== "all") {
       const typeMap: Record<string, string> = {
-        failures: 'failure',
-        gaps: 'gap',
-        recommendations: 'recommendation',
+        failures: "failure",
+        gaps: "gap",
+        recommendations: "recommendation",
       };
       filtered = filtered.filter((f) => f.type === typeMap[statusFilter]);
     }
@@ -779,36 +904,36 @@ export default function InteractiveScorecardPage() {
         (f) =>
           f.title.toLowerCase().includes(query) ||
           f.description.toLowerCase().includes(query) ||
-          f.area.toLowerCase().includes(query)
+          f.area.toLowerCase().includes(query),
       );
     }
 
     return {
       total: filtered.length,
-      critical: filtered.filter((f) => f.severity === 'critical').length,
-      high: filtered.filter((f) => f.severity === 'high').length,
-      medium: filtered.filter((f) => f.severity === 'medium').length,
+      critical: filtered.filter((f) => f.severity === "critical").length,
+      high: filtered.filter((f) => f.severity === "high").length,
+      medium: filtered.filter((f) => f.severity === "medium").length,
     };
   }, [allFindings, severityFilter, statusFilter, searchQuery]);
 
   const handleSortChange = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
   const clearFilters = () => {
-    setSeverityFilter('all');
-    setDimensionFilter('all');
-    setStatusFilter('all');
-    setSearchQuery('');
+    setSeverityFilter("all");
+    setDimensionFilter("all");
+    setStatusFilter("all");
+    setSearchQuery("");
   };
 
   const hasActiveFilters =
-    severityFilter !== 'all' || statusFilter !== 'all' || searchQuery !== '';
+    severityFilter !== "all" || statusFilter !== "all" || searchQuery !== "";
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -858,11 +983,11 @@ export default function InteractiveScorecardPage() {
               label="Severity"
               value={severityFilter}
               options={[
-                { value: 'all', label: 'All Severities' },
-                { value: 'critical', label: 'Critical' },
-                { value: 'high', label: 'High' },
-                { value: 'medium', label: 'Medium' },
-                { value: 'low', label: 'Low' },
+                { value: "all", label: "All Severities" },
+                { value: "critical", label: "Critical" },
+                { value: "high", label: "High" },
+                { value: "medium", label: "Medium" },
+                { value: "low", label: "Low" },
               ]}
               onChange={(v) => setSeverityFilter(v as SeverityFilter)}
             />
@@ -871,10 +996,10 @@ export default function InteractiveScorecardPage() {
               label="Status"
               value={statusFilter}
               options={[
-                { value: 'all', label: 'All Types' },
-                { value: 'failures', label: 'Failures' },
-                { value: 'gaps', label: 'Gaps' },
-                { value: 'recommendations', label: 'Recommendations' },
+                { value: "all", label: "All Types" },
+                { value: "failures", label: "Failures" },
+                { value: "gaps", label: "Gaps" },
+                { value: "recommendations", label: "Recommendations" },
               ]}
               onChange={(v) => setStatusFilter(v as StatusFilter)}
             />
@@ -912,7 +1037,7 @@ export default function InteractiveScorecardPage() {
           <StatCard
             label="Total Findings"
             value={filteredStats.total}
-            change={hasActiveFilters ? 'filtered' : `of ${allFindings.length}`}
+            change={hasActiveFilters ? "filtered" : `of ${allFindings.length}`}
             icon={FileText}
             color="bg-blue-600"
           />
@@ -943,35 +1068,35 @@ export default function InteractiveScorecardPage() {
             id="overview"
             label="Overview"
             icon={BarChart3}
-            isActive={activeTab === 'overview'}
-            onClick={() => setActiveTab('overview')}
+            isActive={activeTab === "overview"}
+            onClick={() => setActiveTab("overview")}
           />
           <TabButton
             id="findings"
             label="Findings"
             icon={FileText}
-            isActive={activeTab === 'findings'}
-            onClick={() => setActiveTab('findings')}
+            isActive={activeTab === "findings"}
+            onClick={() => setActiveTab("findings")}
           />
           <TabButton
             id="recommendations"
             label="Recommendations"
             icon={Lightbulb}
-            isActive={activeTab === 'recommendations'}
-            onClick={() => setActiveTab('recommendations')}
+            isActive={activeTab === "recommendations"}
+            onClick={() => setActiveTab("recommendations")}
           />
           <TabButton
             id="methodology"
             label="Methodology"
             icon={BookOpen}
-            isActive={activeTab === 'methodology'}
-            onClick={() => setActiveTab('methodology')}
+            isActive={activeTab === "methodology"}
+            onClick={() => setActiveTab("methodology")}
           />
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'overview' && <OverviewTab />}
-        {activeTab === 'findings' && (
+        {activeTab === "overview" && <OverviewTab />}
+        {activeTab === "findings" && (
           <FindingsTab
             severityFilter={severityFilter}
             statusFilter={statusFilter}
@@ -981,20 +1106,22 @@ export default function InteractiveScorecardPage() {
             onSortChange={handleSortChange}
           />
         )}
-        {activeTab === 'recommendations' && <RecommendationsTab />}
-        {activeTab === 'methodology' && <MethodologyTab />}
+        {activeTab === "recommendations" && <RecommendationsTab />}
+        {activeTab === "methodology" && <MethodologyTab />}
       </main>
 
       {/* Footer */}
       <footer className="bg-slate-800 text-slate-400 py-6 mt-12">
         <div className="max-w-7xl mx-auto px-6 text-center text-sm">
-          <p className="mb-2">Flow Optimized Engineering - Interactive Scorecard</p>
+          <p className="mb-2">
+            Flow Optimized Engineering - Interactive Scorecard
+          </p>
           <p>
-            Assessment generated on{' '}
-            {new Date(typedReport.scanDate).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
+            Assessment generated on{" "}
+            {new Date(typedReport.scanDate).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
             })}
           </p>
         </div>

@@ -1,5 +1,5 @@
-import { AlertTriangle } from 'lucide-react';
-import type { FOEReport } from '../types/report';
+import { AlertTriangle } from "lucide-react";
+import type { FOEReport } from "../types/report";
 
 interface TriangleDiagramProps {
   report: FOEReport;
@@ -13,11 +13,14 @@ const MIN_THRESHOLDS = {
 
 export function TriangleDiagram({ report }: TriangleDiagramProps) {
   const { dimensions, triangleDiagnosis } = report;
-  
+
   const scores = {
-    understanding: (dimensions.understanding.score / dimensions.understanding.maxScore) * 100,
+    understanding:
+      (dimensions.understanding.score / dimensions.understanding.maxScore) *
+      100,
     feedback: (dimensions.feedback.score / dimensions.feedback.maxScore) * 100,
-    confidence: (dimensions.confidence.score / dimensions.confidence.maxScore) * 100,
+    confidence:
+      (dimensions.confidence.score / dimensions.confidence.maxScore) * 100,
   };
 
   // Triangle dimensions
@@ -28,12 +31,22 @@ export function TriangleDiagram({ report }: TriangleDiagramProps) {
   // Vertices of equilateral triangle (pointing up)
   const vertices = {
     understanding: { x: center, y: center - radius, angle: -90 }, // Top
-    feedback: { x: center - radius * Math.cos(Math.PI / 6), y: center + radius * Math.sin(Math.PI / 6), angle: 210 }, // Bottom left
-    confidence: { x: center + radius * Math.cos(Math.PI / 6), y: center + radius * Math.sin(Math.PI / 6), angle: -30 }, // Bottom right
+    feedback: {
+      x: center - radius * Math.cos(Math.PI / 6),
+      y: center + radius * Math.sin(Math.PI / 6),
+      angle: 210,
+    }, // Bottom left
+    confidence: {
+      x: center + radius * Math.cos(Math.PI / 6),
+      y: center + radius * Math.sin(Math.PI / 6),
+      angle: -30,
+    }, // Bottom right
   };
 
   // Calculate point on line from center to vertex based on score
-  const getScorePoint = (dimension: 'understanding' | 'feedback' | 'confidence') => {
+  const getScorePoint = (
+    dimension: "understanding" | "feedback" | "confidence",
+  ) => {
     const vertex = vertices[dimension];
     const score = scores[dimension] / 100;
     return {
@@ -43,13 +56,15 @@ export function TriangleDiagram({ report }: TriangleDiagramProps) {
   };
 
   const scorePoints = {
-    understanding: getScorePoint('understanding'),
-    feedback: getScorePoint('feedback'),
-    confidence: getScorePoint('confidence'),
+    understanding: getScorePoint("understanding"),
+    feedback: getScorePoint("feedback"),
+    confidence: getScorePoint("confidence"),
   };
 
   // Calculate minimum threshold points
-  const getThresholdPoint = (dimension: 'understanding' | 'feedback' | 'confidence') => {
+  const getThresholdPoint = (
+    dimension: "understanding" | "feedback" | "confidence",
+  ) => {
     const vertex = vertices[dimension];
     const threshold = MIN_THRESHOLDS[dimension] / 100;
     return {
@@ -59,9 +74,9 @@ export function TriangleDiagram({ report }: TriangleDiagramProps) {
   };
 
   const thresholdPoints = {
-    understanding: getThresholdPoint('understanding'),
-    feedback: getThresholdPoint('feedback'),
-    confidence: getThresholdPoint('confidence'),
+    understanding: getThresholdPoint("understanding"),
+    feedback: getThresholdPoint("feedback"),
+    confidence: getThresholdPoint("confidence"),
   };
 
   return (
@@ -244,11 +259,18 @@ export function TriangleDiagram({ report }: TriangleDiagramProps) {
                     Below Minimum Threshold
                   </div>
                   <div className="text-sm text-red-700 dark:text-red-300">
-                    {triangleDiagnosis.belowMinimum.map((dim) => (
-                      <span key={dim} className="capitalize">
-                        {dim} (min: {MIN_THRESHOLDS[dim as keyof typeof MIN_THRESHOLDS]})
-                      </span>
-                    )).reduce((prev, curr) => <>{prev}, {curr}</>)}
+                    {triangleDiagnosis.belowMinimum
+                      .map((dim) => (
+                        <span key={dim} className="capitalize">
+                          {dim} (min:{" "}
+                          {MIN_THRESHOLDS[dim as keyof typeof MIN_THRESHOLDS]})
+                        </span>
+                      ))
+                      .reduce((prev, curr) => (
+                        <>
+                          {prev}, {curr}
+                        </>
+                      ))}
                   </div>
                 </div>
               </div>
@@ -280,13 +302,22 @@ export function TriangleDiagram({ report }: TriangleDiagramProps) {
             </h4>
             <div className="grid grid-cols-3 gap-2 text-xs">
               <div>
-                <span className="text-purple-600 dark:text-purple-400 font-medium">Understanding:</span> ≥{MIN_THRESHOLDS.understanding}
+                <span className="text-purple-600 dark:text-purple-400 font-medium">
+                  Understanding:
+                </span>{" "}
+                ≥{MIN_THRESHOLDS.understanding}
               </div>
               <div>
-                <span className="text-blue-600 dark:text-blue-400 font-medium">Feedback:</span> ≥{MIN_THRESHOLDS.feedback}
+                <span className="text-blue-600 dark:text-blue-400 font-medium">
+                  Feedback:
+                </span>{" "}
+                ≥{MIN_THRESHOLDS.feedback}
               </div>
               <div>
-                <span className="text-green-600 dark:text-green-400 font-medium">Confidence:</span> ≥{MIN_THRESHOLDS.confidence}
+                <span className="text-green-600 dark:text-green-400 font-medium">
+                  Confidence:
+                </span>{" "}
+                ≥{MIN_THRESHOLDS.confidence}
               </div>
             </div>
           </div>

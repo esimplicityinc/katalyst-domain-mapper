@@ -1,34 +1,34 @@
 /**
  * Roadmap Status Workflow (8 states):
- * 
+ *
  * proposed → adr_validated → bdd_pending → bdd_complete → implementing → nfr_validating → complete
  *                                                                      ↘ nfr_blocked
  */
-export type RoadmapStatus = 
-  | 'proposed' 
-  | 'adr_validated' 
-  | 'bdd_pending' 
-  | 'bdd_complete' 
-  | 'implementing' 
-  | 'nfr_validating' 
-  | 'nfr_blocked' 
-  | 'complete';
+export type RoadmapStatus =
+  | "proposed"
+  | "adr_validated"
+  | "bdd_pending"
+  | "bdd_complete"
+  | "implementing"
+  | "nfr_validating"
+  | "nfr_blocked"
+  | "complete";
 
 /**
  * Priority levels for roadmap items
  */
-export type Priority = 'high' | 'medium' | 'low';
+export type Priority = "high" | "medium" | "low";
 
 /**
  * Available view modes for the roadmap dashboard
  */
-export type ViewMode = 'kanban' | 'timeline' | 'dependencies';
+export type ViewMode = "kanban" | "timeline" | "dependencies";
 
 /**
  * Result of an NFR validation check
  */
 export interface NfrResult {
-  status: 'pass' | 'fail' | 'pending';
+  status: "pass" | "fail" | "pending";
   evidence?: string;
   timestamp?: string;
   validated_by?: string;
@@ -74,13 +74,13 @@ export interface Governance {
   };
   bdd: {
     id?: string;
-    status: 'draft' | 'approved';
+    status: "draft" | "approved";
     approved_by?: AgentApproval[];
     test_results?: BddTestResults;
   };
   nfrs: {
     applicable: string[];
-    status: 'pending' | 'validating' | 'pass' | 'fail';
+    status: "pending" | "validating" | "pass" | "fail";
     results?: Record<string, NfrResult>;
   };
 }
@@ -109,10 +109,10 @@ export interface RoadmapItem {
  */
 export interface FilterState {
   search: string;
-  status: RoadmapStatus | 'all';
+  status: RoadmapStatus | "all";
   phase: string;
-  priority?: Priority | 'all';
-  governanceFilter: 'all' | 'adr_pending' | 'bdd_pending' | 'nfr_pending';
+  priority?: Priority | "all";
+  governanceFilter: "all" | "adr_pending" | "bdd_pending" | "nfr_pending";
 }
 
 /**

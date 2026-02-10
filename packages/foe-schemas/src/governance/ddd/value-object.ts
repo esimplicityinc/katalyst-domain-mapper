@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { SlugPattern } from '../common.js';
+import { z } from "zod";
+import { SlugPattern } from "../common.js";
 
 export const ValueObjectPropertySchema = z.object({
   name: z.string(),

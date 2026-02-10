@@ -6,14 +6,16 @@ import { ReportValidationError } from "../../domain/report/ReportErrors.js";
 export class IngestReport {
   constructor(
     private reportRepo: ReportRepository,
-    private logger: Logger
+    private logger: Logger,
   ) {}
 
   /**
    * Accept raw JSON (either scanner or canonical format), normalize it,
    * decompose into tables, and return the report ID.
    */
-  async execute(rawData: unknown): Promise<{ id: string; overallScore: number; maturityLevel: string }> {
+  async execute(
+    rawData: unknown,
+  ): Promise<{ id: string; overallScore: number; maturityLevel: string }> {
     this.logger.info("Ingesting report");
 
     let report;
@@ -23,7 +25,9 @@ export class IngestReport {
       if (err instanceof ReportValidationError) {
         throw err;
       }
-      throw new ReportValidationError("Failed to normalize report", { cause: String(err) });
+      throw new ReportValidationError("Failed to normalize report", {
+        cause: String(err),
+      });
     }
 
     this.logger.info("Report normalized", {

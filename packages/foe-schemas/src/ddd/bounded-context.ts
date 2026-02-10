@@ -14,7 +14,13 @@ export type CommunicationPattern = z.infer<typeof CommunicationPatternSchema>;
 
 export const ContextRelationshipSchema = z.object({
   targetContext: z.string(),
-  type: z.enum(["upstream", "downstream", "partnership", "shared-kernel", "separate-ways"]),
+  type: z.enum([
+    "upstream",
+    "downstream",
+    "partnership",
+    "shared-kernel",
+    "separate-ways",
+  ]),
   communicationPattern: CommunicationPatternSchema.optional(),
   description: z.string().optional(),
 });

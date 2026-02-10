@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Routes, Route, NavLink, Navigate } from "react-router-dom";
 import {
   MessageSquare,
   Layers,
@@ -7,20 +7,20 @@ import {
   BookOpen,
   Loader2,
   Plus,
-} from 'lucide-react';
-import { api } from '../api/client';
-import { DomainModelList } from '../components/domain/DomainModelList';
-import { DDDChat } from '../components/domain/DDDChat';
-import { ContextMapView } from '../components/domain/ContextMapView';
-import { AggregatesView } from '../components/domain/AggregatesView';
-import { GlossaryView } from '../components/domain/GlossaryView';
-import type { DomainModel, DomainModelFull } from '../types/domain';
+} from "lucide-react";
+import { api } from "../api/client";
+import { DomainModelList } from "../components/domain/DomainModelList";
+import { DDDChat } from "../components/domain/DDDChat";
+import { ContextMapView } from "../components/domain/ContextMapView";
+import { AggregatesView } from "../components/domain/AggregatesView";
+import { GlossaryView } from "../components/domain/GlossaryView";
+import type { DomainModel, DomainModelFull } from "../types/domain";
 
 const SUB_NAV = [
-  { to: '/mapper/chat', label: 'Chat', icon: MessageSquare },
-  { to: '/mapper/contexts', label: 'Context Map', icon: Layers },
-  { to: '/mapper/aggregates', label: 'Aggregates', icon: Box },
-  { to: '/mapper/glossary', label: 'Glossary', icon: BookOpen },
+  { to: "/mapper/chat", label: "Chat", icon: MessageSquare },
+  { to: "/mapper/contexts", label: "Context Map", icon: Layers },
+  { to: "/mapper/aggregates", label: "Aggregates", icon: Box },
+  { to: "/mapper/glossary", label: "Glossary", icon: BookOpen },
 ];
 
 export function DomainMapperPage() {
@@ -55,7 +55,7 @@ export function DomainMapperPage() {
       setActiveModel(full);
       setShowModelList(false);
     } catch (err) {
-      console.error('Failed to load domain model:', err);
+      console.error("Failed to load domain model:", err);
     }
   };
 
@@ -142,8 +142,8 @@ export function DomainMapperPage() {
               className={({ isActive }) =>
                 `flex items-center gap-1.5 px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   isActive
-                    ? 'border-purple-500 text-purple-700 dark:text-purple-300'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
+                    ? "border-purple-500 text-purple-700 dark:text-purple-300"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600"
                 }`
               }
             >
@@ -160,11 +160,18 @@ export function DomainMapperPage() {
           <Route index element={<Navigate to="/mapper/chat" replace />} />
           <Route
             path="chat"
-            element={<DDDChat model={activeModel} onModelUpdated={refreshModel} />}
+            element={
+              <DDDChat model={activeModel} onModelUpdated={refreshModel} />
+            }
           />
           <Route
             path="contexts"
-            element={<ContextMapView model={activeModel} onModelUpdated={refreshModel} />}
+            element={
+              <ContextMapView
+                model={activeModel}
+                onModelUpdated={refreshModel}
+              />
+            }
           />
           <Route
             path="aggregates"
@@ -172,7 +179,9 @@ export function DomainMapperPage() {
           />
           <Route
             path="glossary"
-            element={<GlossaryView model={activeModel} onModelUpdated={refreshModel} />}
+            element={
+              <GlossaryView model={activeModel} onModelUpdated={refreshModel} />
+            }
           />
         </Routes>
       </div>

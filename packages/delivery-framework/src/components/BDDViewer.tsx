@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import type { BDDFile, BDDScenario } from '../types/bdd';
-import SearchBDD from './SearchBDD';
+import React, { useState } from "react";
+import type { BDDFile, BDDScenario } from "../types/bdd";
+import SearchBDD from "./SearchBDD";
 
 interface BDDViewerProps {
   tests: BDDFile[];
@@ -14,39 +14,41 @@ interface BDDViewerProps {
 
 function formatDate(isoString: string): string {
   const date = new Date(isoString);
-  return date.toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit'
+  return date.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
   });
 }
 
 function highlightText(text: string, query: string): JSX.Element {
   if (!query) return <>{text}</>;
-  
-  const parts = text.split(new RegExp(`(${query})`, 'gi'));
+
+  const parts = text.split(new RegExp(`(${query})`, "gi"));
   return (
     <>
-      {parts.map((part, i) => 
+      {parts.map((part, i) =>
         part.toLowerCase() === query.toLowerCase() ? (
-          <mark key={i} className="bdd-highlight">{part}</mark>
+          <mark key={i} className="bdd-highlight">
+            {part}
+          </mark>
         ) : (
           <span key={i}>{part}</span>
-        )
+        ),
       )}
     </>
   );
 }
 
-function ScenarioAccordion({ 
-  scenario, 
+function ScenarioAccordion({
+  scenario,
   query,
   isOpen,
-  onToggle
-}: { 
-  scenario: BDDScenario; 
+  onToggle,
+}: {
+  scenario: BDDScenario;
   query: string;
   isOpen: boolean;
   onToggle: () => void;
@@ -54,25 +56,24 @@ function ScenarioAccordion({
   const [showError, setShowError] = useState(false);
 
   const statusEmoji = {
-    passed: '✓',
-    failed: '✗',
-    pending: '○'
+    passed: "✓",
+    failed: "✗",
+    pending: "○",
   }[scenario.status];
 
   const statusClass = `status-${scenario.status}`;
 
-  const matchesQuery = query && (
-    scenario.name.toLowerCase().includes(query.toLowerCase()) ||
-    scenario.tags.some(t => t.toLowerCase().includes(query.toLowerCase()))
-  );
+  const matchesQuery =
+    query &&
+    (scenario.name.toLowerCase().includes(query.toLowerCase()) ||
+      scenario.tags.some((t) => t.toLowerCase().includes(query.toLowerCase())));
 
   return (
-    <div className={`bdd-scenario ${matchesQuery ? 'bdd-scenario-matched' : ''}`}>
-      <button 
-        className="bdd-scenario-header"
-        onClick={onToggle}
-      >
-        <span className="bdd-scenario-toggle">{isOpen ? '▼' : '▶'}</span>
+    <div
+      className={`bdd-scenario ${matchesQuery ? "bdd-scenario-matched" : ""}`}
+    >
+      <button className="bdd-scenario-header" onClick={onToggle}>
+        <span className="bdd-scenario-toggle">{isOpen ? "▼" : "▶"}</span>
         <span className={`bdd-scenario-status ${statusClass}`}>
           {statusEmoji}
         </span>
@@ -88,7 +89,7 @@ function ScenarioAccordion({
         <div className="bdd-scenario-content">
           {scenario.tags.length > 0 && (
             <div className="bdd-scenario-tags">
-              {scenario.tags.map(tag => (
+              {scenario.tags.map((tag) => (
                 <span key={tag} className="bdd-tag">
                   {tag}
                 </span>
@@ -98,7 +99,10 @@ function ScenarioAccordion({
 
           <div className="bdd-steps">
             {scenario.steps.map((step, idx) => (
-              <div key={idx} className={`bdd-step ${step.keyword.toLowerCase().trim()}`}>
+              <div
+                key={idx}
+                className={`bdd-step ${step.keyword.toLowerCase().trim()}`}
+              >
                 <span className="bdd-step-keyword">{step.keyword}</span>
                 <span className="bdd-step-text">{step.text}</span>
               </div>
@@ -107,11 +111,11 @@ function ScenarioAccordion({
 
           {scenario.error && (
             <div className="bdd-error">
-              <button 
+              <button
                 className="bdd-error-toggle"
                 onClick={() => setShowError(!showError)}
               >
-                {showError ? '▼' : '▶'} Error Details
+                {showError ? "▼" : "▶"} Error Details
               </button>
               {showError && (
                 <pre className="bdd-error-message">{scenario.error}</pre>
@@ -131,14 +135,16 @@ export default function BDDViewer({
   searchQuery,
   onSearchChange,
   matchedCount,
-  totalCount
+  totalCount,
 }: BDDViewerProps): JSX.Element | null {
-  const [expandedScenarios, setExpandedScenarios] = useState<Set<string>>(new Set());
+  const [expandedScenarios, setExpandedScenarios] = useState<Set<string>>(
+    new Set(),
+  );
 
   if (!isOpen) return null;
 
   const toggleScenario = (scenarioId: string) => {
-    setExpandedScenarios(prev => {
+    setExpandedScenarios((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(scenarioId)) {
         newSet.delete(scenarioId);
@@ -156,16 +162,18 @@ export default function BDDViewer({
   const totalPending = tests.reduce((sum, t) => sum + t.summary.pending, 0);
 
   // Get latest run time
-  const lastRun = tests.length > 0 
-    ? tests.reduce((latest, t) => 
-        new Date(t.lastRun) > new Date(latest) ? t.lastRun : latest,
-        tests[0].lastRun
-      )
-    : null;
+  const lastRun =
+    tests.length > 0
+      ? tests.reduce(
+          (latest, t) =>
+            new Date(t.lastRun) > new Date(latest) ? t.lastRun : latest,
+          tests[0].lastRun,
+        )
+      : null;
 
   return (
     <div className="bdd-viewer-overlay" onClick={onClose}>
-      <div className="bdd-viewer-modal" onClick={e => e.stopPropagation()}>
+      <div className="bdd-viewer-modal" onClick={(e) => e.stopPropagation()}>
         <div className="bdd-viewer-header">
           <h2>BDD Tests</h2>
           <button className="bdd-viewer-close" onClick={onClose}>
@@ -183,15 +191,9 @@ export default function BDDViewer({
         </div>
 
         <div className="bdd-viewer-summary">
-          <span className="bdd-summary-item">
-            {totalScenarios} scenarios
-          </span>
-          <span className="bdd-summary-item passed">
-            {totalPassed} passed
-          </span>
-          <span className="bdd-summary-item failed">
-            {totalFailed} failed
-          </span>
+          <span className="bdd-summary-item">{totalScenarios} scenarios</span>
+          <span className="bdd-summary-item passed">{totalPassed} passed</span>
+          <span className="bdd-summary-item failed">{totalFailed} failed</span>
           <span className="bdd-summary-item pending">
             {totalPending} pending
           </span>
@@ -215,8 +217,10 @@ export default function BDDViewer({
                   <code className="bdd-file-path">{test.file}</code>
                   {test.tags.length > 0 && (
                     <div className="bdd-file-tags">
-                      {test.tags.map(tag => (
-                        <span key={tag} className="bdd-tag">{tag}</span>
+                      {test.tags.map((tag) => (
+                        <span key={tag} className="bdd-tag">
+                          {tag}
+                        </span>
                       ))}
                     </div>
                   )}
@@ -242,7 +246,8 @@ export default function BDDViewer({
                 </div>
 
                 <div className="bdd-file-summary">
-                  {test.summary.passed} passed, {test.summary.failed} failed, {test.summary.pending} pending
+                  {test.summary.passed} passed, {test.summary.failed} failed,{" "}
+                  {test.summary.pending} pending
                 </div>
               </div>
             ))

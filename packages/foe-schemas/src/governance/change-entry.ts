@@ -1,28 +1,33 @@
-import { z } from 'zod';
-import { ChangeIdPattern, RoadItemIdPattern } from './common.js';
+import { z } from "zod";
+import { ChangeIdPattern, RoadItemIdPattern } from "./common.js";
 
-export const ChangeStatusSchema = z.enum(['draft', 'published', 'archived']);
+export const ChangeStatusSchema = z.enum(["draft", "published", "archived"]);
 export const ChangeCategorySchema = z.enum([
-  'Added', 'Changed', 'Deprecated', 'Removed', 'Fixed', 'Security'
+  "Added",
+  "Changed",
+  "Deprecated",
+  "Removed",
+  "Fixed",
+  "Security",
 ]);
 
 export const ComplianceCheckSchema = z.object({
-  status: z.enum(['pending', 'pass', 'fail']),
-  validatedBy: z.string().default(''),
-  validatedAt: z.string().default(''),
-  notes: z.string().default(''),
+  status: z.enum(["pending", "pass", "fail"]),
+  validatedBy: z.string().default(""),
+  validatedAt: z.string().default(""),
+  notes: z.string().default(""),
 });
 
 export const NfrCheckSchema = z.object({
-  status: z.enum(['pending', 'pass', 'fail', 'na']),
-  evidence: z.string().default(''),
-  validatedBy: z.string().default(''),
+  status: z.enum(["pending", "pass", "fail", "na"]),
+  evidence: z.string().default(""),
+  validatedBy: z.string().default(""),
 });
 
 export const AgentSignatureSchema = z.object({
   agent: z.string(),
   role: z.string(),
-  status: z.enum(['approved', 'rejected', 'pending']),
+  status: z.enum(["approved", "rejected", "pending"]),
   timestamp: z.string(),
 });
 
@@ -37,10 +42,10 @@ export const ChangeEntrySchema = z.object({
   compliance: z.object({
     adrCheck: ComplianceCheckSchema,
     bddCheck: z.object({
-      status: z.enum(['pending', 'pass', 'fail']),
+      status: z.enum(["pending", "pass", "fail"]),
       scenarios: z.number().int().default(0),
       passed: z.number().int().default(0),
-      coverage: z.string().default('0%'),
+      coverage: z.string().default("0%"),
     }),
     nfrChecks: z.object({
       performance: NfrCheckSchema,

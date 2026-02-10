@@ -96,7 +96,7 @@ export class ReportRepositoryInMemory implements ReportRepository {
     name: string,
     url?: string,
     techStack?: string[],
-    isMonorepo?: boolean
+    isMonorepo?: boolean,
   ): Promise<string> {
     for (const [id, repo] of this.repositories) {
       if (repo.name === name) return id;
@@ -118,10 +118,10 @@ export class ReportRepositoryInMemory implements ReportRepository {
   async listRepositories(): Promise<RepositorySummary[]> {
     return Array.from(this.repositories.values()).map((repo) => {
       const scans = Array.from(this.reports.values()).filter(
-        (r) => r.repositoryId === repo.id
+        (r) => r.repositoryId === repo.id,
       );
       const latest = scans.sort((a, b) =>
-        b.report.scanDate.localeCompare(a.report.scanDate)
+        b.report.scanDate.localeCompare(a.report.scanDate),
       )[0];
 
       return {
@@ -142,10 +142,10 @@ export class ReportRepositoryInMemory implements ReportRepository {
     if (!repo) return null;
 
     const scans = Array.from(this.reports.values()).filter(
-      (r) => r.repositoryId === id
+      (r) => r.repositoryId === id,
     );
     const latest = scans.sort((a, b) =>
-      b.report.scanDate.localeCompare(a.report.scanDate)
+      b.report.scanDate.localeCompare(a.report.scanDate),
     )[0];
 
     return {

@@ -1,7 +1,7 @@
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useState } from 'react';
-import { RadialBarChart, RadialBar, ResponsiveContainer } from 'recharts';
-import type { DimensionReport } from '../types/report';
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
+import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
+import type { DimensionReport } from "../types/report";
 
 interface DimensionCardProps {
   name: string;
@@ -11,23 +11,24 @@ interface DimensionCardProps {
 
 const dimensionInfo: Record<string, { description: string; weight: string }> = {
   feedback: {
-    description: 'Speed and quality of learning cycles',
-    weight: '35%',
+    description: "Speed and quality of learning cycles",
+    weight: "35%",
   },
   understanding: {
-    description: 'System clarity and shared mental models',
-    weight: '35%',
+    description: "System clarity and shared mental models",
+    weight: "35%",
   },
   confidence: {
-    description: 'Trust in changes and system stability',
-    weight: '30%',
+    description: "Trust in changes and system stability",
+    weight: "30%",
   },
 };
 
 const confidenceBadgeColors = {
-  high: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200',
-  medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200',
-  low: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200',
+  high: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200",
+  medium:
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200",
+  low: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200",
 };
 
 export function DimensionCard({ name, dimension, color }: DimensionCardProps) {
@@ -81,7 +82,7 @@ export function DimensionCard({ name, dimension, color }: DimensionCardProps) {
               <RadialBar
                 dataKey="value"
                 cornerRadius={10}
-                background={{ fill: '#e5e7eb' }}
+                background={{ fill: "#e5e7eb" }}
               />
             </RadialBarChart>
           </ResponsiveContainer>
@@ -101,7 +102,7 @@ export function DimensionCard({ name, dimension, color }: DimensionCardProps) {
             <div key={key}>
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
-                  {key.replace(/([A-Z])/g, ' $1').trim()}
+                  {key.replace(/([A-Z])/g, " $1").trim()}
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600 dark:text-gray-400">

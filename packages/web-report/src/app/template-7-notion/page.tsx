@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { 
-  ChevronRight, 
-  ChevronDown, 
-  CheckSquare, 
-  Square, 
-  Hash, 
-  Calendar, 
+import { useState } from "react";
+import Link from "next/link";
+import {
+  ChevronRight,
+  ChevronDown,
+  CheckSquare,
+  Square,
+  Hash,
+  Calendar,
   Tag,
   FileText,
   AlertCircle,
@@ -18,73 +18,98 @@ import {
   Shield,
   Lightbulb,
   BookOpen,
-  Home
-} from 'lucide-react';
-import report from '@/data/report.json';
-import type { FOEReport, DimensionScore, Finding, Recommendation, Strength } from '@/data/types';
+  Home,
+} from "lucide-react";
+import report from "@/data/report.json";
+import type {
+  FOEReport,
+  DimensionScore,
+  Finding,
+  Recommendation,
+  Strength,
+} from "@/data/types";
 
 const typedReport = report as FOEReport;
 
 // Status pill component for inline colored badges
-function StatusPill({ 
-  status, 
-  variant = 'default' 
-}: { 
-  status: string; 
-  variant?: 'default' | 'severity' | 'priority' | 'maturity' | 'confidence';
+function StatusPill({
+  status,
+  variant = "default",
+}: {
+  status: string;
+  variant?: "default" | "severity" | "priority" | "maturity" | "confidence";
 }) {
   const getColors = () => {
-    if (variant === 'severity') {
+    if (variant === "severity") {
       switch (status) {
-        case 'critical': return 'bg-red-100 text-red-700';
-        case 'high': return 'bg-orange-100 text-orange-700';
-        case 'medium': return 'bg-yellow-100 text-yellow-700';
-        case 'low': return 'bg-gray-100 text-gray-600';
-        default: return 'bg-gray-100 text-gray-600';
+        case "critical":
+          return "bg-red-100 text-red-700";
+        case "high":
+          return "bg-orange-100 text-orange-700";
+        case "medium":
+          return "bg-yellow-100 text-yellow-700";
+        case "low":
+          return "bg-gray-100 text-gray-600";
+        default:
+          return "bg-gray-100 text-gray-600";
       }
     }
-    if (variant === 'priority') {
+    if (variant === "priority") {
       switch (status) {
-        case 'immediate': return 'bg-red-100 text-red-700';
-        case 'short-term': return 'bg-orange-100 text-orange-700';
-        case 'medium-term': return 'bg-blue-100 text-blue-700';
-        default: return 'bg-gray-100 text-gray-600';
+        case "immediate":
+          return "bg-red-100 text-red-700";
+        case "short-term":
+          return "bg-orange-100 text-orange-700";
+        case "medium-term":
+          return "bg-blue-100 text-blue-700";
+        default:
+          return "bg-gray-100 text-gray-600";
       }
     }
-    if (variant === 'maturity') {
+    if (variant === "maturity") {
       switch (status) {
-        case 'Emerging': return 'bg-amber-100 text-amber-700';
-        case 'Developing': return 'bg-blue-100 text-blue-700';
-        case 'Optimized': return 'bg-green-100 text-green-700';
-        default: return 'bg-gray-100 text-gray-600';
+        case "Emerging":
+          return "bg-amber-100 text-amber-700";
+        case "Developing":
+          return "bg-blue-100 text-blue-700";
+        case "Optimized":
+          return "bg-green-100 text-green-700";
+        default:
+          return "bg-gray-100 text-gray-600";
       }
     }
-    if (variant === 'confidence') {
+    if (variant === "confidence") {
       switch (status) {
-        case 'high': return 'bg-green-100 text-green-700';
-        case 'medium': return 'bg-yellow-100 text-yellow-700';
-        case 'low': return 'bg-red-100 text-red-700';
-        default: return 'bg-gray-100 text-gray-600';
+        case "high":
+          return "bg-green-100 text-green-700";
+        case "medium":
+          return "bg-yellow-100 text-yellow-700";
+        case "low":
+          return "bg-red-100 text-red-700";
+        default:
+          return "bg-gray-100 text-gray-600";
       }
     }
-    return 'bg-gray-100 text-gray-600';
+    return "bg-gray-100 text-gray-600";
   };
 
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getColors()}`}>
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getColors()}`}
+    >
       {status}
     </span>
   );
 }
 
 // Collapsible block component
-function ToggleBlock({ 
-  icon: Icon, 
-  title, 
-  children, 
+function ToggleBlock({
+  icon: Icon,
+  title,
+  children,
   defaultOpen = false,
-  badge
-}: { 
+  badge,
+}: {
   icon: React.ElementType;
   title: string;
   children: React.ReactNode;
@@ -100,13 +125,17 @@ function ToggleBlock({
         className="w-full flex items-center gap-2 py-2 px-1 -ml-1 rounded hover:bg-gray-50 transition-colors duration-150"
       >
         <span className="text-gray-400 group-hover:text-gray-600 transition-colors">
-          {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+          {isOpen ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
         </span>
         <Icon className="w-4 h-4 text-gray-400" />
         <span className="font-medium text-gray-900">{title}</span>
         {badge}
       </button>
-      
+
       {isOpen && (
         <div className="ml-6 pl-4 border-l border-gray-100 mt-1 mb-4">
           {children}
@@ -117,13 +146,13 @@ function ToggleBlock({
 }
 
 // Checkbox recommendation item
-function CheckboxItem({ 
-  checked, 
-  onToggle, 
+function CheckboxItem({
+  checked,
+  onToggle,
   children,
   priority,
-  impact
-}: { 
+  impact,
+}: {
   checked: boolean;
   onToggle: () => void;
   children: React.ReactNode;
@@ -131,7 +160,7 @@ function CheckboxItem({
   impact?: string;
 }) {
   return (
-    <div 
+    <div
       className="flex items-start gap-3 py-2 px-2 -mx-2 rounded hover:bg-gray-50 transition-colors duration-150 cursor-pointer group"
       onClick={onToggle}
     >
@@ -142,7 +171,9 @@ function CheckboxItem({
           <Square className="w-4 h-4" />
         )}
       </span>
-      <div className={`flex-1 ${checked ? 'line-through text-gray-400' : 'text-gray-700'}`}>
+      <div
+        className={`flex-1 ${checked ? "line-through text-gray-400" : "text-gray-700"}`}
+      >
         <div className="flex items-center gap-2 flex-wrap">
           {children}
           {priority && <StatusPill status={priority} variant="priority" />}
@@ -154,11 +185,11 @@ function CheckboxItem({
 }
 
 // Property row for the metadata table
-function PropertyRow({ 
-  label, 
-  children 
-}: { 
-  label: string; 
+function PropertyRow({
+  label,
+  children,
+}: {
+  label: string;
   children: React.ReactNode;
 }) {
   return (
@@ -181,18 +212,27 @@ function DimensionBlock({ dimension }: { dimension: DimensionScore }) {
         className="w-full flex items-center gap-3 py-2 px-1 -ml-1 rounded hover:bg-gray-50 transition-colors duration-150 group"
       >
         <span className="text-gray-400 group-hover:text-gray-600 transition-colors">
-          {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+          {isOpen ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
         </span>
-        <div 
-          className="w-3 h-3 rounded-full flex-shrink-0" 
+        <div
+          className="w-3 h-3 rounded-full flex-shrink-0"
           style={{ backgroundColor: dimension.color }}
         />
-        <span className="font-medium text-gray-900 flex-1 text-left">{dimension.name}</span>
+        <span className="font-medium text-gray-900 flex-1 text-left">
+          {dimension.name}
+        </span>
         <div className="flex items-center gap-3">
           <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div 
+            <div
               className="h-full rounded-full transition-all duration-500"
-              style={{ width: `${percentage}%`, backgroundColor: dimension.color }}
+              style={{
+                width: `${percentage}%`,
+                backgroundColor: dimension.color,
+              }}
             />
           </div>
           <span className="text-sm font-mono text-gray-600 w-12 text-right">
@@ -207,28 +247,35 @@ function DimensionBlock({ dimension }: { dimension: DimensionScore }) {
           {dimension.subscores.map((subscore, idx) => (
             <div key={idx} className="py-2">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">{subscore.name}</span>
+                <span className="text-sm font-medium text-gray-700">
+                  {subscore.name}
+                </span>
                 <span className="text-xs font-mono text-gray-500">
                   {subscore.score}/{subscore.max}
                 </span>
               </div>
-              
+
               <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden mb-3">
-                <div 
+                <div
                   className="h-full rounded-full"
-                  style={{ 
+                  style={{
                     width: `${(subscore.score / subscore.max) * 100}%`,
-                    backgroundColor: dimension.color
+                    backgroundColor: dimension.color,
                   }}
                 />
               </div>
 
               {subscore.evidence.length > 0 && (
                 <div className="mb-2">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Evidence</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
+                    Evidence
+                  </p>
                   <ul className="space-y-0.5">
                     {subscore.evidence.map((e, i) => (
-                      <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
+                      <li
+                        key={i}
+                        className="text-sm text-gray-600 flex items-start gap-2"
+                      >
                         <span className="text-green-500 mt-1">+</span>
                         {e}
                       </li>
@@ -239,10 +286,15 @@ function DimensionBlock({ dimension }: { dimension: DimensionScore }) {
 
               {subscore.gaps.length > 0 && (
                 <div className="mb-2">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Gaps</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
+                    Gaps
+                  </p>
                   <ul className="space-y-0.5">
                     {subscore.gaps.map((g, i) => (
-                      <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
+                      <li
+                        key={i}
+                        className="text-sm text-gray-600 flex items-start gap-2"
+                      >
                         <span className="text-orange-500 mt-1">!</span>
                         {g}
                       </li>
@@ -253,10 +305,14 @@ function DimensionBlock({ dimension }: { dimension: DimensionScore }) {
 
               {subscore.deductions && subscore.deductions.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Deductions</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
+                    Deductions
+                  </p>
                   <ul className="space-y-0.5">
                     {subscore.deductions.map((d, i) => (
-                      <li key={i} className="text-xs font-mono text-red-600">{d}</li>
+                      <li key={i} className="text-xs font-mono text-red-600">
+                        {d}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -280,7 +336,11 @@ function FindingItem({ finding }: { finding: Finding }) {
         className="w-full flex items-start gap-2 text-left hover:bg-gray-50 -mx-2 px-2 py-1 rounded transition-colors duration-150 group"
       >
         <span className="text-gray-400 group-hover:text-gray-600 transition-colors mt-0.5">
-          {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+          {isOpen ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
         </span>
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
@@ -308,7 +368,9 @@ function FindingItem({ finding }: { finding: Finding }) {
           {finding.location && (
             <div>
               <span className="text-gray-400">Location: </span>
-              <code className="text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">{finding.location}</code>
+              <code className="text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">
+                {finding.location}
+              </code>
             </div>
           )}
         </div>
@@ -329,7 +391,9 @@ function StrengthItem({ strength }: { strength: Strength }) {
           </div>
           <p className="text-sm text-gray-600 mt-0.5">{strength.evidence}</p>
           {strength.caveat && (
-            <p className="text-xs text-gray-400 mt-1 italic">Caveat: {strength.caveat}</p>
+            <p className="text-xs text-gray-400 mt-1 italic">
+              Caveat: {strength.caveat}
+            </p>
           )}
         </div>
       </div>
@@ -341,9 +405,9 @@ export default function NotionTemplate() {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
   const toggleItem = (id: string) => {
-    setCheckedItems(prev => ({
+    setCheckedItems((prev) => ({
       ...prev,
-      [id]: !prev[id]
+      [id]: !prev[id],
     }));
   };
 
@@ -362,8 +426,8 @@ export default function NotionTemplate() {
       <nav className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-gray-100">
         <div className="max-w-3xl mx-auto px-8 py-3">
           <div className="flex items-center gap-2 text-sm">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="flex items-center gap-1.5 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <Home className="w-4 h-4" />
@@ -372,7 +436,9 @@ export default function NotionTemplate() {
             <ChevronRight className="w-3 h-3 text-gray-300" />
             <span className="text-gray-400">Reports</span>
             <ChevronRight className="w-3 h-3 text-gray-300" />
-            <span className="text-gray-700 font-medium">{typedReport.repository}</span>
+            <span className="text-gray-700 font-medium">
+              {typedReport.repository}
+            </span>
           </div>
         </div>
       </nav>
@@ -398,7 +464,9 @@ export default function NotionTemplate() {
             </div>
           </PropertyRow>
           <PropertyRow label="Overall Score">
-            <span className="font-mono font-semibold">{typedReport.overallScore}/100</span>
+            <span className="font-mono font-semibold">
+              {typedReport.overallScore}/100
+            </span>
           </PropertyRow>
           <PropertyRow label="Maturity Level">
             <StatusPill status={typedReport.maturityLevel} variant="maturity" />
@@ -410,21 +478,25 @@ export default function NotionTemplate() {
             </div>
           </PropertyRow>
           <PropertyRow label="Files Analyzed">
-            <span className="font-mono">{typedReport.methodology.filesAnalyzed}</span>
+            <span className="font-mono">
+              {typedReport.methodology.filesAnalyzed}
+            </span>
           </PropertyRow>
         </div>
 
         {/* Executive Summary */}
         <div className="mb-10">
-          <p className="text-gray-600 leading-relaxed">{typedReport.executiveSummary}</p>
+          <p className="text-gray-600 leading-relaxed">
+            {typedReport.executiveSummary}
+          </p>
         </div>
 
         <hr className="border-gray-100 mb-8" />
 
         {/* Dimensions */}
-        <ToggleBlock 
-          icon={BarChart3} 
-          title="Dimension Scores" 
+        <ToggleBlock
+          icon={BarChart3}
+          title="Dimension Scores"
           defaultOpen={true}
           badge={
             <span className="text-xs text-gray-400 ml-2">
@@ -442,9 +514,9 @@ export default function NotionTemplate() {
         <hr className="border-gray-100 my-6" />
 
         {/* Critical Failures */}
-        <ToggleBlock 
-          icon={AlertCircle} 
-          title="Critical Failures" 
+        <ToggleBlock
+          icon={AlertCircle}
+          title="Critical Failures"
           defaultOpen={true}
           badge={
             <span className="ml-2 bg-red-100 text-red-700 text-xs px-1.5 py-0.5 rounded">
@@ -462,9 +534,9 @@ export default function NotionTemplate() {
         <hr className="border-gray-100 my-6" />
 
         {/* Gaps */}
-        <ToggleBlock 
-          icon={Target} 
-          title="Identified Gaps" 
+        <ToggleBlock
+          icon={Target}
+          title="Identified Gaps"
           badge={
             <span className="ml-2 bg-orange-100 text-orange-700 text-xs px-1.5 py-0.5 rounded">
               {gaps.length}
@@ -481,9 +553,9 @@ export default function NotionTemplate() {
         <hr className="border-gray-100 my-6" />
 
         {/* Strengths */}
-        <ToggleBlock 
-          icon={Shield} 
-          title="Strengths" 
+        <ToggleBlock
+          icon={Shield}
+          title="Strengths"
           badge={
             <span className="ml-2 bg-green-100 text-green-700 text-xs px-1.5 py-0.5 rounded">
               {typedReport.strengths.length}
@@ -500,13 +572,14 @@ export default function NotionTemplate() {
         <hr className="border-gray-100 my-6" />
 
         {/* Recommendations as checkboxes */}
-        <ToggleBlock 
-          icon={Lightbulb} 
-          title="Recommendations" 
+        <ToggleBlock
+          icon={Lightbulb}
+          title="Recommendations"
           defaultOpen={true}
           badge={
             <span className="ml-2 text-xs text-gray-400">
-              {Object.values(checkedItems).filter(Boolean).length}/{typedReport.recommendations.length} complete
+              {Object.values(checkedItems).filter(Boolean).length}/
+              {typedReport.recommendations.length} complete
             </span>
           }
         >
@@ -521,7 +594,9 @@ export default function NotionTemplate() {
               >
                 <div>
                   <span className="font-medium">{rec.title}</span>
-                  <p className="text-sm text-gray-500 mt-0.5">{rec.description}</p>
+                  <p className="text-sm text-gray-500 mt-0.5">
+                    {rec.description}
+                  </p>
                 </div>
               </CheckboxItem>
             ))}
@@ -531,31 +606,39 @@ export default function NotionTemplate() {
         <hr className="border-gray-100 my-6" />
 
         {/* Methodology */}
-        <ToggleBlock 
-          icon={BookOpen} 
-          title="Methodology"
-        >
+        <ToggleBlock icon={BookOpen} title="Methodology">
           <div className="mt-4 space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center py-4 bg-gray-50 rounded-lg">
-                <p className="text-2xl font-semibold text-gray-900">{typedReport.methodology.filesAnalyzed}</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {typedReport.methodology.filesAnalyzed}
+                </p>
                 <p className="text-xs text-gray-500 mt-1">Files Analyzed</p>
               </div>
               <div className="text-center py-4 bg-gray-50 rounded-lg">
-                <p className="text-2xl font-semibold text-gray-900">{typedReport.methodology.testFilesAnalyzed}</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {typedReport.methodology.testFilesAnalyzed}
+                </p>
                 <p className="text-xs text-gray-500 mt-1">Test Files</p>
               </div>
               <div className="text-center py-4 bg-gray-50 rounded-lg">
-                <p className="text-2xl font-semibold text-gray-900">{typedReport.methodology.adrsAnalyzed}</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {typedReport.methodology.adrsAnalyzed}
+                </p>
                 <p className="text-xs text-gray-500 mt-1">ADRs</p>
               </div>
             </div>
 
             <div>
-              <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Confidence Notes</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">
+                Confidence Notes
+              </p>
               <ul className="space-y-1">
                 {typedReport.methodology.confidenceNotes.map((note, i) => (
-                  <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
+                  <li
+                    key={i}
+                    className="text-sm text-gray-600 flex items-start gap-2"
+                  >
                     <FileText className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
                     {note}
                   </li>

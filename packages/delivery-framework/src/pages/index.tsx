@@ -1,13 +1,22 @@
-import React from 'react';
-import clsx from 'clsx';
-import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import Layout from '@theme/Layout';
-import styles from './index.module.css';
+import React from "react";
+import clsx from "clsx";
+import Link from "@docusaurus/Link";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import Layout from "@theme/Layout";
+import styles from "./index.module.css";
 
 // SVG Icon Components
 const ScannerIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="48"
+    height="48"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <circle cx="11" cy="11" r="8" />
     <path d="M21 21l-4.35-4.35" />
     <path d="M11 8v6" />
@@ -16,7 +25,16 @@ const ScannerIcon = () => (
 );
 
 const ArchitectureIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="48"
+    height="48"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M3 21h18" />
     <path d="M5 21V7l8-4 8 4v14" />
     <path d="M9 21v-6h6v6" />
@@ -26,7 +44,16 @@ const ArchitectureIcon = () => (
 );
 
 const BDDIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="48"
+    height="48"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
     <polyline points="14 2 14 8 20 8" />
     <line x1="16" y1="13" x2="8" y2="13" />
@@ -36,26 +63,29 @@ const BDDIcon = () => (
 );
 
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
+    <header className={clsx("hero hero--primary", styles.heroBanner)}>
       <div className="container">
         <h1 className="hero__title">{siteConfig.title}</h1>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/ddd/domain-overview">
+            to="/docs/ddd/domain-overview"
+          >
             Explore DDD
           </Link>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/roads/index">
+            to="/docs/roads/index"
+          >
             View Roadmap
           </Link>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/bdd/bdd-overview">
+            to="/docs/bdd/bdd-overview"
+          >
             BDD Workflow
           </Link>
         </div>
@@ -65,17 +95,18 @@ function HomepageHeader() {
 }
 
 export default function Home(): JSX.Element {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
       title={`Welcome to ${siteConfig.title}`}
-      description="Katalyst Delivery Framework - Governance-driven delivery with DDD, BDD, and FOE practices">
+      description="Katalyst Delivery Framework - Governance-driven delivery with DDD, BDD, and FOE practices"
+    >
       <HomepageHeader />
       <main>
         <section className={styles.features}>
           <div className="container">
             <div className="row">
-              <div className={clsx('col col--4')}>
+              <div className={clsx("col col--4")}>
                 <div className={styles.featureCard}>
                   <div className={styles.featureIcon}>
                     <ScannerIcon />
@@ -88,7 +119,7 @@ export default function Home(): JSX.Element {
                   </p>
                 </div>
               </div>
-              <div className={clsx('col col--4')}>
+              <div className={clsx("col col--4")}>
                 <div className={styles.featureCard}>
                   <div className={styles.featureIcon}>
                     <ArchitectureIcon />
@@ -100,7 +131,7 @@ export default function Home(): JSX.Element {
                   </p>
                 </div>
               </div>
-              <div className={clsx('col col--4')}>
+              <div className={clsx("col col--4")}>
                 <div className={styles.featureCard}>
                   <div className={styles.featureIcon}>
                     <BDDIcon />

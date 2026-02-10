@@ -43,12 +43,12 @@ export interface DimensionReport {
 export interface Subscore {
   score: number;
   max: number;
-  confidence: 'high' | 'medium' | 'low';
+  confidence: "high" | "medium" | "low";
 }
 
 export interface Finding {
   area: string;
-  type: 'strength' | 'observation';
+  type: "strength" | "observation";
   description: string;
   evidence: string[];
 }
@@ -58,7 +58,7 @@ export interface Gap {
   currentState: string;
   hypothesis: string;
   recommendation: string;
-  impact: 'high' | 'medium' | 'low';
+  impact: "high" | "medium" | "low";
   foeMethod?: string;
   foeInsights?: {
     understanding: string;

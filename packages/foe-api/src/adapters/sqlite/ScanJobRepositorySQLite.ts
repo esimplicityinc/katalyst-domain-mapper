@@ -8,17 +8,20 @@ export class ScanJobRepositorySQLite implements ScanJobRepository {
   constructor(private db: DrizzleDB) {}
 
   async create(job: ScanJob): Promise<void> {
-    this.db.insert(schema.scanJobs).values({
-      id: job.id,
-      repositoryPath: job.repositoryPath,
-      repositoryName: job.repositoryName,
-      status: job.status,
-      errorMessage: job.errorMessage,
-      scanId: job.scanId,
-      createdAt: job.createdAt,
-      startedAt: job.startedAt,
-      completedAt: job.completedAt,
-    }).run();
+    this.db
+      .insert(schema.scanJobs)
+      .values({
+        id: job.id,
+        repositoryPath: job.repositoryPath,
+        repositoryName: job.repositoryName,
+        status: job.status,
+        errorMessage: job.errorMessage,
+        scanId: job.scanId,
+        createdAt: job.createdAt,
+        startedAt: job.startedAt,
+        completedAt: job.completedAt,
+      })
+      .run();
   }
 
   async getById(id: string): Promise<ScanJob | null> {
@@ -45,11 +48,15 @@ export class ScanJobRepositorySQLite implements ScanJobRepository {
   async update(id: string, updates: Partial<ScanJob>): Promise<void> {
     const setValues: Record<string, unknown> = {};
     if (updates.status !== undefined) setValues.status = updates.status;
-    if (updates.errorMessage !== undefined) setValues.errorMessage = updates.errorMessage;
+    if (updates.errorMessage !== undefined)
+      setValues.errorMessage = updates.errorMessage;
     if (updates.scanId !== undefined) setValues.scanId = updates.scanId;
-    if (updates.startedAt !== undefined) setValues.startedAt = updates.startedAt;
-    if (updates.completedAt !== undefined) setValues.completedAt = updates.completedAt;
-    if (updates.repositoryName !== undefined) setValues.repositoryName = updates.repositoryName;
+    if (updates.startedAt !== undefined)
+      setValues.startedAt = updates.startedAt;
+    if (updates.completedAt !== undefined)
+      setValues.completedAt = updates.completedAt;
+    if (updates.repositoryName !== undefined)
+      setValues.repositoryName = updates.repositoryName;
 
     this.db
       .update(schema.scanJobs)
@@ -67,9 +74,9 @@ export class ScanJobRepositorySQLite implements ScanJobRepository {
           eq(schema.scanJobs.repositoryPath, repositoryPath),
           or(
             eq(schema.scanJobs.status, "queued"),
-            eq(schema.scanJobs.status, "running")
-          )
-        )
+            eq(schema.scanJobs.status, "running"),
+          ),
+        ),
       )
       .get();
 

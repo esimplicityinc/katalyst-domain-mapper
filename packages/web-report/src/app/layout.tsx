@@ -1,21 +1,19 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: 'FOE Scan Report',
-  description: 'Flow Optimized Engineering Assessment Report',
-}
+  title: "FOE Scan Report",
+  description: "Flow Optimized Engineering Assessment Report",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen antialiased">
-        {children}
-      </body>
+      <body className="min-h-screen antialiased">{children}</body>
     </html>
-  )
+  );
 }

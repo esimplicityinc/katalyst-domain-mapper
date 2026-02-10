@@ -1,75 +1,92 @@
-import { Upload, FileJson, AlertCircle, Database, FolderSearch } from 'lucide-react';
-import { useState, useCallback } from 'react';
-import type { FOEReport } from '../types/report';
-import { ReportBrowser } from './ReportBrowser';
-import { ScanDirectory } from './ScanDirectory';
+import {
+  Upload,
+  FileJson,
+  AlertCircle,
+  Database,
+  FolderSearch,
+} from "lucide-react";
+import { useState, useCallback } from "react";
+import type { FOEReport } from "../types/report";
+import { ReportBrowser } from "./ReportBrowser";
+import { ScanDirectory } from "./ScanDirectory";
 
 interface ReportUploadProps {
   onReportLoaded: (report: FOEReport) => void;
 }
 
-type Tab = 'upload' | 'api' | 'scan';
+type Tab = "upload" | "api" | "scan";
 
 export function ReportUpload({ onReportLoaded }: ReportUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<Tab>('upload');
+  const [activeTab, setActiveTab] = useState<Tab>("upload");
 
   const validateReport = (data: any): data is FOEReport => {
     // Basic validation - check for required top-level fields
     return (
       data &&
-      typeof data === 'object' &&
-      'version' in data &&
-      'repository' in data &&
-      'dimensions' in data &&
-      'overallScore' in data
+      typeof data === "object" &&
+      "version" in data &&
+      "repository" in data &&
+      "dimensions" in data &&
+      "overallScore" in data
     );
   };
 
-  const handleFile = useCallback((file: File) => {
-    setError(null);
+  const handleFile = useCallback(
+    (file: File) => {
+      setError(null);
 
-    if (!file.name.endsWith('.json')) {
-      setError('Please upload a JSON file');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const text = e.target?.result as string;
-        const data = JSON.parse(text);
-
-        if (!validateReport(data)) {
-          setError('Invalid FOE report format. Please upload a valid report JSON file.');
-          return;
-        }
-
-        onReportLoaded(data);
-      } catch (err) {
-        setError('Failed to parse JSON file. Please check the file format.');
+      if (!file.name.endsWith(".json")) {
+        setError("Please upload a JSON file");
+        return;
       }
-    };
-    reader.readAsText(file);
-  }, [onReportLoaded]);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const text = e.target?.result as string;
+          const data = JSON.parse(text);
 
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      handleFile(file);
-    }
-  }, [handleFile]);
+          if (!validateReport(data)) {
+            setError(
+              "Invalid FOE report format. Please upload a valid report JSON file.",
+            );
+            return;
+          }
 
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFile(file);
-    }
-  }, [handleFile]);
+          onReportLoaded(data);
+        } catch (err) {
+          setError("Failed to parse JSON file. Please check the file format.");
+        }
+      };
+      reader.readAsText(file);
+    },
+    [onReportLoaded],
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
+
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        handleFile(file);
+      }
+    },
+    [handleFile],
+  );
+
+  const handleFileInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        handleFile(file);
+      }
+    },
+    [handleFile],
+  );
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
@@ -86,33 +103,33 @@ export function ReportUpload({ onReportLoaded }: ReportUploadProps) {
         {/* Tabs */}
         <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6">
           <button
-            onClick={() => setActiveTab('upload')}
+            onClick={() => setActiveTab("upload")}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === 'upload'
-                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              activeTab === "upload"
+                ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             <Upload className="w-4 h-4" />
             Upload File
           </button>
           <button
-            onClick={() => setActiveTab('scan')}
+            onClick={() => setActiveTab("scan")}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === 'scan'
-                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              activeTab === "scan"
+                ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             <FolderSearch className="w-4 h-4" />
             Scan Directory
           </button>
           <button
-            onClick={() => setActiveTab('api')}
+            onClick={() => setActiveTab("api")}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === 'api'
-                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              activeTab === "api"
+                ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             <Database className="w-4 h-4" />
@@ -121,7 +138,7 @@ export function ReportUpload({ onReportLoaded }: ReportUploadProps) {
         </div>
 
         {/* Upload Tab */}
-        {activeTab === 'upload' && (
+        {activeTab === "upload" && (
           <>
             <div
               onDragOver={(e) => {
@@ -132,8 +149,8 @@ export function ReportUpload({ onReportLoaded }: ReportUploadProps) {
               onDrop={handleDrop}
               className={`relative border-2 border-dashed rounded-lg p-12 transition-colors ${
                 isDragging
-                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800'
+                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                  : "border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
               }`}
             >
               <input
@@ -151,7 +168,9 @@ export function ReportUpload({ onReportLoaded }: ReportUploadProps) {
                 )}
 
                 <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                  {isDragging ? 'Drop your report here' : 'Drop your FOE report here'}
+                  {isDragging
+                    ? "Drop your report here"
+                    : "Drop your FOE report here"}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                   or click to browse files
@@ -169,7 +188,9 @@ export function ReportUpload({ onReportLoaded }: ReportUploadProps) {
                   <p className="text-sm font-medium text-red-800 dark:text-red-200">
                     Error loading report
                   </p>
-                  <p className="text-sm text-red-700 dark:text-red-300 mt-1">{error}</p>
+                  <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                    {error}
+                  </p>
                 </div>
               </div>
             )}
@@ -177,12 +198,12 @@ export function ReportUpload({ onReportLoaded }: ReportUploadProps) {
         )}
 
         {/* Scan Tab */}
-        {activeTab === 'scan' && (
+        {activeTab === "scan" && (
           <ScanDirectory onReportLoaded={onReportLoaded} />
         )}
 
         {/* API Tab */}
-        {activeTab === 'api' && (
+        {activeTab === "api" && (
           <ReportBrowser onReportLoaded={onReportLoaded} />
         )}
       </div>

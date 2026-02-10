@@ -1,66 +1,68 @@
-import { useState, useEffect } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
-import { FileJson, Map, Shield, Hexagon, Loader2 } from 'lucide-react';
-import { ApiKeyPrompt } from './ApiKeyPrompt';
-import { api } from '../api/client';
+import { useState, useEffect } from "react";
+import { NavLink, Outlet } from "react-router-dom";
+import { FileJson, Map, Shield, Hexagon, Loader2 } from "lucide-react";
+import { ApiKeyPrompt } from "./ApiKeyPrompt";
+import { api } from "../api/client";
 
 const NAV_ITEMS = [
   {
-    to: '/reports',
-    label: 'FOE Reports',
+    to: "/reports",
+    label: "FOE Reports",
     icon: FileJson,
-    description: 'Maturity assessments',
+    description: "Maturity assessments",
   },
   {
-    to: '/mapper',
-    label: 'Domain Mapper',
+    to: "/mapper",
+    label: "Domain Mapper",
     icon: Map,
-    description: 'DDD workspace',
+    description: "DDD workspace",
   },
   {
-    to: '/governance',
-    label: 'Governance',
+    to: "/governance",
+    label: "Governance",
     icon: Shield,
-    description: 'Health & coverage',
+    description: "Health & coverage",
   },
 ];
 
-type GateState = 'loading' | 'needs-key' | 'ready';
+type GateState = "loading" | "needs-key" | "ready";
 
 export function Layout() {
-  const [gate, setGate] = useState<GateState>('loading');
+  const [gate, setGate] = useState<GateState>("loading");
 
   useEffect(() => {
     checkApiKey();
   }, []);
 
   const checkApiKey = async () => {
-    setGate('loading');
+    setGate("loading");
     try {
       const status = await api.getConfigStatus();
-      setGate(status.anthropicApiKey ? 'ready' : 'needs-key');
+      setGate(status.anthropicApiKey ? "ready" : "needs-key");
     } catch {
       // Backend unreachable — let user through (graceful degradation)
-      setGate('ready');
+      setGate("ready");
     }
   };
 
-  if (gate === 'loading') {
+  if (gate === "loading") {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-900">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-          <p className="text-sm text-gray-500 dark:text-gray-400">Connecting...</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Connecting...
+          </p>
         </div>
       </div>
     );
   }
 
-  if (gate === 'needs-key') {
+  if (gate === "needs-key") {
     return (
       <ApiKeyPrompt
-        onConfigured={() => setGate('ready')}
-        onSkip={() => setGate('ready')}
+        onConfigured={() => setGate("ready")}
+        onSkip={() => setGate("ready")}
       />
     );
   }
@@ -93,8 +95,8 @@ export function Layout() {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50"
                 }`
               }
             >

@@ -1,6 +1,6 @@
-export type Severity = 'critical' | 'high' | 'medium' | 'low';
-export type MaturityLevel = 'Emerging' | 'Developing' | 'Optimized';
-export type Confidence = 'high' | 'medium' | 'low';
+export type Severity = "critical" | "high" | "medium" | "low";
+export type MaturityLevel = "Emerging" | "Developing" | "Optimized";
+export type Confidence = "high" | "medium" | "low";
 
 export interface DimensionScore {
   name: string;
@@ -40,10 +40,10 @@ export interface Strength {
 
 export interface Recommendation {
   id: string;
-  priority: 'immediate' | 'short-term' | 'medium-term';
+  priority: "immediate" | "short-term" | "medium-term";
   title: string;
   description: string;
-  impact: 'high' | 'medium' | 'low';
+  impact: "high" | "medium" | "low";
 }
 
 export interface FOEReport {
@@ -51,21 +51,21 @@ export interface FOEReport {
   scanDate: string;
   overallScore: number;
   maturityLevel: MaturityLevel;
-  assessmentMode: 'standard' | 'critical';
-  
+  assessmentMode: "standard" | "critical";
+
   executiveSummary: string;
-  
+
   dimensions: {
     feedback: DimensionScore;
     understanding: DimensionScore;
     confidence: DimensionScore;
   };
-  
+
   criticalFailures: Finding[];
   strengths: Strength[];
   gaps: Finding[];
   recommendations: Recommendation[];
-  
+
   methodology: {
     filesAnalyzed: number;
     testFilesAnalyzed: number;

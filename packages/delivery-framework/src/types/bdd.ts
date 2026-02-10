@@ -11,7 +11,7 @@ export interface BDDScenario {
   name: string;
   tags: string[];
   steps: BDDStep[];
-  status: 'passed' | 'failed' | 'pending';
+  status: "passed" | "failed" | "pending";
   duration?: string;
   error?: string;
 }

@@ -44,7 +44,12 @@ interface ScannerDimension {
   score: number;
   maxScore: number;
   subscores: Record<string, { score: number; max: number; confidence: string }>;
-  findings: { area: string; type: string; description: string; evidence: string[] }[];
+  findings: {
+    area: string;
+    type: string;
+    description: string;
+    evidence: string[];
+  }[];
   gaps: {
     area: string;
     currentState: string;
@@ -84,12 +89,15 @@ function transformScannerReport(data: ScannerReport): FOEReport {
   const transformDimension = (
     name: "Feedback" | "Understanding" | "Confidence",
     dim: ScannerDimension,
-    color: string
+    color: string,
   ) => {
     const entries = Object.entries(dim.subscores);
     // Pad to 4 subscores if needed
     while (entries.length < 4) {
-      entries.push([`subscore-${entries.length + 1}`, { score: 0, max: 25, confidence: "low" }]);
+      entries.push([
+        `subscore-${entries.length + 1}`,
+        { score: 0, max: 25, confidence: "low" },
+      ]);
     }
 
     return {
@@ -112,16 +120,16 @@ function transformScannerReport(data: ScannerReport): FOEReport {
   const transformFindings = (
     gaps: ScannerDimension["gaps"],
     kind: "gap",
-    prefix: string
+    prefix: string,
   ) =>
     gaps.map((g, i) => ({
       id: `${prefix}-${i + 1}`,
       area: g.area,
-      severity: (g.impact === "high" ? "high" : g.impact === "medium" ? "medium" : "low") as
-        | "critical"
-        | "high"
-        | "medium"
-        | "low",
+      severity: (g.impact === "high"
+        ? "high"
+        : g.impact === "medium"
+          ? "medium"
+          : "low") as "critical" | "high" | "medium" | "low",
       title: g.currentState,
       evidence: g.hypothesis,
       impact: g.impact,
@@ -146,10 +154,11 @@ function transformScannerReport(data: ScannerReport): FOEReport {
   // Transform recommendations from topGaps
   const reportRecommendations = data.topGaps.map((g, i) => ({
     id: `rec-${i + 1}`,
-    priority: (i === 0 ? "immediate" : i <= 1 ? "short-term" : "medium-term") as
-      | "immediate"
-      | "short-term"
-      | "medium-term",
+    priority: (i === 0
+      ? "immediate"
+      : i <= 1
+        ? "short-term"
+        : "medium-term") as "immediate" | "short-term" | "medium-term",
     title: g.area,
     description: g.reason,
     impact: (g.score < 30 ? "high" : g.score < 50 ? "medium" : "low") as
@@ -167,7 +176,10 @@ function transformScannerReport(data: ScannerReport): FOEReport {
   if (minMatch) scanDurationMs += Number(minMatch[1]) * 60_000;
   if (secMatch) scanDurationMs += Number(secMatch[1]) * 1000;
 
-  const weakestMap: Record<string, "feedback" | "understanding" | "confidence"> = {
+  const weakestMap: Record<
+    string,
+    "feedback" | "understanding" | "confidence"
+  > = {
     feedback: "feedback",
     understanding: "understanding",
     confidence: "confidence",
@@ -181,23 +193,42 @@ function transformScannerReport(data: ScannerReport): FOEReport {
     scanDuration: scanDurationMs,
     scannerVersion: data.version,
     overallScore: data.overallScore,
-    maturityLevel: calculateMaturity(data.overallScore) as FOEReport["maturityLevel"],
+    maturityLevel: calculateMaturity(
+      data.overallScore,
+    ) as FOEReport["maturityLevel"],
     assessmentMode: "standard" as const,
     executiveSummary: `FOE assessment for ${data.repository.name}. Overall score: ${data.overallScore}/100 (${calculateMaturity(data.overallScore)}).`,
     dimensions: {
-      feedback: transformDimension("Feedback", data.dimensions.feedback, "#3b82f6"),
-      understanding: transformDimension("Understanding", data.dimensions.understanding, "#9333ea"),
-      confidence: transformDimension("Confidence", data.dimensions.confidence, "#10b981"),
+      feedback: transformDimension(
+        "Feedback",
+        data.dimensions.feedback,
+        "#3b82f6",
+      ),
+      understanding: transformDimension(
+        "Understanding",
+        data.dimensions.understanding,
+        "#9333ea",
+      ),
+      confidence: transformDimension(
+        "Confidence",
+        data.dimensions.confidence,
+        "#10b981",
+      ),
     },
     criticalFailures: [],
     strengths: reportStrengths,
     gaps: allGaps,
     recommendations: reportRecommendations,
     triangleDiagnosis: {
-      cycleHealth: (data.triangleDiagnosis.cycleHealth as "virtuous" | "at-risk" | "vicious") ?? "at-risk",
+      cycleHealth:
+        (data.triangleDiagnosis.cycleHealth as
+          | "virtuous"
+          | "at-risk"
+          | "vicious") ?? "at-risk",
       pattern: data.triangleDiagnosis.pattern,
       weakestPrinciple:
-        weakestMap[data.triangleDiagnosis.weakestDimension?.toLowerCase()] ?? "feedback",
+        weakestMap[data.triangleDiagnosis.weakestDimension?.toLowerCase()] ??
+        "feedback",
       intervention: data.triangleDiagnosis.intervention,
     },
     methodology: {
@@ -240,12 +271,15 @@ export function normalizeReport(data: unknown): FOEReport {
     } catch (err) {
       throw new ReportValidationError(
         "Failed to transform scanner report to canonical format",
-        { transformError: String(err), zodErrors: zodResult.error.issues }
+        { transformError: String(err), zodErrors: zodResult.error.issues },
       );
     }
   }
 
-  throw new ReportValidationError("Invalid report format: does not match canonical or scanner schema", {
-    zodErrors: zodResult.error.issues,
-  });
+  throw new ReportValidationError(
+    "Invalid report format: does not match canonical or scanner schema",
+    {
+      zodErrors: zodResult.error.issues,
+    },
+  );
 }

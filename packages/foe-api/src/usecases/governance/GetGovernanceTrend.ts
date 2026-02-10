@@ -1,4 +1,7 @@
-import type { GovernanceRepository, TrendPoint } from "../../ports/GovernanceRepository.js";
+import type {
+  GovernanceRepository,
+  TrendPoint,
+} from "../../ports/GovernanceRepository.js";
 
 export class GetGovernanceTrend {
   constructor(private governanceRepo: GovernanceRepository) {}

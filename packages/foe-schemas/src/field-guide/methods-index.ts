@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { MethodSchema } from './method.js';
+import { z } from "zod";
+import { MethodSchema } from "./method.js";
 
 /**
  * Methods Index - complete registry of all methods
@@ -8,38 +8,38 @@ import { MethodSchema } from './method.js';
 export const MethodsIndexSchema = z.object({
   /** Index version */
   version: z.string(),
-  
+
   /** Generation timestamp (ISO 8601) */
   generated: z.string().datetime(),
-  
+
   /** All methods indexed by methodId */
   methods: z.record(z.string(), MethodSchema),
-  
+
   /** Keyword index for auto-linking */
   keywordIndex: z.record(z.string(), z.array(z.string())),
-  
+
   /** Field guide index (guide ID → method IDs) */
   fieldGuideIndex: z.record(z.string(), z.array(z.string())).optional(),
-  
+
   /** External framework index (framework → method IDs) */
   frameworkIndex: z.record(z.string(), z.array(z.string())).optional(),
 });
 
 export type MethodsIndex = z.infer<typeof MethodsIndexSchema>;
 
-import type { Method } from './method.js';
+import type { Method } from "./method.js";
 
 /**
  * Helper to get methods by field guide
  */
 export function getMethodsByFieldGuide(
   index: MethodsIndex,
-  fieldGuideId: string
+  fieldGuideId: string,
 ): Method[] {
   if (!index.fieldGuideIndex) return [];
   const methodIds = index.fieldGuideIndex[fieldGuideId] || [];
   return methodIds
-    .map(id => index.methods[id])
+    .map((id) => index.methods[id])
     .filter((m): m is Method => m !== undefined);
 }
 
@@ -48,12 +48,12 @@ export function getMethodsByFieldGuide(
  */
 export function getMethodsByFramework(
   index: MethodsIndex,
-  framework: string
+  framework: string,
 ): Method[] {
   if (!index.frameworkIndex) return [];
   const methodIds = index.frameworkIndex[framework] || [];
   return methodIds
-    .map(id => index.methods[id])
+    .map((id) => index.methods[id])
     .filter((m): m is Method => m !== undefined);
 }
 
@@ -62,13 +62,11 @@ export function getMethodsByFramework(
  */
 export function searchMethodsByKeyword(
   index: MethodsIndex,
-  keyword: string
+  keyword: string,
 ): Method[] {
   const normalizedKeyword = keyword.toLowerCase();
   const methodIds = index.keywordIndex[normalizedKeyword] || [];
   return methodIds
-    .map(id => index.methods[id])
+    .map((id) => index.methods[id])
     .filter((m): m is Method => m !== undefined);
 }
-
-

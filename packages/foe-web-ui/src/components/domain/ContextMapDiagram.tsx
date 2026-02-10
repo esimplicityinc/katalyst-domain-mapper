@@ -1,12 +1,12 @@
-import { useState, useMemo, useCallback } from 'react';
-import { RotateCcw, Layers } from 'lucide-react';
-import type { DomainModelFull } from '../../types/domain';
-import { useAutoLayout } from './svg/useAutoLayout';
-import { useSvgPanZoom } from './svg/useSvgPanZoom';
-import { SvgMarkers } from './svg/markers';
-import { ContextNode } from './ContextNode';
-import { RelationshipPath } from './RelationshipPath';
-import { ContextDetailPanel } from './ContextDetailPanel';
+import { useState, useMemo, useCallback } from "react";
+import { RotateCcw, Layers } from "lucide-react";
+import type { DomainModelFull } from "../../types/domain";
+import { useAutoLayout } from "./svg/useAutoLayout";
+import { useSvgPanZoom } from "./svg/useSvgPanZoom";
+import { SvgMarkers } from "./svg/markers";
+import { ContextNode } from "./ContextNode";
+import { RelationshipPath } from "./RelationshipPath";
+import { ContextDetailPanel } from "./ContextDetailPanel";
 
 interface ContextMapDiagramProps {
   model: DomainModelFull;
@@ -21,7 +21,9 @@ interface ContextMapDiagramProps {
 export function ContextMapDiagram({ model }: ContextMapDiagramProps) {
   const positions = useAutoLayout(model.boundedContexts);
   const { viewBox, handlers, resetView } = useSvgPanZoom();
-  const [selectedContextId, setSelectedContextId] = useState<string | null>(null);
+  const [selectedContextId, setSelectedContextId] = useState<string | null>(
+    null,
+  );
   const [hoveredContextId, setHoveredContextId] = useState<string | null>(null);
 
   // Build a position lookup by context id for relationship paths
@@ -42,7 +44,7 @@ export function ContextMapDiagram({ model }: ContextMapDiagramProps) {
       sourceY: number;
       targetX: number;
       targetY: number;
-      type: (typeof model.boundedContexts)[0]['relationships'][0]['type'];
+      type: (typeof model.boundedContexts)[0]["relationships"][0]["type"];
     }> = [];
 
     for (const ctx of model.boundedContexts) {
@@ -95,16 +97,25 @@ export function ContextMapDiagram({ model }: ContextMapDiagramProps) {
 
   // Compute artifact counts per context
   const artifactCountsMap = useMemo(() => {
-    const map = new Map<string, { aggregates: number; events: number; vos: number }>();
+    const map = new Map<
+      string,
+      { aggregates: number; events: number; vos: number }
+    >();
     for (const ctx of model.boundedContexts) {
       map.set(ctx.id, {
-        aggregates: model.aggregates.filter((a) => a.contextId === ctx.id).length,
+        aggregates: model.aggregates.filter((a) => a.contextId === ctx.id)
+          .length,
         events: model.domainEvents.filter((e) => e.contextId === ctx.id).length,
         vos: model.valueObjects.filter((v) => v.contextId === ctx.id).length,
       });
     }
     return map;
-  }, [model.boundedContexts, model.aggregates, model.domainEvents, model.valueObjects]);
+  }, [
+    model.boundedContexts,
+    model.aggregates,
+    model.domainEvents,
+    model.valueObjects,
+  ]);
 
   const isRelHighlighted = useCallback(
     (sourceId: string, targetId: string): boolean => {
@@ -137,19 +148,20 @@ export function ContextMapDiagram({ model }: ContextMapDiagramProps) {
       <div className="flex flex-col items-center justify-center py-20">
         <Layers className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-4" />
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          No bounded contexts to display. Add one to see the context map diagram.
+          No bounded contexts to display. Add one to see the context map
+          diagram.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full" style={{ height: '500px' }}>
+    <div className="relative w-full" style={{ height: "500px" }}>
       {/* SVG Canvas */}
       <svg
         viewBox={viewBoxStr}
         className="w-full h-full select-none"
-        style={{ cursor: 'grab' }}
+        style={{ cursor: "grab" }}
         {...handlers}
         onClick={handleBackgroundClick}
         aria-label="Context map diagram showing bounded contexts and their relationships"
@@ -219,7 +231,9 @@ export function ContextMapDiagram({ model }: ContextMapDiagramProps) {
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
-            <span className="text-gray-600 dark:text-gray-400">Unclassified</span>
+            <span className="text-gray-600 dark:text-gray-400">
+              Unclassified
+            </span>
           </span>
         </div>
       </div>

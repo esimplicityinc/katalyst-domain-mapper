@@ -14,7 +14,7 @@ export class StructuredLogger implements Logger {
 
   constructor(
     private meta: Record<string, unknown> = {},
-    level: LogLevel = "info"
+    level: LogLevel = "info",
   ) {
     this.minLevel = LOG_LEVELS[level];
   }
@@ -38,13 +38,17 @@ export class StructuredLogger implements Logger {
   child(meta: Record<string, unknown>): Logger {
     return new StructuredLogger(
       { ...this.meta, ...meta },
-      Object.entries(LOG_LEVELS).find(
-        ([, v]) => v === this.minLevel
-      )?.[0] as LogLevel ?? "info"
+      (Object.entries(LOG_LEVELS).find(
+        ([, v]) => v === this.minLevel,
+      )?.[0] as LogLevel) ?? "info",
     );
   }
 
-  private log(level: LogLevel, message: string, extra?: Record<string, unknown>): void {
+  private log(
+    level: LogLevel,
+    message: string,
+    extra?: Record<string, unknown>,
+  ): void {
     if (LOG_LEVELS[level] < this.minLevel) return;
 
     const entry = {

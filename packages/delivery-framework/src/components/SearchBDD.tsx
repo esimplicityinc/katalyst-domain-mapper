@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 interface SearchBDDProps {
   value: string;
@@ -13,7 +13,7 @@ export default function SearchBDD({
   onChange,
   matchedCount,
   totalCount,
-  placeholder = "Search scenarios..."
+  placeholder = "Search scenarios...",
 }: SearchBDDProps): JSX.Element {
   const [isSearching, setIsSearching] = useState(false);
 
@@ -28,7 +28,7 @@ export default function SearchBDD({
   }, [value]);
 
   const handleClear = () => {
-    onChange('');
+    onChange("");
   };
 
   return (
@@ -51,7 +51,7 @@ export default function SearchBDD({
           </button>
         )}
       </div>
-      
+
       <div className="bdd-search-stats">
         {isSearching ? (
           <span className="bdd-search-loading">Searching...</span>
@@ -60,9 +60,7 @@ export default function SearchBDD({
             {matchedCount} of {totalCount} scenarios
           </span>
         ) : (
-          <span className="bdd-search-total">
-            {totalCount} scenarios
-          </span>
+          <span className="bdd-search-total">{totalCount} scenarios</span>
         )}
       </div>
     </div>

@@ -28,7 +28,7 @@ export function parseFrontmatter(content: string): {
 export function normalizeObservationRef(ref: string): string {
   // Remove leading "observations/" directory if present
   let cleaned = ref.replace(/^observations\//, "");
-  
+
   // Remove "internal/" or "external/" prefix
   cleaned = cleaned.replace(/^(internal|external)\//, "");
 

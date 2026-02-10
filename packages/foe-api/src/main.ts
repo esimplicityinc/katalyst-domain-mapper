@@ -19,15 +19,22 @@ const { logger } = container;
 
 // Run migrations
 try {
-  const migrationsFolder = path.resolve(import.meta.dirname ?? ".", "../drizzle");
+  const migrationsFolder = path.resolve(
+    import.meta.dirname ?? ".",
+    "../drizzle",
+  );
   if (fs.existsSync(migrationsFolder)) {
     migrate(container.db, { migrationsFolder });
     logger.info("Database migrations applied");
   } else {
-    logger.warn("No migrations folder found, skipping migrations", { migrationsFolder });
+    logger.warn("No migrations folder found, skipping migrations", {
+      migrationsFolder,
+    });
   }
 } catch (err) {
-  logger.error("Migration failed", { error: err instanceof Error ? err.message : String(err) });
+  logger.error("Migration failed", {
+    error: err instanceof Error ? err.message : String(err),
+  });
   process.exit(1);
 }
 
@@ -52,7 +59,7 @@ app.listen(
   ({ hostname, port }) => {
     logger.info(`FOE API listening on http://${hostname}:${port}`);
     logger.info(`Swagger docs at http://${hostname}:${port}/swagger`);
-  }
+  },
 );
 
 // Graceful shutdown

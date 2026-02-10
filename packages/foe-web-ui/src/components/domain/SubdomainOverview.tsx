@@ -1,11 +1,11 @@
-import type { BoundedContext, SubdomainType } from '../../types/domain';
+import type { BoundedContext, SubdomainType } from "../../types/domain";
 
 interface SubdomainOverviewProps {
   contexts: BoundedContext[];
 }
 
 interface SubdomainSection {
-  type: SubdomainType | 'unclassified';
+  type: SubdomainType | "unclassified";
   label: string;
   investment: string;
   strategy: string;
@@ -15,36 +15,36 @@ interface SubdomainSection {
 
 const SECTIONS: SubdomainSection[] = [
   {
-    type: 'core',
-    label: 'Core',
-    investment: 'High Investment',
-    strategy: 'Build',
-    headerColor: 'text-blue-700 dark:text-blue-300',
-    dotColor: 'bg-blue-500',
+    type: "core",
+    label: "Core",
+    investment: "High Investment",
+    strategy: "Build",
+    headerColor: "text-blue-700 dark:text-blue-300",
+    dotColor: "bg-blue-500",
   },
   {
-    type: 'supporting',
-    label: 'Supporting',
-    investment: 'Medium Investment',
-    strategy: 'Integrate',
-    headerColor: 'text-green-700 dark:text-green-300',
-    dotColor: 'bg-green-500',
+    type: "supporting",
+    label: "Supporting",
+    investment: "Medium Investment",
+    strategy: "Integrate",
+    headerColor: "text-green-700 dark:text-green-300",
+    dotColor: "bg-green-500",
   },
   {
-    type: 'generic',
-    label: 'Generic',
-    investment: 'Low Investment',
-    strategy: 'Buy',
-    headerColor: 'text-gray-600 dark:text-gray-400',
-    dotColor: 'bg-gray-400',
+    type: "generic",
+    label: "Generic",
+    investment: "Low Investment",
+    strategy: "Buy",
+    headerColor: "text-gray-600 dark:text-gray-400",
+    dotColor: "bg-gray-400",
   },
   {
-    type: 'unclassified',
-    label: 'Unclassified',
-    investment: 'Needs Classification',
-    strategy: 'Review',
-    headerColor: 'text-amber-600 dark:text-amber-400',
-    dotColor: 'bg-amber-400',
+    type: "unclassified",
+    label: "Unclassified",
+    investment: "Needs Classification",
+    strategy: "Review",
+    headerColor: "text-amber-600 dark:text-amber-400",
+    dotColor: "bg-amber-400",
   },
 ];
 
@@ -57,7 +57,7 @@ export function SubdomainOverview({ contexts }: SubdomainOverviewProps) {
   };
 
   for (const ctx of contexts) {
-    const key = ctx.subdomainType ?? 'unclassified';
+    const key = ctx.subdomainType ?? "unclassified";
     grouped[key].push(ctx);
   }
 
@@ -90,7 +90,9 @@ export function SubdomainOverview({ contexts }: SubdomainOverviewProps) {
               </div>
               <div className="flex items-center gap-2 mb-3 text-xs text-gray-500 dark:text-gray-400">
                 <span>{section.investment}</span>
-                <span className="text-gray-300 dark:text-gray-600">&middot;</span>
+                <span className="text-gray-300 dark:text-gray-600">
+                  &middot;
+                </span>
                 <span>{section.strategy}</span>
               </div>
               <ul className="space-y-1">

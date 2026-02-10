@@ -1,6 +1,6 @@
-import { CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
-import { useState } from 'react';
-import type { TopItem } from '../types/report';
+import { CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
+import type { TopItem } from "../types/report";
 
 interface FindingsTableProps {
   topStrengths: TopItem[];

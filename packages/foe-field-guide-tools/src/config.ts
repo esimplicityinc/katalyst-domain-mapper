@@ -12,9 +12,17 @@ export const FIELD_GUIDES_ROOT = join(DOCS_ROOT, "field-guides");
 export const EXTERNAL_FRAMEWORKS_ROOT = join(DOCS_ROOT, "external-frameworks");
 
 // Output paths
-export const OUTPUT_DIR = join(PROJECT_ROOT, "packages", "foe-field-guide-tools", "dist");
+export const OUTPUT_DIR = join(
+  PROJECT_ROOT,
+  "packages",
+  "foe-field-guide-tools",
+  "dist",
+);
 export const METHODS_INDEX_PATH = join(OUTPUT_DIR, "methods-index.json");
-export const OBSERVATIONS_INDEX_PATH = join(OUTPUT_DIR, "observations-index.json");
+export const OBSERVATIONS_INDEX_PATH = join(
+  OUTPUT_DIR,
+  "observations-index.json",
+);
 
 // Keyword extraction config
 export const STOP_WORDS = new Set([
@@ -75,11 +83,12 @@ export const STOP_WORDS = new Set([
 ]);
 
 // Governance documentation paths
-export const GOVERNANCE_ROOT = process.env.FOE_GOVERNANCE_ROOT
-  || join(PROJECT_ROOT, 'packages', 'delivery-framework');
+export const GOVERNANCE_ROOT =
+  process.env.FOE_GOVERNANCE_ROOT ||
+  join(PROJECT_ROOT, "packages", "delivery-framework");
 
 // Governance output
-export const GOVERNANCE_INDEX_PATH = join(OUTPUT_DIR, 'governance-index.json');
+export const GOVERNANCE_INDEX_PATH = join(OUTPUT_DIR, "governance-index.json");
 
 // Neo4j configuration (optional)
 export const NEO4J_URI = process.env.NEO4J_URI || "bolt://localhost:7687";

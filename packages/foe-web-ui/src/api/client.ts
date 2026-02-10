@@ -6,7 +6,7 @@ import type {
   DomainEvent,
   ValueObject,
   GlossaryTerm,
-} from '../types/domain';
+} from "../types/domain";
 import type {
   GovernanceSnapshot,
   RoadItemSummary,
@@ -14,16 +14,16 @@ import type {
   PersonaCoverage,
   IntegrityReport,
   TrendPoint,
-} from '../types/governance';
+} from "../types/governance";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? '';
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE}${path}`;
   const res = await fetch(url, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options?.headers,
     },
   });
@@ -73,12 +73,12 @@ export const api = {
     offset?: number;
   }): Promise<ReportSummary[]> {
     const query = new URLSearchParams();
-    if (params?.repositoryId) query.set('repositoryId', params.repositoryId);
-    if (params?.maturityLevel) query.set('maturityLevel', params.maturityLevel);
-    if (params?.limit) query.set('limit', String(params.limit));
-    if (params?.offset) query.set('offset', String(params.offset));
+    if (params?.repositoryId) query.set("repositoryId", params.repositoryId);
+    if (params?.maturityLevel) query.set("maturityLevel", params.maturityLevel);
+    if (params?.limit) query.set("limit", String(params.limit));
+    if (params?.offset) query.set("offset", String(params.offset));
     const qs = query.toString();
-    return request(`/api/v1/reports${qs ? `?${qs}` : ''}`);
+    return request(`/api/v1/reports${qs ? `?${qs}` : ""}`);
   },
 
   /** Get the raw report JSON by ID (scanner format, compatible with web-ui types) */
@@ -93,7 +93,7 @@ export const api = {
 
   /** List repositories */
   listRepositories(): Promise<RepositorySummary[]> {
-    return request('/api/v1/repositories');
+    return request("/api/v1/repositories");
   },
 
   // ── Config ─────────────────────────────────────────────────────────────────
@@ -101,7 +101,7 @@ export const api = {
   /** Health check */
   async isHealthy(): Promise<boolean> {
     try {
-      await request('/api/v1/health');
+      await request("/api/v1/health");
       return true;
     } catch {
       return false;
@@ -109,14 +109,19 @@ export const api = {
   },
 
   /** Get config status (is API key set, etc.) */
-  getConfigStatus(): Promise<{ anthropicApiKey: boolean; scannerEnabled: boolean }> {
-    return request('/api/v1/config/status');
+  getConfigStatus(): Promise<{
+    anthropicApiKey: boolean;
+    scannerEnabled: boolean;
+  }> {
+    return request("/api/v1/config/status");
   },
 
   /** Set the Anthropic API key at runtime */
-  setApiKey(apiKey: string): Promise<{ message: string; scannerEnabled: boolean }> {
-    return request('/api/v1/config/api-key', {
-      method: 'PUT',
+  setApiKey(
+    apiKey: string,
+  ): Promise<{ message: string; scannerEnabled: boolean }> {
+    return request("/api/v1/config/api-key", {
+      method: "PUT",
       body: JSON.stringify({ apiKey }),
     });
   },
@@ -130,8 +135,8 @@ export const api = {
     repositoryPath: string;
     message: string;
   }> {
-    return request('/api/v1/scans', {
-      method: 'POST',
+    return request("/api/v1/scans", {
+      method: "POST",
       body: JSON.stringify({ repositoryPath }),
     });
   },
@@ -141,7 +146,7 @@ export const api = {
     id: string;
     repositoryPath: string;
     repositoryName: string | null;
-    status: 'queued' | 'running' | 'completed' | 'failed';
+    status: "queued" | "running" | "completed" | "failed";
     errorMessage: string | null;
     scanId: string | null;
     createdAt: string;
@@ -152,31 +157,36 @@ export const api = {
   },
 
   /** List scan jobs */
-  listScans(status?: string): Promise<Array<{
-    id: string;
-    repositoryPath: string;
-    repositoryName: string | null;
-    status: string;
-    scanId: string | null;
-    createdAt: string;
-  }>> {
-    const qs = status ? `?status=${status}` : '';
+  listScans(status?: string): Promise<
+    Array<{
+      id: string;
+      repositoryPath: string;
+      repositoryName: string | null;
+      status: string;
+      scanId: string | null;
+      createdAt: string;
+    }>
+  > {
+    const qs = status ? `?status=${status}` : "";
     return request(`/api/v1/scans${qs}`);
   },
 
   // ── Domain Models ──────────────────────────────────────────────────────────
 
   /** Create a domain model */
-  createDomainModel(data: { name: string; description?: string }): Promise<DomainModel> {
-    return request('/api/v1/domain-models', {
-      method: 'POST',
+  createDomainModel(data: {
+    name: string;
+    description?: string;
+  }): Promise<DomainModel> {
+    return request("/api/v1/domain-models", {
+      method: "POST",
       body: JSON.stringify(data),
     });
   },
 
   /** List all domain models */
   listDomainModels(): Promise<DomainModel[]> {
-    return request('/api/v1/domain-models');
+    return request("/api/v1/domain-models");
   },
 
   /** Get a domain model with all artifacts */
@@ -186,7 +196,7 @@ export const api = {
 
   /** Delete a domain model */
   deleteDomainModel(id: string): Promise<{ deleted: boolean }> {
-    return request(`/api/v1/domain-models/${id}`, { method: 'DELETE' });
+    return request(`/api/v1/domain-models/${id}`, { method: "DELETE" });
   },
 
   // ── Bounded Contexts ───────────────────────────────────────────────────────
@@ -202,12 +212,12 @@ export const api = {
       sourceDirectory?: string;
       teamOwnership?: string;
       status?: string;
-      subdomainType?: 'core' | 'supporting' | 'generic';
-      relationships?: BoundedContext['relationships'];
+      subdomainType?: "core" | "supporting" | "generic";
+      relationships?: BoundedContext["relationships"];
     },
   ): Promise<BoundedContext> {
     return request(`/api/v1/domain-models/${modelId}/contexts`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(data),
     });
   },
@@ -223,20 +233,23 @@ export const api = {
       sourceDirectory: string;
       teamOwnership: string;
       status: string;
-      subdomainType: 'core' | 'supporting' | 'generic' | null;
-      relationships: BoundedContext['relationships'];
+      subdomainType: "core" | "supporting" | "generic" | null;
+      relationships: BoundedContext["relationships"];
     }>,
   ): Promise<BoundedContext> {
     return request(`/api/v1/domain-models/${modelId}/contexts/${contextId}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(data),
     });
   },
 
   /** Delete a bounded context */
-  deleteBoundedContext(modelId: string, contextId: string): Promise<{ deleted: boolean }> {
+  deleteBoundedContext(
+    modelId: string,
+    contextId: string,
+  ): Promise<{ deleted: boolean }> {
     return request(`/api/v1/domain-models/${modelId}/contexts/${contextId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   },
 
@@ -254,13 +267,13 @@ export const api = {
       valueObjects?: string[];
       events?: string[];
       commands?: string[];
-      invariants?: Aggregate['invariants'];
+      invariants?: Aggregate["invariants"];
       sourceFile?: string;
       status?: string;
     },
   ): Promise<Aggregate> {
     return request(`/api/v1/domain-models/${modelId}/aggregates`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(data),
     });
   },
@@ -276,7 +289,7 @@ export const api = {
       slug: string;
       title: string;
       description?: string;
-      payload?: DomainEvent['payload'];
+      payload?: DomainEvent["payload"];
       consumedBy?: string[];
       triggers?: string[];
       sideEffects?: string[];
@@ -284,7 +297,7 @@ export const api = {
     },
   ): Promise<DomainEvent> {
     return request(`/api/v1/domain-models/${modelId}/events`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(data),
     });
   },
@@ -299,14 +312,14 @@ export const api = {
       slug: string;
       title: string;
       description?: string;
-      properties?: ValueObject['properties'];
+      properties?: ValueObject["properties"];
       validationRules?: string[];
       immutable?: boolean;
       sourceFile?: string;
     },
   ): Promise<ValueObject> {
     return request(`/api/v1/domain-models/${modelId}/value-objects`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(data),
     });
   },
@@ -327,7 +340,7 @@ export const api = {
     },
   ): Promise<GlossaryTerm> {
     return request(`/api/v1/domain-models/${modelId}/glossary`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(data),
     });
   },
@@ -341,38 +354,38 @@ export const api = {
 
   /** Get the latest governance snapshot */
   getGovernanceLatest(): Promise<GovernanceSnapshot> {
-    return request('/api/v1/governance/latest');
+    return request("/api/v1/governance/latest");
   },
 
   /** List all governance snapshots */
   listGovernanceSnapshots(): Promise<GovernanceSnapshot[]> {
-    return request('/api/v1/governance/snapshots');
+    return request("/api/v1/governance/snapshots");
   },
 
   /** Get road items with optional status filter */
   getGovernanceRoads(status?: string): Promise<RoadItemSummary[]> {
-    const qs = status ? `?status=${status}` : '';
+    const qs = status ? `?status=${status}` : "";
     return request(`/api/v1/governance/roads${qs}`);
   },
 
   /** Get capability coverage */
   getCapabilityCoverage(): Promise<CapabilityCoverage[]> {
-    return request('/api/v1/governance/coverage/capabilities');
+    return request("/api/v1/governance/coverage/capabilities");
   },
 
   /** Get persona coverage */
   getPersonaCoverage(): Promise<PersonaCoverage[]> {
-    return request('/api/v1/governance/coverage/personas');
+    return request("/api/v1/governance/coverage/personas");
   },
 
   /** Get governance health trends */
   getGovernanceTrends(limit?: number): Promise<TrendPoint[]> {
-    const qs = limit ? `?limit=${limit}` : '';
+    const qs = limit ? `?limit=${limit}` : "";
     return request(`/api/v1/governance/trends${qs}`);
   },
 
   /** Get cross-reference integrity report */
   getGovernanceIntegrity(): Promise<IntegrityReport> {
-    return request('/api/v1/governance/integrity');
+    return request("/api/v1/governance/integrity");
   },
 };

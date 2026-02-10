@@ -265,6 +265,6 @@ export interface CreateScanParams {
   maturityLevel: string;
   scanDate: string;
   scannerVersion: string;
-  assessmentMode: 'standard' | 'critical';
+  assessmentMode: "standard" | "critical";
   executiveSummary?: string;
 }

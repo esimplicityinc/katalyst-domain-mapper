@@ -1,18 +1,18 @@
-import { glob } from 'glob';
-import { governance } from '@foe/schemas';
-import { parseCapabilityFile } from '../parsers/governance/capability.js';
-import { parsePersonaFile } from '../parsers/governance/persona.js';
-import { parseUserStoryFile } from '../parsers/governance/user-story.js';
-import { parseUseCaseFile } from '../parsers/governance/use-case.js';
-import { parseRoadItemFile } from '../parsers/governance/road-item.js';
-import { parseAdrFile } from '../parsers/governance/adr.js';
-import { parseNfrFile } from '../parsers/governance/nfr.js';
-import { parseChangeEntryFile } from '../parsers/governance/change-entry.js';
-import { parseBoundedContextFile } from '../parsers/governance/bounded-context.js';
-import { parseAggregateFile } from '../parsers/governance/aggregate.js';
-import { parseValueObjectFile } from '../parsers/governance/value-object.js';
-import { parseDomainEventFile } from '../parsers/governance/domain-event.js';
-import { GOVERNANCE_ROOT } from '../config.js';
+import { glob } from "glob";
+import { governance } from "@foe/schemas";
+import { parseCapabilityFile } from "../parsers/governance/capability.js";
+import { parsePersonaFile } from "../parsers/governance/persona.js";
+import { parseUserStoryFile } from "../parsers/governance/user-story.js";
+import { parseUseCaseFile } from "../parsers/governance/use-case.js";
+import { parseRoadItemFile } from "../parsers/governance/road-item.js";
+import { parseAdrFile } from "../parsers/governance/adr.js";
+import { parseNfrFile } from "../parsers/governance/nfr.js";
+import { parseChangeEntryFile } from "../parsers/governance/change-entry.js";
+import { parseBoundedContextFile } from "../parsers/governance/bounded-context.js";
+import { parseAggregateFile } from "../parsers/governance/aggregate.js";
+import { parseValueObjectFile } from "../parsers/governance/value-object.js";
+import { parseDomainEventFile } from "../parsers/governance/domain-event.js";
+import { GOVERNANCE_ROOT } from "../config.js";
 
 /**
  * Parse all files matching a glob pattern through a parser function.
@@ -27,7 +27,7 @@ async function parseAllFiles<T extends Record<string, unknown>>(
   const files = await glob(pattern, {
     cwd,
     absolute: true,
-    ignore: ['**/node_modules/**', '**/index.md'],
+    ignore: ["**/node_modules/**", "**/index.md"],
   });
   const records: Record<string, T> = {};
   const errors: string[] = [];
@@ -59,107 +59,107 @@ async function parseAllFiles<T extends Record<string, unknown>>(
  */
 export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex> {
   const startTime = Date.now();
-  console.log('Building governance index...');
+  console.log("Building governance index...");
 
   const allErrors: string[] = [];
 
   // Parse all artifact types
   const { records: capabilities, errors: capErrors } = await parseAllFiles(
-    'capabilities/CAP-*.md',
+    "capabilities/CAP-*.md",
     GOVERNANCE_ROOT,
     parseCapabilityFile,
-    'id',
+    "id",
   );
   allErrors.push(...capErrors);
 
   const { records: personas, errors: perErrors } = await parseAllFiles(
-    'personas/PER-*.md',
+    "personas/PER-*.md",
     GOVERNANCE_ROOT,
     parsePersonaFile,
-    'id',
+    "id",
   );
   allErrors.push(...perErrors);
 
   const { records: userStories, errors: usErrors } = await parseAllFiles(
-    'user-stories/US-*.md',
+    "user-stories/US-*.md",
     GOVERNANCE_ROOT,
     parseUserStoryFile,
-    'id',
+    "id",
   );
   allErrors.push(...usErrors);
 
   // Use-cases may not have individual markdown files yet
   const { records: useCases, errors: ucErrors } = await parseAllFiles(
-    'use-cases/UC-*.md',
+    "use-cases/UC-*.md",
     GOVERNANCE_ROOT,
     parseUseCaseFile,
-    'id',
+    "id",
   );
   allErrors.push(...ucErrors);
 
   const { records: roadItems, errors: roadErrors } = await parseAllFiles(
-    'roads/ROAD-*.md',
+    "roads/ROAD-*.md",
     GOVERNANCE_ROOT,
     parseRoadItemFile,
-    'id',
+    "id",
   );
   allErrors.push(...roadErrors);
 
   const { records: adrs, errors: adrErrors } = await parseAllFiles(
-    'adr/ADR-*.md',
+    "adr/ADR-*.md",
     GOVERNANCE_ROOT,
     parseAdrFile,
-    'id',
+    "id",
   );
   allErrors.push(...adrErrors);
 
   const { records: nfrs, errors: nfrErrors } = await parseAllFiles(
-    'nfr/NFR-*.md',
+    "nfr/NFR-*.md",
     GOVERNANCE_ROOT,
     parseNfrFile,
-    'id',
+    "id",
   );
   allErrors.push(...nfrErrors);
 
   // Change entries may not exist yet
   const { records: changeEntries, errors: changeErrors } = await parseAllFiles(
-    'changes/CHANGE-*.md',
+    "changes/CHANGE-*.md",
     GOVERNANCE_ROOT,
     parseChangeEntryFile,
-    'id',
+    "id",
   );
   allErrors.push(...changeErrors);
 
   // DDD artifacts (keyed by slug)
   const { records: boundedContexts, errors: bcErrors } = await parseAllFiles(
-    'ddd/contexts/*.md',
+    "ddd/contexts/*.md",
     GOVERNANCE_ROOT,
     parseBoundedContextFile,
-    'slug',
+    "slug",
   );
   allErrors.push(...bcErrors);
 
   const { records: aggregates, errors: aggErrors } = await parseAllFiles(
-    'ddd/aggregates/*.md',
+    "ddd/aggregates/*.md",
     GOVERNANCE_ROOT,
     parseAggregateFile,
-    'slug',
+    "slug",
   );
   allErrors.push(...aggErrors);
 
   const { records: valueObjects, errors: voErrors } = await parseAllFiles(
-    'ddd/value-objects/*.md',
+    "ddd/value-objects/*.md",
     GOVERNANCE_ROOT,
     parseValueObjectFile,
-    'slug',
+    "slug",
   );
   allErrors.push(...voErrors);
 
   const { records: domainEvents, errors: deErrors } = await parseAllFiles(
-    'ddd/events/*.md',
+    "ddd/events/*.md",
     GOVERNANCE_ROOT,
     parseDomainEventFile,
-    'slug',
+    "slug",
   );
   allErrors.push(...deErrors);
 
@@ -172,7 +172,10 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
   // ── Build reverse indices ──────────────────────────────────────
 
   // byCapability: for each capability, which personas/stories/roads reference it
-  const byCapability: Record<string, { personas: string[]; stories: string[]; roads: string[] }> = {};
+  const byCapability: Record<
+    string,
+    { personas: string[]; stories: string[]; roads: string[] }
+  > = {};
   for (const capId of Object.keys(capabilities)) {
     byCapability[capId] = { personas: [], stories: [], roads: [] };
   }
@@ -193,7 +196,10 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
   }
 
   // byPersona: for each persona, their stories and capabilities
-  const byPersona: Record<string, { stories: string[]; capabilities: string[] }> = {};
+  const byPersona: Record<
+    string,
+    { stories: string[]; capabilities: string[] }
+  > = {};
   for (const [perId, persona] of Object.entries(personas)) {
     byPersona[perId] = {
       stories: persona.relatedStories,
@@ -202,7 +208,15 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
   }
 
   // byRoad: for each road item, its ADRs, changes, capabilities, and NFRs
-  const byRoad: Record<string, { adrs: string[]; changes: string[]; capabilities: string[]; nfrs: string[] }> = {};
+  const byRoad: Record<
+    string,
+    {
+      adrs: string[];
+      changes: string[];
+      capabilities: string[];
+      nfrs: string[];
+    }
+  > = {};
   for (const [roadId, road] of Object.entries(roadItems)) {
     byRoad[roadId] = {
       adrs: road.governance.adrs.ids,
@@ -218,9 +232,22 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
   }
 
   // byContext: for each bounded context, its aggregates, events, value objects, and roads
-  const byContext: Record<string, { aggregates: string[]; events: string[]; valueObjects: string[]; roads: string[] }> = {};
+  const byContext: Record<
+    string,
+    {
+      aggregates: string[];
+      events: string[];
+      valueObjects: string[];
+      roads: string[];
+    }
+  > = {};
   for (const slug of Object.keys(boundedContexts)) {
-    byContext[slug] = { aggregates: [], events: [], valueObjects: [], roads: [] };
+    byContext[slug] = {
+      aggregates: [],
+      events: [],
+      valueObjects: [],
+      roads: [],
+    };
   }
   for (const [slug, agg] of Object.entries(aggregates)) {
     if (byContext[agg.context]) byContext[agg.context].aggregates.push(slug);
@@ -233,7 +260,10 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
   }
 
   // byAggregate: for each aggregate, its context, value objects, and events
-  const byAggregate: Record<string, { context: string; valueObjects: string[]; events: string[] }> = {};
+  const byAggregate: Record<
+    string,
+    { context: string; valueObjects: string[]; events: string[] }
+  > = {};
   for (const [slug, agg] of Object.entries(aggregates)) {
     byAggregate[slug] = {
       context: agg.context,
@@ -250,12 +280,16 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
   for (const [id, persona] of Object.entries(personas)) {
     for (const capId of persona.typicalCapabilities) {
       if (!capabilities[capId]) {
-        integrityErrors.push(`Persona ${id} references non-existent capability ${capId}`);
+        integrityErrors.push(
+          `Persona ${id} references non-existent capability ${capId}`,
+        );
       }
     }
     for (const storyId of persona.relatedStories) {
       if (!userStories[storyId]) {
-        integrityErrors.push(`Persona ${id} references non-existent user story ${storyId}`);
+        integrityErrors.push(
+          `Persona ${id} references non-existent user story ${storyId}`,
+        );
       }
     }
   }
@@ -263,11 +297,15 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
   // UserStory → Persona, Capability
   for (const [id, story] of Object.entries(userStories)) {
     if (!personas[story.persona]) {
-      integrityErrors.push(`User story ${id} references non-existent persona ${story.persona}`);
+      integrityErrors.push(
+        `User story ${id} references non-existent persona ${story.persona}`,
+      );
     }
     for (const capId of story.capabilities) {
       if (!capabilities[capId]) {
-        integrityErrors.push(`User story ${id} references non-existent capability ${capId}`);
+        integrityErrors.push(
+          `User story ${id} references non-existent capability ${capId}`,
+        );
       }
     }
   }
@@ -276,7 +314,9 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
   for (const [id, road] of Object.entries(roadItems)) {
     for (const depId of road.dependsOn) {
       if (!roadItems[depId]) {
-        integrityErrors.push(`Road item ${id} depends on non-existent ${depId}`);
+        integrityErrors.push(
+          `Road item ${id} depends on non-existent ${depId}`,
+        );
       }
     }
   }
@@ -284,32 +324,44 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
   // ChangeEntry → RoadItem
   for (const [id, change] of Object.entries(changeEntries)) {
     if (!roadItems[change.roadId]) {
-      integrityErrors.push(`Change entry ${id} references non-existent road item ${change.roadId}`);
+      integrityErrors.push(
+        `Change entry ${id} references non-existent road item ${change.roadId}`,
+      );
     }
   }
 
   // DDD referential integrity
   for (const [slug, agg] of Object.entries(aggregates)) {
     if (!boundedContexts[agg.context]) {
-      integrityErrors.push(`Aggregate ${slug} references non-existent context ${agg.context}`);
+      integrityErrors.push(
+        `Aggregate ${slug} references non-existent context ${agg.context}`,
+      );
     }
     for (const voSlug of agg.valueObjects) {
       if (!valueObjects[voSlug]) {
-        integrityErrors.push(`Aggregate ${slug} references non-existent value object ${voSlug}`);
+        integrityErrors.push(
+          `Aggregate ${slug} references non-existent value object ${voSlug}`,
+        );
       }
     }
     for (const evSlug of agg.events) {
       if (!domainEvents[evSlug]) {
-        integrityErrors.push(`Aggregate ${slug} references non-existent domain event ${evSlug}`);
+        integrityErrors.push(
+          `Aggregate ${slug} references non-existent domain event ${evSlug}`,
+        );
       }
     }
   }
   for (const [slug, event] of Object.entries(domainEvents)) {
     if (!boundedContexts[event.context]) {
-      integrityErrors.push(`Domain event ${slug} references non-existent context ${event.context}`);
+      integrityErrors.push(
+        `Domain event ${slug} references non-existent context ${event.context}`,
+      );
     }
     if (event.aggregate && !aggregates[event.aggregate]) {
-      integrityErrors.push(`Domain event ${slug} references non-existent aggregate ${event.aggregate}`);
+      integrityErrors.push(
+        `Domain event ${slug} references non-existent aggregate ${event.aggregate}`,
+      );
     }
   }
 
@@ -319,13 +371,14 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
   const roadsByPhase: Record<string, number> = {};
   for (const road of Object.values(roadItems)) {
     roadsByStatus[road.status] = (roadsByStatus[road.status] || 0) + 1;
-    roadsByPhase[String(road.phase)] = (roadsByPhase[String(road.phase)] || 0) + 1;
+    roadsByPhase[String(road.phase)] =
+      (roadsByPhase[String(road.phase)] || 0) + 1;
   }
 
   // ── Assemble index ─────────────────────────────────────────────
 
   const index: governance.GovernanceIndex = {
-    version: '1.0.0',
+    version: "1.0.0",
     generated: new Date().toISOString(),
     capabilities,
     personas,
@@ -370,18 +423,21 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
   console.log(`\nGovernance index built in ${duration}ms`);
   console.log(
     `Artifacts: ${Object.keys(capabilities).length} capabilities, ` +
-    `${Object.keys(personas).length} personas, ` +
-    `${Object.keys(userStories).length} stories, ` +
-    `${Object.keys(roadItems).length} roads, ` +
-    `${Object.keys(adrs).length} ADRs, ` +
-    `${Object.keys(nfrs).length} NFRs`,
+      `${Object.keys(personas).length} personas, ` +
+      `${Object.keys(userStories).length} stories, ` +
+      `${Object.keys(roadItems).length} roads, ` +
+      `${Object.keys(adrs).length} ADRs, ` +
+      `${Object.keys(nfrs).length} NFRs`,
   );
-  if (Object.keys(boundedContexts).length > 0 || Object.keys(aggregates).length > 0) {
+  if (
+    Object.keys(boundedContexts).length > 0 ||
+    Object.keys(aggregates).length > 0
+  ) {
     console.log(
       `DDD: ${Object.keys(boundedContexts).length} contexts, ` +
-      `${Object.keys(aggregates).length} aggregates, ` +
-      `${Object.keys(valueObjects).length} value objects, ` +
-      `${Object.keys(domainEvents).length} domain events`,
+        `${Object.keys(aggregates).length} aggregates, ` +
+        `${Object.keys(valueObjects).length} value objects, ` +
+        `${Object.keys(domainEvents).length} domain events`,
     );
   }
   if (integrityErrors.length > 0) {

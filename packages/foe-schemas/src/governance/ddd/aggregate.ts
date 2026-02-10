@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { SlugPattern } from '../common.js';
+import { z } from "zod";
+import { SlugPattern } from "../common.js";
 
 export const InvariantSchema = z.object({
   description: z.string(),
@@ -18,7 +18,7 @@ export const AggregateSchema = z.object({
   invariants: z.array(InvariantSchema).default([]),
   commands: z.array(z.string()).default([]),
   sourceFile: z.string().optional(),
-  status: z.enum(['draft', 'implemented', 'deprecated']).default('draft'),
+  status: z.enum(["draft", "implemented", "deprecated"]).default("draft"),
   path: z.string(),
 });
 

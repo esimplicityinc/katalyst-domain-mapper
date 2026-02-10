@@ -7,7 +7,16 @@ export interface ValidatedSnapshotData {
   capabilities: Record<string, { id?: string; title: string; status: string }>;
   personas: Record<string, { id?: string; name: string; type: string }>;
   userStories: Record<string, unknown>;
-  roadItems: Record<string, { id?: string; title: string; status: string; phase?: number; priority?: string }>;
+  roadItems: Record<
+    string,
+    {
+      id?: string;
+      title: string;
+      status: string;
+      phase?: number;
+      priority?: string;
+    }
+  >;
   stats: {
     capabilities?: number;
     totalCapabilities?: number;

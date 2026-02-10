@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from "react";
 
 interface ViewBox {
   x: number;
@@ -112,18 +112,15 @@ export function useSvgPanZoom(): UseSvgPanZoomResult {
   );
 
   // Touch support
-  const handleTouchStart = useCallback(
-    (e: React.TouchEvent<SVGSVGElement>) => {
-      if (e.touches.length === 1) {
-        isPanning.current = true;
-        lastPoint.current = {
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-        };
-      }
-    },
-    [],
-  );
+  const handleTouchStart = useCallback((e: React.TouchEvent<SVGSVGElement>) => {
+    if (e.touches.length === 1) {
+      isPanning.current = true;
+      lastPoint.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+    }
+  }, []);
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent<SVGSVGElement>) => {

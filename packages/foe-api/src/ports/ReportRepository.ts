@@ -56,7 +56,12 @@ export interface ReportRepository {
   delete(id: string): Promise<boolean>;
 
   /** Get or create a repository record, returning its ID */
-  ensureRepository(name: string, url?: string, techStack?: string[], isMonorepo?: boolean): Promise<string>;
+  ensureRepository(
+    name: string,
+    url?: string,
+    techStack?: string[],
+    isMonorepo?: boolean,
+  ): Promise<string>;
 
   /** List all repositories with summary info */
   listRepositories(): Promise<RepositorySummary[]>;

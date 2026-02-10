@@ -5,7 +5,7 @@ export class DockerScanRunner implements ScanRunner {
   constructor(
     private image: string,
     private getApiKey: () => string | undefined,
-    private logger: Logger
+    private logger: Logger,
   ) {}
 
   async run(repositoryPath: string): Promise<ScanResult> {
@@ -21,8 +21,10 @@ export class DockerScanRunner implements ScanRunner {
     const args = [
       "run",
       "--rm",
-      "-v", `${repositoryPath}:/repo`,
-      "-e", `ANTHROPIC_API_KEY=${apiKey}`,
+      "-v",
+      `${repositoryPath}:/repo`,
+      "-e",
+      `ANTHROPIC_API_KEY=${apiKey}`,
       this.image,
     ];
 
@@ -42,11 +44,16 @@ export class DockerScanRunner implements ScanRunner {
       const exitCode = await proc.exited;
 
       if (stderr) {
-        this.logger.debug("Scanner stderr output", { stderr: stderr.slice(0, 2000) });
+        this.logger.debug("Scanner stderr output", {
+          stderr: stderr.slice(0, 2000),
+        });
       }
 
       if (exitCode !== 0) {
-        this.logger.error("Scanner exited with error", { exitCode, stderr: stderr.slice(0, 2000) });
+        this.logger.error("Scanner exited with error", {
+          exitCode,
+          stderr: stderr.slice(0, 2000),
+        });
         return {
           success: false,
           report: null,
@@ -76,7 +83,9 @@ export class DockerScanRunner implements ScanRunner {
         if (jsonStart >= 0 && jsonEnd > jsonStart) {
           try {
             const report = JSON.parse(trimmed.slice(jsonStart, jsonEnd + 1));
-            this.logger.info("Scanner completed successfully (extracted JSON from output)");
+            this.logger.info(
+              "Scanner completed successfully (extracted JSON from output)",
+            );
             return { success: true, report };
           } catch {
             return {

@@ -3,8 +3,18 @@ import type { ReportRepository } from "../../ports/ReportRepository.js";
 import { ReportNotFoundError } from "../../domain/report/ReportErrors.js";
 
 export interface ReportComparison {
-  baseReport: { id: string; repository: string; scanDate: string; overallScore: number };
-  compareReport: { id: string; repository: string; scanDate: string; overallScore: number };
+  baseReport: {
+    id: string;
+    repository: string;
+    scanDate: string;
+    overallScore: number;
+  };
+  compareReport: {
+    id: string;
+    repository: string;
+    scanDate: string;
+    overallScore: number;
+  };
   scoreDelta: number;
   dimensionDeltas: {
     feedback: number;
@@ -48,9 +58,14 @@ export class CompareReports {
       },
       scoreDelta: compare.overallScore - base.overallScore,
       dimensionDeltas: {
-        feedback: compare.dimensions.feedback.score - base.dimensions.feedback.score,
-        understanding: compare.dimensions.understanding.score - base.dimensions.understanding.score,
-        confidence: compare.dimensions.confidence.score - base.dimensions.confidence.score,
+        feedback:
+          compare.dimensions.feedback.score - base.dimensions.feedback.score,
+        understanding:
+          compare.dimensions.understanding.score -
+          base.dimensions.understanding.score,
+        confidence:
+          compare.dimensions.confidence.score -
+          base.dimensions.confidence.score,
       },
       maturityChange:
         base.maturityLevel !== compare.maturityLevel

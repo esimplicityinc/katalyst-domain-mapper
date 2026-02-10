@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import type { BoundedContext } from '../../../types/domain';
+import { useMemo } from "react";
+import type { BoundedContext } from "../../../types/domain";
 
 export interface PositionedNode {
   context: BoundedContext;
@@ -54,10 +54,10 @@ export function useAutoLayout(contexts: BoundedContext[]): PositionedNode[] {
 
     for (const ctx of contexts) {
       switch (ctx.subdomainType) {
-        case 'core':
+        case "core":
           core.push(ctx);
           break;
-        case 'supporting':
+        case "supporting":
           supporting.push(ctx);
           break;
         default:
@@ -82,17 +82,19 @@ export function useAutoLayout(contexts: BoundedContext[]): PositionedNode[] {
     }
 
     // Supporting: middle ring, offset angle so they don't overlap with core
-    const supportingOffset = supporting.length > 0 && core.length > 0
-      ? -Math.PI / 2 + Math.PI / supporting.length
-      : -Math.PI / 2;
+    const supportingOffset =
+      supporting.length > 0 && core.length > 0
+        ? -Math.PI / 2 + Math.PI / supporting.length
+        : -Math.PI / 2;
     positions.push(
       ...distributeOnRing(supporting, SUPPORTING_RADIUS, supportingOffset),
     );
 
     // Generic + unclassified: outer ring, offset from supporting
-    const outerOffset = outer.length > 0 && supporting.length > 0
-      ? -Math.PI / 2 + Math.PI / (outer.length * 2)
-      : -Math.PI / 2;
+    const outerOffset =
+      outer.length > 0 && supporting.length > 0
+        ? -Math.PI / 2 + Math.PI / (outer.length * 2)
+        : -Math.PI / 2;
     positions.push(...distributeOnRing(outer, OUTER_RADIUS, outerOffset));
 
     return positions;

@@ -1,15 +1,25 @@
-import { z } from 'zod';
-import { AdrIdPattern } from './common.js';
+import { z } from "zod";
+import { AdrIdPattern } from "./common.js";
 
-export const AdrStatusSchema = z.enum(['proposed', 'accepted', 'deprecated', 'superseded']);
-export const AdrCategorySchema = z.enum(['architecture', 'infrastructure', 'security', 'performance']);
+export const AdrStatusSchema = z.enum([
+  "proposed",
+  "accepted",
+  "deprecated",
+  "superseded",
+]);
+export const AdrCategorySchema = z.enum([
+  "architecture",
+  "infrastructure",
+  "security",
+  "performance",
+]);
 
 export const AdrSchema = z.object({
   id: AdrIdPattern,
   title: z.string(),
   status: AdrStatusSchema,
   category: AdrCategorySchema,
-  scope: z.string().default('project-wide'),
+  scope: z.string().default("project-wide"),
   created: z.string(),
   updated: z.string(),
   supersededBy: AdrIdPattern.optional(),

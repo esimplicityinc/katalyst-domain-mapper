@@ -1,12 +1,12 @@
-import { Kanban, Hash, Flag } from 'lucide-react';
-import type { RoadItemSummary } from '../../types/governance';
+import { Kanban, Hash, Flag } from "lucide-react";
+import type { RoadItemSummary } from "../../types/governance";
 import {
   GOVERNANCE_STATES,
   STATE_COLORS,
   STATE_LABELS,
   PRIORITY_COLORS,
-} from '../../types/governance';
-import type { GovernanceState } from '../../types/governance';
+} from "../../types/governance";
+import type { GovernanceState } from "../../types/governance";
 
 interface KanbanBoardProps {
   items: RoadItemSummary[];
@@ -14,9 +14,15 @@ interface KanbanBoardProps {
   onFilterChange: (state: string | null) => void;
 }
 
-export function KanbanBoard({ items, filterState, onFilterChange }: KanbanBoardProps) {
+export function KanbanBoard({
+  items,
+  filterState,
+  onFilterChange,
+}: KanbanBoardProps) {
   // Group items by status
-  const grouped = GOVERNANCE_STATES.reduce<Record<GovernanceState, RoadItemSummary[]>>(
+  const grouped = GOVERNANCE_STATES.reduce<
+    Record<GovernanceState, RoadItemSummary[]>
+  >(
     (acc, state) => {
       acc[state] = items.filter((item) => item.status === state);
       return acc;
@@ -25,7 +31,15 @@ export function KanbanBoard({ items, filterState, onFilterChange }: KanbanBoardP
   );
 
   // Columns to display: either the filtered state only, or all states with items (+ always show pipeline core)
-  const coreStates: GovernanceState[] = ['proposed', 'adr_validated', 'bdd_pending', 'bdd_complete', 'implementing', 'nfr_validating', 'complete'];
+  const coreStates: GovernanceState[] = [
+    "proposed",
+    "adr_validated",
+    "bdd_pending",
+    "bdd_complete",
+    "implementing",
+    "nfr_validating",
+    "complete",
+  ];
   const visibleColumns: GovernanceState[] = filterState
     ? [filterState as GovernanceState]
     : GOVERNANCE_STATES.filter(
@@ -40,8 +54,8 @@ export function KanbanBoard({ items, filterState, onFilterChange }: KanbanBoardP
           onClick={() => onFilterChange(null)}
           className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
             filterState === null
-              ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+              : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
           }`}
         >
           All ({items.length})
@@ -53,7 +67,9 @@ export function KanbanBoard({ items, filterState, onFilterChange }: KanbanBoardP
           return (
             <button
               key={state}
-              onClick={() => onFilterChange(filterState === state ? null : state)}
+              onClick={() =>
+                onFilterChange(filterState === state ? null : state)
+              }
               className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
                 filterState === state
                   ? `${colors.bg} ${colors.text} ring-2 ring-offset-1 ring-current`
@@ -79,9 +95,13 @@ export function KanbanBoard({ items, filterState, onFilterChange }: KanbanBoardP
               className={`flex-shrink-0 w-72 lg:w-auto lg:flex-1 min-w-[16rem] snap-center rounded-lg border ${colors.border} bg-gray-50 dark:bg-gray-800/50`}
             >
               {/* Column header */}
-              <div className={`flex items-center justify-between px-3 py-2.5 border-b ${colors.border}`}>
+              <div
+                className={`flex items-center justify-between px-3 py-2.5 border-b ${colors.border}`}
+              >
                 <div className="flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full ${colors.bg} ${colors.text}`}>
+                  <span
+                    className={`w-2 h-2 rounded-full ${colors.bg} ${colors.text}`}
+                  >
                     <span className="sr-only">{state}</span>
                   </span>
                   <h3 className={`text-sm font-semibold ${colors.text}`}>
@@ -137,7 +157,9 @@ function KanbanCard({ item }: { item: RoadItemSummary }) {
         <span className="text-xs font-mono text-gray-400 dark:text-gray-500">
           {item.id}
         </span>
-        <span className={`flex items-center gap-1 text-xs font-medium ${priorityColor}`}>
+        <span
+          className={`flex items-center gap-1 text-xs font-medium ${priorityColor}`}
+        >
           <Flag className="w-3 h-3" />
           {item.priority}
         </span>

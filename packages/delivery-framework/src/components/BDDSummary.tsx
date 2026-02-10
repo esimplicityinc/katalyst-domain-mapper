@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useBDDData } from '../hooks/useBDDData';
-import BDDViewer from './BDDViewer';
-import type { RoadmapItem } from '../types/roadmap';
+import React, { useState } from "react";
+import { useBDDData } from "../hooks/useBDDData";
+import BDDViewer from "./BDDViewer";
+import type { RoadmapItem } from "../types/roadmap";
 
 interface BDDSummaryProps {
   roadId: string;
@@ -14,9 +14,9 @@ function formatRelativeTime(isoString: string): string {
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffHours < 1) return 'Just now';
-  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  if (diffHours < 1) return "Just now";
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
   return date.toLocaleDateString();
 }
 
@@ -30,7 +30,7 @@ export default function BDDSummary({ roadId }: BDDSummaryProps): JSX.Element {
     setSearchQuery,
     matchedCount,
     totalResults,
-    getTestsByRoadId
+    getTestsByRoadId,
   } = useBDDData();
 
   const roadTests = getTestsByRoadId(roadId);
@@ -65,15 +65,19 @@ export default function BDDSummary({ roadId }: BDDSummaryProps): JSX.Element {
   }
 
   // Calculate totals across all BDD files for this ROAD item
-  const totalScenarios = roadTests.reduce((sum, t) => sum + t.scenarios.length, 0);
+  const totalScenarios = roadTests.reduce(
+    (sum, t) => sum + t.scenarios.length,
+    0,
+  );
   const totalPassed = roadTests.reduce((sum, t) => sum + t.summary.passed, 0);
   const totalFailed = roadTests.reduce((sum, t) => sum + t.summary.failed, 0);
   const totalPending = roadTests.reduce((sum, t) => sum + t.summary.pending, 0);
 
   // Get latest run time
-  const lastRun = roadTests.reduce((latest, t) => 
-    new Date(t.lastRun) > new Date(latest) ? t.lastRun : latest,
-    roadTests[0].lastRun
+  const lastRun = roadTests.reduce(
+    (latest, t) =>
+      new Date(t.lastRun) > new Date(latest) ? t.lastRun : latest,
+    roadTests[0].lastRun,
   );
 
   return (
@@ -88,7 +92,7 @@ export default function BDDSummary({ roadId }: BDDSummaryProps): JSX.Element {
           {roadTests.map((test, idx) => (
             <div key={idx} className="bdd-summary-file">
               <code className="bdd-summary-filename">
-                {test.file.split('/').pop()}
+                {test.file.split("/").pop()}
               </code>
             </div>
           ))}
@@ -113,7 +117,7 @@ export default function BDDSummary({ roadId }: BDDSummaryProps): JSX.Element {
           </span>
         </div>
 
-        <button 
+        <button
           className="bdd-summary-button"
           onClick={() => setIsViewerOpen(true)}
         >

@@ -1,6 +1,13 @@
-import { useState } from 'react';
-import { Box, ChevronDown, ChevronRight, Shield, Zap, FileCode } from 'lucide-react';
-import type { DomainModelFull, Aggregate } from '../../types/domain';
+import { useState } from "react";
+import {
+  Box,
+  ChevronDown,
+  ChevronRight,
+  Shield,
+  Zap,
+  FileCode,
+} from "lucide-react";
+import type { DomainModelFull, Aggregate } from "../../types/domain";
 
 interface AggregatesViewProps {
   model: DomainModelFull;
@@ -20,7 +27,7 @@ export function AggregatesView({ model }: AggregatesViewProps) {
 
   const getContextName = (contextId: string): string => {
     const ctx = model.boundedContexts.find((c) => c.id === contextId);
-    return ctx?.title ?? 'Unknown Context';
+    return ctx?.title ?? "Unknown Context";
   };
 
   // Group aggregates by bounded context
@@ -44,8 +51,9 @@ export function AggregatesView({ model }: AggregatesViewProps) {
           Aggregates
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-          {totalAggregates} aggregate{totalAggregates !== 1 ? 's' : ''} across{' '}
-          {model.boundedContexts.length} context{model.boundedContexts.length !== 1 ? 's' : ''}
+          {totalAggregates} aggregate{totalAggregates !== 1 ? "s" : ""} across{" "}
+          {model.boundedContexts.length} context
+          {model.boundedContexts.length !== 1 ? "s" : ""}
         </p>
       </div>
 
@@ -53,7 +61,8 @@ export function AggregatesView({ model }: AggregatesViewProps) {
         <div className="text-center py-16">
           <Box className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            No aggregates defined yet. Use the chat to discover them or add them via the API.
+            No aggregates defined yet. Use the chat to discover them or add them
+            via the API.
           </p>
         </div>
       ) : (

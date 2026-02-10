@@ -72,17 +72,26 @@ export function createContainer(config: AppConfig): Container {
   const scanRunner = new DockerScanRunner(
     config.scannerImage,
     getAnthropicApiKey,
-    logger.child({ component: "scan-runner" })
+    logger.child({ component: "scan-runner" }),
   );
 
   // Use cases
-  const ingestReport = new IngestReport(reportRepo, logger.child({ usecase: "ingest-report" }));
+  const ingestReport = new IngestReport(
+    reportRepo,
+    logger.child({ usecase: "ingest-report" }),
+  );
   const getReport = new GetReport(reportRepo);
   const listReports = new ListReports(reportRepo);
   const compareReports = new CompareReports(reportRepo);
-  const triggerScan = new TriggerScan(scanJobRepo, logger.child({ usecase: "trigger-scan" }));
+  const triggerScan = new TriggerScan(
+    scanJobRepo,
+    logger.child({ usecase: "trigger-scan" }),
+  );
   const getScanStatus = new GetScanStatus(scanJobRepo);
-  const ingestGovernanceSnapshot = new IngestGovernanceSnapshot(governanceRepo, logger.child({ usecase: "ingest-governance" }));
+  const ingestGovernanceSnapshot = new IngestGovernanceSnapshot(
+    governanceRepo,
+    logger.child({ usecase: "ingest-governance" }),
+  );
   const queryGovernanceState = new QueryGovernanceState(governanceRepo);
   const getCapabilityCoverage = new GetCapabilityCoverage(governanceRepo);
   const getGovernanceTrend = new GetGovernanceTrend(governanceRepo);

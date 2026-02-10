@@ -9,7 +9,7 @@ export interface DomainModel {
   updatedAt: string;
 }
 
-export type SubdomainType = 'core' | 'supporting' | 'generic';
+export type SubdomainType = "core" | "supporting" | "generic";
 
 export interface BoundedContext {
   id: string;
@@ -30,14 +30,14 @@ export interface BoundedContext {
 export interface ContextRelationship {
   targetContextId: string;
   type:
-    | 'upstream'
-    | 'downstream'
-    | 'conformist'
-    | 'anticorruption-layer'
-    | 'shared-kernel'
-    | 'customer-supplier'
-    | 'partnership'
-    | 'published-language';
+    | "upstream"
+    | "downstream"
+    | "conformist"
+    | "anticorruption-layer"
+    | "shared-kernel"
+    | "customer-supplier"
+    | "partnership"
+    | "published-language";
   description?: string;
 }
 

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Repository Node
@@ -25,7 +25,7 @@ export const ScanNodeSchema = z.object({
   maturityLevel: z.string(),
   scanDate: z.string().datetime(),
   scannerVersion: z.string(),
-  assessmentMode: z.enum(['standard', 'critical']),
+  assessmentMode: z.enum(["standard", "critical"]),
   executiveSummary: z.string().optional(),
 });
 export type ScanNode = z.infer<typeof ScanNodeSchema>;
@@ -35,10 +35,10 @@ export type ScanNode = z.infer<typeof ScanNodeSchema>;
  * Represents one of the three FOE principles (Feedback, Understanding, Confidence)
  */
 export const DimensionNodeSchema = z.object({
-  name: z.enum(['Feedback', 'Understanding', 'Confidence']),
+  name: z.enum(["Feedback", "Understanding", "Confidence"]),
   score: z.number().min(0).max(100),
   max: z.literal(100),
-  confidence: z.enum(['high', 'medium', 'low']),
+  confidence: z.enum(["high", "medium", "low"]),
 });
 export type DimensionNode = z.infer<typeof DimensionNodeSchema>;
 
@@ -50,7 +50,7 @@ export const SubScoreNodeSchema = z.object({
   name: z.string(),
   score: z.number().min(0).max(25),
   max: z.literal(25),
-  confidence: z.enum(['high', 'medium', 'low']),
+  confidence: z.enum(["high", "medium", "low"]),
 });
 export type SubScoreNode = z.infer<typeof SubScoreNodeSchema>;
 
@@ -61,7 +61,7 @@ export type SubScoreNode = z.infer<typeof SubScoreNodeSchema>;
 export const FindingNodeSchema = z.object({
   id: z.string(),
   title: z.string(),
-  severity: z.enum(['critical', 'high', 'medium', 'low']),
+  severity: z.enum(["critical", "high", "medium", "low"]),
   area: z.string(),
   evidence: z.string(),
   impact: z.string(),
@@ -77,9 +77,9 @@ export type FindingNode = z.infer<typeof FindingNodeSchema>;
 export const RecommendationNodeSchema = z.object({
   id: z.string(),
   title: z.string(),
-  priority: z.enum(['immediate', 'short-term', 'medium-term']),
+  priority: z.enum(["immediate", "short-term", "medium-term"]),
   description: z.string(),
-  impact: z.enum(['high', 'medium', 'low']),
+  impact: z.enum(["high", "medium", "low"]),
 });
 export type RecommendationNode = z.infer<typeof RecommendationNodeSchema>;
 
@@ -90,8 +90,10 @@ export type RecommendationNode = z.infer<typeof RecommendationNodeSchema>;
 export const MethodNodeSchema = z.object({
   methodId: z.string().regex(/^M\d{3,}$/),
   title: z.string(),
-  maturity: z.enum(['hypothesized', 'observing', 'validated', 'proven']),
-  foeMaturity: z.enum(['hypothesized', 'observing', 'validated', 'proven']).optional(),
+  maturity: z.enum(["hypothesized", "observing", "validated", "proven"]),
+  foeMaturity: z
+    .enum(["hypothesized", "observing", "validated", "proven"])
+    .optional(),
   isExternal: z.boolean(),
   fieldGuide: z.string().optional(),
   keywords: z.array(z.string()),
@@ -106,8 +108,8 @@ export type MethodNode = z.infer<typeof MethodNodeSchema>;
 export const ObservationNodeSchema = z.object({
   observationId: z.string().regex(/^O\d{3,}$/),
   title: z.string(),
-  status: z.enum(['in-progress', 'completed']),
-  sourceType: z.enum(['internal', 'external']),
+  status: z.enum(["in-progress", "completed"]),
+  sourceType: z.enum(["internal", "external"]),
   dateDocumented: z.string().datetime().optional(),
 });
 export type ObservationNode = z.infer<typeof ObservationNodeSchema>;
@@ -146,18 +148,18 @@ export type KeywordNode = z.infer<typeof KeywordNodeSchema>;
 /**
  * Union of all node types for type safety
  */
-export const GraphNodeSchema = z.discriminatedUnion('_label', [
-  RepositoryNodeSchema.extend({ _label: z.literal('Repository') }),
-  ScanNodeSchema.extend({ _label: z.literal('Scan') }),
-  DimensionNodeSchema.extend({ _label: z.literal('Dimension') }),
-  SubScoreNodeSchema.extend({ _label: z.literal('SubScore') }),
-  FindingNodeSchema.extend({ _label: z.literal('Finding') }),
-  RecommendationNodeSchema.extend({ _label: z.literal('Recommendation') }),
-  MethodNodeSchema.extend({ _label: z.literal('Method') }),
-  ObservationNodeSchema.extend({ _label: z.literal('Observation') }),
-  FieldGuideNodeSchema.extend({ _label: z.literal('FieldGuide') }),
-  FrameworkNodeSchema.extend({ _label: z.literal('Framework') }),
-  KeywordNodeSchema.extend({ _label: z.literal('Keyword') }),
+export const GraphNodeSchema = z.discriminatedUnion("_label", [
+  RepositoryNodeSchema.extend({ _label: z.literal("Repository") }),
+  ScanNodeSchema.extend({ _label: z.literal("Scan") }),
+  DimensionNodeSchema.extend({ _label: z.literal("Dimension") }),
+  SubScoreNodeSchema.extend({ _label: z.literal("SubScore") }),
+  FindingNodeSchema.extend({ _label: z.literal("Finding") }),
+  RecommendationNodeSchema.extend({ _label: z.literal("Recommendation") }),
+  MethodNodeSchema.extend({ _label: z.literal("Method") }),
+  ObservationNodeSchema.extend({ _label: z.literal("Observation") }),
+  FieldGuideNodeSchema.extend({ _label: z.literal("FieldGuide") }),
+  FrameworkNodeSchema.extend({ _label: z.literal("Framework") }),
+  KeywordNodeSchema.extend({ _label: z.literal("Keyword") }),
 ]);
 export type GraphNode = z.infer<typeof GraphNodeSchema>;
 
@@ -165,15 +167,15 @@ export type GraphNode = z.infer<typeof GraphNodeSchema>;
  * Node label constants
  */
 export const NodeLabels = {
-  REPOSITORY: 'Repository',
-  SCAN: 'Scan',
-  DIMENSION: 'Dimension',
-  SUBSCORE: 'SubScore',
-  FINDING: 'Finding',
-  RECOMMENDATION: 'Recommendation',
-  METHOD: 'Method',
-  OBSERVATION: 'Observation',
-  FIELD_GUIDE: 'FieldGuide',
-  FRAMEWORK: 'Framework',
-  KEYWORD: 'Keyword',
+  REPOSITORY: "Repository",
+  SCAN: "Scan",
+  DIMENSION: "Dimension",
+  SUBSCORE: "SubScore",
+  FINDING: "Finding",
+  RECOMMENDATION: "Recommendation",
+  METHOD: "Method",
+  OBSERVATION: "Observation",
+  FIELD_GUIDE: "FieldGuide",
+  FRAMEWORK: "Framework",
+  KEYWORD: "Keyword",
 } as const;

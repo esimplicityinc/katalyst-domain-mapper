@@ -1,46 +1,48 @@
-import { useState } from 'react';
-import { ArrowUpDown, Layers } from 'lucide-react';
-import type { CapabilityCoverage } from '../../types/governance';
+import { useState } from "react";
+import { ArrowUpDown, Layers } from "lucide-react";
+import type { CapabilityCoverage } from "../../types/governance";
 
 interface CoverageMatrixProps {
   capabilities: CapabilityCoverage[];
 }
 
-type SortField = 'title' | 'roadCount' | 'storyCount' | 'status';
-type SortDirection = 'asc' | 'desc';
+type SortField = "title" | "roadCount" | "storyCount" | "status";
+type SortDirection = "asc" | "desc";
 
 const STATUS_BADGE: Record<string, string> = {
-  active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  draft: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
-  planned: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-  deprecated: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+  active:
+    "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
+  draft: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
+  planned: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+  deprecated:
+    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
 };
 
 const MAX_DOTS = 5;
 
 export function CoverageMatrix({ capabilities }: CoverageMatrixProps) {
-  const [sortField, setSortField] = useState<SortField>('roadCount');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [sortField, setSortField] = useState<SortField>("roadCount");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+      setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
     } else {
       setSortField(field);
-      setSortDirection('desc');
+      setSortDirection("desc");
     }
   };
 
   const sorted = [...capabilities].sort((a, b) => {
-    const mult = sortDirection === 'asc' ? 1 : -1;
+    const mult = sortDirection === "asc" ? 1 : -1;
     switch (sortField) {
-      case 'title':
+      case "title":
         return mult * a.title.localeCompare(b.title);
-      case 'roadCount':
+      case "roadCount":
         return mult * (a.roadCount - b.roadCount);
-      case 'storyCount':
+      case "storyCount":
         return mult * (a.storyCount - b.storyCount);
-      case 'status':
+      case "status":
         return mult * a.status.localeCompare(b.status);
       default:
         return 0;
@@ -48,7 +50,10 @@ export function CoverageMatrix({ capabilities }: CoverageMatrixProps) {
   });
 
   // Find the max road count across all capabilities for scaling dots
-  const maxRoadCount = capabilities.reduce((max, c) => Math.max(max, c.roadCount), 0);
+  const maxRoadCount = capabilities.reduce(
+    (max, c) => Math.max(max, c.roadCount),
+    0,
+  );
 
   if (capabilities.length === 0) {
     return (
@@ -134,10 +139,7 @@ export function CoverageMatrix({ capabilities }: CoverageMatrixProps) {
 
               {/* Coverage indicator (dots) */}
               <td className="py-2.5 px-3" data-testid="coverage-indicator">
-                <CoverageDots
-                  count={cap.roadCount}
-                  maxCount={maxRoadCount}
-                />
+                <CoverageDots count={cap.roadCount} maxCount={maxRoadCount} />
               </td>
 
               {/* Road count */}
@@ -159,11 +161,15 @@ export function CoverageMatrix({ capabilities }: CoverageMatrixProps) {
 
 // ── CoverageDots ─────────────────────────────────────────────────────────────
 
-function CoverageDots({ count, maxCount }: { count: number; maxCount: number }) {
+function CoverageDots({
+  count,
+  maxCount,
+}: {
+  count: number;
+  maxCount: number;
+}) {
   // Scale count to 0..MAX_DOTS range
-  const filled = maxCount > 0
-    ? Math.round((count / maxCount) * MAX_DOTS)
-    : 0;
+  const filled = maxCount > 0 ? Math.round((count / maxCount) * MAX_DOTS) : 0;
 
   return (
     <div className="flex items-center gap-1">
@@ -172,8 +178,8 @@ function CoverageDots({ count, maxCount }: { count: number; maxCount: number }) 
           key={i}
           className={`w-2.5 h-2.5 rounded-full ${
             i < filled
-              ? 'bg-blue-500 dark:bg-blue-400'
-              : 'bg-gray-200 dark:bg-gray-700'
+              ? "bg-blue-500 dark:bg-blue-400"
+              : "bg-gray-200 dark:bg-gray-700"
           }`}
         />
       ))}
@@ -189,21 +195,21 @@ function SortableHeader({
   currentField,
   direction,
   onSort,
-  align = 'left',
+  align = "left",
 }: {
   label: string;
   field: SortField;
   currentField: SortField;
   direction: SortDirection;
   onSort: (field: SortField) => void;
-  align?: 'left' | 'right';
+  align?: "left" | "right";
 }) {
   const isActive = currentField === field;
 
   return (
     <th
       className={`py-2 px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 ${
-        align === 'right' ? 'text-right' : 'text-left'
+        align === "right" ? "text-right" : "text-left"
       }`}
       onClick={() => onSort(field)}
     >
@@ -211,12 +217,14 @@ function SortableHeader({
         {label}
         <ArrowUpDown
           className={`w-3 h-3 ${
-            isActive ? 'text-blue-500 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'
+            isActive
+              ? "text-blue-500 dark:text-blue-400"
+              : "text-gray-300 dark:text-gray-600"
           }`}
         />
         {isActive && (
           <span className="text-blue-500 dark:text-blue-400">
-            {direction === 'asc' ? '\u2191' : '\u2193'}
+            {direction === "asc" ? "\u2191" : "\u2193"}
           </span>
         )}
       </span>

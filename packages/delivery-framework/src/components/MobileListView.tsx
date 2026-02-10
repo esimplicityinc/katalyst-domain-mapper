@@ -1,6 +1,6 @@
-import React from 'react';
-import RoadmapCard from './RoadmapCard';
-import type { RoadmapItem } from '../types/roadmap';
+import React from "react";
+import RoadmapCard from "./RoadmapCard";
+import type { RoadmapItem } from "../types/roadmap";
 
 interface MobileListViewProps {
   items: RoadmapItem[];
@@ -8,7 +8,11 @@ interface MobileListViewProps {
   onToggleExpand: (id: string) => void;
 }
 
-export default function MobileListView({ items, expandedItems, onToggleExpand }: MobileListViewProps): JSX.Element {
+export default function MobileListView({
+  items,
+  expandedItems,
+  onToggleExpand,
+}: MobileListViewProps): JSX.Element {
   if (items.length === 0) {
     return (
       <div className="mobile-list-empty">
@@ -19,7 +23,7 @@ export default function MobileListView({ items, expandedItems, onToggleExpand }:
 
   return (
     <div className="mobile-list-view">
-      {items.map(item => (
+      {items.map((item) => (
         <RoadmapCard
           key={item.id}
           item={item}

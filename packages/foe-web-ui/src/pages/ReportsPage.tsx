@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { ReportUpload } from '../components/ReportUpload';
-import { OverviewCard } from '../components/OverviewCard';
-import { DimensionCard } from '../components/DimensionCard';
-import { TriangleDiagram } from '../components/TriangleDiagram';
-import { FindingsTable } from '../components/FindingsTable';
-import { GapsTable } from '../components/GapsTable';
-import { FileJson, RotateCcw } from 'lucide-react';
-import type { FOEReport } from '../types/report';
+import { useState } from "react";
+import { ReportUpload } from "../components/ReportUpload";
+import { OverviewCard } from "../components/OverviewCard";
+import { DimensionCard } from "../components/DimensionCard";
+import { TriangleDiagram } from "../components/TriangleDiagram";
+import { FindingsTable } from "../components/FindingsTable";
+import { GapsTable } from "../components/GapsTable";
+import { FileJson, RotateCcw } from "lucide-react";
+import type { FOEReport } from "../types/report";
 
 const DIMENSION_COLORS = {
-  feedback: '#3b82f6',
-  understanding: '#9333ea',
-  confidence: '#10b981',
+  feedback: "#3b82f6",
+  understanding: "#9333ea",
+  confidence: "#10b981",
 };
 
 export function ReportsPage() {
@@ -90,7 +90,7 @@ export function ReportsPage() {
               Report generated on {new Date(report.generated).toLocaleString()}
             </p>
             <p className="mt-1">
-              FOE Scanner v{report.version} •{' '}
+              FOE Scanner v{report.version} •{" "}
               <a
                 href="https://foe.engineering"
                 target="_blank"

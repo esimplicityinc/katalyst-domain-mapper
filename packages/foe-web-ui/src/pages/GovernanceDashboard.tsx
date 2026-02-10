@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 import {
   Shield,
   Loader2,
@@ -10,22 +10,22 @@ import {
   Users,
   MapPin,
   RefreshCw,
-} from 'lucide-react';
-import { api } from '../api/client';
-import { KanbanBoard } from '../components/domain/KanbanBoard';
-import { CoverageMatrix } from '../components/domain/CoverageMatrix';
+} from "lucide-react";
+import { api } from "../api/client";
+import { KanbanBoard } from "../components/domain/KanbanBoard";
+import { CoverageMatrix } from "../components/domain/CoverageMatrix";
 import type {
   GovernanceSnapshot,
   RoadItemSummary,
   CapabilityCoverage,
   PersonaCoverage,
   IntegrityReport,
-} from '../types/governance';
+} from "../types/governance";
 
-type LoadingState = 'loading' | 'ready' | 'empty' | 'error';
+type LoadingState = "loading" | "ready" | "empty" | "error";
 
 export function GovernanceDashboard() {
-  const [state, setState] = useState<LoadingState>('loading');
+  const [state, setState] = useState<LoadingState>("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Data
@@ -39,7 +39,7 @@ export function GovernanceDashboard() {
   const [kanbanFilter, setKanbanFilter] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
-    setState('loading');
+    setState("loading");
     setErrorMessage(null);
 
     try {
@@ -51,13 +51,19 @@ export function GovernanceDashboard() {
         api.getGovernanceIntegrity(),
       ]);
 
-      const [snapshotResult, roadsResult, capsResult, personasResult, integrityResult] = results;
+      const [
+        snapshotResult,
+        roadsResult,
+        capsResult,
+        personasResult,
+        integrityResult,
+      ] = results;
 
       // Check if the primary snapshot fetch returned a 404 (no data)
-      if (snapshotResult.status === 'rejected') {
-        const errMsg = (snapshotResult.reason as Error)?.message ?? '';
-        if (errMsg.includes('404')) {
-          setState('empty');
+      if (snapshotResult.status === "rejected") {
+        const errMsg = (snapshotResult.reason as Error)?.message ?? "";
+        if (errMsg.includes("404")) {
+          setState("empty");
           return;
         }
         // API unreachable — try static fallback
@@ -66,12 +72,18 @@ export function GovernanceDashboard() {
       }
 
       setSnapshot(snapshotResult.value);
-      setRoads(roadsResult.status === 'fulfilled' ? roadsResult.value : []);
-      setCapabilities(capsResult.status === 'fulfilled' ? capsResult.value : []);
-      setPersonas(personasResult.status === 'fulfilled' ? personasResult.value : []);
-      setIntegrity(integrityResult.status === 'fulfilled' ? integrityResult.value : null);
+      setRoads(roadsResult.status === "fulfilled" ? roadsResult.value : []);
+      setCapabilities(
+        capsResult.status === "fulfilled" ? capsResult.value : [],
+      );
+      setPersonas(
+        personasResult.status === "fulfilled" ? personasResult.value : [],
+      );
+      setIntegrity(
+        integrityResult.status === "fulfilled" ? integrityResult.value : null,
+      );
 
-      setState('ready');
+      setState("ready");
     } catch {
       await tryStaticFallback();
     }
@@ -79,15 +91,19 @@ export function GovernanceDashboard() {
 
   const tryStaticFallback = async () => {
     try {
-      const res = await fetch('/governance-snapshot.json');
-      if (!res.ok) throw new Error('No static fallback');
-      const data = await res.json() as GovernanceSnapshot;
+      const res = await fetch("/governance-snapshot.json");
+      if (!res.ok) throw new Error("No static fallback");
+      const data = (await res.json()) as GovernanceSnapshot;
       setSnapshot(data);
-      setState('ready');
-      setErrorMessage('Unable to reach governance API. Showing static snapshot.');
+      setState("ready");
+      setErrorMessage(
+        "Unable to reach governance API. Showing static snapshot.",
+      );
     } catch {
-      setState('error');
-      setErrorMessage('Unable to reach governance API. No static snapshot available.');
+      setState("error");
+      setErrorMessage(
+        "Unable to reach governance API. No static snapshot available.",
+      );
     }
   };
 
@@ -97,21 +113,26 @@ export function GovernanceDashboard() {
 
   // ── Computed values ────────────────────────────────────────────────────────
 
-  const completedRoads = roads.filter((r) => r.status === 'complete').length;
+  const completedRoads = roads.filter((r) => r.status === "complete").length;
   const totalRoads = roads.length;
-  const governanceScore = totalRoads > 0
-    ? Math.round((completedRoads / totalRoads) * 100)
-    : 0;
+  const governanceScore =
+    totalRoads > 0 ? Math.round((completedRoads / totalRoads) * 100) : 0;
 
   const integrityPercentage = integrity
-    ? Math.round(((integrity.totalArtifacts - integrity.errors.length) / Math.max(integrity.totalArtifacts, 1)) * 100)
+    ? Math.round(
+        ((integrity.totalArtifacts - integrity.errors.length) /
+          Math.max(integrity.totalArtifacts, 1)) *
+          100,
+      )
     : snapshot
-      ? (snapshot.stats.integrityStatus === 'pass' ? 100 : 0)
+      ? snapshot.stats.integrityStatus === "pass"
+        ? 100
+        : 0
       : 0;
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
-  if (state === 'loading') {
+  if (state === "loading") {
     return (
       <div className="flex items-center justify-center h-full min-h-[60vh]">
         <div className="flex flex-col items-center gap-3">
@@ -124,7 +145,7 @@ export function GovernanceDashboard() {
     );
   }
 
-  if (state === 'empty') {
+  if (state === "empty") {
     return (
       <div className="min-h-full bg-gray-50 dark:bg-gray-900">
         <DashboardHeader />
@@ -137,15 +158,16 @@ export function GovernanceDashboard() {
             No Governance Data
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md text-center">
-            Ingest a governance snapshot to see health metrics, road item progress,
-            and capability coverage. Run the governance sync command to get started.
+            Ingest a governance snapshot to see health metrics, road item
+            progress, and capability coverage. Run the governance sync command
+            to get started.
           </p>
         </div>
       </div>
     );
   }
 
-  if (state === 'error' && !snapshot) {
+  if (state === "error" && !snapshot) {
     return (
       <div className="min-h-full bg-gray-50 dark:bg-gray-900">
         <DashboardHeader />
@@ -202,9 +224,7 @@ export function GovernanceDashboard() {
         )}
 
         {/* ── Integrity Report ────────────────────────────────────────── */}
-        {integrity && (
-          <IntegritySection integrity={integrity} />
-        )}
+        {integrity && <IntegritySection integrity={integrity} />}
       </div>
     </div>
   );
@@ -260,9 +280,9 @@ function ErrorBanner({
       <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />
       <div className="flex-1 min-w-0">
         <p className="text-sm text-amber-800 dark:text-amber-200">
-          {message ?? 'Unable to reach governance API.'}
+          {message ?? "Unable to reach governance API."}
         </p>
-        {message?.includes('static snapshot') && (
+        {message?.includes("static snapshot") && (
           <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
             Data may be outdated. Click Retry to attempt a live connection.
           </p>
@@ -296,7 +316,10 @@ function HealthSummaryCard({
   personaCount: number;
 }) {
   return (
-    <div data-testid="health-summary-card" className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+    <div
+      data-testid="health-summary-card"
+      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6"
+    >
       {/* Top row: score + metadata */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <div className="flex items-center gap-4">
@@ -319,8 +342,16 @@ function HealthSummaryCard({
         </div>
         {snapshot && (
           <div className="sm:ml-auto text-right text-xs text-gray-400 dark:text-gray-500">
-            <p>Project: <span className="text-gray-600 dark:text-gray-300 font-medium">{snapshot.project}</span></p>
-            <p>v{snapshot.version} &middot; {new Date(snapshot.generated).toLocaleDateString()}</p>
+            <p>
+              Project:{" "}
+              <span className="text-gray-600 dark:text-gray-300 font-medium">
+                {snapshot.project}
+              </span>
+            </p>
+            <p>
+              v{snapshot.version} &middot;{" "}
+              {new Date(snapshot.generated).toLocaleDateString()}
+            </p>
           </div>
         )}
       </div>
@@ -362,10 +393,10 @@ function HealthSummaryCard({
             data-testid="integrity-percentage"
             className={`text-xl font-bold ${
               integrityPercentage === 100
-                ? 'text-green-600 dark:text-green-400'
+                ? "text-green-600 dark:text-green-400"
                 : integrityPercentage >= 80
-                  ? 'text-amber-600 dark:text-amber-400'
-                  : 'text-red-600 dark:text-red-400'
+                  ? "text-amber-600 dark:text-amber-400"
+                  : "text-red-600 dark:text-red-400"
             }`}
           >
             {integrityPercentage}%
@@ -476,8 +507,8 @@ function IntegritySection({ integrity }: { integrity: IntegrityReport }) {
           data-testid="integrity-status-badge"
           className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full ${
             integrity.valid
-              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-              : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+              : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
           }`}
         >
           {integrity.valid ? (
@@ -485,14 +516,16 @@ function IntegritySection({ integrity }: { integrity: IntegrityReport }) {
           ) : (
             <XCircle className="w-3.5 h-3.5" />
           )}
-          {integrity.valid ? 'Valid' : 'Invalid'}
+          {integrity.valid ? "Valid" : "Invalid"}
         </span>
       </div>
 
       <div className="p-6">
         <div className="flex gap-6 mb-4 text-sm">
           <div>
-            <span className="text-gray-500 dark:text-gray-400">Total artifacts: </span>
+            <span className="text-gray-500 dark:text-gray-400">
+              Total artifacts:{" "}
+            </span>
             <span className="font-semibold text-gray-900 dark:text-white">
               {integrity.totalArtifacts}
             </span>
@@ -502,8 +535,8 @@ function IntegritySection({ integrity }: { integrity: IntegrityReport }) {
             <span
               className={`font-semibold ${
                 integrity.errors.length > 0
-                  ? 'text-red-600 dark:text-red-400'
-                  : 'text-green-600 dark:text-green-400'
+                  ? "text-red-600 dark:text-red-400"
+                  : "text-green-600 dark:text-green-400"
               }`}
             >
               {integrity.errors.length}
@@ -539,7 +572,9 @@ function IntegritySection({ integrity }: { integrity: IntegrityReport }) {
         {integrity.errors.length === 0 && (
           <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-300">
             <CheckCircle2 className="w-5 h-5" />
-            <span>All cross-references are valid. No integrity issues detected.</span>
+            <span>
+              All cross-references are valid. No integrity issues detected.
+            </span>
           </div>
         )}
       </div>

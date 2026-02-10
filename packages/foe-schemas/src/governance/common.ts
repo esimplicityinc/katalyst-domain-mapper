@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // ID pattern validators
 export const CapabilityIdPattern = z.string().regex(/^CAP-\d{3,}$/);
@@ -14,7 +14,7 @@ export const ChangeIdPattern = z.string().regex(/^CHANGE-\d{3,}$/);
 export const SlugPattern = z.string().regex(/^[a-z0-9-]+$/);
 
 // Shared enums
-export const PrioritySchema = z.enum(['critical', 'high', 'medium', 'low']);
+export const PrioritySchema = z.enum(["critical", "high", "medium", "low"]);
 export const GovernancePhaseSchema = z.number().int().min(0).max(3);
 
 // Inferred types

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 import {
   FolderSearch,
   Loader2,
@@ -6,27 +6,27 @@ import {
   Clock,
   Play,
   XCircle,
-} from 'lucide-react';
-import { api } from '../api/client';
-import type { FOEReport } from '../types/report';
+} from "lucide-react";
+import { api } from "../api/client";
+import type { FOEReport } from "../types/report";
 
 interface ScanDirectoryProps {
   onReportLoaded: (report: FOEReport) => void;
 }
 
 type ScanPhase =
-  | { step: 'idle' }
-  | { step: 'submitting' }
-  | { step: 'polling'; jobId: string; status: string; startedAt: string | null }
-  | { step: 'loading-report'; jobId: string; scanId: string }
-  | { step: 'done' }
-  | { step: 'error'; message: string };
+  | { step: "idle" }
+  | { step: "submitting" }
+  | { step: "polling"; jobId: string; status: string; startedAt: string | null }
+  | { step: "loading-report"; jobId: string; scanId: string }
+  | { step: "done" }
+  | { step: "error"; message: string };
 
 const POLL_INTERVAL = 3000;
 
 export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
-  const [path, setPath] = useState('');
-  const [phase, setPhase] = useState<ScanPhase>({ step: 'idle' });
+  const [path, setPath] = useState("");
+  const [phase, setPhase] = useState<ScanPhase>({ step: "idle" });
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Cleanup polling on unmount
@@ -48,12 +48,12 @@ export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
     const trimmed = path.trim();
     if (!trimmed) return;
 
-    setPhase({ step: 'submitting' });
+    setPhase({ step: "submitting" });
 
     try {
       const result = await api.triggerScan(trimmed);
       setPhase({
-        step: 'polling',
+        step: "polling",
         jobId: result.jobId,
         status: result.status,
         startedAt: null,
@@ -61,8 +61,8 @@ export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
       startPolling(result.jobId);
     } catch (err) {
       setPhase({
-        step: 'error',
-        message: err instanceof Error ? err.message : 'Failed to start scan',
+        step: "error",
+        message: err instanceof Error ? err.message : "Failed to start scan",
       });
     }
   };
@@ -73,19 +73,19 @@ export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
       try {
         const job = await api.getScanStatus(jobId);
 
-        if (job.status === 'completed' && job.scanId) {
+        if (job.status === "completed" && job.scanId) {
           stopPolling();
-          setPhase({ step: 'loading-report', jobId, scanId: job.scanId });
+          setPhase({ step: "loading-report", jobId, scanId: job.scanId });
           await loadReport(job.scanId);
-        } else if (job.status === 'failed') {
+        } else if (job.status === "failed") {
           stopPolling();
           setPhase({
-            step: 'error',
-            message: job.errorMessage ?? 'Scan failed with no error message',
+            step: "error",
+            message: job.errorMessage ?? "Scan failed with no error message",
           });
         } else {
           setPhase({
-            step: 'polling',
+            step: "polling",
             jobId,
             status: job.status,
             startedAt: job.startedAt,
@@ -94,8 +94,11 @@ export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
       } catch (err) {
         stopPolling();
         setPhase({
-          step: 'error',
-          message: err instanceof Error ? err.message : 'Lost connection while polling',
+          step: "error",
+          message:
+            err instanceof Error
+              ? err.message
+              : "Lost connection while polling",
         });
       }
     }, POLL_INTERVAL);
@@ -105,24 +108,24 @@ export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
     try {
       const raw = await api.getReportRaw(reportId);
       onReportLoaded(raw as FOEReport);
-      setPhase({ step: 'done' });
+      setPhase({ step: "done" });
     } catch (err) {
       setPhase({
-        step: 'error',
-        message: err instanceof Error ? err.message : 'Failed to load report',
+        step: "error",
+        message: err instanceof Error ? err.message : "Failed to load report",
       });
     }
   };
 
   const handleReset = () => {
     stopPolling();
-    setPhase({ step: 'idle' });
+    setPhase({ step: "idle" });
   };
 
   const isActive =
-    phase.step === 'submitting' ||
-    phase.step === 'polling' ||
-    phase.step === 'loading-report';
+    phase.step === "submitting" ||
+    phase.step === "polling" ||
+    phase.step === "loading-report";
 
   return (
     <div className="space-y-6">
@@ -148,7 +151,7 @@ export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
             disabled={!path.trim() || isActive}
             className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
           >
-            {phase.step === 'submitting' ? (
+            {phase.step === "submitting" ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <Play className="w-4 h-4" />
@@ -157,24 +160,27 @@ export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
           </button>
         </div>
         <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-          Absolute path to the repository on the server's filesystem (Docker volume mount).
-          The scanner will analyze the codebase and generate a FOE maturity report.
+          Absolute path to the repository on the server's filesystem (Docker
+          volume mount). The scanner will analyze the codebase and generate a
+          FOE maturity report.
         </p>
       </form>
 
       {/* Status display */}
-      {phase.step === 'polling' && (
+      {phase.step === "polling" && (
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
           <div className="flex items-center gap-3">
             <Loader2 className="w-5 h-5 text-blue-500 animate-spin flex-shrink-0" />
             <div className="flex-1">
               <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                {phase.status === 'queued' ? 'Scan queued...' : 'Scanning repository...'}
+                {phase.status === "queued"
+                  ? "Scan queued..."
+                  : "Scanning repository..."}
               </p>
               <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
-                {phase.status === 'queued'
-                  ? 'Waiting for scanner to pick up the job'
-                  : 'Analyzing code structure, tests, CI/CD, architecture, and documentation'}
+                {phase.status === "queued"
+                  ? "Waiting for scanner to pick up the job"
+                  : "Analyzing code structure, tests, CI/CD, architecture, and documentation"}
               </p>
               {phase.startedAt && (
                 <p className="text-xs text-blue-500 dark:text-blue-500 mt-1 flex items-center gap-1">
@@ -197,7 +203,7 @@ export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
         </div>
       )}
 
-      {phase.step === 'loading-report' && (
+      {phase.step === "loading-report" && (
         <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
           <div className="flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
@@ -210,7 +216,7 @@ export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
         </div>
       )}
 
-      {phase.step === 'error' && (
+      {phase.step === "error" && (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <XCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
@@ -233,7 +239,7 @@ export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
       )}
 
       {/* Tips */}
-      {phase.step === 'idle' && (
+      {phase.step === "idle" && (
         <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
           <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
             What gets scanned?
@@ -241,19 +247,29 @@ export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
           <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1.5">
             <li className="flex items-start gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0 mt-1.5" />
-              <span><strong>Feedback</strong> — CI/CD pipelines, deployment frequency, caching, parallelization</span>
+              <span>
+                <strong>Feedback</strong> — CI/CD pipelines, deployment
+                frequency, caching, parallelization
+              </span>
             </li>
             <li className="flex items-start gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-purple-400 flex-shrink-0 mt-1.5" />
-              <span><strong>Understanding</strong> — Architecture patterns, DDD, documentation, ADRs</span>
+              <span>
+                <strong>Understanding</strong> — Architecture patterns, DDD,
+                documentation, ADRs
+              </span>
             </li>
             <li className="flex items-start gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0 mt-1.5" />
-              <span><strong>Confidence</strong> — Test coverage, static analysis, contract testing</span>
+              <span>
+                <strong>Confidence</strong> — Test coverage, static analysis,
+                contract testing
+              </span>
             </li>
           </ul>
           <p className="text-xs text-gray-500 dark:text-gray-500 mt-3">
-            Scans typically take 5–15 minutes depending on repository size. Requires a configured Anthropic API key.
+            Scans typically take 5–15 minutes depending on repository size.
+            Requires a configured Anthropic API key.
           </p>
         </div>
       )}

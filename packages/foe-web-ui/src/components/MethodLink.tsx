@@ -1,11 +1,11 @@
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink } from "lucide-react";
 
 interface MethodLinkProps {
   methodId?: string;
   className?: string;
 }
 
-export function MethodLink({ methodId, className = '' }: MethodLinkProps) {
+export function MethodLink({ methodId, className = "" }: MethodLinkProps) {
   if (!methodId) return null;
 
   // TODO: Link to actual Field Guide docs when available

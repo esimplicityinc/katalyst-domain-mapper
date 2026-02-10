@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { UseCaseIdPattern, PersonaIdPattern } from './common.js';
+import { z } from "zod";
+import { UseCaseIdPattern, PersonaIdPattern } from "./common.js";
 
 export const UseCaseSchema = z.object({
   id: UseCaseIdPattern,

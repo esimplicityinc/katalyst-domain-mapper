@@ -1,17 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useRoadmapItems, useFilteredItems } from '../hooks/useRoadmapItems';
-import RoadmapFilter from './RoadmapFilter';
-import RoadmapStats from './RoadmapStats';
-import KanbanView from './KanbanView';
-import TimelineView from './TimelineView';
-import DependencyView from './DependencyView';
-import MobileListView from './MobileListView';
-import type { ViewMode, FilterState } from '../types/roadmap';
-import styles from './RoadmapDashboard.module.css';
+import React, { useState, useEffect } from "react";
+import { useRoadmapItems, useFilteredItems } from "../hooks/useRoadmapItems";
+import RoadmapFilter from "./RoadmapFilter";
+import RoadmapStats from "./RoadmapStats";
+import KanbanView from "./KanbanView";
+import TimelineView from "./TimelineView";
+import DependencyView from "./DependencyView";
+import MobileListView from "./MobileListView";
+import type { ViewMode, FilterState } from "../types/roadmap";
+import styles from "./RoadmapDashboard.module.css";
 
 // Dashboard icon SVG
 const DashboardIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
     <rect x="3" y="3" width="7" height="7" rx="1" />
     <rect x="14" y="3" width="7" height="7" rx="1" />
     <rect x="14" y="14" width="7" height="7" rx="1" />
@@ -21,14 +28,14 @@ const DashboardIcon = () => (
 
 export default function RoadmapDashboard(): JSX.Element {
   const { items, loading, error } = useRoadmapItems();
-  const [viewMode, setViewMode] = useState<ViewMode>('kanban');
+  const [viewMode, setViewMode] = useState<ViewMode>("kanban");
   const [isMobile, setIsMobile] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [filters, setFilters] = useState<FilterState>({
-    search: '',
-    status: 'all',
-    phase: 'all',
-    governanceFilter: 'all',
+    search: "",
+    status: "all",
+    phase: "all",
+    governanceFilter: "all",
   });
 
   // Check for mobile viewport
@@ -36,16 +43,16 @@ export default function RoadmapDashboard(): JSX.Element {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const filteredItems = useFilteredItems(items, filters);
 
   const handleToggleExpand = (id: string) => {
-    setExpandedItems(prev => {
+    setExpandedItems((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
         newSet.delete(id);
@@ -87,7 +94,7 @@ export default function RoadmapDashboard(): JSX.Element {
     }
 
     switch (viewMode) {
-      case 'kanban':
+      case "kanban":
         return (
           <KanbanView
             items={filteredItems}
@@ -95,7 +102,7 @@ export default function RoadmapDashboard(): JSX.Element {
             onToggleExpand={handleToggleExpand}
           />
         );
-      case 'timeline':
+      case "timeline":
         return (
           <TimelineView
             items={filteredItems}
@@ -103,7 +110,7 @@ export default function RoadmapDashboard(): JSX.Element {
             onToggleExpand={handleToggleExpand}
           />
         );
-      case 'dependencies':
+      case "dependencies":
         return <DependencyView items={filteredItems} />;
       default:
         return (
@@ -123,24 +130,24 @@ export default function RoadmapDashboard(): JSX.Element {
           <DashboardIcon />
           Roadmap Dashboard
         </h2>
-        
+
         {!isMobile && (
           <div className={styles.viewTabs}>
             <button
-              className={`${styles.viewTab} ${viewMode === 'kanban' ? styles.viewTabActive : ''}`}
-              onClick={() => setViewMode('kanban')}
+              className={`${styles.viewTab} ${viewMode === "kanban" ? styles.viewTabActive : ""}`}
+              onClick={() => setViewMode("kanban")}
             >
               Kanban
             </button>
             <button
-              className={`${styles.viewTab} ${viewMode === 'timeline' ? styles.viewTabActive : ''}`}
-              onClick={() => setViewMode('timeline')}
+              className={`${styles.viewTab} ${viewMode === "timeline" ? styles.viewTabActive : ""}`}
+              onClick={() => setViewMode("timeline")}
             >
               Timeline
             </button>
             <button
-              className={`${styles.viewTab} ${viewMode === 'dependencies' ? styles.viewTabActive : ''}`}
-              onClick={() => setViewMode('dependencies')}
+              className={`${styles.viewTab} ${viewMode === "dependencies" ? styles.viewTabActive : ""}`}
+              onClick={() => setViewMode("dependencies")}
             >
               Dependencies
             </button>
@@ -149,16 +156,14 @@ export default function RoadmapDashboard(): JSX.Element {
       </div>
 
       <RoadmapStats items={filteredItems} />
-      
+
       <RoadmapFilter
         filters={filters}
         onFilterChange={setFilters}
         isMobile={isMobile}
       />
 
-      <div className={styles.content}>
-        {renderView()}
-      </div>
+      <div className={styles.content}>{renderView()}</div>
 
       <div className={styles.footer}>
         <p>

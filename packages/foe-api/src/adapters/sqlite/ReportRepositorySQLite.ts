@@ -25,126 +25,153 @@ export class ReportRepositorySQLite implements ReportRepository {
       .run();
 
     // Insert scan
-    this.db.insert(schema.scans).values({
-      id: report.id,
-      repositoryId: repoId,
-      overallScore: report.overallScore,
-      maturityLevel: report.maturityLevel,
-      assessmentMode: report.assessmentMode,
-      executiveSummary: report.executiveSummary,
-      scanDate: report.scanDate,
-      scanDuration: report.scanDuration,
-      scannerVersion: report.scannerVersion,
-      rawReport: rawReport as Record<string, unknown>,
-      createdAt: now,
-    }).run();
+    this.db
+      .insert(schema.scans)
+      .values({
+        id: report.id,
+        repositoryId: repoId,
+        overallScore: report.overallScore,
+        maturityLevel: report.maturityLevel,
+        assessmentMode: report.assessmentMode,
+        executiveSummary: report.executiveSummary,
+        scanDate: report.scanDate,
+        scanDuration: report.scanDuration,
+        scannerVersion: report.scannerVersion,
+        rawReport: rawReport as Record<string, unknown>,
+        createdAt: now,
+      })
+      .run();
 
     // Insert dimensions + subscores
     for (const [key, dim] of Object.entries(report.dimensions)) {
       const dimId = crypto.randomUUID();
-      this.db.insert(schema.dimensions).values({
-        id: dimId,
-        scanId: report.id,
-        name: dim.name,
-        score: dim.score,
-        max: dim.max,
-        confidence: dim.confidence,
-        color: dim.color,
-      }).run();
+      this.db
+        .insert(schema.dimensions)
+        .values({
+          id: dimId,
+          scanId: report.id,
+          name: dim.name,
+          score: dim.score,
+          max: dim.max,
+          confidence: dim.confidence,
+          color: dim.color,
+        })
+        .run();
 
       for (const sub of dim.subscores) {
-        this.db.insert(schema.subscores).values({
-          id: crypto.randomUUID(),
-          dimensionId: dimId,
-          name: sub.name,
-          score: sub.score,
-          max: sub.max,
-          confidence: sub.confidence,
-          evidence: sub.evidence,
-          gaps: sub.gaps,
-        }).run();
+        this.db
+          .insert(schema.subscores)
+          .values({
+            id: crypto.randomUUID(),
+            dimensionId: dimId,
+            name: sub.name,
+            score: sub.score,
+            max: sub.max,
+            confidence: sub.confidence,
+            evidence: sub.evidence,
+            gaps: sub.gaps,
+          })
+          .run();
       }
     }
 
     // Insert findings (gaps + critical failures)
     for (const finding of report.gaps) {
-      this.db.insert(schema.findings).values({
-        id: `${report.id}-${finding.id}`,
-        scanId: report.id,
-        kind: "gap",
-        area: finding.area,
-        severity: finding.severity,
-        title: finding.title,
-        evidence: finding.evidence,
-        impact: finding.impact,
-        recommendation: finding.recommendation,
-        location: finding.location,
-        methods: finding.methods,
-      }).run();
+      this.db
+        .insert(schema.findings)
+        .values({
+          id: `${report.id}-${finding.id}`,
+          scanId: report.id,
+          kind: "gap",
+          area: finding.area,
+          severity: finding.severity,
+          title: finding.title,
+          evidence: finding.evidence,
+          impact: finding.impact,
+          recommendation: finding.recommendation,
+          location: finding.location,
+          methods: finding.methods,
+        })
+        .run();
     }
 
     for (const finding of report.criticalFailures) {
-      this.db.insert(schema.findings).values({
-        id: `${report.id}-${finding.id}`,
-        scanId: report.id,
-        kind: "critical_failure",
-        area: finding.area,
-        severity: finding.severity,
-        title: finding.title,
-        evidence: finding.evidence,
-        impact: finding.impact,
-        recommendation: finding.recommendation,
-        location: finding.location,
-        methods: finding.methods,
-      }).run();
+      this.db
+        .insert(schema.findings)
+        .values({
+          id: `${report.id}-${finding.id}`,
+          scanId: report.id,
+          kind: "critical_failure",
+          area: finding.area,
+          severity: finding.severity,
+          title: finding.title,
+          evidence: finding.evidence,
+          impact: finding.impact,
+          recommendation: finding.recommendation,
+          location: finding.location,
+          methods: finding.methods,
+        })
+        .run();
     }
 
     // Insert strengths
     for (const strength of report.strengths) {
-      this.db.insert(schema.strengths).values({
-        id: `${report.id}-${strength.id}`,
-        scanId: report.id,
-        area: strength.area,
-        evidence: strength.evidence,
-        caveat: strength.caveat,
-      }).run();
+      this.db
+        .insert(schema.strengths)
+        .values({
+          id: `${report.id}-${strength.id}`,
+          scanId: report.id,
+          area: strength.area,
+          evidence: strength.evidence,
+          caveat: strength.caveat,
+        })
+        .run();
     }
 
     // Insert recommendations
     for (const rec of report.recommendations) {
-      this.db.insert(schema.recommendations).values({
-        id: `${report.id}-${rec.id}`,
-        scanId: report.id,
-        priority: rec.priority,
-        title: rec.title,
-        description: rec.description,
-        impact: rec.impact,
-        methods: rec.methods,
-        learningPath: rec.learningPath,
-      }).run();
+      this.db
+        .insert(schema.recommendations)
+        .values({
+          id: `${report.id}-${rec.id}`,
+          scanId: report.id,
+          priority: rec.priority,
+          title: rec.title,
+          description: rec.description,
+          impact: rec.impact,
+          methods: rec.methods,
+          learningPath: rec.learningPath,
+        })
+        .run();
     }
 
     // Insert triangle diagnosis
-    this.db.insert(schema.triangleDiagnoses).values({
-      id: crypto.randomUUID(),
-      scanId: report.id,
-      cycleHealth: report.triangleDiagnosis.cycleHealth,
-      pattern: report.triangleDiagnosis.pattern,
-      weakestPrinciple: report.triangleDiagnosis.weakestPrinciple,
-      intervention: report.triangleDiagnosis.intervention,
-      thresholds: report.triangleDiagnosis.thresholds,
-    }).run();
+    this.db
+      .insert(schema.triangleDiagnoses)
+      .values({
+        id: crypto.randomUUID(),
+        scanId: report.id,
+        cycleHealth: report.triangleDiagnosis.cycleHealth,
+        pattern: report.triangleDiagnosis.pattern,
+        weakestPrinciple: report.triangleDiagnosis.weakestPrinciple,
+        intervention: report.triangleDiagnosis.intervention,
+        thresholds: report.triangleDiagnosis.thresholds,
+      })
+      .run();
 
     // Insert methodology
-    this.db.insert(schema.methodologies).values({
-      id: crypto.randomUUID(),
-      scanId: report.id,
-      filesAnalyzed: report.methodology.filesAnalyzed,
-      testFilesAnalyzed: report.methodology.testFilesAnalyzed,
-      adrsAnalyzed: report.methodology.adrsAnalyzed,
-      coverageReportFound: report.methodology.coverageReportFound,
-      confidenceNotes: report.methodology.confidenceNotes,
-    }).run();
+    this.db
+      .insert(schema.methodologies)
+      .values({
+        id: crypto.randomUUID(),
+        scanId: report.id,
+        filesAnalyzed: report.methodology.filesAnalyzed,
+        testFilesAnalyzed: report.methodology.testFilesAnalyzed,
+        adrsAnalyzed: report.methodology.adrsAnalyzed,
+        coverageReportFound: report.methodology.coverageReportFound,
+        confidenceNotes: report.methodology.confidenceNotes,
+      })
+      .run();
 
     return report.id;
   }
@@ -165,7 +192,8 @@ export class ReportRepositorySQLite implements ReportRepository {
       .where(eq(schema.dimensions.scanId, id))
       .all();
 
-    const dimensionsMap: Record<string, FOEReport["dimensions"]["feedback"]> = {};
+    const dimensionsMap: Record<string, FOEReport["dimensions"]["feedback"]> =
+      {};
 
     for (const dim of dims) {
       const subs = this.db
@@ -174,7 +202,10 @@ export class ReportRepositorySQLite implements ReportRepository {
         .where(eq(schema.subscores.dimensionId, dim.id))
         .all();
 
-      const dimKey = dim.name.toLowerCase() as "feedback" | "understanding" | "confidence";
+      const dimKey = dim.name.toLowerCase() as
+        | "feedback"
+        | "understanding"
+        | "confidence";
       dimensionsMap[dimKey] = {
         name: dim.name as "Feedback" | "Understanding" | "Confidence",
         score: dim.score,
@@ -287,9 +318,15 @@ export class ReportRepositorySQLite implements ReportRepository {
       })) as FOEReport["recommendations"],
       triangleDiagnosis: triangle
         ? {
-            cycleHealth: triangle.cycleHealth as "virtuous" | "at-risk" | "vicious",
+            cycleHealth: triangle.cycleHealth as
+              | "virtuous"
+              | "at-risk"
+              | "vicious",
             pattern: triangle.pattern,
-            weakestPrinciple: triangle.weakestPrinciple as "feedback" | "understanding" | "confidence",
+            weakestPrinciple: triangle.weakestPrinciple as
+              | "feedback"
+              | "understanding"
+              | "confidence",
             intervention: triangle.intervention,
             thresholds: triangle.thresholds ?? undefined,
           }
@@ -355,7 +392,10 @@ export class ReportRepositorySQLite implements ReportRepository {
         createdAt: schema.scans.createdAt,
       })
       .from(schema.scans)
-      .innerJoin(schema.repositories, eq(schema.scans.repositoryId, schema.repositories.id))
+      .innerJoin(
+        schema.repositories,
+        eq(schema.scans.repositoryId, schema.repositories.id),
+      )
       .where(where)
       .orderBy(desc(schema.scans.scanDate))
       .limit(filter?.limit ?? 50)
@@ -375,10 +415,7 @@ export class ReportRepositorySQLite implements ReportRepository {
 
     if (!existing) return false;
 
-    this.db
-      .delete(schema.scans)
-      .where(eq(schema.scans.id, id))
-      .run();
+    this.db.delete(schema.scans).where(eq(schema.scans.id, id)).run();
     return true;
   }
 
@@ -386,7 +423,7 @@ export class ReportRepositorySQLite implements ReportRepository {
     name: string,
     url?: string,
     techStack?: string[],
-    isMonorepo?: boolean
+    isMonorepo?: boolean,
   ): Promise<string> {
     // Check if repo exists by name
     const existing = this.db
@@ -400,14 +437,17 @@ export class ReportRepositorySQLite implements ReportRepository {
     }
 
     const id = crypto.randomUUID();
-    this.db.insert(schema.repositories).values({
-      id,
-      name,
-      url: url ?? null,
-      techStack: techStack ?? [],
-      isMonorepo: isMonorepo ?? false,
-      createdAt: new Date().toISOString(),
-    }).run();
+    this.db
+      .insert(schema.repositories)
+      .values({
+        id,
+        name,
+        url: url ?? null,
+        techStack: techStack ?? [],
+        isMonorepo: isMonorepo ?? false,
+        createdAt: new Date().toISOString(),
+      })
+      .run();
 
     return id;
   }
@@ -422,7 +462,9 @@ export class ReportRepositorySQLite implements ReportRepository {
         isMonorepo: schema.repositories.isMonorepo,
         lastScannedAt: schema.repositories.lastScannedAt,
         scanCount: sql<number>`(SELECT COUNT(*) FROM scans WHERE scans.repository_id = repositories.id)`,
-        latestScore: sql<number | null>`(SELECT overall_score FROM scans WHERE scans.repository_id = repositories.id ORDER BY scan_date DESC LIMIT 1)`,
+        latestScore: sql<
+          number | null
+        >`(SELECT overall_score FROM scans WHERE scans.repository_id = repositories.id ORDER BY scan_date DESC LIMIT 1)`,
       })
       .from(schema.repositories)
       .all();
@@ -444,7 +486,9 @@ export class ReportRepositorySQLite implements ReportRepository {
         isMonorepo: schema.repositories.isMonorepo,
         lastScannedAt: schema.repositories.lastScannedAt,
         scanCount: sql<number>`(SELECT COUNT(*) FROM scans WHERE scans.repository_id = repositories.id)`,
-        latestScore: sql<number | null>`(SELECT overall_score FROM scans WHERE scans.repository_id = repositories.id ORDER BY scan_date DESC LIMIT 1)`,
+        latestScore: sql<
+          number | null
+        >`(SELECT overall_score FROM scans WHERE scans.repository_id = repositories.id ORDER BY scan_date DESC LIMIT 1)`,
       })
       .from(schema.repositories)
       .where(eq(schema.repositories.id, id))
@@ -475,7 +519,10 @@ export class ReportRepositorySQLite implements ReportRepository {
 
     for (const scan of scanRows) {
       const dims = this.db
-        .select({ name: schema.dimensions.name, score: schema.dimensions.score })
+        .select({
+          name: schema.dimensions.name,
+          score: schema.dimensions.score,
+        })
         .from(schema.dimensions)
         .where(eq(schema.dimensions.scanId, scan.scanId))
         .all();

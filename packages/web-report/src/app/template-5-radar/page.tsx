@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { useState } from "react";
+import Link from "next/link";
 import {
   RadarChart,
   PolarGrid,
@@ -17,47 +17,52 @@ import {
   YAxis,
   CartesianGrid,
   Cell,
-} from 'recharts';
-import report from '@/data/report.json';
+} from "recharts";
+import report from "@/data/report.json";
 
-type DimensionKey = 'feedback' | 'understanding' | 'confidence';
+type DimensionKey = "feedback" | "understanding" | "confidence";
 
-const dimensionColors: Record<DimensionKey, { primary: string; light: string; bg: string }> = {
-  feedback: { primary: '#3b82f6', light: '#93c5fd', bg: 'bg-blue-50' },
-  understanding: { primary: '#8b5cf6', light: '#c4b5fd', bg: 'bg-purple-50' },
-  confidence: { primary: '#10b981', light: '#6ee7b7', bg: 'bg-green-50' },
+const dimensionColors: Record<
+  DimensionKey,
+  { primary: string; light: string; bg: string }
+> = {
+  feedback: { primary: "#3b82f6", light: "#93c5fd", bg: "bg-blue-50" },
+  understanding: { primary: "#8b5cf6", light: "#c4b5fd", bg: "bg-purple-50" },
+  confidence: { primary: "#10b981", light: "#6ee7b7", bg: "bg-green-50" },
 };
 
 const dimensionLabels: Record<DimensionKey, string> = {
-  feedback: 'Feedback',
-  understanding: 'Understanding',
-  confidence: 'Confidence',
+  feedback: "Feedback",
+  understanding: "Understanding",
+  confidence: "Confidence",
 };
 
 export default function Template5RadarPage() {
-  const [selectedDimension, setSelectedDimension] = useState<DimensionKey | null>(null);
+  const [selectedDimension, setSelectedDimension] =
+    useState<DimensionKey | null>(null);
 
-  const { dimensions, overallScore, maturityLevel, repository, scanDate } = report;
+  const { dimensions, overallScore, maturityLevel, repository, scanDate } =
+    report;
 
   // Prepare radar chart data
   const radarData = [
     {
-      dimension: 'Feedback',
+      dimension: "Feedback",
       actual: dimensions.feedback.score,
       ideal: 100,
-      key: 'feedback' as DimensionKey,
+      key: "feedback" as DimensionKey,
     },
     {
-      dimension: 'Understanding',
+      dimension: "Understanding",
       actual: dimensions.understanding.score,
       ideal: 100,
-      key: 'understanding' as DimensionKey,
+      key: "understanding" as DimensionKey,
     },
     {
-      dimension: 'Confidence',
+      dimension: "Confidence",
       actual: dimensions.confidence.score,
       ideal: 100,
-      key: 'confidence' as DimensionKey,
+      key: "confidence" as DimensionKey,
     },
   ];
 
@@ -76,20 +81,28 @@ export default function Template5RadarPage() {
   const calculateGap = (score: number) => 100 - score;
 
   // Custom radar tick that handles click
-  const CustomTick = ({ x, y, payload }: { x: number; y: number; payload: { value: string } }) => {
+  const CustomTick = ({
+    x,
+    y,
+    payload,
+  }: {
+    x: number;
+    y: number;
+    payload: { value: string };
+  }) => {
     const dimensionKey = payload.value.toLowerCase() as DimensionKey;
     const isSelected = selectedDimension === dimensionKey;
-    const color = dimensionColors[dimensionKey]?.primary || '#6b7280';
+    const color = dimensionColors[dimensionKey]?.primary || "#6b7280";
 
     return (
       <g
         onClick={() => setSelectedDimension(isSelected ? null : dimensionKey)}
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: "pointer" }}
       >
         <text
           x={x}
           y={y}
-          fill={isSelected ? color : '#374151'}
+          fill={isSelected ? color : "#374151"}
           fontSize={14}
           fontWeight={isSelected ? 700 : 500}
           textAnchor="middle"
@@ -97,14 +110,7 @@ export default function Template5RadarPage() {
         >
           {payload.value}
         </text>
-        {isSelected && (
-          <circle
-            cx={x}
-            cy={y + 16}
-            r={4}
-            fill={color}
-          />
-        )}
+        {isSelected && <circle cx={x} cy={y + 16} r={4} fill={color} />}
       </g>
     );
   };
@@ -119,8 +125,18 @@ export default function Template5RadarPage() {
               href="/"
               className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
               </svg>
               <span className="font-medium">Back to Templates</span>
             </Link>
@@ -148,10 +164,14 @@ export default function Template5RadarPage() {
           {/* Radar Chart - Hero Element */}
           <div className="lg:col-span-2 bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-8">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-white">Dimension Analysis</h2>
-              <span className="text-sm text-slate-400">Click a dimension to explore</span>
+              <h2 className="text-xl font-semibold text-white">
+                Dimension Analysis
+              </h2>
+              <span className="text-sm text-slate-400">
+                Click a dimension to explore
+              </span>
             </div>
-            
+
             <div className="h-[450px]">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData} outerRadius="75%">
@@ -164,7 +184,7 @@ export default function Template5RadarPage() {
                   <PolarRadiusAxis
                     angle={90}
                     domain={[0, 100]}
-                    tick={{ fill: '#94a3b8', fontSize: 10 }}
+                    tick={{ fill: "#94a3b8", fontSize: 10 }}
                     axisLine={false}
                     tickCount={5}
                   />
@@ -182,27 +202,35 @@ export default function Template5RadarPage() {
                   <Radar
                     name="Actual"
                     dataKey="actual"
-                    stroke={selectedDimension ? dimensionColors[selectedDimension].primary : '#f59e0b'}
-                    fill={selectedDimension ? dimensionColors[selectedDimension].primary : '#f59e0b'}
+                    stroke={
+                      selectedDimension
+                        ? dimensionColors[selectedDimension].primary
+                        : "#f59e0b"
+                    }
+                    fill={
+                      selectedDimension
+                        ? dimensionColors[selectedDimension].primary
+                        : "#f59e0b"
+                    }
                     fillOpacity={0.3}
                     strokeWidth={3}
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #475569',
-                      borderRadius: '12px',
-                      boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.5)',
+                      backgroundColor: "#1e293b",
+                      border: "1px solid #475569",
+                      borderRadius: "12px",
+                      boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.5)",
                     }}
-                    labelStyle={{ color: '#f1f5f9', fontWeight: 600 }}
-                    itemStyle={{ color: '#cbd5e1' }}
+                    labelStyle={{ color: "#f1f5f9", fontWeight: 600 }}
+                    itemStyle={{ color: "#cbd5e1" }}
                     formatter={(value: number, name: string) => [
                       `${value}/100`,
-                      name === 'Actual' ? 'Current Score' : 'Target',
+                      name === "Actual" ? "Current Score" : "Target",
                     ]}
                   />
                   <Legend
-                    wrapperStyle={{ paddingTop: '20px' }}
+                    wrapperStyle={{ paddingTop: "20px" }}
                     formatter={(value: string) => (
                       <span className="text-slate-300">{value}</span>
                     )}
@@ -225,7 +253,9 @@ export default function Template5RadarPage() {
                 </div>
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/20 rounded-full">
                   <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-                  <span className="text-amber-300 text-sm font-medium">{maturityLevel}</span>
+                  <span className="text-amber-300 text-sm font-medium">
+                    {maturityLevel}
+                  </span>
                 </div>
               </div>
             </div>
@@ -244,17 +274,19 @@ export default function Template5RadarPage() {
                   className={`w-full text-left rounded-xl border p-4 transition-all duration-300 ${
                     isSelected
                       ? `border-2 ${colors.bg} border-opacity-50`
-                      : 'bg-slate-800/50 border-slate-700/50 hover:border-slate-600'
+                      : "bg-slate-800/50 border-slate-700/50 hover:border-slate-600"
                   }`}
                   style={{
                     borderColor: isSelected ? colors.primary : undefined,
-                    backgroundColor: isSelected ? `${colors.primary}10` : undefined,
+                    backgroundColor: isSelected
+                      ? `${colors.primary}10`
+                      : undefined,
                   }}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span
                       className="font-semibold"
-                      style={{ color: isSelected ? colors.primary : '#e2e8f0' }}
+                      style={{ color: isSelected ? colors.primary : "#e2e8f0" }}
                     >
                       {dimensionLabels[key]}
                     </span>
@@ -297,7 +329,9 @@ export default function Template5RadarPage() {
               <div className="flex items-center gap-3 mb-6">
                 <div
                   className="w-4 h-4 rounded-full"
-                  style={{ backgroundColor: dimensionColors[selectedDimension].primary }}
+                  style={{
+                    backgroundColor: dimensionColors[selectedDimension].primary,
+                  }}
                 />
                 <h3 className="text-2xl font-bold text-white">
                   {dimensionLabels[selectedDimension]} Breakdown
@@ -316,33 +350,35 @@ export default function Template5RadarPage() {
                     <XAxis
                       type="number"
                       domain={[0, 25]}
-                      tick={{ fill: '#94a3b8', fontSize: 12 }}
-                      axisLine={{ stroke: '#475569' }}
+                      tick={{ fill: "#94a3b8", fontSize: 12 }}
+                      axisLine={{ stroke: "#475569" }}
                     />
                     <YAxis
                       dataKey="name"
                       type="category"
                       width={150}
-                      tick={{ fill: '#cbd5e1', fontSize: 12 }}
-                      axisLine={{ stroke: '#475569' }}
+                      tick={{ fill: "#cbd5e1", fontSize: 12 }}
+                      axisLine={{ stroke: "#475569" }}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#1e293b',
-                        border: '1px solid #475569',
-                        borderRadius: '8px',
+                        backgroundColor: "#1e293b",
+                        border: "1px solid #475569",
+                        borderRadius: "8px",
                       }}
-                      labelStyle={{ color: '#f1f5f9' }}
-                      formatter={(value: number) => [`${value}`, 'Score']}
+                      labelStyle={{ color: "#f1f5f9" }}
+                      formatter={(value: number) => [`${value}`, "Score"]}
                     />
                     <Bar dataKey="score" radius={[0, 4, 4, 0]}>
-                      {getSubscoreData(selectedDimension).map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={dimensionColors[selectedDimension].primary}
-                          fillOpacity={0.3 + (entry.percentage / 100) * 0.7}
-                        />
-                      ))}
+                      {getSubscoreData(selectedDimension).map(
+                        (entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={dimensionColors[selectedDimension].primary}
+                            fillOpacity={0.3 + (entry.percentage / 100) * 0.7}
+                          />
+                        ),
+                      )}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -360,11 +396,15 @@ export default function Template5RadarPage() {
                       <div className="flex items-baseline gap-1">
                         <span
                           className="text-xl font-bold"
-                          style={{ color: dimensionColors[selectedDimension].primary }}
+                          style={{
+                            color: dimensionColors[selectedDimension].primary,
+                          }}
                         >
                           {sub.score}
                         </span>
-                        <span className="text-slate-500 text-sm">/{sub.max}</span>
+                        <span className="text-slate-500 text-sm">
+                          /{sub.max}
+                        </span>
                       </div>
                     </div>
 
@@ -374,7 +414,8 @@ export default function Template5RadarPage() {
                         className="h-full rounded-full"
                         style={{
                           width: `${(sub.score / sub.max) * 100}%`,
-                          backgroundColor: dimensionColors[selectedDimension].primary,
+                          backgroundColor:
+                            dimensionColors[selectedDimension].primary,
                         }}
                       />
                     </div>
@@ -387,7 +428,10 @@ export default function Template5RadarPage() {
                         </div>
                         <ul className="space-y-1">
                           {sub.evidence.slice(0, 2).map((e, i) => (
-                            <li key={i} className="text-xs text-slate-400 flex items-start gap-2">
+                            <li
+                              key={i}
+                              className="text-xs text-slate-400 flex items-start gap-2"
+                            >
                               <span className="text-green-400 mt-0.5">+</span>
                               {e}
                             </li>
@@ -404,7 +448,10 @@ export default function Template5RadarPage() {
                         </div>
                         <ul className="space-y-1">
                           {sub.gaps.slice(0, 2).map((g, i) => (
-                            <li key={i} className="text-xs text-slate-400 flex items-start gap-2">
+                            <li
+                              key={i}
+                              className="text-xs text-slate-400 flex items-start gap-2"
+                            >
                               <span className="text-red-400 mt-0.5">-</span>
                               {g}
                             </li>
@@ -442,7 +489,9 @@ export default function Template5RadarPage() {
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: colors.primary }}
                       />
-                      <h4 className="font-semibold text-white">{dimensionLabels[key]}</h4>
+                      <h4 className="font-semibold text-white">
+                        {dimensionLabels[key]}
+                      </h4>
                     </div>
 
                     {/* Mini bar chart */}
@@ -450,8 +499,12 @@ export default function Template5RadarPage() {
                       {subscoreData.map((sub, idx) => (
                         <div key={idx}>
                           <div className="flex justify-between text-xs mb-1">
-                            <span className="text-slate-400 truncate pr-2">{sub.name}</span>
-                            <span className="text-slate-300">{sub.percentage}%</span>
+                            <span className="text-slate-400 truncate pr-2">
+                              {sub.name}
+                            </span>
+                            <span className="text-slate-300">
+                              {sub.percentage}%
+                            </span>
                           </div>
                           <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
                             <div
@@ -467,7 +520,9 @@ export default function Template5RadarPage() {
                     </div>
 
                     <div className="mt-4 pt-3 border-t border-slate-700">
-                      <span className="text-xs text-slate-400">Click to explore details</span>
+                      <span className="text-xs text-slate-400">
+                        Click to explore details
+                      </span>
                     </div>
                   </div>
                 );

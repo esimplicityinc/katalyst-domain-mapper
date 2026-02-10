@@ -6,5 +6,5 @@ export const requestIdMiddleware = new Elysia({ name: "request-id" }).derive(
     const requestId =
       request.headers.get("x-request-id") ?? crypto.randomUUID();
     return { requestId };
-  }
+  },
 );

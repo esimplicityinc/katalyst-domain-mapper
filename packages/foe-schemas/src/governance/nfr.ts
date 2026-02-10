@@ -1,9 +1,13 @@
-import { z } from 'zod';
-import { NfrIdPattern, PrioritySchema } from './common.js';
+import { z } from "zod";
+import { NfrIdPattern, PrioritySchema } from "./common.js";
 
 export const NfrCategorySchema = z.enum([
-  'performance', 'security', 'accessibility',
-  'reliability', 'scalability', 'maintainability',
+  "performance",
+  "security",
+  "accessibility",
+  "reliability",
+  "scalability",
+  "maintainability",
 ]);
 
 export const NfrSchema = z.object({
@@ -11,7 +15,7 @@ export const NfrSchema = z.object({
   title: z.string(),
   category: NfrCategorySchema,
   priority: PrioritySchema,
-  status: z.enum(['active', 'deprecated']),
+  status: z.enum(["active", "deprecated"]),
   created: z.string(),
   threshold: z.string().optional(),
   measurement: z.string().optional(),

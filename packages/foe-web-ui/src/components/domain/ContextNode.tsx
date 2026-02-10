@@ -1,5 +1,5 @@
-import type { BoundedContext, SubdomainType } from '../../types/domain';
-import { NODE_WIDTH, NODE_HEIGHT } from './svg/useAutoLayout';
+import type { BoundedContext, SubdomainType } from "../../types/domain";
+import { NODE_WIDTH, NODE_HEIGHT } from "./svg/useAutoLayout";
 
 interface ArtifactCounts {
   aggregates: number;
@@ -27,15 +27,15 @@ interface SubdomainColors {
 }
 
 const SUBDOMAIN_COLORS: Record<SubdomainType, SubdomainColors> = {
-  core: { fill: '#3B82F6', stroke: '#1D4ED8', label: 'Core' },
-  supporting: { fill: '#22C55E', stroke: '#15803D', label: 'Supporting' },
-  generic: { fill: '#9CA3AF', stroke: '#6B7280', label: 'Generic' },
+  core: { fill: "#3B82F6", stroke: "#1D4ED8", label: "Core" },
+  supporting: { fill: "#22C55E", stroke: "#15803D", label: "Supporting" },
+  generic: { fill: "#9CA3AF", stroke: "#6B7280", label: "Generic" },
 };
 
 const DEFAULT_COLORS: SubdomainColors = {
-  fill: '#94A3B8',
-  stroke: '#64748B',
-  label: '',
+  fill: "#94A3B8",
+  stroke: "#64748B",
+  label: "",
 };
 
 function getColors(subdomainType: SubdomainType | null): SubdomainColors {
@@ -51,7 +51,7 @@ function getColors(subdomainType: SubdomainType | null): SubdomainColors {
  */
 function truncateTitle(title: string, maxChars: number = 20): string {
   if (title.length <= maxChars) return title;
-  return title.slice(0, maxChars - 1) + '\u2026';
+  return title.slice(0, maxChars - 1) + "\u2026";
 }
 
 /**
@@ -62,7 +62,7 @@ function artifactSummary(counts: ArtifactCounts): string {
   if (counts.aggregates > 0) parts.push(`${counts.aggregates} agg`);
   if (counts.events > 0) parts.push(`${counts.events} evt`);
   if (counts.vos > 0) parts.push(`${counts.vos} vo`);
-  return parts.length > 0 ? parts.join(', ') : 'No artifacts';
+  return parts.length > 0 ? parts.join(", ") : "No artifacts";
 }
 
 export function ContextNode({
@@ -82,7 +82,7 @@ export function ContextNode({
   const strokeWidth = isSelected ? 3 : 1.5;
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       onClick();
     }
@@ -92,7 +92,7 @@ export function ContextNode({
     <g
       transform={`translate(${x}, ${y})`}
       opacity={opacity}
-      style={{ cursor: 'pointer', transition: 'opacity 0.2s ease' }}
+      style={{ cursor: "pointer", transition: "opacity 0.2s ease" }}
       onClick={(e) => {
         e.stopPropagation();
         onClick();
@@ -101,7 +101,7 @@ export function ContextNode({
       onMouseLeave={onMouseLeave}
       onKeyDown={handleKeyDown}
       role="button"
-      aria-label={`${context.title} bounded context${context.subdomainType ? `, ${context.subdomainType} subdomain` : ''}`}
+      aria-label={`${context.title} bounded context${context.subdomainType ? `, ${context.subdomainType} subdomain` : ""}`}
       tabIndex={0}
     >
       {/* Glow effect for highlighted nodes */}
@@ -129,7 +129,7 @@ export function ContextNode({
         rx={8}
         ry={8}
         fill={colors.fill}
-        stroke={isSelected ? '#FFFFFF' : colors.stroke}
+        stroke={isSelected ? "#FFFFFF" : colors.stroke}
         strokeWidth={strokeWidth}
       />
 

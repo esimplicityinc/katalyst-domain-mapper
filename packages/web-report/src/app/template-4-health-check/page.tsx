@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Heart,
   Activity,
@@ -19,49 +19,54 @@ import {
   Cross,
   HeartPulse,
   ClipboardList,
-} from 'lucide-react';
-import { clsx } from 'clsx';
-import report from '@/data/report.json';
-import type { FOEReport, DimensionScore, Finding, Recommendation } from '@/data/types';
+} from "lucide-react";
+import { clsx } from "clsx";
+import report from "@/data/report.json";
+import type {
+  FOEReport,
+  DimensionScore,
+  Finding,
+  Recommendation,
+} from "@/data/types";
 
 const typedReport = report as FOEReport;
 
 // Medical status helpers
-type MedicalStatus = 'critical' | 'warning' | 'healthy';
+type MedicalStatus = "critical" | "warning" | "healthy";
 
 function getVitalStatus(score: number, max: number): MedicalStatus {
   const percentage = (score / max) * 100;
-  if (percentage < 40) return 'critical';
-  if (percentage < 70) return 'warning';
-  return 'healthy';
+  if (percentage < 40) return "critical";
+  if (percentage < 70) return "warning";
+  return "healthy";
 }
 
 function getOverallStatus(score: number): MedicalStatus {
-  if (score < 40) return 'critical';
-  if (score < 70) return 'warning';
-  return 'healthy';
+  if (score < 40) return "critical";
+  if (score < 70) return "warning";
+  return "healthy";
 }
 
 // Animated Pulse Component
 function PulseIndicator({ status }: { status: MedicalStatus }) {
   const colors = {
-    critical: 'bg-red-500',
-    warning: 'bg-amber-500',
-    healthy: 'bg-emerald-500',
+    critical: "bg-red-500",
+    warning: "bg-amber-500",
+    healthy: "bg-emerald-500",
   };
 
   return (
     <span className="relative flex h-3 w-3">
       <span
         className={clsx(
-          'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75',
-          colors[status]
+          "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+          colors[status],
         )}
       />
       <span
         className={clsx(
-          'relative inline-flex rounded-full h-3 w-3',
-          colors[status]
+          "relative inline-flex rounded-full h-3 w-3",
+          colors[status],
         )}
       />
     </span>
@@ -69,32 +74,38 @@ function PulseIndicator({ status }: { status: MedicalStatus }) {
 }
 
 // Medical Alert Badge
-function MedicalBadge({ status, size = 'md' }: { status: MedicalStatus; size?: 'sm' | 'md' | 'lg' }) {
+function MedicalBadge({
+  status,
+  size = "md",
+}: {
+  status: MedicalStatus;
+  size?: "sm" | "md" | "lg";
+}) {
   const config = {
     critical: {
-      bg: 'bg-red-600',
-      border: 'border-red-700',
-      text: 'CRITICAL',
+      bg: "bg-red-600",
+      border: "border-red-700",
+      text: "CRITICAL",
       icon: AlertCircle,
     },
     warning: {
-      bg: 'bg-amber-500',
-      border: 'border-amber-600',
-      text: 'WARNING',
+      bg: "bg-amber-500",
+      border: "border-amber-600",
+      text: "WARNING",
       icon: AlertTriangle,
     },
     healthy: {
-      bg: 'bg-emerald-500',
-      border: 'border-emerald-600',
-      text: 'HEALTHY',
+      bg: "bg-emerald-500",
+      border: "border-emerald-600",
+      text: "HEALTHY",
       icon: CheckCircle,
     },
   };
 
   const sizeClasses = {
-    sm: 'px-2 py-0.5 text-xs',
-    md: 'px-3 py-1 text-sm',
-    lg: 'px-4 py-1.5 text-base',
+    sm: "px-2 py-0.5 text-xs",
+    md: "px-3 py-1 text-sm",
+    lg: "px-4 py-1.5 text-base",
   };
 
   const { bg, border, text, icon: Icon } = config[status];
@@ -102,10 +113,10 @@ function MedicalBadge({ status, size = 'md' }: { status: MedicalStatus; size?: '
   return (
     <span
       className={clsx(
-        'inline-flex items-center gap-1.5 font-bold text-white rounded border-2 uppercase tracking-wide',
+        "inline-flex items-center gap-1.5 font-bold text-white rounded border-2 uppercase tracking-wide",
         bg,
         border,
-        sizeClasses[size]
+        sizeClasses[size],
       )}
     >
       <Icon className="w-4 h-4" />
@@ -117,9 +128,9 @@ function MedicalBadge({ status, size = 'md' }: { status: MedicalStatus; size?: '
 // Heartbeat Animation Line
 function HeartbeatLine({ status }: { status: MedicalStatus }) {
   const colors = {
-    critical: 'stroke-red-500',
-    warning: 'stroke-amber-500',
-    healthy: 'stroke-emerald-500',
+    critical: "stroke-red-500",
+    warning: "stroke-amber-500",
+    healthy: "stroke-emerald-500",
   };
 
   return (
@@ -127,14 +138,20 @@ function HeartbeatLine({ status }: { status: MedicalStatus }) {
       <path
         d="M0,15 L30,15 L35,15 L40,5 L45,25 L50,10 L55,20 L60,15 L90,15 L95,15 L100,5 L105,25 L110,10 L115,20 L120,15 L150,15 L155,15 L160,5 L165,25 L170,10 L175,20 L180,15 L200,15"
         fill="none"
-        className={clsx('stroke-2', colors[status])}
+        className={clsx("stroke-2", colors[status])}
         strokeLinecap="round"
         strokeLinejoin="round"
       >
         <animate
           attributeName="stroke-dasharray"
           values="0,200;200,0"
-          dur={status === 'critical' ? '0.8s' : status === 'warning' ? '1.2s' : '1.6s'}
+          dur={
+            status === "critical"
+              ? "0.8s"
+              : status === "warning"
+                ? "1.2s"
+                : "1.6s"
+          }
           repeatCount="indefinite"
         />
       </path>
@@ -204,7 +221,9 @@ function PatientCard() {
           </div>
           <div>
             <h2 className="text-white font-bold text-lg">PATIENT RECORD</h2>
-            <p className="text-red-200 text-sm">Engineering Health Assessment</p>
+            <p className="text-red-200 text-sm">
+              Engineering Health Assessment
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -220,17 +239,19 @@ function PatientCard() {
             <label className="text-xs text-slate-500 uppercase tracking-wide font-medium">
               Patient ID
             </label>
-            <p className="text-slate-900 font-bold mt-1">{typedReport.repository}</p>
+            <p className="text-slate-900 font-bold mt-1">
+              {typedReport.repository}
+            </p>
           </div>
           <div>
             <label className="text-xs text-slate-500 uppercase tracking-wide font-medium">
               Exam Date
             </label>
             <p className="text-slate-900 font-medium mt-1">
-              {new Date(typedReport.scanDate).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
+              {new Date(typedReport.scanDate).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
               })}
             </p>
           </div>
@@ -238,9 +259,17 @@ function PatientCard() {
             <label className="text-xs text-slate-500 uppercase tracking-wide font-medium">
               Overall Health Score
             </label>
-            <p className="text-3xl font-bold mt-1" style={{
-              color: status === 'critical' ? '#dc2626' : status === 'warning' ? '#f59e0b' : '#10b981'
-            }}>
+            <p
+              className="text-3xl font-bold mt-1"
+              style={{
+                color:
+                  status === "critical"
+                    ? "#dc2626"
+                    : status === "warning"
+                      ? "#f59e0b"
+                      : "#10b981",
+              }}
+            >
               {typedReport.overallScore}
               <span className="text-slate-400 text-lg font-normal">/100</span>
             </p>
@@ -249,12 +278,14 @@ function PatientCard() {
             <label className="text-xs text-slate-500 uppercase tracking-wide font-medium">
               Condition
             </label>
-            <p className={clsx(
-              'font-bold text-lg mt-1',
-              typedReport.maturityLevel === 'Emerging' && 'text-red-600',
-              typedReport.maturityLevel === 'Developing' && 'text-amber-600',
-              typedReport.maturityLevel === 'Optimized' && 'text-emerald-600'
-            )}>
+            <p
+              className={clsx(
+                "font-bold text-lg mt-1",
+                typedReport.maturityLevel === "Emerging" && "text-red-600",
+                typedReport.maturityLevel === "Developing" && "text-amber-600",
+                typedReport.maturityLevel === "Optimized" && "text-emerald-600",
+              )}
+            >
               {typedReport.maturityLevel}
             </p>
           </div>
@@ -264,7 +295,10 @@ function PatientCard() {
         <div className="mt-4 pt-4 border-t border-slate-200">
           <span className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded text-sm text-slate-600">
             <Stethoscope className="w-4 h-4" />
-            Assessment Mode: <span className="font-medium uppercase">{typedReport.assessmentMode}</span>
+            Assessment Mode:{" "}
+            <span className="font-medium uppercase">
+              {typedReport.assessmentMode}
+            </span>
           </span>
         </div>
       </div>
@@ -292,7 +326,8 @@ function DiagnosisSection() {
         </p>
         <div className="mt-4 flex items-center gap-2 text-sm text-slate-500">
           <Clock className="w-4 h-4" />
-          Diagnosis confidence: <span className="font-medium text-slate-700">HIGH</span>
+          Diagnosis confidence:{" "}
+          <span className="font-medium text-slate-700">HIGH</span>
         </div>
       </div>
     </div>
@@ -302,9 +337,21 @@ function DiagnosisSection() {
 // Vital Signs Monitor
 function VitalSignsMonitor() {
   const dimensions = [
-    { key: 'feedback', icon: Activity, dimension: typedReport.dimensions.feedback },
-    { key: 'understanding', icon: Thermometer, dimension: typedReport.dimensions.understanding },
-    { key: 'confidence', icon: HeartPulse, dimension: typedReport.dimensions.confidence },
+    {
+      key: "feedback",
+      icon: Activity,
+      dimension: typedReport.dimensions.feedback,
+    },
+    {
+      key: "understanding",
+      icon: Thermometer,
+      dimension: typedReport.dimensions.understanding,
+    },
+    {
+      key: "confidence",
+      icon: HeartPulse,
+      dimension: typedReport.dimensions.confidence,
+    },
   ];
 
   return (
@@ -341,8 +388,12 @@ function VitalSignsMonitor() {
 
 // Symptoms Section (Critical Failures)
 function SymptomsSection() {
-  const criticalSymptoms = typedReport.criticalFailures.filter(f => f.severity === 'critical');
-  const severeSymptoms = typedReport.criticalFailures.filter(f => f.severity === 'high');
+  const criticalSymptoms = typedReport.criticalFailures.filter(
+    (f) => f.severity === "critical",
+  );
+  const severeSymptoms = typedReport.criticalFailures.filter(
+    (f) => f.severity === "high",
+  );
 
   return (
     <div className="bg-white border-l-4 border-l-red-500 rounded-lg shadow-md overflow-hidden">
@@ -352,7 +403,9 @@ function SymptomsSection() {
             <div className="bg-red-500 p-2 rounded-full">
               <ShieldAlert className="w-5 h-5 text-white" />
             </div>
-            <h3 className="text-red-900 font-bold text-lg">SYMPTOMS DETECTED</h3>
+            <h3 className="text-red-900 font-bold text-lg">
+              SYMPTOMS DETECTED
+            </h3>
           </div>
           <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">
             {typedReport.criticalFailures.length} ISSUES
@@ -370,7 +423,11 @@ function SymptomsSection() {
             </h4>
             <div className="space-y-4">
               {criticalSymptoms.map((symptom) => (
-                <SymptomCard key={symptom.id} symptom={symptom} severity="critical" />
+                <SymptomCard
+                  key={symptom.id}
+                  symptom={symptom}
+                  severity="critical"
+                />
               ))}
             </div>
           </div>
@@ -385,7 +442,11 @@ function SymptomsSection() {
             </h4>
             <div className="space-y-4">
               {severeSymptoms.map((symptom) => (
-                <SymptomCard key={symptom.id} symptom={symptom} severity="high" />
+                <SymptomCard
+                  key={symptom.id}
+                  symptom={symptom}
+                  severity="high"
+                />
               ))}
             </div>
           </div>
@@ -395,26 +456,34 @@ function SymptomsSection() {
   );
 }
 
-function SymptomCard({ symptom, severity }: { symptom: Finding; severity: 'critical' | 'high' }) {
-  const isCritical = severity === 'critical';
+function SymptomCard({
+  symptom,
+  severity,
+}: {
+  symptom: Finding;
+  severity: "critical" | "high";
+}) {
+  const isCritical = severity === "critical";
 
   return (
     <div
       className={clsx(
-        'rounded-lg p-4 border-l-4',
+        "rounded-lg p-4 border-l-4",
         isCritical
-          ? 'bg-red-50 border-l-red-500'
-          : 'bg-amber-50 border-l-amber-500'
+          ? "bg-red-50 border-l-red-500"
+          : "bg-amber-50 border-l-amber-500",
       )}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <PulseIndicator status={isCritical ? 'critical' : 'warning'} />
-            <span className={clsx(
-              'text-xs font-bold uppercase',
-              isCritical ? 'text-red-600' : 'text-amber-600'
-            )}>
+            <PulseIndicator status={isCritical ? "critical" : "warning"} />
+            <span
+              className={clsx(
+                "text-xs font-bold uppercase",
+                isCritical ? "text-red-600" : "text-amber-600",
+              )}
+            >
               {symptom.area}
             </span>
           </div>
@@ -438,9 +507,15 @@ function SymptomCard({ symptom, severity }: { symptom: Finding; severity: 'criti
 
 // Prescription Section (Recommendations)
 function PrescriptionSection() {
-  const immediate = typedReport.recommendations.filter(r => r.priority === 'immediate');
-  const shortTerm = typedReport.recommendations.filter(r => r.priority === 'short-term');
-  const mediumTerm = typedReport.recommendations.filter(r => r.priority === 'medium-term');
+  const immediate = typedReport.recommendations.filter(
+    (r) => r.priority === "immediate",
+  );
+  const shortTerm = typedReport.recommendations.filter(
+    (r) => r.priority === "short-term",
+  );
+  const mediumTerm = typedReport.recommendations.filter(
+    (r) => r.priority === "medium-term",
+  );
 
   return (
     <div className="bg-white border-l-4 border-l-emerald-500 rounded-lg shadow-md overflow-hidden">
@@ -466,7 +541,9 @@ function PrescriptionSection() {
               <span className="bg-red-600 text-white px-2 py-0.5 rounded text-xs font-bold">
                 STAT
               </span>
-              <span className="text-slate-700 font-medium">Administer Immediately</span>
+              <span className="text-slate-700 font-medium">
+                Administer Immediately
+              </span>
             </div>
             <div className="space-y-3">
               {immediate.map((rx) => (
@@ -483,7 +560,9 @@ function PrescriptionSection() {
               <span className="bg-amber-500 text-white px-2 py-0.5 rounded text-xs font-bold">
                 QD
               </span>
-              <span className="text-slate-700 font-medium">Daily Treatment (1-2 weeks)</span>
+              <span className="text-slate-700 font-medium">
+                Daily Treatment (1-2 weeks)
+              </span>
             </div>
             <div className="space-y-3">
               {shortTerm.map((rx) => (
@@ -500,7 +579,9 @@ function PrescriptionSection() {
               <span className="bg-blue-500 text-white px-2 py-0.5 rounded text-xs font-bold">
                 QW
               </span>
-              <span className="text-slate-700 font-medium">Weekly Treatment (1-3 months)</span>
+              <span className="text-slate-700 font-medium">
+                Weekly Treatment (1-3 months)
+              </span>
             </div>
             <div className="space-y-3">
               {mediumTerm.map((rx) => (
@@ -515,33 +596,43 @@ function PrescriptionSection() {
       <div className="bg-slate-50 px-6 py-4 border-t border-slate-200">
         <div className="flex items-center gap-2 text-sm text-slate-600">
           <Syringe className="w-4 h-4" />
-          <span>Follow treatment plan in order of priority for optimal recovery</span>
+          <span>
+            Follow treatment plan in order of priority for optimal recovery
+          </span>
         </div>
       </div>
     </div>
   );
 }
 
-function PrescriptionCard({ rx, dosage }: { rx: Recommendation; dosage: string }) {
+function PrescriptionCard({
+  rx,
+  dosage,
+}: {
+  rx: Recommendation;
+  dosage: string;
+}) {
   const impactColors = {
-    high: 'text-red-600 bg-red-50 border-red-200',
-    medium: 'text-amber-600 bg-amber-50 border-amber-200',
-    low: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+    high: "text-red-600 bg-red-50 border-red-200",
+    medium: "text-amber-600 bg-amber-50 border-amber-200",
+    low: "text-emerald-600 bg-emerald-50 border-emerald-200",
   };
 
   return (
     <div className="bg-white border border-slate-200 rounded-lg p-4 flex items-start gap-4">
       <div className="bg-slate-100 rounded px-2 py-1 text-xs font-mono text-slate-600">
-        Rx #{rx.id.split('-')[1]}
+        Rx #{rx.id.split("-")[1]}
       </div>
       <div className="flex-1">
         <h5 className="font-bold text-slate-900 mb-1">{rx.title}</h5>
         <p className="text-sm text-slate-600">{rx.description}</p>
       </div>
-      <div className={clsx(
-        'px-2 py-1 rounded border text-xs font-medium',
-        impactColors[rx.impact]
-      )}>
+      <div
+        className={clsx(
+          "px-2 py-1 rounded border text-xs font-medium",
+          impactColors[rx.impact],
+        )}
+      >
         {rx.impact.toUpperCase()} IMPACT
       </div>
     </div>
@@ -557,21 +648,32 @@ function SecondaryFindingsSection() {
           <div className="bg-amber-500 p-2 rounded-full">
             <ClipboardList className="w-5 h-5 text-white" />
           </div>
-          <h3 className="text-amber-900 font-bold text-lg">SECONDARY FINDINGS</h3>
+          <h3 className="text-amber-900 font-bold text-lg">
+            SECONDARY FINDINGS
+          </h3>
         </div>
       </div>
 
       <div className="p-6 space-y-4">
         {typedReport.gaps.map((gap) => (
-          <div key={gap.id} className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div
+            key={gap.id}
+            className="bg-amber-50 border border-amber-200 rounded-lg p-4"
+          >
             <div className="flex items-center gap-2 mb-2">
-              <span className={clsx(
-                'px-2 py-0.5 rounded text-xs font-bold uppercase',
-                gap.severity === 'high' ? 'bg-amber-600 text-white' : 'bg-amber-200 text-amber-800'
-              )}>
+              <span
+                className={clsx(
+                  "px-2 py-0.5 rounded text-xs font-bold uppercase",
+                  gap.severity === "high"
+                    ? "bg-amber-600 text-white"
+                    : "bg-amber-200 text-amber-800",
+                )}
+              >
                 {gap.severity}
               </span>
-              <span className="text-amber-800 text-sm font-medium">{gap.area}</span>
+              <span className="text-amber-800 text-sm font-medium">
+                {gap.area}
+              </span>
             </div>
             <h5 className="font-bold text-slate-900 mb-2">{gap.title}</h5>
             <p className="text-sm text-slate-600">{gap.evidence}</p>
@@ -656,7 +758,10 @@ export default function HealthCheckPage() {
           </h3>
           <ul className="space-y-2">
             {typedReport.methodology.confidenceNotes.map((note, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-sm text-slate-600">
+              <li
+                key={idx}
+                className="flex items-start gap-2 text-sm text-slate-600"
+              >
                 <CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
                 {note}
               </li>
@@ -673,11 +778,11 @@ export default function HealthCheckPage() {
             <span>Flow Optimized Engineering Health Diagnostic</span>
           </div>
           <p>
-            This diagnostic report was generated on{' '}
-            {new Date(typedReport.scanDate).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
+            This diagnostic report was generated on{" "}
+            {new Date(typedReport.scanDate).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
             })}
           </p>
         </div>

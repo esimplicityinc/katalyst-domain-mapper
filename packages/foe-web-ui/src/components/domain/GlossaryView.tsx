@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Plus, Loader2, BookOpen, Search } from 'lucide-react';
-import { api } from '../../api/client';
-import type { DomainModelFull, GlossaryTerm } from '../../types/domain';
+import { useState } from "react";
+import { Plus, Loader2, BookOpen, Search } from "lucide-react";
+import { api } from "../../api/client";
+import type { DomainModelFull, GlossaryTerm } from "../../types/domain";
 
 interface GlossaryViewProps {
   model: DomainModelFull;
@@ -11,21 +11,21 @@ interface GlossaryViewProps {
 export function GlossaryView({ model, onModelUpdated }: GlossaryViewProps) {
   const [showForm, setShowForm] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   // Form state
-  const [term, setTerm] = useState('');
-  const [definition, setDefinition] = useState('');
-  const [contextId, setContextId] = useState('');
-  const [aliases, setAliases] = useState('');
-  const [examples, setExamples] = useState('');
+  const [term, setTerm] = useState("");
+  const [definition, setDefinition] = useState("");
+  const [contextId, setContextId] = useState("");
+  const [aliases, setAliases] = useState("");
+  const [examples, setExamples] = useState("");
 
   const resetForm = () => {
-    setTerm('');
-    setDefinition('');
-    setContextId('');
-    setAliases('');
-    setExamples('');
+    setTerm("");
+    setDefinition("");
+    setContextId("");
+    setAliases("");
+    setExamples("");
     setShowForm(false);
   };
 
@@ -40,16 +40,22 @@ export function GlossaryView({ model, onModelUpdated }: GlossaryViewProps) {
         definition: definition.trim(),
         contextId: contextId || undefined,
         aliases: aliases
-          ? aliases.split(',').map((a) => a.trim()).filter(Boolean)
+          ? aliases
+              .split(",")
+              .map((a) => a.trim())
+              .filter(Boolean)
           : undefined,
         examples: examples
-          ? examples.split('\n').map((e) => e.trim()).filter(Boolean)
+          ? examples
+              .split("\n")
+              .map((e) => e.trim())
+              .filter(Boolean)
           : undefined,
       });
       resetForm();
       onModelUpdated();
     } catch (err) {
-      console.error('Failed to create glossary term:', err);
+      console.error("Failed to create glossary term:", err);
     } finally {
       setCreating(false);
     }
@@ -86,7 +92,8 @@ export function GlossaryView({ model, onModelUpdated }: GlossaryViewProps) {
             Ubiquitous Language
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            {model.glossaryTerms.length} term{model.glossaryTerms.length !== 1 ? 's' : ''}
+            {model.glossaryTerms.length} term
+            {model.glossaryTerms.length !== 1 ? "s" : ""}
           </p>
         </div>
         <button
@@ -190,7 +197,8 @@ export function GlossaryView({ model, onModelUpdated }: GlossaryViewProps) {
         <div className="text-center py-16">
           <BookOpen className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            No glossary terms yet. Add terms manually or use the chat to build a ubiquitous language.
+            No glossary terms yet. Add terms manually or use the chat to build a
+            ubiquitous language.
           </p>
         </div>
       ) : sorted.length === 0 ? (
@@ -220,7 +228,11 @@ export function GlossaryView({ model, onModelUpdated }: GlossaryViewProps) {
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
               {sorted.map((t) => (
-                <GlossaryRow key={t.id} term={t} contextName={getContextName(t.contextId)} />
+                <GlossaryRow
+                  key={t.id}
+                  term={t}
+                  contextName={getContextName(t.contextId)}
+                />
               ))}
             </tbody>
           </table>
@@ -266,7 +278,9 @@ function GlossaryRow({ term, contextName }: GlossaryRowProps) {
             {contextName}
           </span>
         ) : (
-          <span className="text-xs text-gray-400 dark:text-gray-500">Global</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500">
+            Global
+          </span>
         )}
       </td>
       <td className="px-4 py-3 hidden lg:table-cell">

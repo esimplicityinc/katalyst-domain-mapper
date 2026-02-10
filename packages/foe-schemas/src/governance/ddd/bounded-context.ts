@@ -1,10 +1,15 @@
-import { z } from 'zod';
-import { SlugPattern } from '../common.js';
+import { z } from "zod";
+import { SlugPattern } from "../common.js";
 
 export const CommunicationPatternSchema = z.enum([
-  'domain-events', 'shared-kernel', 'anti-corruption-layer',
-  'open-host-service', 'conformist',
-  'partnership', 'customer-supplier', 'separate-ways',
+  "domain-events",
+  "shared-kernel",
+  "anti-corruption-layer",
+  "open-host-service",
+  "conformist",
+  "partnership",
+  "customer-supplier",
+  "separate-ways",
 ]);
 
 export const SubdomainTypeSchema = z.enum(["core", "supporting", "generic"]);
@@ -17,11 +22,11 @@ export const BoundedContextSchema = z.object({
   responsibility: z.string(),
   sourceDirectory: z.string().optional(),
   aggregates: z.array(SlugPattern).default([]),
-  communicationPattern: CommunicationPatternSchema.default('domain-events'),
+  communicationPattern: CommunicationPatternSchema.default("domain-events"),
   upstreamContexts: z.array(SlugPattern).default([]),
   downstreamContexts: z.array(SlugPattern).default([]),
   teamOwnership: z.string().optional(),
-  status: z.enum(['draft', 'stable', 'deprecated']).default('draft'),
+  status: z.enum(["draft", "stable", "deprecated"]).default("draft"),
   subdomainType: SubdomainTypeSchema.nullable().default(null),
   path: z.string(),
 });

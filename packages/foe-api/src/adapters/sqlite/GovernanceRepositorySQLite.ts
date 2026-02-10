@@ -21,49 +21,69 @@ export class GovernanceRepositorySQLite implements GovernanceRepository {
     const generated = data.generated ?? now;
 
     const stats = {
-      capabilities: data.stats.capabilities ?? data.stats.totalCapabilities ?? Object.keys(data.capabilities).length,
+      capabilities:
+        data.stats.capabilities ??
+        data.stats.totalCapabilities ??
+        Object.keys(data.capabilities).length,
       personas: data.stats.personas ?? data.stats.totalPersonas ?? 0,
       userStories: data.stats.userStories ?? data.stats.totalStories ?? 0,
-      roadItems: data.stats.roadItems ?? data.stats.totalRoadItems ?? Object.keys(data.roadItems).length,
-      integrityStatus: data.stats.integrityStatus ?? (data.stats.referentialIntegrity?.valid ? "pass" : "fail"),
-      integrityErrors: data.stats.integrityErrors ?? (data.stats.referentialIntegrity?.errors?.length ?? 0),
+      roadItems:
+        data.stats.roadItems ??
+        data.stats.totalRoadItems ??
+        Object.keys(data.roadItems).length,
+      integrityStatus:
+        data.stats.integrityStatus ??
+        (data.stats.referentialIntegrity?.valid ? "pass" : "fail"),
+      integrityErrors:
+        data.stats.integrityErrors ??
+        data.stats.referentialIntegrity?.errors?.length ??
+        0,
     };
 
     // Insert snapshot
-    this.db.insert(schema.governanceSnapshots).values({
-      id,
-      project: data.project,
-      version: data.version,
-      generated,
-      rawIndex: data as unknown as Record<string, unknown>,
-      createdAt: now,
-    }).run();
+    this.db
+      .insert(schema.governanceSnapshots)
+      .values({
+        id,
+        project: data.project,
+        version: data.version,
+        generated,
+        rawIndex: data as unknown as Record<string, unknown>,
+        createdAt: now,
+      })
+      .run();
 
     // Denormalize capabilities
     const byCapability = data.byCapability ?? {};
     for (const [capId, cap] of Object.entries(data.capabilities)) {
       const capData = byCapability[capId];
-      this.db.insert(schema.governanceCapabilities).values({
-        id: `${id}:${capId}`,
-        snapshotId: id,
-        title: cap.title ?? capId,
-        status: cap.status ?? "unknown",
-        roadCount: capData?.roads?.length ?? 0,
-        storyCount: capData?.stories?.length ?? 0,
-      }).run();
+      this.db
+        .insert(schema.governanceCapabilities)
+        .values({
+          id: `${id}:${capId}`,
+          snapshotId: id,
+          title: cap.title ?? capId,
+          status: cap.status ?? "unknown",
+          roadCount: capData?.roads?.length ?? 0,
+          storyCount: capData?.stories?.length ?? 0,
+        })
+        .run();
     }
 
     // Denormalize road items
     for (const [roadId, road] of Object.entries(data.roadItems)) {
-      this.db.insert(schema.governanceRoadItems).values({
-        id: `${id}:${roadId}`,
-        snapshotId: id,
-        roadId,
-        title: road.title ?? roadId,
-        status: road.status ?? "proposed",
-        phase: road.phase ?? 0,
-        priority: road.priority ?? "medium",
-      }).run();
+      this.db
+        .insert(schema.governanceRoadItems)
+        .values({
+          id: `${id}:${roadId}`,
+          snapshotId: id,
+          roadId,
+          title: road.title ?? roadId,
+          status: road.status ?? "proposed",
+          phase: road.phase ?? 0,
+          priority: road.priority ?? "medium",
+        })
+        .run();
     }
 
     // Denormalize bounded contexts if present
@@ -71,17 +91,27 @@ export class GovernanceRepositorySQLite implements GovernanceRepository {
     const byContext = data.byContext ?? {};
     for (const [slug, ctx] of Object.entries(contexts)) {
       const ctxData = byContext[slug];
-      this.db.insert(schema.governanceContexts).values({
-        id: `${id}:${slug}`,
-        snapshotId: id,
-        slug,
-        title: ctx.title ?? slug,
-        aggregateCount: ctxData?.aggregates?.length ?? 0,
-        eventCount: ctxData?.events?.length ?? 0,
-      }).run();
+      this.db
+        .insert(schema.governanceContexts)
+        .values({
+          id: `${id}:${slug}`,
+          snapshotId: id,
+          slug,
+          title: ctx.title ?? slug,
+          aggregateCount: ctxData?.aggregates?.length ?? 0,
+          eventCount: ctxData?.events?.length ?? 0,
+        })
+        .run();
     }
 
-    return { id, project: data.project, version: data.version, generated, createdAt: now, stats };
+    return {
+      id,
+      project: data.project,
+      version: data.version,
+      generated,
+      createdAt: now,
+      stats,
+    };
   }
 
   async getLatestSnapshot(): Promise<StoredSnapshot | null> {
@@ -157,8 +187,9 @@ export class GovernanceRepositorySQLite implements GovernanceRepository {
     const latest = await this.getLatestSnapshot();
     if (!latest) return [];
 
-    const raw = (latest as unknown as { _rawIndex: ValidatedSnapshotData })._rawIndex
-      ?? (await this.getRawIndex(latest.id));
+    const raw =
+      (latest as unknown as { _rawIndex: ValidatedSnapshotData })._rawIndex ??
+      (await this.getRawIndex(latest.id));
 
     if (!raw) return [];
 
@@ -204,12 +235,22 @@ export class GovernanceRepositorySQLite implements GovernanceRepository {
   async getIntegrity(): Promise<IntegrityReport> {
     const latest = await this.getLatestSnapshot();
     if (!latest) {
-      return { valid: true, errors: [], totalArtifacts: 0, checkedAt: new Date().toISOString() };
+      return {
+        valid: true,
+        errors: [],
+        totalArtifacts: 0,
+        checkedAt: new Date().toISOString(),
+      };
     }
 
     const raw = await this.getRawIndex(latest.id);
     if (!raw) {
-      return { valid: true, errors: [], totalArtifacts: 0, checkedAt: latest.generated };
+      return {
+        valid: true,
+        errors: [],
+        totalArtifacts: 0,
+        checkedAt: latest.generated,
+      };
     }
 
     const statsObj = raw.stats;
@@ -223,7 +264,7 @@ export class GovernanceRepositorySQLite implements GovernanceRepository {
       (statsObj?.totalRoadItems ?? statsObj?.roadItems ?? 0);
 
     return {
-      valid: integrity?.valid ?? (latest.stats.integrityStatus === "pass"),
+      valid: integrity?.valid ?? latest.stats.integrityStatus === "pass",
       errors: integrity?.errors ?? [],
       totalArtifacts,
       checkedAt: latest.generated,
@@ -249,22 +290,24 @@ export class GovernanceRepositorySQLite implements GovernanceRepository {
         .where(eq(schema.governanceRoadItems.snapshotId, snap.id))
         .all();
 
-      const completedRoads = roadRows.filter((r) => r.status === "complete").length;
+      const completedRoads = roadRows.filter(
+        (r) => r.status === "complete",
+      ).length;
 
       const capCount = this.db
         .select()
         .from(schema.governanceCapabilities)
         .where(eq(schema.governanceCapabilities.snapshotId, snap.id))
-        .all()
-        .length;
+        .all().length;
 
       return {
         snapshotId: snap.id,
         generated: snap.generated,
         totalCapabilities: capCount,
         totalRoadItems: roadRows.length,
-        integrityStatus: statsObj?.integrityStatus
-          ?? (statsObj?.referentialIntegrity?.valid ? "pass" : "fail"),
+        integrityStatus:
+          statsObj?.integrityStatus ??
+          (statsObj?.referentialIntegrity?.valid ? "pass" : "fail"),
         completedRoads,
       };
     });
@@ -290,19 +333,25 @@ export class GovernanceRepositorySQLite implements GovernanceRepository {
       generated: row.generated,
       createdAt: row.createdAt,
       stats: {
-        capabilities: statsObj?.capabilities ?? statsObj?.totalCapabilities ?? 0,
+        capabilities:
+          statsObj?.capabilities ?? statsObj?.totalCapabilities ?? 0,
         personas: statsObj?.personas ?? statsObj?.totalPersonas ?? 0,
         userStories: statsObj?.userStories ?? statsObj?.totalStories ?? 0,
         roadItems: statsObj?.roadItems ?? statsObj?.totalRoadItems ?? 0,
-        integrityStatus: statsObj?.integrityStatus
-          ?? (statsObj?.referentialIntegrity?.valid ? "pass" : "fail"),
-        integrityErrors: statsObj?.integrityErrors
-          ?? (statsObj?.referentialIntegrity?.errors?.length ?? 0),
+        integrityStatus:
+          statsObj?.integrityStatus ??
+          (statsObj?.referentialIntegrity?.valid ? "pass" : "fail"),
+        integrityErrors:
+          statsObj?.integrityErrors ??
+          statsObj?.referentialIntegrity?.errors?.length ??
+          0,
       },
     };
   }
 
-  private async getRawIndex(snapshotId: string): Promise<ValidatedSnapshotData | null> {
+  private async getRawIndex(
+    snapshotId: string,
+  ): Promise<ValidatedSnapshotData | null> {
     const row = this.db
       .select({ rawIndex: schema.governanceSnapshots.rawIndex })
       .from(schema.governanceSnapshots)

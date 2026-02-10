@@ -1,7 +1,7 @@
-import { governance } from '@foe/schemas';
-import { readFile } from 'node:fs/promises';
-import { parseFrontmatter } from '../frontmatter.js';
-import { makeGovernancePath } from '../governance-helpers.js';
+import { governance } from "@foe/schemas";
+import { readFile } from "node:fs/promises";
+import { parseFrontmatter } from "../frontmatter.js";
+import { makeGovernancePath } from "../governance-helpers.js";
 
 /**
  * Parse a persona markdown file (PER-xxx.md).
@@ -14,8 +14,10 @@ import { makeGovernancePath } from '../governance-helpers.js';
  *   related_personas → relatedPersonas
  *   validated_by → validatedBy
  */
-export async function parsePersonaFile(filePath: string): Promise<governance.Persona> {
-  const fileContent = await readFile(filePath, 'utf-8');
+export async function parsePersonaFile(
+  filePath: string,
+): Promise<governance.Persona> {
+  const fileContent = await readFile(filePath, "utf-8");
   const { data } = parseFrontmatter(fileContent);
 
   const mapped = {
@@ -49,6 +51,8 @@ export async function parsePersonaFile(filePath: string): Promise<governance.Per
     return governance.PersonaSchema.parse(mapped);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    throw new Error(`Persona ${data.id} validation failed in ${filePath}: ${message}`);
+    throw new Error(
+      `Persona ${data.id} validation failed in ${filePath}: ${message}`,
+    );
   }
 }
