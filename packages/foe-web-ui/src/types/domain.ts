@@ -9,6 +9,8 @@ export interface DomainModel {
   updatedAt: string;
 }
 
+export type SubdomainType = 'core' | 'supporting' | 'generic';
+
 export interface BoundedContext {
   id: string;
   domainModelId: string;
@@ -19,6 +21,7 @@ export interface BoundedContext {
   sourceDirectory: string | null;
   teamOwnership: string | null;
   status: string | null;
+  subdomainType: SubdomainType | null;
   relationships: ContextRelationship[];
   createdAt: string;
   updatedAt: string;

@@ -87,11 +87,12 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
         sourceDirectory: body.sourceDirectory ?? null,
         teamOwnership: body.teamOwnership ?? null,
         status: body.status ?? "draft",
+        subdomainType: body.subdomainType ?? null,
         relationships: body.relationships ?? [],
         createdAt: now,
         updatedAt: now,
       }).run();
-      return { id: ctxId, slug: body.slug, title: body.title };
+      return { id: ctxId, slug: body.slug, title: body.title, subdomainType: body.subdomainType ?? null };
     }, {
       params: t.Object({ id: t.String() }),
       body: t.Object({
@@ -102,6 +103,7 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
         sourceDirectory: t.Optional(t.String()),
         teamOwnership: t.Optional(t.String()),
         status: t.Optional(t.String()),
+        subdomainType: t.Optional(t.Union([t.Literal('core'), t.Literal('supporting'), t.Literal('generic')])),
         relationships: t.Optional(t.Array(t.Any())),
       }),
       detail: { summary: "Add bounded context", tags: ["Domain Models"] },
@@ -117,10 +119,11 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
         sourceDirectory: body.sourceDirectory ?? null,
         teamOwnership: body.teamOwnership ?? null,
         status: body.status ?? "draft",
+        subdomainType: body.subdomainType ?? null,
         relationships: body.relationships ?? [],
         updatedAt: now,
       }).where(eq(schema.boundedContexts.id, params.ctxId)).run();
-      return { id: params.ctxId, updated: true };
+      return { id: params.ctxId, updated: true, subdomainType: body.subdomainType ?? null };
     }, {
       params: t.Object({ id: t.String(), ctxId: t.String() }),
       body: t.Object({
@@ -131,6 +134,7 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
         sourceDirectory: t.Optional(t.String()),
         teamOwnership: t.Optional(t.String()),
         status: t.Optional(t.String()),
+        subdomainType: t.Optional(t.Union([t.Literal('core'), t.Literal('supporting'), t.Literal('generic')])),
         relationships: t.Optional(t.Array(t.Any())),
       }),
       detail: { summary: "Update bounded context", tags: ["Domain Models"] },

@@ -202,6 +202,7 @@ export const api = {
       sourceDirectory?: string;
       teamOwnership?: string;
       status?: string;
+      subdomainType?: 'core' | 'supporting' | 'generic';
       relationships?: BoundedContext['relationships'];
     },
   ): Promise<BoundedContext> {
@@ -222,6 +223,7 @@ export const api = {
       sourceDirectory: string;
       teamOwnership: string;
       status: string;
+      subdomainType: 'core' | 'supporting' | 'generic' | null;
       relationships: BoundedContext['relationships'];
     }>,
   ): Promise<BoundedContext> {

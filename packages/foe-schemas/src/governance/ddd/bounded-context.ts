@@ -7,6 +7,9 @@ export const CommunicationPatternSchema = z.enum([
   'partnership', 'customer-supplier', 'separate-ways',
 ]);
 
+export const SubdomainTypeSchema = z.enum(["core", "supporting", "generic"]);
+export type SubdomainType = z.infer<typeof SubdomainTypeSchema>;
+
 export const BoundedContextSchema = z.object({
   slug: SlugPattern,
   title: z.string(),
@@ -19,6 +22,7 @@ export const BoundedContextSchema = z.object({
   downstreamContexts: z.array(SlugPattern).default([]),
   teamOwnership: z.string().optional(),
   status: z.enum(['draft', 'stable', 'deprecated']).default('draft'),
+  subdomainType: SubdomainTypeSchema.nullable().default(null),
   path: z.string(),
 });
 

@@ -158,6 +158,7 @@ export const boundedContexts = sqliteTable("bounded_contexts", {
   sourceDirectory: text("source_directory"),
   teamOwnership: text("team_ownership"),
   status: text("status").notNull().default("draft"),
+  subdomainType: text("subdomain_type"),  // 'core' | 'supporting' | 'generic' | null
   relationships: text("relationships", { mode: "json" }).$type<unknown[]>().default([]),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),

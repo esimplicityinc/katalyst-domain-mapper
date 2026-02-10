@@ -29,6 +29,7 @@ export async function parseBoundedContextFile(filePath: string): Promise<governa
     downstreamContexts: data.downstream_contexts,
     teamOwnership: data.team_ownership,
     status: data.status,
+    subdomainType: data.subdomain_type,
     path: makeGovernancePath(filePath),
   };
 

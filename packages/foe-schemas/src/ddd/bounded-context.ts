@@ -20,6 +20,9 @@ export const ContextRelationshipSchema = z.object({
 });
 export type ContextRelationship = z.infer<typeof ContextRelationshipSchema>;
 
+export const SubdomainTypeSchema = z.enum(["core", "supporting", "generic"]);
+export type SubdomainType = z.infer<typeof SubdomainTypeSchema>;
+
 export const BoundedContextSchema = z.object({
   id: z.string().uuid(),
   slug: z.string().regex(/^[a-z0-9-]+$/),
@@ -31,6 +34,7 @@ export const BoundedContextSchema = z.object({
   relationships: z.array(ContextRelationshipSchema).default([]),
   teamOwnership: z.string().optional(),
   status: z.enum(["draft", "stable", "deprecated"]).default("draft"),
+  subdomainType: SubdomainTypeSchema.nullable().default(null),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });
