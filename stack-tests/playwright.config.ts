@@ -62,7 +62,7 @@ export default defineConfig({
     {
       ...hybridBdd,
       use: {
-        baseURL: API_BASE_URL,
+        baseURL: FRONTEND_URL,
       },
     },
   ],

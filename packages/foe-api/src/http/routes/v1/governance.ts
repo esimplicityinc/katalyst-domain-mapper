@@ -135,6 +135,23 @@ export function createGovernanceRoutes(deps: {
       }
     )
 
+    // DELETE / — Delete ALL snapshots (for BDD test isolation)
+    .delete(
+      "/",
+      async () => {
+        const snapshots = await deps.queryGovernanceState.listSnapshots();
+        let deleted = 0;
+        for (const snapshot of snapshots) {
+          const ok = await deps.governanceRepo.deleteSnapshot(snapshot.id);
+          if (ok) deleted++;
+        }
+        return { message: `Deleted ${deleted} governance snapshots`, count: deleted };
+      },
+      {
+        detail: { summary: "Delete all governance snapshots", tags: ["Governance"] },
+      }
+    )
+
     // DELETE /:id — Delete snapshot (for BDD cleanup)
     .delete(
       "/:id",

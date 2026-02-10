@@ -7,6 +7,14 @@ import type {
   ValueObject,
   GlossaryTerm,
 } from '../types/domain';
+import type {
+  GovernanceSnapshot,
+  RoadItemSummary,
+  CapabilityCoverage,
+  PersonaCoverage,
+  IntegrityReport,
+  TrendPoint,
+} from '../types/governance';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
@@ -22,7 +30,8 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ?? `Request failed: ${res.status} ${res.statusText}`);
+    const msg = body.error ?? `Request failed: ${res.status} ${res.statusText}`;
+    throw new Error(`${res.status}: ${msg}`);
   }
 
   return res.json();
@@ -324,5 +333,44 @@ export const api = {
   /** List glossary terms */
   listGlossaryTerms(modelId: string): Promise<GlossaryTerm[]> {
     return request(`/api/v1/domain-models/${modelId}/glossary`);
+  },
+
+  // ── Governance ────────────────────────────────────────────────────────────
+
+  /** Get the latest governance snapshot */
+  getGovernanceLatest(): Promise<GovernanceSnapshot> {
+    return request('/api/v1/governance/latest');
+  },
+
+  /** List all governance snapshots */
+  listGovernanceSnapshots(): Promise<GovernanceSnapshot[]> {
+    return request('/api/v1/governance/snapshots');
+  },
+
+  /** Get road items with optional status filter */
+  getGovernanceRoads(status?: string): Promise<RoadItemSummary[]> {
+    const qs = status ? `?status=${status}` : '';
+    return request(`/api/v1/governance/roads${qs}`);
+  },
+
+  /** Get capability coverage */
+  getCapabilityCoverage(): Promise<CapabilityCoverage[]> {
+    return request('/api/v1/governance/coverage/capabilities');
+  },
+
+  /** Get persona coverage */
+  getPersonaCoverage(): Promise<PersonaCoverage[]> {
+    return request('/api/v1/governance/coverage/personas');
+  },
+
+  /** Get governance health trends */
+  getGovernanceTrends(limit?: number): Promise<TrendPoint[]> {
+    const qs = limit ? `?limit=${limit}` : '';
+    return request(`/api/v1/governance/trends${qs}`);
+  },
+
+  /** Get cross-reference integrity report */
+  getGovernanceIntegrity(): Promise<IntegrityReport> {
+    return request('/api/v1/governance/integrity');
   },
 };

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { FileJson, Map, Hexagon, Loader2 } from 'lucide-react';
+import { FileJson, Map, Shield, Hexagon, Loader2 } from 'lucide-react';
 import { ApiKeyPrompt } from './ApiKeyPrompt';
 import { api } from '../api/client';
 
@@ -16,6 +16,12 @@ const NAV_ITEMS = [
     label: 'Domain Mapper',
     icon: Map,
     description: 'DDD workspace',
+  },
+  {
+    to: '/governance',
+    label: 'Governance',
+    icon: Shield,
+    description: 'Health & coverage',
   },
 ];
 

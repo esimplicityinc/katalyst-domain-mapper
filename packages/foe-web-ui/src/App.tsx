@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ReportsPage } from './pages/ReportsPage';
 import { DomainMapperPage } from './pages/DomainMapperPage';
+import { GovernanceDashboard } from './pages/GovernanceDashboard';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
           <Route index element={<Navigate to="/reports" replace />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="mapper/*" element={<DomainMapperPage />} />
+          <Route path="governance" element={<GovernanceDashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>

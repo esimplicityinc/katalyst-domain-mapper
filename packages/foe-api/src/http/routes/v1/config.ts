@@ -21,6 +21,18 @@ export function createConfigRoutes(deps: {
       }
     )
 
+    // DELETE /config/api-key — clear the API key (used by BDD tests for isolation)
+    .delete(
+      "/api-key",
+      () => {
+        deps.setAnthropicApiKey("");
+        return { message: "API key cleared" };
+      },
+      {
+        detail: { summary: "Clear Anthropic API key", tags: ["Config"] },
+      }
+    )
+
     // PUT /config/api-key — set the Anthropic API key at runtime
     .put(
       "/api-key",
