@@ -1,6 +1,6 @@
 @ui @ddd-modeling @ROAD-016
 Feature: Interactive Context Map Diagram
-  As a Domain Architect
+  As a Domain Architect (@PER-007)
   I want to see bounded contexts as an interactive SVG diagram
   So that I can visualize system topology and relationships at a glance
 
