@@ -1,11 +1,11 @@
 {
-  "name": "@foe/field-guide-tools",
+  "name": "@katalyst/vocabulary",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "foe-field-guide": "./dist/cli.js"
+    "katalyst-vocab": "./dist/cli.js"
   },
   "scripts": {
     "build": "bun build ./src/index.ts --outdir ./dist --target node --format esm --external @foe/schemas && bun build ./src/cli.ts --outdir ./dist --target node --format esm --external @foe/schemas && chmod +x ./dist/cli.js",

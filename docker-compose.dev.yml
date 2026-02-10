@@ -6,14 +6,16 @@ services:
   app:
     build:
       context: .
-      dockerfile: packages/foe-api/Dockerfile
-      target: dev
+      dockerfile: Dockerfile
     ports: !override
       - "3001:3001"     # API (Bun --watch)
+      - "3000:3000"     # Web UI (Vite)
     volumes:
       # Mount source code for hot reload
-      - ./packages/foe-api/src:/app/packages/foe-api/src
+      - ./packages/intelligence/api:/app/packages/intelligence/api
+      - ./packages/intelligence/web/src:/app/packages/intelligence/web/src
       - ./packages/foe-schemas/src:/app/packages/foe-schemas/src
+      - ./packages/vocabulary/src:/app/packages/vocabulary/src
       - foe-data:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
     environment:

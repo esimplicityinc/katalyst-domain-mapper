@@ -141,6 +141,16 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
             return { error: "Domain model not found" };
           }
 
+          // Validate subdomainType manually to return 400 instead of 500
+          const validSubdomainTypes = ["core", "supporting", "generic"];
+          if (body.subdomainType && !validSubdomainTypes.includes(body.subdomainType)) {
+            set.status = 400;
+            return { 
+              error: "Invalid subdomain type",
+              message: `subdomainType must be one of: ${validSubdomainTypes.join(", ")}`
+            };
+          }
+
           const now = new Date().toISOString();
           const ctxId = crypto.randomUUID();
           db.insert(schema.boundedContexts)
@@ -177,13 +187,7 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
             sourceDirectory: t.Optional(t.String()),
             teamOwnership: t.Optional(t.String()),
             status: t.Optional(t.String()),
-            subdomainType: t.Optional(
-              t.Union([
-                t.Literal("core"),
-                t.Literal("supporting"),
-                t.Literal("generic"),
-              ]),
-            ),
+            subdomainType: t.Optional(t.String()),
             relationships: t.Optional(t.Array(t.Any())),
           }),
           detail: { summary: "Add bounded context", tags: ["Domain Models"] },
@@ -315,6 +319,69 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
         },
       )
 
+      .put(
+        "/:id/aggregates/:aggId",
+        ({ params, body }) => {
+          const now = new Date().toISOString();
+          db.update(schema.aggregates)
+            .set({
+              slug: body.slug,
+              title: body.title,
+              rootEntity: body.rootEntity,
+              entities: body.entities ?? [],
+              valueObjects: body.valueObjects ?? [],
+              events: body.events ?? [],
+              commands: body.commands ?? [],
+              invariants: body.invariants ?? [],
+              sourceFile: body.sourceFile ?? null,
+              status: body.status ?? "draft",
+              updatedAt: now,
+            })
+            .where(eq(schema.aggregates.id, params.aggId))
+            .run();
+          return {
+            id: params.aggId,
+            updated: true,
+          };
+        },
+        {
+          params: t.Object({ id: t.String(), aggId: t.String() }),
+          body: t.Object({
+            slug: t.String(),
+            title: t.String(),
+            rootEntity: t.String(),
+            entities: t.Optional(t.Array(t.String())),
+            valueObjects: t.Optional(t.Array(t.String())),
+            events: t.Optional(t.Array(t.String())),
+            commands: t.Optional(t.Array(t.String())),
+            invariants: t.Optional(t.Array(t.Any())),
+            sourceFile: t.Optional(t.String()),
+            status: t.Optional(t.String()),
+          }),
+          detail: {
+            summary: "Update aggregate",
+            tags: ["Domain Models"],
+          },
+        },
+      )
+
+      .delete(
+        "/:id/aggregates/:aggId",
+        ({ params }) => {
+          db.delete(schema.aggregates)
+            .where(eq(schema.aggregates.id, params.aggId))
+            .run();
+          return { message: "Deleted" };
+        },
+        {
+          params: t.Object({ id: t.String(), aggId: t.String() }),
+          detail: {
+            summary: "Delete aggregate",
+            tags: ["Domain Models"],
+          },
+        },
+      )
+
       // ── Domain Events ─────────────────────────────────────────────────────
 
       .post(
@@ -370,6 +437,65 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
         },
       )
 
+      .put(
+        "/:id/events/:eventId",
+        ({ params, body }) => {
+          const now = new Date().toISOString();
+          db.update(schema.domainEvents)
+            .set({
+              slug: body.slug,
+              title: body.title,
+              description: body.description ?? null,
+              payload: body.payload ?? [],
+              consumedBy: body.consumedBy ?? [],
+              triggers: body.triggers ?? [],
+              sideEffects: body.sideEffects ?? [],
+              sourceFile: body.sourceFile ?? null,
+              updatedAt: now,
+            })
+            .where(eq(schema.domainEvents.id, params.eventId))
+            .run();
+          return {
+            id: params.eventId,
+            updated: true,
+          };
+        },
+        {
+          params: t.Object({ id: t.String(), eventId: t.String() }),
+          body: t.Object({
+            slug: t.String(),
+            title: t.String(),
+            description: t.Optional(t.String()),
+            payload: t.Optional(t.Array(t.Any())),
+            consumedBy: t.Optional(t.Array(t.String())),
+            triggers: t.Optional(t.Array(t.String())),
+            sideEffects: t.Optional(t.Array(t.String())),
+            sourceFile: t.Optional(t.String()),
+          }),
+          detail: {
+            summary: "Update domain event",
+            tags: ["Domain Models"],
+          },
+        },
+      )
+
+      .delete(
+        "/:id/events/:eventId",
+        ({ params }) => {
+          db.delete(schema.domainEvents)
+            .where(eq(schema.domainEvents.id, params.eventId))
+            .run();
+          return { message: "Deleted" };
+        },
+        {
+          params: t.Object({ id: t.String(), eventId: t.String() }),
+          detail: {
+            summary: "Delete domain event",
+            tags: ["Domain Models"],
+          },
+        },
+      )
+
       // ── Value Objects ─────────────────────────────────────────────────────
 
       .post(
@@ -418,6 +544,63 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
             sourceFile: t.Optional(t.String()),
           }),
           detail: { summary: "Add value object", tags: ["Domain Models"] },
+        },
+      )
+
+      .put(
+        "/:id/value-objects/:voId",
+        ({ params, body }) => {
+          const now = new Date().toISOString();
+          db.update(schema.valueObjects)
+            .set({
+              slug: body.slug,
+              title: body.title,
+              description: body.description ?? null,
+              properties: body.properties ?? [],
+              validationRules: body.validationRules ?? [],
+              immutable: body.immutable ?? true,
+              sourceFile: body.sourceFile ?? null,
+              updatedAt: now,
+            })
+            .where(eq(schema.valueObjects.id, params.voId))
+            .run();
+          return {
+            id: params.voId,
+            updated: true,
+          };
+        },
+        {
+          params: t.Object({ id: t.String(), voId: t.String() }),
+          body: t.Object({
+            slug: t.String(),
+            title: t.String(),
+            description: t.Optional(t.String()),
+            properties: t.Optional(t.Array(t.Any())),
+            validationRules: t.Optional(t.Array(t.String())),
+            immutable: t.Optional(t.Boolean()),
+            sourceFile: t.Optional(t.String()),
+          }),
+          detail: {
+            summary: "Update value object",
+            tags: ["Domain Models"],
+          },
+        },
+      )
+
+      .delete(
+        "/:id/value-objects/:voId",
+        ({ params }) => {
+          db.delete(schema.valueObjects)
+            .where(eq(schema.valueObjects.id, params.voId))
+            .run();
+          return { message: "Deleted" };
+        },
+        {
+          params: t.Object({ id: t.String(), voId: t.String() }),
+          detail: {
+            summary: "Delete value object",
+            tags: ["Domain Models"],
+          },
         },
       )
 
@@ -482,6 +665,23 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
         {
           params: t.Object({ id: t.String() }),
           detail: { summary: "List glossary terms", tags: ["Domain Models"] },
+        },
+      )
+
+      .delete(
+        "/:id/glossary/:termId",
+        ({ params }) => {
+          db.delete(schema.glossaryTerms)
+            .where(eq(schema.glossaryTerms.id, params.termId))
+            .run();
+          return { message: "Deleted" };
+        },
+        {
+          params: t.Object({ id: t.String(), termId: t.String() }),
+          detail: {
+            summary: "Delete glossary term",
+            tags: ["Domain Models"],
+          },
         },
       )
   );

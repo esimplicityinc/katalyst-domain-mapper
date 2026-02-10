@@ -10,34 +10,168 @@ Feature: FOE End-to-End - Ingest Report and View
     Then the response status should be 200
     And the value at "status" should equal "ok"
 
-    # Ingest a report
+    # Ingest a report with complete canonical FOE format
     When I POST "/api/v1/reports" with JSON body:
       """
       {
-        "repository": {
-          "name": "hybrid-e2e-repo",
-          "url": "https://github.com/example/hybrid-e2e",
-          "techStack": ["TypeScript", "Playwright"],
-          "isMonorepo": false
-        },
+        "id": "550e8400-e29b-41d4-a716-446655440100",
+        "repository": "hybrid-e2e-repo",
+        "repositoryUrl": "https://github.com/example/hybrid-e2e",
         "scanDate": "2026-02-05T16:00:00Z",
+        "scanDuration": 120000,
+        "scannerVersion": "1.0.0",
         "overallScore": 75,
         "maturityLevel": "Practicing",
+        "assessmentMode": "standard",
+        "executiveSummary": "Test report for hybrid E2E testing",
         "dimensions": {
-          "feedback": { "score": 80, "subscores": [], "findings": [], "gaps": [] },
-          "understanding": { "score": 70, "subscores": [], "findings": [], "gaps": [] },
-          "confidence": { "score": 75, "subscores": [], "findings": [], "gaps": [] }
+          "feedback": {
+            "name": "Feedback",
+            "score": 80,
+            "max": 100,
+            "confidence": "high",
+            "color": "#3B82F6",
+            "subscores": [
+              { 
+                "name": "CI/CD Speed", 
+                "score": 20, 
+                "max": 25,
+                "confidence": "high",
+                "evidence": ["Fast CI pipeline", "Quick feedback loops"],
+                "gaps": []
+              },
+              { 
+                "name": "Test Feedback", 
+                "score": 20, 
+                "max": 25,
+                "confidence": "high",
+                "evidence": ["Comprehensive test suite"],
+                "gaps": []
+              },
+              { 
+                "name": "Deployment Frequency", 
+                "score": 20, 
+                "max": 25,
+                "confidence": "high",
+                "evidence": ["Daily deployments"],
+                "gaps": []
+              },
+              { 
+                "name": "Learning Cycles", 
+                "score": 20, 
+                "max": 25,
+                "confidence": "high",
+                "evidence": ["Regular retrospectives"],
+                "gaps": []
+              }
+            ]
+          },
+          "understanding": {
+            "name": "Understanding",
+            "score": 70,
+            "max": 100,
+            "confidence": "medium",
+            "color": "#8B5CF6",
+            "subscores": [
+              { 
+                "name": "Architecture Clarity", 
+                "score": 18, 
+                "max": 25,
+                "confidence": "medium",
+                "evidence": ["Documented architecture"],
+                "gaps": ["Could improve diagrams"]
+              },
+              { 
+                "name": "Documentation", 
+                "score": 17, 
+                "max": 25,
+                "confidence": "medium",
+                "evidence": ["README files present"],
+                "gaps": ["API docs incomplete"]
+              },
+              { 
+                "name": "Domain Modeling", 
+                "score": 18, 
+                "max": 25,
+                "confidence": "medium",
+                "evidence": ["DDD patterns used"],
+                "gaps": []
+              },
+              { 
+                "name": "Onboarding", 
+                "score": 17, 
+                "max": 25,
+                "confidence": "medium",
+                "evidence": ["Onboarding guide exists"],
+                "gaps": ["Could be more detailed"]
+              }
+            ]
+          },
+          "confidence": {
+            "name": "Confidence",
+            "score": 75,
+            "max": 100,
+            "confidence": "high",
+            "color": "#10B981",
+            "subscores": [
+              { 
+                "name": "Test Coverage", 
+                "score": 19, 
+                "max": 25,
+                "confidence": "high",
+                "evidence": ["80% code coverage"],
+                "gaps": []
+              },
+              { 
+                "name": "Static Analysis", 
+                "score": 18, 
+                "max": 25,
+                "confidence": "high",
+                "evidence": ["ESLint configured"],
+                "gaps": []
+              },
+              { 
+                "name": "Contract Testing", 
+                "score": 19, 
+                "max": 25,
+                "confidence": "high",
+                "evidence": ["API contracts tested"],
+                "gaps": []
+              },
+              { 
+                "name": "Observability", 
+                "score": 19, 
+                "max": 25,
+                "confidence": "high",
+                "evidence": ["Monitoring in place"],
+                "gaps": []
+              }
+            ]
+          }
         },
+        "criticalFailures": [],
         "strengths": [],
-        "topGaps": [],
+        "gaps": [],
         "recommendations": [],
         "triangleDiagnosis": {
-          "feedback": 80,
-          "understanding": 70,
-          "confidence": 75,
-          "belowThreshold": [],
-          "healthy": true
-        }
+          "feedbackScore": 80,
+          "understandingScore": 70,
+          "confidenceScore": 75,
+          "cycleHealth": "virtuous",
+          "pattern": "balanced",
+          "weakestPrinciple": "understanding",
+          "intervention": "Improve documentation and domain modeling"
+        },
+        "methodology": {
+          "filesAnalyzed": 100,
+          "testFilesFound": 20,
+          "testFilesAnalyzed": 20,
+          "adrsCounted": 5,
+          "adrsAnalyzed": 5,
+          "coverageReportPresent": true,
+          "confidenceNotes": ["Based on comprehensive analysis"]
+        },
+        "referencedMethods": []
       }
       """
     Then the response status should be 200

@@ -1,0 +1,48 @@
+{
+  "name": "@katalyst/intelligence",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev:api": "bun --watch api/main.ts",
+    "dev:web": "cd web && vite",
+    "dev": "concurrently \"bun run dev:api\" \"bun run dev:web\"",
+    "build:api": "bun build ./api/main.ts --outdir ./api/dist --target bun --format esm",
+    "build:web": "cd web && tsc && vite build",
+    "build": "bun run build:api && bun run build:web",
+    "start": "bun run api/dist/main.js",
+    "db:generate": "cd api && drizzle-kit generate",
+    "db:migrate": "cd api && drizzle-kit migrate",
+    "test": "bun test",
+    "lint": "cd web && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+  },
+  "dependencies": {
+    "@foe/schemas": "workspace:*",
+    "elysia": "^1.4.0",
+    "@elysiajs/cors": "^1.4.0",
+    "@elysiajs/swagger": "^1.3.0",
+    "drizzle-orm": "^0.45.0",
+    "zod": "^3.24.1",
+    "@opencode-ai/sdk": "^1.1.53",
+    "lucide-react": "^0.462.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.13.0",
+    "recharts": "^2.15.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "drizzle-kit": "^0.31.0",
+    "typescript": "^5.7.3",
+    "@tailwindcss/typography": "^0.5.19",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.0.7",
+    "concurrently": "^9.1.2",
+    "eslint": "^8.57.0"
+  }
+}

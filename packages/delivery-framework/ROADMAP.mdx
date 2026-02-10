@@ -6,7 +6,7 @@ description: Consolidated roadmap for the governance pipeline, DDD tooling, and 
 # Katalyst Delivery Framework — Roadmap
 
 > **Last Updated**: 2026-02-10
-> **Total Items**: 23 | **In Progress**: 0 | **Proposed**: 21 | **Complete**: 2
+> **Total Items**: 24 | **In Progress**: 1 | **Proposed**: 16 | **Complete**: 7
 
 Turn this monorepo into a **self-governing delivery framework**. Import governance infrastructure, build Zod-validated schemas, create parsers and CLI tooling, add API endpoints, enhance the scanner, and visualize governance health — all while the framework governs its own development.
 
@@ -156,6 +156,29 @@ Extend `@foe/field-guide-tools` with 11 new parsers, a governance index builder 
 
 ---
 
+### [ROAD-024] ContextMapper CML Export Adapter 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 2 — Parsers & CLI
+**Created**: 2026-02-10
+
+Create a Ports & Adapters pattern implementation that exports the Zod domain model to ContextMapper CML (Context Mapping Language) format. Enables using ContextMapper's visualization and architecture analysis tools while maintaining Zod schemas as the single source of truth.
+
+- 🎯 Create `CMLWriter` adapter — transforms `DomainModel` → CML string
+- 🎯 Add CLI command: `export:cml` — outputs `.cml` file for ContextMapper consumption
+- 🎯 Implement bounded context mapping with relationships (Customer-Supplier, Conformist, ACL, etc.)
+- 🎯 Generate ContextMap block with SYSTEM_LANDSCAPE type and relationship annotations
+- 🎯 Add optional `fromCML()` reader adapter for bidirectional sync (Phase 2 stretch goal)
+- 🎯 Create integration test verifying CML output parses with ContextMapper CLI
+- 🎯 Document usage: `bunx foe-field-guide export:cml --input model.json --output context-map.cml`
+
+**Requires**: [ROAD-004](#road-004-governance-parsers-index-builder--cli-), [ROAD-003](#road-003-ddd-artifact-schemas-)
+**Enables**: [ROAD-016](#road-016-interactive-context-map-diagram-) (alternative diagram generation), [ROAD-021](#road-021-markdown-documentation-export-) (precedent for multi-format export)
+**Capabilities**: [CAP-012](#cap-012-domain-model-export-pipeline) — adds CML as new export format
+**User Stories**: [US-041](#us-041-export-domain-model-to-contextmapper-cml) (to be created)
+
+---
+
 ## Phase 3: API, Scanner, Visualization & Domain Tooling
 
 > **Goal**: Multiple parallel workstreams that consume the governance index: API endpoints, scanner agents, delivery framework integration, SSE streaming, governance dashboards, interactive DDD visualizations, export pipelines, and onboarding. Can all start once Phase 2 is complete.
@@ -254,11 +277,12 @@ Server-Sent Events (SSE) endpoint so the UI can display agent output as it's gen
 
 ---
 
-### [ROAD-009] Governance & DDD Web Visualization 🎯
-**Status**: Proposed
+### [ROAD-009] Governance & DDD Web Visualization ✅
+**Status**: Complete
 **Priority**: Low
 **Phase**: 3 — API, Scanner, Visualization & Domain Tooling
 **Created**: 2026-02-05
+**Completed**: 2026-02-10
 
 Add 2 new report templates to `@foe/web-ui`: a Governance Dashboard (Template 12) and a DDD Context Map (Template 13).
 
@@ -604,41 +628,49 @@ Phase 0          Phase 1          Phase 2          Phase 3 (API, Scanner, Viz & 
                  │ Schemas  │
          ┌──────►│          │──────┐
          │       └──────────┘      │
-┌────────┐│                        │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌─────────────┐
-│ROAD-001│┤                        ├─►│ ROAD-004 │─►│ ROAD-005 │─►│ ROAD-009 │─►│  ROAD-020   │
-│Import  ││  ┌──────────┐          │  │ Parsers  │  │ API      │  │ Web Viz  │  │  Subdomain  │
-│Infra   │├─►│ ROAD-003 │──────────┘  │ CLI      │  └──────────┘  └──────────┘  │  Classif.   │
-└────────┘│  │ DDD      │             └──────────┘─┐      │                     └──────┬──────┘
-          │  └──────────┘                  │       ├►ROAD-006 Scanner                  │
-          │                                │       ├►ROAD-008 Integr.     ┌────────────┼──────────┐
-          │  ┌──────────┐                  │       ├►ROAD-015 SSE         ▼            ▼          ▼
-          └─►│ ROAD-007 │                  │       │                ┌──────────┐ ┌──────────┐ ┌──────────┐
-             │ BDD      │                  │       │                │ ROAD-016 │ │ ROAD-017 │ │ ROAD-021 │
-             └──────────┘                  │       │                │ Ctx Map  │ │ Agg Tree │ │ MD Export│
-                                           │       │                └────┬─────┘ └────┬─────┘ └────┬─────┘
-                                           │       │                     │            │            │
-                                           │       │                ┌────┴─────┐ ┌───┴──────┐     │
-                                           │       │                │ ROAD-018 │ │ ROAD-019 │     │
-                                           │       │                │ Evt Flow │ │ State M. │     │
-                                           │       │                └────┬─────┘ └────┬─────┘     │
-                                           │       │                     └─────┬──────┘           │
-                                           │       │                           ▼                  │
-                                           │       │                     ┌──────────┐             │
-                                           │       │                     │ ROAD-022 │◄────────────┘
-                                           │       │                     │ Static   │
-                                           │       │                     │ Site Gen │
-                                           │       │                     └──────────┘
-                                           │       │
-                                           │       │   ┌──────────┐                        ┌──────────┐
-                                           │       │   │ ROAD-023 │  Onboarding            │ ROAD-010 │
-                                           │       │   │ How It   │  (standalone)           │ Jira     │
-                                           │       │   │ Works    │                         └──────────┘
-                                           │       │   └──────────┘                        ┌──────────┐
-                                           │       │                                       │ ROAD-011 │
-                                           │       │                                       │Confluence│
-                                           └───────┴──────────────────────────────────────►└──────────┘
-                                                                                           ROAD-012..014
-                                                                                           (GitHub ×3)
+┌────────┐│                        │  ┌──────────┐  ┌──────────────┐  ┌──────────┐  ┌─────────────┐
+│ROAD-001││                        ├─►│ ROAD-004 │─►│  ROAD-024    │─►│ ROAD-005 │─►│  ROAD-020   │
+│Import  ││  ┌──────────┐          │  │ Parsers  │  │ CML Adapter  │  │ API      │  │  Subdomain  │
+│Infra   │├─►│ ROAD-003 │──────────┘  │ CLI      │  └──────────────┘  └──────────┘  │  Classif.   │
+└────────┘│  │ DDD      │             └──────────┘─┐       │               │        └──────┬──────┘
+          │  └──────────┘                  │       ├───────┘        ┌──────────┐         │
+          │                                │       ├►ROAD-006       │ ROAD-009 │  ┌───────┴──────────┐
+          │  ┌──────────┐                  │       │   Scanner      │ Web Viz  │  │                  │
+          └─►│ ROAD-007 │                  │       ├►ROAD-008       └────┬─────┘  │  ┌──────────┐   │
+             │ BDD      │                  │       │   Integr.             │       │  │ ROAD-016 │   │
+             └──────────┘                  │       ├►ROAD-015              ▼       │  │ Ctx Map  │   │
+                                            │       │   SSE            ┌──────────┐│  └────┬─────┘   │
+                                            │       │                  │ ROAD-017 ││       │         │
+                                            │       │                  │ Agg Tree ││       ▼         │
+                                            │       │                  └────┬─────┘│  ┌──────────┐   │
+                                            │       │                       │      │  │ ROAD-018 │   │
+                                            │       │                  ┌────┴─────┐│  │ Evt Flow │   │
+                                            │       │                  │ ROAD-019 ││  └────┬─────┘   │
+                                            │       │                  │ State M. ││       │         │
+                                            │       │                  └────┬─────┘│       ▼         │
+                                            │       │                       │      │  ┌──────────┐   │
+                                            │       │                  ┌────┴─────┐│  │ ROAD-021 │◄──┘
+                                            │       │                  │ ROAD-022 ││  │ MD Export│
+                                            │       │                  │ Static   ││  └──────────┘
+                                            │       │                  │ Site Gen ││
+                                            │       │                  └──────────┘│
+                                            │       │                              │
+                                            │       │   ┌──────────┐               │
+                                            │       │   │ ROAD-023 │ Onboarding    │
+                                            │       │   │ How It   │ (standalone)  │
+                                            │       │   │ Works    │               │
+                                            │       │   └──────────┘               │
+                                            │       │                              │
+                                            └───────┴──────────────────────────────┴──────────────────►┌──────────┐
+                                                                                                      │ ROAD-010 │
+                                                                                                      │ Jira     │
+                                                                                                      └──────────┘
+                                                                                                      ┌──────────┐
+                                                                                                      │ ROAD-011 │
+                                                                                                      │Confluence│
+                                                                                                      └──────────┘
+                                                                                                      ROAD-012..014
+                                                                                                      (GitHub ×3)
 ```
 
 ---
@@ -673,10 +705,10 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 |-------|-----------|-----------|---------------|------------|
 | 0 — Foundation | ROAD-001 | ~75 | ~17 | N/A |
 | 1 — Core Schemas | ROAD-002, 003, 007 | ~20 | ~3 | ~2,000 |
-| 2 — Parsers & CLI | ROAD-004 | ~14 | ~4 | ~1,200 |
+| 2 — Parsers & CLI | ROAD-004, 024 | ~18 | ~4 | ~1,600 |
 | 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023 | ~100 | ~15 | ~8,300 |
 | 4 — Advanced External Integrations | ROAD-010, 011, 012, 013, 014 | ~35 | ~6 | ~4,200 |
-| **Total** | **23** | **~244** | **~45** | **~15,700** |
+| **Total** | **24** | **~248** | **~45** | **~16,100** |
 
 ---
 
@@ -720,5 +752,6 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | Application Lifecycle State Machine *(plan TBD)* | ROAD-019 | SVG state machine with workflow states, transitions, sync/async |
 | Subdomain Classification *(plan TBD)* | ROAD-020 | Core/Supporting/Generic classification for bounded contexts |
 | Markdown Documentation Export *(plan TBD)* | ROAD-021 | Export domain model as downloadable markdown zip |
+| ContextMapper CML Adapter | ROAD-024 | Zod → CML export adapter with CLI command |
 | Static Documentation Site Generator *(plan TBD)* | ROAD-022 | Generate standalone Vite + React + Tailwind site from domain model |
 | Onboarding & How It Works *(plan TBD)* | ROAD-023 | 4-phase workflow guide, Human-in-the-Loop rationale, quick-start |

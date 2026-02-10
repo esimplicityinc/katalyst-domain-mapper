@@ -3,7 +3,7 @@
     {
       "id": "ROAD-001",
       "title": "Import Governance Infrastructure",
-      "status": "implementing",
+      "status": "complete",
       "phase": 1,
       "priority": "high",
       "created": "2026-02-05",
@@ -18,11 +18,13 @@
           "ids": [
             "ADR-001",
             "ADR-005",
-            "ADR-008"
+            "ADR-008",
+            "ADR-011",
+            "ADR-012"
           ]
         },
         "bdd": {
-          "status": "draft",
+          "status": "active",
           "approved_by": [],
           "test_results": {
             "total": 0,
@@ -30,8 +32,14 @@
             "failed": 0,
             "coverage": "0%"
           },
-          "feature_files": [],
-          "scenarios": 0,
+          "feature_files": [
+            "api/reporting/05_foe_dimension_scores.feature",
+            "api/reporting/06_report_comparison.feature",
+            "api/reporting/07_report_raw_retrieval.feature",
+            "api/reporting/08_report_filtering_pagination.feature",
+            "ui/reporting/01_report_upload_viewer.feature"
+          ],
+          "scenarios": 18,
           "passing": 0
         },
         "nfrs": {
@@ -48,7 +56,7 @@
     {
       "id": "ROAD-002",
       "title": "Governance Zod Schemas",
-      "status": "proposed",
+      "status": "complete",
       "phase": 1,
       "priority": "high",
       "created": "2026-02-05",
@@ -95,7 +103,7 @@
     {
       "id": "ROAD-003",
       "title": "DDD Artifact Schemas",
-      "status": "proposed",
+      "status": "complete",
       "phase": 1,
       "priority": "high",
       "created": "2026-02-05",
@@ -110,7 +118,8 @@
           "ids": [
             "ADR-002",
             "ADR-008",
-            "ADR-009"
+            "ADR-009",
+            "ADR-012"
           ]
         },
         "bdd": {
@@ -142,8 +151,8 @@
     {
       "id": "ROAD-004",
       "title": "Governance Parsers, Index Builder & CLI",
-      "status": "proposed",
-      "phase": 1,
+      "status": "complete",
+      "phase": 2,
       "priority": "high",
       "created": "2026-02-05",
       "started": "",
@@ -191,11 +200,11 @@
     {
       "id": "ROAD-005",
       "title": "API Governance Domain",
-      "status": "proposed",
-      "phase": 2,
+      "status": "implementing",
+      "phase": 3,
       "priority": "medium",
       "created": "2026-02-05",
-      "started": "",
+      "started": "2026-02-09",
       "completed": "",
       "governance": {
         "adrs": {
@@ -209,7 +218,7 @@
           ]
         },
         "bdd": {
-          "status": "draft",
+          "status": "active",
           "approved_by": [],
           "test_results": {
             "total": 0,
@@ -217,8 +226,13 @@
             "failed": 0,
             "coverage": "0%"
           },
-          "feature_files": [],
-          "scenarios": 0,
+          "feature_files": [
+            "stack-tests/features/api/governance/01_governance_ingest.feature",
+            "stack-tests/features/api/governance/02_governance_coverage.feature",
+            "stack-tests/features/api/governance/03_governance_state_machine.feature",
+            "stack-tests/features/hybrid/governance/01_governance_e2e.feature"
+          ],
+          "scenarios": 19,
           "passing": 0
         },
         "nfrs": {
@@ -241,7 +255,7 @@
       "id": "ROAD-006",
       "title": "Scanner Governance Agent",
       "status": "proposed",
-      "phase": 2,
+      "phase": 3,
       "priority": "low",
       "created": "2026-02-05",
       "started": "",
@@ -328,7 +342,7 @@
       "id": "ROAD-008",
       "title": "Delivery Framework Integration",
       "status": "proposed",
-      "phase": 2,
+      "phase": 3,
       "priority": "medium",
       "created": "2026-02-05",
       "started": "",
@@ -374,7 +388,7 @@
     {
       "id": "ROAD-009",
       "title": "Governance & DDD Web Visualization",
-      "status": "proposed",
+      "status": "implementing",
       "phase": 3,
       "priority": "low",
       "created": "2026-02-05",
@@ -385,6 +399,134 @@
           "validated": true,
           "validated_by": "architecture-inspector",
           "validated_at": "2026-02-06",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "approved",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%",
+            "hybrid": "6/6 passing",
+            "ui": "10 scenarios (wip-tagged, requires UI route + component)"
+          },
+          "feature_files": [
+            "stack-tests/features/ui/governance/01_governance_dashboard.feature",
+            "stack-tests/features/hybrid/governance/02_governance_dashboard.feature"
+          ],
+          "scenarios": 16,
+          "passing": 6
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001",
+            "NFR-A11Y-001"
+          ],
+          "status": "pending",
+          "results": {}
+        },
+        "quality_gates": {
+          "architecture": {
+            "status": "conditional_pass",
+            "agent": "architecture-inspector",
+            "date": "2026-02-09",
+            "findings": "2 low-severity (Tailwind in types, minor logic in page)"
+          },
+          "ddd_alignment": {
+            "status": "conditional_pass",
+            "agent": "ddd-aligner",
+            "date": "2026-02-09",
+            "findings": "1 medium bug fixed (integrityStatus pass vs valid), 2 low"
+          },
+          "typescript": {
+            "status": "pass",
+            "errors": 0
+          },
+          "bdd_tests": {
+            "status": "pass",
+            "passed": 6,
+            "failed": 0,
+            "total": 6
+          }
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-009"
+    },
+    {
+      "id": "ROAD-016",
+      "title": "Interactive Context Map Diagram",
+      "status": "complete",
+      "phase": 3,
+      "priority": "medium",
+      "created": "2026-02-06",
+      "started": "",
+      "completed": "2026-02-10",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "approved",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [
+            "stack-tests/features/ui/domain-model/05_context_map_diagram.feature"
+          ],
+          "scenarios": 5,
+          "passing": 5
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001",
+            "NFR-A11Y-001"
+          ],
+          "status": "pass",
+          "results": {
+            "NFR-A11Y-001": "ARIA labels on SVG elements, keyboard navigation (Enter/Space), role=button on nodes, role=img on canvas",
+            "NFR-PERF-001": "useMemo for positions, relationships, artifact counts; useCallback for highlight logic; SVG batch rendering"
+          }
+        },
+        "agent_signatures": {
+          "architecture-inspector": "CONDITIONAL PASS -> PASS (DRY violations fixed via constants.ts extraction)",
+          "ddd-aligner": "CONDITIONAL PASS -> PASS (active->stable status fix, shared constants with proper typing)",
+          "ci-runner": "TypeScript PASS (0 errors), Formatting PASS (auto-fixed)",
+          "code-writer": "Implemented fixes for DRY violations, DDD alignment, SubdomainBadge reuse"
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-016"
+    },
+    {
+      "id": "ROAD-017",
+      "title": "Aggregate Tree Hierarchy View",
+      "status": "proposed",
+      "phase": 3,
+      "priority": "high",
+      "created": "2026-02-06",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
           "compliance_check": [],
           "ids": []
         },
@@ -413,10 +555,273 @@
       "blocks": [],
       "depends_on": [],
       "blocked_by": [],
-      "filePath": "roads/ROAD-009"
+      "filePath": "roads/ROAD-017"
+    },
+    {
+      "id": "ROAD-018",
+      "title": "Domain Event Flow Visualization",
+      "status": "proposed",
+      "phase": 3,
+      "priority": "medium",
+      "created": "2026-02-06",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001",
+            "NFR-A11Y-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-018"
+    },
+    {
+      "id": "ROAD-019",
+      "title": "Application Lifecycle State Machine View",
+      "status": "proposed",
+      "phase": 3,
+      "priority": "medium",
+      "created": "2026-02-06",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001",
+            "NFR-A11Y-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-019"
+    },
+    {
+      "id": "ROAD-020",
+      "title": "Subdomain Classification System",
+      "status": "complete",
+      "phase": 3,
+      "priority": "high",
+      "created": "2026-02-06",
+      "started": "",
+      "completed": "2026-02-10",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "architecture-inspector",
+          "validated_at": "2026-02-09",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "approved",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [
+            "stack-tests/features/api/domain-models/04_subdomain_classification.feature"
+          ],
+          "scenarios": 6,
+          "passing": 6
+        },
+        "nfrs": {
+          "applicable": [],
+          "status": "pass",
+          "results": {}
+        },
+        "agent_signatures": {
+          "architecture-inspector": "CONDITIONAL PASS (pre-existing domain-models.ts pattern, frontend excellent)",
+          "ddd-aligner": "PASS (ubiquitous language, strategic design, type consistency all correct)",
+          "ci-runner": "TypeScript PASS (0 errors across foe-web-ui and foe-api)"
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-020"
+    },
+    {
+      "id": "ROAD-021",
+      "title": "Markdown Documentation Export",
+      "status": "proposed",
+      "phase": 3,
+      "priority": "high",
+      "created": "2026-02-06",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-021"
+    },
+    {
+      "id": "ROAD-022",
+      "title": "Static Documentation Site Generator",
+      "status": "proposed",
+      "phase": 3,
+      "priority": "medium",
+      "created": "2026-02-06",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-022"
+    },
+    {
+      "id": "ROAD-023",
+      "title": "Onboarding & How It Works Experience",
+      "status": "proposed",
+      "phase": 3,
+      "priority": "medium",
+      "created": "2026-02-06",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-A11Y-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-023"
     }
   ],
-  "generatedAt": "2026-02-06T13:03:13.644Z",
+  "generatedAt": "2026-02-10T16:38:26.688Z",
   "validStatuses": [
     "proposed",
     "adr_validated",

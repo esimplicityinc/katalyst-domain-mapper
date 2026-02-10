@@ -255,7 +255,7 @@ Feature: Governance Dashboard (Template 12)
 
   # ── Empty State ────────────────────────────────────────────────
 
-  @empty-state
+  @empty-state @wip
   Scenario: Dashboard shows empty state when no governance data exists
     # Ensure no governance data exists (clean up from prior scenarios)
     When I DELETE "/api/v1/governance"

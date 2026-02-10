@@ -1,7 +1,7 @@
 /**
- * @foe/field-guide-tools
+ * @katalyst/vocabulary
  *
- * Tools for working with FOE Field Guides - build indices, sync to Neo4j, validate.
+ * Vocabulary management for Katalyst - methods, observations, keywords, and ubiquitous language.
  */
 
 export * from "./config.js";
@@ -17,3 +17,6 @@ export type {
 
 // Re-export governance types (via namespace)
 export type { governance } from "@foe/schemas";
+
+// Export CML adapter
+export { CMLWriter } from "./adapters/cml/index.js";

@@ -1,0 +1,25 @@
+{
+  "name": "@katalyst/assessment",
+  "version": "0.1.0",
+  "description": "Katalyst Assessment - AI-powered repository analysis and FOE scoring",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/katalyst-domain-mapper.git",
+    "directory": "packages/assessment"
+  },
+  "keywords": [
+    "katalyst",
+    "assessment",
+    "repository-analysis",
+    "ai-agents",
+    "foe",
+    "flow-optimized-engineering",
+    "scanner",
+    "devops",
+    "ci-cd",
+    "architecture"
+  ],
+  "author": "Katalyst Contributors",
+  "license": "MIT"
+}

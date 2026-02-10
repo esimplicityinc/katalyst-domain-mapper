@@ -36,8 +36,8 @@ import { governance } from "@foe/schemas";
 const program = new Command();
 
 program
-  .name("foe-field-guide")
-  .description("FOE Field Guide tools - build indices, sync to Neo4j, validate")
+  .name("katalyst-vocab")
+  .description("Katalyst Vocabulary - manage methods, observations, and ubiquitous language")
   .version("0.1.0");
 
 program
@@ -719,6 +719,38 @@ program
       console.log(`  Total stories: ${totalStories}`);
     } catch (err) {
       console.error(chalk.red("Coverage report failed:"), err);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("export:cml")
+  .description("Export domain model to ContextMapper CML format")
+  .requiredOption("-i, --input <path>", "Input domain model JSON file")
+  .requiredOption("-o, --output <path>", "Output CML file path")
+  .action(async (options) => {
+    try {
+      console.log(chalk.blue("Exporting domain model to CML format...\n"));
+
+      const { CMLWriter } = await import("./adapters/cml/index.js");
+      const { readFile } = await import("fs/promises");
+
+      // Read and parse input
+      const inputData = await readFile(options.input, "utf-8");
+      const domainModel = JSON.parse(inputData);
+
+      // Generate CML
+      const writer = new CMLWriter();
+      const cml = writer.write(domainModel);
+
+      // Write output
+      await writeFile(options.output, cml, "utf-8");
+
+      console.log(chalk.green(`✓ Exported to ${options.output}`));
+      console.log(`  - ${domainModel.boundedContexts?.length ?? 0} bounded contexts`);
+      console.log(`  - Output size: ${(cml.length / 1024).toFixed(1)} KB`);
+    } catch (err) {
+      console.error(chalk.red("Export failed:"), err);
       process.exit(1);
     }
   });

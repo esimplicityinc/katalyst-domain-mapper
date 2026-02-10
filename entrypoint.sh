@@ -19,4 +19,4 @@ fi
 
 # ── Start Bun API + static server in foreground ─────────────────────────────
 echo "Starting Bun server on :${PORT:-8090}..."
-exec bun run /app/packages/foe-api/src/main.ts
+exec bun run /app/packages/intelligence/api/main.ts
