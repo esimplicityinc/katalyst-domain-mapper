@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Plus,
   Loader2,
@@ -9,50 +9,34 @@ import {
   ChevronRight,
   Eye,
   List,
-} from 'lucide-react';
-import { api } from '../../api/client';
-import type { DomainModelFull, BoundedContext } from '../../types/domain';
-import { SubdomainBadge } from './SubdomainBadge';
-import { SubdomainOverview } from './SubdomainOverview';
-import { ContextMapDiagram } from './ContextMapDiagram';
+} from "lucide-react";
+import { api } from "../../api/client";
+import type { DomainModelFull, BoundedContext } from "../../types/domain";
+import { SubdomainBadge } from "./SubdomainBadge";
+import { SubdomainOverview } from "./SubdomainOverview";
+import { ContextMapDiagram } from "./ContextMapDiagram";
+import { RELATIONSHIP_LABELS, STATUS_STYLES } from "./constants";
 
 interface ContextMapViewProps {
   model: DomainModelFull;
   onModelUpdated: () => void;
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
-  active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  deprecated: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-};
-
-const RELATIONSHIP_LABELS: Record<string, string> = {
-  upstream: 'Upstream',
-  downstream: 'Downstream',
-  conformist: 'Conformist',
-  'anticorruption-layer': 'ACL',
-  'shared-kernel': 'Shared Kernel',
-  'customer-supplier': 'Customer-Supplier',
-  partnership: 'Partnership',
-  'published-language': 'Published Language',
-};
-
 export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
-  const [viewMode, setViewMode] = useState<'diagram' | 'list'>('diagram');
+  const [viewMode, setViewMode] = useState<"diagram" | "list">("diagram");
   const [showForm, setShowForm] = useState(false);
   const [creating, setCreating] = useState(false);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState<string | null>(null);
 
   // Form state
-  const [slug, setSlug] = useState('');
-  const [title, setTitle] = useState('');
-  const [responsibility, setResponsibility] = useState('');
-  const [description, setDescription] = useState('');
-  const [sourceDir, setSourceDir] = useState('');
-  const [teamOwner, setTeamOwner] = useState('');
-  const [subdomainType, setSubdomainType] = useState('');
+  const [slug, setSlug] = useState("");
+  const [title, setTitle] = useState("");
+  const [responsibility, setResponsibility] = useState("");
+  const [description, setDescription] = useState("");
+  const [sourceDir, setSourceDir] = useState("");
+  const [teamOwner, setTeamOwner] = useState("");
+  const [subdomainType, setSubdomainType] = useState("");
 
   const toggleExpand = (id: string) => {
     setExpanded((prev) => {
@@ -64,13 +48,13 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
   };
 
   const resetForm = () => {
-    setSlug('');
-    setTitle('');
-    setResponsibility('');
-    setDescription('');
-    setSourceDir('');
-    setTeamOwner('');
-    setSubdomainType('');
+    setSlug("");
+    setTitle("");
+    setResponsibility("");
+    setDescription("");
+    setSourceDir("");
+    setTeamOwner("");
+    setSubdomainType("");
     setShowForm(false);
   };
 
@@ -87,25 +71,27 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
         description: description.trim() || undefined,
         sourceDirectory: sourceDir.trim() || undefined,
         teamOwnership: teamOwner.trim() || undefined,
-        subdomainType: subdomainType ? (subdomainType as 'core' | 'supporting' | 'generic') : undefined,
+        subdomainType: subdomainType
+          ? (subdomainType as "core" | "supporting" | "generic")
+          : undefined,
       });
       resetForm();
       onModelUpdated();
     } catch (err) {
-      console.error('Failed to create context:', err);
+      console.error("Failed to create context:", err);
     } finally {
       setCreating(false);
     }
   };
 
   const handleDelete = async (ctxId: string) => {
-    if (!confirm('Delete this bounded context?')) return;
+    if (!confirm("Delete this bounded context?")) return;
     setDeleting(ctxId);
     try {
       await api.deleteBoundedContext(model.id, ctxId);
       onModelUpdated();
     } catch (err) {
-      console.error('Failed to delete context:', err);
+      console.error("Failed to delete context:", err);
     } finally {
       setDeleting(null);
     }
@@ -118,10 +104,16 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
 
   // Count artifacts per context
   const artifactCounts = (ctx: BoundedContext) => {
-    const aggregates = model.aggregates.filter((a) => a.contextId === ctx.id).length;
-    const events = model.domainEvents.filter((e) => e.contextId === ctx.id).length;
+    const aggregates = model.aggregates.filter(
+      (a) => a.contextId === ctx.id,
+    ).length;
+    const events = model.domainEvents.filter(
+      (e) => e.contextId === ctx.id,
+    ).length;
     const vos = model.valueObjects.filter((v) => v.contextId === ctx.id).length;
-    const terms = model.glossaryTerms.filter((t) => t.contextId === ctx.id).length;
+    const terms = model.glossaryTerms.filter(
+      (t) => t.contextId === ctx.id,
+    ).length;
     return { aggregates, events, vos, terms };
   };
 
@@ -134,18 +126,19 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
             Context Map
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            {model.boundedContexts.length} bounded context{model.boundedContexts.length !== 1 ? 's' : ''}
+            {model.boundedContexts.length} bounded context
+            {model.boundedContexts.length !== 1 ? "s" : ""}
           </p>
         </div>
         <div className="flex items-center gap-3">
           {/* View toggle */}
           <div className="flex items-center gap-0.5 bg-gray-100 dark:bg-gray-700 rounded-lg p-0.5">
             <button
-              onClick={() => setViewMode('diagram')}
+              onClick={() => setViewMode("diagram")}
               className={`flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                viewMode === 'diagram'
-                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                viewMode === "diagram"
+                  ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
               }`}
               aria-label="Diagram view"
             >
@@ -153,11 +146,11 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
               Diagram
             </button>
             <button
-              onClick={() => setViewMode('list')}
+              onClick={() => setViewMode("list")}
               className={`flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                viewMode === 'list'
-                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                viewMode === "list"
+                  ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
               }`}
               aria-label="List view"
             >
@@ -262,12 +255,10 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
       )}
 
       {/* Diagram view */}
-      {viewMode === 'diagram' && (
-        <ContextMapDiagram model={model} />
-      )}
+      {viewMode === "diagram" && <ContextMapDiagram model={model} />}
 
       {/* List view */}
-      {viewMode === 'list' && (
+      {viewMode === "list" && (
         <>
           {/* Subdomain classification overview */}
           {model.boundedContexts.length > 0 && (
@@ -279,7 +270,8 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
             <div className="text-center py-16">
               <Layers className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                No bounded contexts defined yet. Add one or use the chat to discover them.
+                No bounded contexts defined yet. Add one or use the chat to
+                discover them.
               </p>
             </div>
           ) : (
@@ -315,9 +307,9 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
                             {ctx.slug}
                           </span>
                           <span
-                            className={`px-1.5 py-0.5 text-xs font-medium rounded ${STATUS_COLORS[ctx.status ?? 'draft']}`}
+                            className={`px-1.5 py-0.5 text-xs font-medium rounded ${STATUS_STYLES[ctx.status ?? "draft"]}`}
                           >
-                            {ctx.status ?? 'draft'}
+                            {ctx.status ?? "draft"}
                           </span>
                           <SubdomainBadge subdomainType={ctx.subdomainType} />
                         </div>
@@ -358,7 +350,9 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
                         )}
                         {ctx.sourceDirectory && (
                           <div className="text-xs">
-                            <span className="text-gray-500 dark:text-gray-400">Source: </span>
+                            <span className="text-gray-500 dark:text-gray-400">
+                              Source:{" "}
+                            </span>
                             <code className="text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">
                               {ctx.sourceDirectory}
                             </code>
@@ -366,7 +360,9 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
                         )}
                         {ctx.teamOwnership && (
                           <div className="text-xs">
-                            <span className="text-gray-500 dark:text-gray-400">Team: </span>
+                            <span className="text-gray-500 dark:text-gray-400">
+                              Team:{" "}
+                            </span>
                             <span className="text-gray-700 dark:text-gray-300">
                               {ctx.teamOwnership}
                             </span>

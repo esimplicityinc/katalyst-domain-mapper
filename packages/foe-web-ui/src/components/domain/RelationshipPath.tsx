@@ -1,26 +1,16 @@
-import type { ContextRelationship } from '../../types/domain';
-import { NODE_WIDTH, NODE_HEIGHT } from './svg/useAutoLayout';
+import type { ContextRelationship } from "../../types/domain";
+import { NODE_WIDTH, NODE_HEIGHT } from "./svg/useAutoLayout";
+import { RELATIONSHIP_LABELS } from "./constants";
 
 interface RelationshipPathProps {
   sourceX: number;
   sourceY: number;
   targetX: number;
   targetY: number;
-  type: ContextRelationship['type'];
+  type: ContextRelationship["type"];
   isHighlighted: boolean;
   isDimmed: boolean;
 }
-
-const RELATIONSHIP_LABELS: Record<ContextRelationship['type'], string> = {
-  upstream: 'Upstream',
-  downstream: 'Downstream',
-  conformist: 'Conformist',
-  'anticorruption-layer': 'ACL',
-  'shared-kernel': 'Shared Kernel',
-  'customer-supplier': 'Cust-Supplier',
-  partnership: 'Partnership',
-  'published-language': 'Pub Language',
-};
 
 /**
  * Compute the center of a node given its top-left position.
@@ -101,16 +91,16 @@ export function RelationshipPath({
   let opacity: number;
 
   if (isHighlighted) {
-    strokeColor = '#A855F7'; // purple-500
-    markerUrl = 'url(#arrowhead-highlighted)';
+    strokeColor = "#A855F7"; // purple-500
+    markerUrl = "url(#arrowhead-highlighted)";
     opacity = 1;
   } else if (isDimmed) {
-    strokeColor = '#D1D5DB'; // gray-300
-    markerUrl = 'url(#arrowhead-dimmed)';
+    strokeColor = "#D1D5DB"; // gray-300
+    markerUrl = "url(#arrowhead-dimmed)";
     opacity = 0.2;
   } else {
-    strokeColor = '#9CA3AF'; // gray-400
-    markerUrl = 'url(#arrowhead)';
+    strokeColor = "#9CA3AF"; // gray-400
+    markerUrl = "url(#arrowhead)";
     opacity = 1;
   }
 
@@ -118,7 +108,7 @@ export function RelationshipPath({
   const pathD = `M ${start.bx} ${start.by} Q ${cpX} ${cpY} ${end.bx} ${end.by}`;
 
   return (
-    <g opacity={opacity} style={{ transition: 'opacity 0.2s ease' }}>
+    <g opacity={opacity} style={{ transition: "opacity 0.2s ease" }}>
       {/* Path */}
       <path
         d={pathD}
@@ -136,7 +126,7 @@ export function RelationshipPath({
         height={16}
         rx={4}
         ry={4}
-        fill={isDimmed ? '#F3F4F6' : '#FFFFFF'}
+        fill={isDimmed ? "#F3F4F6" : "#FFFFFF"}
         stroke={strokeColor}
         strokeWidth={0.5}
         opacity={0.9}
@@ -149,7 +139,7 @@ export function RelationshipPath({
         textAnchor="middle"
         dominantBaseline="central"
         fontSize={8}
-        fill={isHighlighted ? '#7C3AED' : '#6B7280'}
+        fill={isHighlighted ? "#7C3AED" : "#6B7280"}
         fontWeight={isHighlighted ? 600 : 400}
       >
         {label}
