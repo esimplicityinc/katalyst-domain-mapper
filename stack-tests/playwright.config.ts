@@ -7,18 +7,22 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const localEnvPath = path.resolve(__dirname, '.env');
-const rootEnvPath = path.resolve(process.cwd(), '.env');
+const rootEnvPath = path.resolve(__dirname, '..', '.env');
 
-if (fs.existsSync(localEnvPath)) {
-  dotenv.config({ path: localEnvPath });
-} else if (fs.existsSync(rootEnvPath)) {
+// Load root .env first (shared ports: FRONTEND_PORT, API_PORT)
+if (fs.existsSync(rootEnvPath)) {
   dotenv.config({ path: rootEnvPath });
-} else {
-  dotenv.config();
+}
+// Then load local .env (overrides with full URLs: FRONTEND_URL, API_BASE_URL)
+if (fs.existsSync(localEnvPath)) {
+  dotenv.config({ path: localEnvPath, override: true });
 }
 
-const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001';
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+// Build URLs from explicit FRONTEND_URL/API_BASE_URL or fall back to root .env ports
+const apiPort = process.env.API_PORT || '3001';
+const frontendPort = process.env.FRONTEND_PORT || '3000';
+const API_BASE_URL = process.env.API_BASE_URL || `http://localhost:${apiPort}`;
+const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${frontendPort}`;
 
 const apiBdd = defineBddProject({
   name: 'api',

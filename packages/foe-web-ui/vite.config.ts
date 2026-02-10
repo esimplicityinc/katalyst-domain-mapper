@@ -1,5 +1,6 @@
-import { defineConfig, type Plugin } from 'vite'
+import { defineConfig, loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'node:path'
 
 /**
  * The @opencode-ai/sdk index.js does `export * from "./server.js"` which imports
@@ -32,23 +33,32 @@ function stubOpencodeServer(): Plugin {
   }
 }
 
-export default defineConfig({
-  plugins: [
-    stubOpencodeServer(),
-    react(),
-  ],
-  server: {
-    port: 3000,
-    host: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
+export default defineConfig(({ mode }) => {
+  // Load env from the monorepo root (.env is the single source of truth for ports)
+  const rootDir = path.resolve(__dirname, '../..')
+  const env = loadEnv(mode, rootDir, '')
+
+  const frontendPort = Number(env.FRONTEND_PORT) || 3000
+  const apiPort = Number(env.API_PORT) || 3001
+
+  return {
+    plugins: [
+      stubOpencodeServer(),
+      react(),
+    ],
+    server: {
+      port: frontendPort,
+      host: true,
+      proxy: {
+        '/api': {
+          target: `http://localhost:${apiPort}`,
+          changeOrigin: true,
+        },
       },
     },
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-  },
+    build: {
+      outDir: 'dist',
+      sourcemap: true,
+    },
+  }
 })
