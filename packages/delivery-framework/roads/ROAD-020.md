@@ -1,27 +1,27 @@
 ---
 id: ROAD-020
 title: "Subdomain Classification System"
-status: proposed
+status: implementing
 phase: 3
 priority: high
 created: "2026-02-06"
-updated: "2026-02-06"
-owner: ""
+updated: "2026-02-09"
+owner: "superpowers-orchestrator"
 tags: [web-ui, ddd, subdomains, api, classification]
 governance:
   adrs:
-    validated: false
+    validated: true
     ids: []
-    validated_by: ""
-    validated_at: ""
+    validated_by: "architecture-inspector"
+    validated_at: "2026-02-09"
   bdd:
-    status: draft
-    feature_files: []
-    scenarios: 0
-    passing: 0
+    status: approved
+    feature_files: ["stack-tests/features/api/domain-models/04_subdomain_classification.feature"]
+    scenarios: 6
+    passing: 6
   nfrs:
     applicable: []
-    status: pending
+    status: pass
     results: {}
 dependencies:
   requires: [ROAD-009]
@@ -95,9 +95,9 @@ Add `subdomainType: 'core' | 'supporting' | 'generic' | null` to `BoundedContext
 
 ## Governance Checklist
 
-- [ ] ADRs identified and validated
-- [ ] BDD scenarios written and approved
-- [ ] Implementation complete
-- [ ] NFRs validated
+- [x] ADRs identified and validated (no new ADRs needed — additive field on existing table)
+- [x] BDD scenarios written and approved (6 scenarios in `04_subdomain_classification.feature`)
+- [x] Implementation complete (backend + frontend across 12 files)
+- [x] NFRs validated (no applicable NFRs — non-breaking, nullable field)
 - [ ] Change record created
-- [ ] Documentation updated
+- [x] Documentation updated (ubiquitous language glossary updated)

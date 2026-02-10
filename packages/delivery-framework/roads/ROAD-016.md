@@ -1,11 +1,11 @@
 ---
 id: ROAD-016
 title: "Interactive Context Map Diagram"
-status: proposed
+status: implementing
 phase: 3
 priority: critical
 created: "2026-02-06"
-updated: "2026-02-06"
+updated: "2026-02-10"
 owner: ""
 tags: [web-ui, visualization, ddd, context-map, svg]
 governance:
