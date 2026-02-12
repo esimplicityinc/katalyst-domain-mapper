@@ -43,7 +43,7 @@ User stories define requirements from the perspective of personas interacting wi
 | [US-031](US-031) | Filter and Paginate Report Listings | PER-001 | CAP-001 | draft |
 | [US-032](US-032) | Configure API Key and Scanner Settings | PER-002 | CAP-004 | draft |
 | [US-033](US-033) | Visualize Context Map as Interactive SVG Diagram | PER-007 | CAP-010, CAP-011, CAP-009 | draft |
-| [US-034](US-034) | Explore Aggregate Hierarchy as Collapsible Tree | PER-007 | CAP-010, CAP-009 | draft |
+| [US-034](US-034) | Explore Aggregate Hierarchy as Collapsible Tree | PER-007 | CAP-010, CAP-009 | complete |
 | [US-035](US-035) | View Application Lifecycle State Machine | PER-007 | CAP-010, CAP-009 | draft |
 | [US-036](US-036) | Browse Domain Events as Flow Timeline | PER-007 | CAP-010, CAP-009 | draft |
 | [US-037](US-037) | Classify Bounded Contexts by Subdomain Type | PER-002 | CAP-011, CAP-009 | draft |

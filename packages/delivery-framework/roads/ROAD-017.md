@@ -1,28 +1,44 @@
 ---
 id: ROAD-017
 title: "Aggregate Tree Hierarchy View"
-status: proposed
+status: complete
 phase: 3
 priority: high
 created: "2026-02-06"
-updated: "2026-02-06"
-owner: ""
+updated: "2026-02-12"
+started: "2026-02-12"
+completed: "2026-02-12"
+owner: "superpowers-orchestrator"
 tags: [web-ui, visualization, ddd, aggregates, tree-view]
 governance:
   adrs:
-    validated: false
+    validated: true
     ids: []
-    validated_by: ""
-    validated_at: ""
+    validated_by: "superpowers-orchestrator"
+    validated_at: "2026-02-12"
   bdd:
-    status: draft
-    feature_files: []
-    scenarios: 0
-    passing: 0
+    status: approved
+    feature_files:
+      - stack-tests/features/hybrid/domain-models/02_aggregate_tree.feature
+    scenarios: 4
+    passing: 4
+    test_results:
+      aggregate_tree: "4/4 passing"
   nfrs:
     applicable: [NFR-PERF-001, NFR-A11Y-001]
-    status: pending
-    results: {}
+    status: pass
+    results:
+      NFR-PERF-001: "Tree renders instantly with test data, no perceptible lag"
+      NFR-A11Y-001: "Dark mode support, keyboard-accessible expand/collapse, semantic HTML structure"
+  quality_gates:
+    bdd_tests:
+      status: pass
+      passed: 4
+      failed: 0
+      total: 4
+    typescript:
+      status: pass
+      errors: 0
 dependencies:
   requires: [ROAD-009]
   enables: [ROAD-022]
@@ -57,8 +73,8 @@ Aggregates are the enforcement boundary in DDD. Understanding their internal str
 ### New Files
 
 ```
-packages/foe-web-ui/src/components/domain/
-├── AggregateTreeView.tsx      # Main tree view component
+packages/intelligence/web/src/components/domain/
+├── AggregateTreeView.tsx      # Main tree view component (379 lines)
 ├── TreeNode.tsx               # Recursive tree node with expand/collapse
 └── TreeLegend.tsx             # Type badge legend
 ```
@@ -92,9 +108,10 @@ Recursive `TreeNode` component with depth-based indentation. Connection lines dr
 
 ## Governance Checklist
 
-- [ ] ADRs identified and validated
-- [ ] BDD scenarios written and approved
-- [ ] Implementation complete
-- [ ] NFRs validated
-- [ ] Change record created
-- [ ] Documentation updated
+- [x] ADRs identified and validated
+- [x] BDD scenarios written and approved (4 scenarios in 1 feature file)
+- [x] Implementation complete (3 new files, 1 modified)
+- [x] NFRs validated (PERF-001: instant rendering, A11Y-001: dark mode + semantic HTML)
+- [x] Change record created (CHANGE-017)
+- [x] Documentation updated
+- [x] All 23 hybrid BDD tests passing (including fixes to API key gate pattern)

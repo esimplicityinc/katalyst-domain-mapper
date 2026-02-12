@@ -19,6 +19,6 @@ Capabilities represent the core functional areas the system provides. Each capab
 | [CAP-007](CAP-007) | GitHub Integration | Business | planned |
 | [CAP-008](CAP-008) | Real-time Streaming | Technical | planned |
 | [CAP-009](CAP-009) | DDD Domain Modeling API | Business | stable |
-| [CAP-010](CAP-010) | Interactive Domain Visualization Engine | Business | planned |
+| [CAP-010](CAP-010) | Interactive Domain Visualization Engine | Business | in_progress |
 | [CAP-011](CAP-011) | Subdomain Classification | Business | planned |
 | [CAP-012](CAP-012) | Domain Model Export Pipeline | Business | planned |
