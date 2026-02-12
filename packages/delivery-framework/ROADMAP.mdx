@@ -5,8 +5,8 @@ description: Consolidated roadmap for the governance pipeline, DDD tooling, and 
 
 # Katalyst Delivery Framework — Roadmap
 
-> **Last Updated**: 2026-02-10
-> **Total Items**: 24 | **In Progress**: 1 | **Proposed**: 16 | **Complete**: 7
+> **Last Updated**: 2026-02-12
+> **Total Items**: 24 | **In Progress**: 0 | **Proposed**: 16 | **Complete**: 8
 
 Turn this monorepo into a **self-governing delivery framework**. Import governance infrastructure, build Zod-validated schemas, create parsers and CLI tooling, add API endpoints, enhance the scanner, and visualize governance health — all while the framework governs its own development.
 
@@ -183,11 +183,12 @@ Create a Ports & Adapters pattern implementation that exports the Zod domain mod
 
 > **Goal**: Multiple parallel workstreams that consume the governance index: API endpoints, scanner agents, delivery framework integration, SSE streaming, governance dashboards, interactive DDD visualizations, export pipelines, and onboarding. Can all start once Phase 2 is complete.
 
-### [ROAD-005] API Governance Domain 🎯
-**Status**: Proposed
+### [ROAD-005] API Governance Domain ✅
+**Status**: Complete
 **Priority**: Medium
 **Phase**: 3 — API & Services
 **Created**: 2026-02-05
+**Completed**: 2026-02-12
 
 Add governance domain to `@foe/api` (Elysia + SQLite + Drizzle) following hexagonal architecture. Provides REST endpoints for governance snapshot ingestion, trend tracking, and coverage reporting.
 

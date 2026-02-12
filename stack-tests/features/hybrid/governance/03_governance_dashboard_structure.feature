@@ -10,8 +10,12 @@ Feature: Governance Dashboard UI Structure & Interactivity
   # specific data-dependent assertions (counts, names, status values).
 
   Background:
-    # Clear API key gate
-    When I DELETE "/api/v1/config/api-key"
+    # Set a dummy API key so the Welcome gate is bypassed on page load
+    When I PUT "/api/v1/config/api-key" with JSON body:
+      """
+      { "apiKey": "sk-ant-dummy-key-for-bdd-testing" }
+      """
+    Then the response status should be 200
     # Seed a representative governance snapshot with all artifact types
     When I POST "/api/v1/governance" with JSON body:
       """
@@ -49,11 +53,10 @@ Feature: Governance Dashboard UI Structure & Interactivity
     Then the response status should be 200
     And I store the value at "id" as "snapshotId"
     Given I register cleanup DELETE "/api/v1/governance/{snapshotId}"
-    # Navigate to governance dashboard and bypass API key gate
+    # Navigate to governance dashboard (API key set, gate bypassed)
     Given I navigate to "/governance"
     Then I wait for the page to load
-    When I click the button "Skip for now"
-    Then I wait for the page to load
+    Then I wait for 2 seconds
 
   # -- Page Shell --------------------------------------------------------
 

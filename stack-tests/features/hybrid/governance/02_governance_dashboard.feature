@@ -9,8 +9,12 @@ Feature: Governance Dashboard (Template 12)
   # This ensures tests are idempotent, deterministic, and isolated.
 
   Background:
-    # Clear API key so the gate prompts "Skip for now"
-    When I DELETE "/api/v1/config/api-key"
+    # Set a dummy API key so the Welcome gate is bypassed on page load
+    When I PUT "/api/v1/config/api-key" with JSON body:
+      """
+      { "apiKey": "sk-ant-dummy-key-for-bdd-testing" }
+      """
+    Then the response status should be 200
 
   # ── Health Summary ─────────────────────────────────────────────
 
@@ -48,11 +52,10 @@ Feature: Governance Dashboard (Template 12)
     And I store the value at "id" as "snapshotId"
     Given I register cleanup DELETE "/api/v1/governance/{snapshotId}"
 
-    # Navigate to governance dashboard and bypass API key gate
+    # Navigate to governance dashboard (API key set, gate bypassed)
     Given I navigate to "/governance"
     Then I wait for the page to load
-    When I click the button "Skip for now"
-    Then I wait for the page to load
+    Then I wait for 2 seconds
 
     # Verify dashboard renders with health summary
     Then I should see text "Governance Dashboard"
@@ -99,11 +102,10 @@ Feature: Governance Dashboard (Template 12)
     And I store the value at "id" as "snapshotId"
     Given I register cleanup DELETE "/api/v1/governance/{snapshotId}"
 
-    # Navigate and bypass gate
+    # Navigate to governance dashboard (API key set, gate bypassed)
     Given I navigate to "/governance"
     Then I wait for the page to load
-    When I click the button "Skip for now"
-    Then I wait for the page to load
+    Then I wait for 2 seconds
 
     # Verify counts
     Then the element "[data-testid='health-summary-card']" should be visible
@@ -143,11 +145,10 @@ Feature: Governance Dashboard (Template 12)
     And I store the value at "id" as "snapshotId"
     Given I register cleanup DELETE "/api/v1/governance/{snapshotId}"
 
-    # Navigate and bypass gate
+    # Navigate to governance dashboard (API key set, gate bypassed)
     Given I navigate to "/governance"
     Then I wait for the page to load
-    When I click the button "Skip for now"
-    Then I wait for the page to load
+    Then I wait for 2 seconds
 
     # Verify kanban board renders with correct columns
     Then the element "[data-testid='kanban-board']" should be visible
@@ -199,11 +200,10 @@ Feature: Governance Dashboard (Template 12)
     And I store the value at "id" as "snapshotId"
     Given I register cleanup DELETE "/api/v1/governance/{snapshotId}"
 
-    # Navigate and bypass gate
+    # Navigate to governance dashboard (API key set, gate bypassed)
     Given I navigate to "/governance"
     Then I wait for the page to load
-    When I click the button "Skip for now"
-    Then I wait for the page to load
+    Then I wait for 2 seconds
 
     # Verify coverage matrix
     Then the element "[data-testid='coverage-matrix']" should be visible
@@ -242,11 +242,10 @@ Feature: Governance Dashboard (Template 12)
     And I store the value at "id" as "snapshotId"
     Given I register cleanup DELETE "/api/v1/governance/{snapshotId}"
 
-    # Navigate and bypass gate
+    # Navigate to governance dashboard (API key set, gate bypassed)
     Given I navigate to "/governance"
     Then I wait for the page to load
-    When I click the button "Skip for now"
-    Then I wait for the page to load
+    Then I wait for 2 seconds
 
     # Verify integrity report
     Then the element "[data-testid='integrity-report']" should be visible
@@ -263,13 +262,10 @@ Feature: Governance Dashboard (Template 12)
       | 200 |
       | 404 |
     
-    # Navigate to UI - should show empty state
+    # Navigate to UI - should show empty state (API key set, gate bypassed)
     Given I navigate to "/governance"
     Then I wait for the page to load
-    
-    # Handle API key prompt if present
-    When I click the button "Skip for now"
-    Then I wait for the page to load
+    Then I wait for 2 seconds
 
     # Verify empty state is displayed
     Then the element "[data-testid='empty-state']" should be visible

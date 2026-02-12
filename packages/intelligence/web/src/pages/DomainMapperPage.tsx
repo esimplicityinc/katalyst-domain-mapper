@@ -12,7 +12,7 @@ import { api } from "../api/client";
 import { DomainModelList } from "../components/domain/DomainModelList";
 import { DDDChat } from "../components/domain/DDDChat";
 import { ContextMapView } from "../components/domain/ContextMapView";
-import { AggregatesView } from "../components/domain/AggregatesView";
+import { AggregateTreeView } from "../components/domain/AggregateTreeView";
 import { GlossaryView } from "../components/domain/GlossaryView";
 import type { DomainModel, DomainModelFull } from "../types/domain";
 
@@ -175,7 +175,7 @@ export function DomainMapperPage() {
           />
           <Route
             path="aggregates"
-            element={<AggregatesView model={activeModel} />}
+            element={<AggregateTreeView model={activeModel} />}
           />
           <Route
             path="glossary"

@@ -6,6 +6,13 @@ Feature: DDD Domain Model End-to-End
 
   @e2e @context-map
   Scenario: Create domain model via API and verify in context map UI
+    # Set a dummy API key so the Welcome gate is bypassed on page load
+    When I PUT "/api/v1/config/api-key" with JSON body:
+      """
+      { "apiKey": "sk-ant-dummy-key-for-bdd-testing" }
+      """
+    Then the response status should be 200
+
     # API: Create a model with bounded contexts
     When I POST "/api/v1/domain-models" with JSON body:
       """
@@ -40,16 +47,28 @@ Feature: DDD Domain Model End-to-End
       """
     Then the response status should be 200
 
-    # UI: Verify context map displays the contexts
-    Given I navigate to "/mapper/contexts"
+    # UI: Navigate to mapper, select our model, then verify context map
+    Given I navigate to "/mapper"
     Then I wait for the page to load
-    # Wait a bit for data to load
+    Then I wait for 2 seconds
+    When I click the button "Switch Model"
+    Then I wait for 1 seconds
+    When I click the element "button:has-text('E2E Domain Model')"
+    Then I wait for 2 seconds
+    When I click the link "Context Map"
     Then I wait for 2 seconds
     Then I should see text "Scanning Context"
     And I should see text "Reporting Context"
 
   @e2e @glossary
   Scenario: Build ubiquitous language glossary and verify in UI
+    # Set a dummy API key so the Welcome gate is bypassed on page load
+    When I PUT "/api/v1/config/api-key" with JSON body:
+      """
+      { "apiKey": "sk-ant-dummy-key-for-bdd-testing" }
+      """
+    Then the response status should be 200
+
     # API: Create model and glossary terms
     When I POST "/api/v1/domain-models" with JSON body:
       """
@@ -82,8 +101,14 @@ Feature: DDD Domain Model End-to-End
       """
     Then the response status should be 200
 
-    # UI: Verify glossary is visible in the glossary view
-    Given I navigate to "/mapper/glossary"
+    # UI: Navigate to mapper, select our model, then verify glossary
+    Given I navigate to "/mapper"
     Then I wait for the page to load
+    Then I wait for 2 seconds
+    When I click the button "Switch Model"
+    Then I wait for 1 seconds
+    When I click the element "button:has-text('Glossary E2E Model')"
+    Then I wait for 2 seconds
+    When I click the link "Glossary"
     Then I wait for 2 seconds
     Then I should see text "Cognitive Triangle"
