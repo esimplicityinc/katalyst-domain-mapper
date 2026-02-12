@@ -27,6 +27,16 @@ import { GetGovernanceTrend } from "../usecases/governance/GetGovernanceTrend.js
 import { ValidateTransition } from "../usecases/governance/ValidateTransition.js";
 import { IngestTaxonomySnapshot } from "../usecases/taxonomy/IngestTaxonomySnapshot.js";
 import { QueryTaxonomyState } from "../usecases/taxonomy/QueryTaxonomyState.js";
+import type { DomainModelRepository } from "../ports/DomainModelRepository.js";
+import { DomainModelRepositorySQLite } from "../adapters/sqlite/DomainModelRepositorySQLite.js";
+import { CreateDomainModel } from "../usecases/domain-model/CreateDomainModel.js";
+import { GetDomainModel } from "../usecases/domain-model/GetDomainModel.js";
+import { ListDomainModels } from "../usecases/domain-model/ListDomainModels.js";
+import { DeleteDomainModel } from "../usecases/domain-model/DeleteDomainModel.js";
+import { ManageBoundedContexts } from "../usecases/domain-model/ManageBoundedContexts.js";
+import { ManageArtifacts } from "../usecases/domain-model/ManageArtifacts.js";
+import { ManageGlossary } from "../usecases/domain-model/ManageGlossary.js";
+import { ManageWorkflows } from "../usecases/domain-model/ManageWorkflows.js";
 
 export interface Container {
   config: AppConfig;
@@ -50,6 +60,15 @@ export interface Container {
   validateTransition: ValidateTransition;
   ingestTaxonomySnapshot: IngestTaxonomySnapshot;
   queryTaxonomyState: QueryTaxonomyState;
+  domainModelRepo: DomainModelRepository;
+  createDomainModel: CreateDomainModel;
+  getDomainModel: GetDomainModel;
+  listDomainModels: ListDomainModels;
+  deleteDomainModel: DeleteDomainModel;
+  manageBoundedContexts: ManageBoundedContexts;
+  manageArtifacts: ManageArtifacts;
+  manageGlossary: ManageGlossary;
+  manageWorkflows: ManageWorkflows;
   healthCheck: () => boolean;
   shutdown: () => void;
   getAnthropicApiKey: () => string | undefined;
@@ -145,6 +164,17 @@ export function createContainer(config: AppConfig): Container {
   );
   const queryTaxonomyState = new QueryTaxonomyState(taxonomyRepo);
 
+  // Domain Model repository + use cases
+  const domainModelRepo = new DomainModelRepositorySQLite(db);
+  const createDomainModel = new CreateDomainModel(domainModelRepo);
+  const getDomainModel = new GetDomainModel(domainModelRepo);
+  const listDomainModels = new ListDomainModels(domainModelRepo);
+  const deleteDomainModel = new DeleteDomainModel(domainModelRepo);
+  const manageBoundedContexts = new ManageBoundedContexts(domainModelRepo);
+  const manageArtifacts = new ManageArtifacts(domainModelRepo);
+  const manageGlossary = new ManageGlossary(domainModelRepo);
+  const manageWorkflows = new ManageWorkflows(domainModelRepo);
+
   // Health check
   const healthCheck = (): boolean => {
     try {
@@ -183,6 +213,15 @@ export function createContainer(config: AppConfig): Container {
     validateTransition: validateTransitionUseCase,
     ingestTaxonomySnapshot,
     queryTaxonomyState,
+    domainModelRepo,
+    createDomainModel,
+    getDomainModel,
+    listDomainModels,
+    deleteDomainModel,
+    manageBoundedContexts,
+    manageArtifacts,
+    manageGlossary,
+    manageWorkflows,
     healthCheck,
     shutdown,
     getAnthropicApiKey,

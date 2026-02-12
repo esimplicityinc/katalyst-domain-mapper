@@ -120,7 +120,14 @@ export function createServer(container: Container) {
         )
         .use(
           createDomainModelRoutes({
-            db: container.db,
+            createDomainModel: container.createDomainModel,
+            getDomainModel: container.getDomainModel,
+            listDomainModels: container.listDomainModels,
+            deleteDomainModel: container.deleteDomainModel,
+            manageBoundedContexts: container.manageBoundedContexts,
+            manageArtifacts: container.manageArtifacts,
+            manageGlossary: container.manageGlossary,
+            manageWorkflows: container.manageWorkflows,
           }),
         )
         .use(

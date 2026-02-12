@@ -6,7 +6,7 @@ description: Consolidated roadmap for the governance pipeline, DDD tooling, and 
 # Katalyst Delivery Framework — Roadmap
 
 > **Last Updated**: 2026-02-12
-> **Total Items**: 27 | **In Progress**: 0 | **Proposed**: 16 | **Complete**: 11
+> **Total Items**: 28 | **In Progress**: 0 | **Proposed**: 17 | **Complete**: 11
 
 Turn this monorepo into a **self-governing delivery framework**. Import governance infrastructure, build Zod-validated schemas, create parsers and CLI tooling, add API endpoints, enhance the scanner, and visualize governance health — all while the framework governs its own development.
 
@@ -540,6 +540,33 @@ The domain-modeling bounded context (`domain-models.ts`, 772 lines) bypasses the
 
 ---
 
+### [ROAD-028] DDD Terminology Explainer Tooltips 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-12
+
+Add contextual info tooltips (ℹ️ icon) next to DDD terminology throughout the Domain Mapper UI. Hovering reveals a plain-English explanation of the term, making the tool accessible to users unfamiliar with Domain-Driven Design concepts. Covers all views: Context Map, Aggregates, Events, Workflows, and Glossary.
+
+- 🎯 Create reusable `DDDTooltip` component — ℹ️ icon that shows a popover on hover with term name, plain-English definition, and optional "Learn more" link
+- 🎯 Build DDD terminology dictionary — static data mapping ~15-20 terms to plain-English descriptions (Bounded Context, Aggregate, Entity, Value Object, Domain Event, Ubiquitous Language, Context Map, Upstream/Downstream, Anti-Corruption Layer, Customer-Supplier, Conformist, Shared Kernel, Core Domain, Supporting Subdomain, Generic Subdomain, Invariant, Command, Root Entity, etc.)
+- 🎯 Add tooltips to Context Map view — next to "Bounded Contexts" header, relationship pattern labels (ACL, Conformist, Customer-Supplier, etc.), subdomain type badges
+- 🎯 Add tooltips to Aggregates view — next to "Aggregates" header, "Root Entity", "Entities", "Value Objects", "Commands", "Events Emitted", "Invariants" section headers
+- 🎯 Add tooltips to Events view — next to "Domain Events" header, sync/async badges, "Trigger", "Effect" labels in detail cards
+- 🎯 Add tooltips to Workflows view — next to "State Machine" header, transition terminology
+- 🎯 Add tooltips to Glossary view — next to "Ubiquitous Language" header
+- 🎯 Ensure tooltips work on both hover (desktop) and tap (mobile/touch)
+- 🎯 Support dark mode with appropriate tooltip background/text contrast
+- 🎯 Tooltips should be dismissable and not block interaction with underlying elements
+- 🎯 Add user preference to hide tooltips (localStorage toggle for experienced DDD users)
+
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-) (visualization foundation)
+**Enables**: [ROAD-023](#road-023-onboarding--how-it-works-experience-) (complements onboarding)
+**Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine)
+**User Stories**: [US-044](#us-044-view-ddd-terminology-explanations-in-context)
+
+---
+
 ## Phase 4: Advanced External Integrations
 
 > **Goal**: Connect the governance pipeline to external project management and documentation tools for bidirectional data flow. Extend scanner data sources beyond repository analysis.
@@ -775,7 +802,7 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | **0.7.0** | ROAD-006 + 009: Scanner + web viz foundation | N/A | Full pipeline: scan → report → governance → viz | Governance agent scores governance health |
 | **0.7.1** | ROAD-020: Subdomain classification | N/A | Subdomain types on bounded contexts, color coding | Context map diagram uses subdomain colors |
 | **0.8.0** | ROAD-016 + 017: Context map + Aggregate tree | N/A | Interactive SVG context map, collapsible aggregate tree | DDD visualizations replace flat lists |
-| **0.8.1** | ROAD-023: Onboarding experience | N/A | How It Works page, quick-start guidance | New user guidance improves adoption |
+| **0.8.1** | ROAD-023 + 028: Onboarding + DDD tooltips | N/A | How It Works page, quick-start guidance, DDD terminology explainers | New user guidance and in-context DDD education |
 | **0.9.0** | ROAD-018 + 019: Event flow + State machine | N/A | Event timeline, lifecycle state machine | Full DDD visualization suite |
 | **0.10.0** | ROAD-021 + 022: Export pipeline + Static site | N/A | Markdown export, standalone React site generator | Domain docs in git, capstone feature |
 | **0.11.0** | ROAD-010: Jira integration | N/A | Bidirectional Jira sync, Feedback dimension from Jira metrics | Agents can import/export Jira issues |
@@ -792,9 +819,9 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | 0 — Foundation | ROAD-001 | ~75 | ~17 | N/A |
 | 1 — Core Schemas | ROAD-002, 003, 007 | ~20 | ~3 | ~2,000 |
 | 2 — Parsers & CLI | ROAD-004, 024 | ~18 | ~4 | ~1,600 |
-| 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023, 025, 027 | ~110 | ~20 | ~9,300 |
+| 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023, 025, 027, 028 | ~115 | ~22 | ~9,600 |
 | 4 — Advanced External Integrations | ROAD-010, 011, 012, 013, 014, 026 | ~40 | ~7 | ~4,800 |
-| **Total** | **27** | **~263** | **~51** | **~17,700** |
+| **Total** | **28** | **~268** | **~53** | **~18,000** |
 
 ---
 
@@ -843,3 +870,4 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | Onboarding & How It Works *(plan TBD)* | ROAD-023 | 4-phase workflow guide, Human-in-the-Loop rationale, quick-start |
 | External Roadmap Source *(plan TBD)* | ROAD-026 | Jira epics & GitHub Projects as external roadmap source of truth |
 | [Hexagonal Architecture Extraction & BDD Stability](./roads/ROAD-027.md) | ROAD-027 | Extract proper hex layers for domain-modeling, fix 18 stale-data BDD failures |
+| DDD Terminology Explainer Tooltips *(plan TBD)* | ROAD-028 | Reusable DDDTooltip component, ~20 term dictionary, tooltips across all DDD views |

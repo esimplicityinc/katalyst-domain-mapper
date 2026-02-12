@@ -1,11 +1,23 @@
 import Elysia, { t } from "elysia";
-import { eq } from "drizzle-orm";
-import type { DrizzleDB } from "../../../db/client.js";
-import * as schema from "../../../db/schema.js";
+import type { CreateDomainModel } from "../../../usecases/domain-model/CreateDomainModel.js";
+import type { GetDomainModel } from "../../../usecases/domain-model/GetDomainModel.js";
+import type { ListDomainModels } from "../../../usecases/domain-model/ListDomainModels.js";
+import type { DeleteDomainModel } from "../../../usecases/domain-model/DeleteDomainModel.js";
+import type { ManageBoundedContexts } from "../../../usecases/domain-model/ManageBoundedContexts.js";
+import type { ManageArtifacts } from "../../../usecases/domain-model/ManageArtifacts.js";
+import type { ManageGlossary } from "../../../usecases/domain-model/ManageGlossary.js";
+import type { ManageWorkflows } from "../../../usecases/domain-model/ManageWorkflows.js";
 
-export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
-  const { db } = deps;
-
+export function createDomainModelRoutes(deps: {
+  createDomainModel: CreateDomainModel;
+  getDomainModel: GetDomainModel;
+  listDomainModels: ListDomainModels;
+  deleteDomainModel: DeleteDomainModel;
+  manageBoundedContexts: ManageBoundedContexts;
+  manageArtifacts: ManageArtifacts;
+  manageGlossary: ManageGlossary;
+  manageWorkflows: ManageWorkflows;
+}) {
   return (
     new Elysia({ prefix: "/domain-models" })
 
@@ -13,19 +25,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .post(
         "/",
-        ({ body }) => {
-          const now = new Date().toISOString();
-          const id = crypto.randomUUID();
-          db.insert(schema.domainModels)
-            .values({
-              id,
-              name: body.name,
-              description: body.description ?? null,
-              createdAt: now,
-              updatedAt: now,
-            })
-            .run();
-          return { id, name: body.name, createdAt: now };
+        async ({ body }) => {
+          return deps.createDomainModel.execute(body);
         },
         {
           body: t.Object({
@@ -38,8 +39,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .get(
         "/",
-        () => {
-          return db.select().from(schema.domainModels).all();
+        async () => {
+          return deps.listDomainModels.execute();
         },
         {
           detail: { summary: "List domain models", tags: ["Domain Models"] },
@@ -48,57 +49,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .get(
         "/:id",
-        ({ params, set }) => {
-          const model = db
-            .select()
-            .from(schema.domainModels)
-            .where(eq(schema.domainModels.id, params.id))
-            .get();
-          if (!model) {
-            set.status = 404;
-            return { error: "Domain model not found" };
-          }
-
-          const contexts = db
-            .select()
-            .from(schema.boundedContexts)
-            .where(eq(schema.boundedContexts.domainModelId, params.id))
-            .all();
-          const aggs = db
-            .select()
-            .from(schema.aggregates)
-            .where(eq(schema.aggregates.domainModelId, params.id))
-            .all();
-          const vos = db
-            .select()
-            .from(schema.valueObjects)
-            .where(eq(schema.valueObjects.domainModelId, params.id))
-            .all();
-          const events = db
-            .select()
-            .from(schema.domainEvents)
-            .where(eq(schema.domainEvents.domainModelId, params.id))
-            .all();
-          const glossary = db
-            .select()
-            .from(schema.glossaryTerms)
-            .where(eq(schema.glossaryTerms.domainModelId, params.id))
-            .all();
-          const workflows = db
-            .select()
-            .from(schema.domainWorkflows)
-            .where(eq(schema.domainWorkflows.domainModelId, params.id))
-            .all();
-
-          return {
-            ...model,
-            boundedContexts: contexts,
-            aggregates: aggs,
-            valueObjects: vos,
-            domainEvents: events,
-            glossaryTerms: glossary,
-            workflows: workflows,
-          };
+        async ({ params }) => {
+          return deps.getDomainModel.execute(params.id);
         },
         {
           params: t.Object({ id: t.String() }),
@@ -111,20 +63,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .delete(
         "/:id",
-        ({ params, set }) => {
-          const existing = db
-            .select({ id: schema.domainModels.id })
-            .from(schema.domainModels)
-            .where(eq(schema.domainModels.id, params.id))
-            .get();
-          if (!existing) {
-            set.status = 404;
-            return { error: "Domain model not found" };
-          }
-          db.delete(schema.domainModels)
-            .where(eq(schema.domainModels.id, params.id))
-            .run();
-          return { message: "Deleted" };
+        async ({ params }) => {
+          return deps.deleteDomainModel.execute(params.id);
         },
         {
           params: t.Object({ id: t.String() }),
@@ -136,51 +76,13 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .post(
         "/:id/contexts",
-        ({ params, body, set }) => {
-          const model = db
-            .select({ id: schema.domainModels.id })
-            .from(schema.domainModels)
-            .where(eq(schema.domainModels.id, params.id))
-            .get();
-          if (!model) {
-            set.status = 404;
-            return { error: "Domain model not found" };
-          }
-
-          // Validate subdomainType manually to return 400 instead of 500
-          const validSubdomainTypes = ["core", "supporting", "generic"];
-          if (body.subdomainType && !validSubdomainTypes.includes(body.subdomainType)) {
-            set.status = 400;
-            return { 
-              error: "Invalid subdomain type",
-              message: `subdomainType must be one of: ${validSubdomainTypes.join(", ")}`
-            };
-          }
-
-          const now = new Date().toISOString();
-          const ctxId = crypto.randomUUID();
-          db.insert(schema.boundedContexts)
-            .values({
-              id: ctxId,
-              domainModelId: params.id,
-              slug: body.slug,
-              title: body.title,
-              description: body.description ?? null,
-              responsibility: body.responsibility,
-              sourceDirectory: body.sourceDirectory ?? null,
-              teamOwnership: body.teamOwnership ?? null,
-              status: body.status ?? "draft",
-              subdomainType: body.subdomainType ?? null,
-              relationships: body.relationships ?? [],
-              createdAt: now,
-              updatedAt: now,
-            })
-            .run();
+        async ({ params, body }) => {
+          const ctx = await deps.manageBoundedContexts.add(params.id, body);
           return {
-            id: ctxId,
-            slug: body.slug,
-            title: body.title,
-            subdomainType: body.subdomainType ?? null,
+            id: ctx.id,
+            slug: ctx.slug,
+            title: ctx.title,
+            subdomainType: ctx.subdomainType,
           };
         },
         {
@@ -202,28 +104,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .put(
         "/:id/contexts/:ctxId",
-        ({ params, body }) => {
-          const now = new Date().toISOString();
-          db.update(schema.boundedContexts)
-            .set({
-              slug: body.slug,
-              title: body.title,
-              description: body.description ?? null,
-              responsibility: body.responsibility,
-              sourceDirectory: body.sourceDirectory ?? null,
-              teamOwnership: body.teamOwnership ?? null,
-              status: body.status ?? "draft",
-              subdomainType: body.subdomainType ?? null,
-              relationships: body.relationships ?? [],
-              updatedAt: now,
-            })
-            .where(eq(schema.boundedContexts.id, params.ctxId))
-            .run();
-          return {
-            id: params.ctxId,
-            updated: true,
-            subdomainType: body.subdomainType ?? null,
-          };
+        async ({ params, body }) => {
+          return deps.manageBoundedContexts.update(params.ctxId, body);
         },
         {
           params: t.Object({ id: t.String(), ctxId: t.String() }),
@@ -253,11 +135,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .delete(
         "/:id/contexts/:ctxId",
-        ({ params }) => {
-          db.delete(schema.boundedContexts)
-            .where(eq(schema.boundedContexts.id, params.ctxId))
-            .run();
-          return { message: "Deleted" };
+        async ({ params }) => {
+          return deps.manageBoundedContexts.delete(params.ctxId);
         },
         {
           params: t.Object({ id: t.String(), ctxId: t.String() }),
@@ -272,39 +151,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .post(
         "/:id/aggregates",
-        ({ params, body, set }) => {
-          const model = db
-            .select({ id: schema.domainModels.id })
-            .from(schema.domainModels)
-            .where(eq(schema.domainModels.id, params.id))
-            .get();
-          if (!model) {
-            set.status = 404;
-            return { error: "Domain model not found" };
-          }
-
-          const now = new Date().toISOString();
-          const aggId = crypto.randomUUID();
-          db.insert(schema.aggregates)
-            .values({
-              id: aggId,
-              domainModelId: params.id,
-              contextId: body.contextId,
-              slug: body.slug,
-              title: body.title,
-              rootEntity: body.rootEntity,
-              entities: body.entities ?? [],
-              valueObjects: body.valueObjects ?? [],
-              events: body.events ?? [],
-              commands: body.commands ?? [],
-              invariants: body.invariants ?? [],
-              sourceFile: body.sourceFile ?? null,
-              status: body.status ?? "draft",
-              createdAt: now,
-              updatedAt: now,
-            })
-            .run();
-          return { id: aggId, slug: body.slug, title: body.title };
+        async ({ params, body }) => {
+          return deps.manageArtifacts.addAggregate(params.id, body);
         },
         {
           params: t.Object({ id: t.String() }),
@@ -327,28 +175,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .put(
         "/:id/aggregates/:aggId",
-        ({ params, body }) => {
-          const now = new Date().toISOString();
-          db.update(schema.aggregates)
-            .set({
-              slug: body.slug,
-              title: body.title,
-              rootEntity: body.rootEntity,
-              entities: body.entities ?? [],
-              valueObjects: body.valueObjects ?? [],
-              events: body.events ?? [],
-              commands: body.commands ?? [],
-              invariants: body.invariants ?? [],
-              sourceFile: body.sourceFile ?? null,
-              status: body.status ?? "draft",
-              updatedAt: now,
-            })
-            .where(eq(schema.aggregates.id, params.aggId))
-            .run();
-          return {
-            id: params.aggId,
-            updated: true,
-          };
+        async ({ params, body }) => {
+          return deps.manageArtifacts.updateAggregate(params.aggId, body);
         },
         {
           params: t.Object({ id: t.String(), aggId: t.String() }),
@@ -373,11 +201,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .delete(
         "/:id/aggregates/:aggId",
-        ({ params }) => {
-          db.delete(schema.aggregates)
-            .where(eq(schema.aggregates.id, params.aggId))
-            .run();
-          return { message: "Deleted" };
+        async ({ params }) => {
+          return deps.manageArtifacts.deleteAggregate(params.aggId);
         },
         {
           params: t.Object({ id: t.String(), aggId: t.String() }),
@@ -392,38 +217,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .post(
         "/:id/events",
-        ({ params, body, set }) => {
-          const model = db
-            .select({ id: schema.domainModels.id })
-            .from(schema.domainModels)
-            .where(eq(schema.domainModels.id, params.id))
-            .get();
-          if (!model) {
-            set.status = 404;
-            return { error: "Domain model not found" };
-          }
-
-          const now = new Date().toISOString();
-          const eventId = crypto.randomUUID();
-          db.insert(schema.domainEvents)
-            .values({
-              id: eventId,
-              domainModelId: params.id,
-              contextId: body.contextId,
-              aggregateId: body.aggregateId ?? null,
-              slug: body.slug,
-              title: body.title,
-              description: body.description ?? null,
-              payload: body.payload ?? [],
-              consumedBy: body.consumedBy ?? [],
-              triggers: body.triggers ?? [],
-              sideEffects: body.sideEffects ?? [],
-              sourceFile: body.sourceFile ?? null,
-              createdAt: now,
-              updatedAt: now,
-            })
-            .run();
-          return { id: eventId, slug: body.slug, title: body.title };
+        async ({ params, body }) => {
+          return deps.manageArtifacts.addDomainEvent(params.id, body);
         },
         {
           params: t.Object({ id: t.String() }),
@@ -445,26 +240,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .put(
         "/:id/events/:eventId",
-        ({ params, body }) => {
-          const now = new Date().toISOString();
-          db.update(schema.domainEvents)
-            .set({
-              slug: body.slug,
-              title: body.title,
-              description: body.description ?? null,
-              payload: body.payload ?? [],
-              consumedBy: body.consumedBy ?? [],
-              triggers: body.triggers ?? [],
-              sideEffects: body.sideEffects ?? [],
-              sourceFile: body.sourceFile ?? null,
-              updatedAt: now,
-            })
-            .where(eq(schema.domainEvents.id, params.eventId))
-            .run();
-          return {
-            id: params.eventId,
-            updated: true,
-          };
+        async ({ params, body }) => {
+          return deps.manageArtifacts.updateDomainEvent(params.eventId, body);
         },
         {
           params: t.Object({ id: t.String(), eventId: t.String() }),
@@ -487,11 +264,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .delete(
         "/:id/events/:eventId",
-        ({ params }) => {
-          db.delete(schema.domainEvents)
-            .where(eq(schema.domainEvents.id, params.eventId))
-            .run();
-          return { message: "Deleted" };
+        async ({ params }) => {
+          return deps.manageArtifacts.deleteDomainEvent(params.eventId);
         },
         {
           params: t.Object({ id: t.String(), eventId: t.String() }),
@@ -506,36 +280,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .post(
         "/:id/value-objects",
-        ({ params, body, set }) => {
-          const model = db
-            .select({ id: schema.domainModels.id })
-            .from(schema.domainModels)
-            .where(eq(schema.domainModels.id, params.id))
-            .get();
-          if (!model) {
-            set.status = 404;
-            return { error: "Domain model not found" };
-          }
-
-          const now = new Date().toISOString();
-          const voId = crypto.randomUUID();
-          db.insert(schema.valueObjects)
-            .values({
-              id: voId,
-              domainModelId: params.id,
-              contextId: body.contextId,
-              slug: body.slug,
-              title: body.title,
-              description: body.description ?? null,
-              properties: body.properties ?? [],
-              validationRules: body.validationRules ?? [],
-              immutable: body.immutable ?? true,
-              sourceFile: body.sourceFile ?? null,
-              createdAt: now,
-              updatedAt: now,
-            })
-            .run();
-          return { id: voId, slug: body.slug, title: body.title };
+        async ({ params, body }) => {
+          return deps.manageArtifacts.addValueObject(params.id, body);
         },
         {
           params: t.Object({ id: t.String() }),
@@ -555,25 +301,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .put(
         "/:id/value-objects/:voId",
-        ({ params, body }) => {
-          const now = new Date().toISOString();
-          db.update(schema.valueObjects)
-            .set({
-              slug: body.slug,
-              title: body.title,
-              description: body.description ?? null,
-              properties: body.properties ?? [],
-              validationRules: body.validationRules ?? [],
-              immutable: body.immutable ?? true,
-              sourceFile: body.sourceFile ?? null,
-              updatedAt: now,
-            })
-            .where(eq(schema.valueObjects.id, params.voId))
-            .run();
-          return {
-            id: params.voId,
-            updated: true,
-          };
+        async ({ params, body }) => {
+          return deps.manageArtifacts.updateValueObject(params.voId, body);
         },
         {
           params: t.Object({ id: t.String(), voId: t.String() }),
@@ -595,11 +324,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .delete(
         "/:id/value-objects/:voId",
-        ({ params }) => {
-          db.delete(schema.valueObjects)
-            .where(eq(schema.valueObjects.id, params.voId))
-            .run();
-          return { message: "Deleted" };
+        async ({ params }) => {
+          return deps.manageArtifacts.deleteValueObject(params.voId);
         },
         {
           params: t.Object({ id: t.String(), voId: t.String() }),
@@ -614,35 +340,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .post(
         "/:id/glossary",
-        ({ params, body, set }) => {
-          const model = db
-            .select({ id: schema.domainModels.id })
-            .from(schema.domainModels)
-            .where(eq(schema.domainModels.id, params.id))
-            .get();
-          if (!model) {
-            set.status = 404;
-            return { error: "Domain model not found" };
-          }
-
-          const now = new Date().toISOString();
-          const termId = crypto.randomUUID();
-          db.insert(schema.glossaryTerms)
-            .values({
-              id: termId,
-              domainModelId: params.id,
-              contextId: body.contextId ?? null,
-              term: body.term,
-              definition: body.definition,
-              aliases: body.aliases ?? [],
-              examples: body.examples ?? [],
-              relatedTerms: body.relatedTerms ?? [],
-              source: body.source ?? null,
-              createdAt: now,
-              updatedAt: now,
-            })
-            .run();
-          return { id: termId, term: body.term };
+        async ({ params, body }) => {
+          return deps.manageGlossary.add(params.id, body);
         },
         {
           params: t.Object({ id: t.String() }),
@@ -661,12 +360,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .get(
         "/:id/glossary",
-        ({ params }) => {
-          return db
-            .select()
-            .from(schema.glossaryTerms)
-            .where(eq(schema.glossaryTerms.domainModelId, params.id))
-            .all();
+        async ({ params }) => {
+          return deps.manageGlossary.list(params.id);
         },
         {
           params: t.Object({ id: t.String() }),
@@ -676,11 +371,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .delete(
         "/:id/glossary/:termId",
-        ({ params }) => {
-          db.delete(schema.glossaryTerms)
-            .where(eq(schema.glossaryTerms.id, params.termId))
-            .run();
-          return { message: "Deleted" };
+        async ({ params }) => {
+          return deps.manageGlossary.delete(params.termId);
         },
         {
           params: t.Object({ id: t.String(), termId: t.String() }),
@@ -691,37 +383,12 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
         },
       )
 
-      // ── Workflows (state machine / lifecycle views) ─────────────────────────
+      // ── Workflows ─────────────────────────────────────────────────────────
 
       .post(
         "/:id/workflows",
-        ({ params, body, set }) => {
-          const model = db
-            .select({ id: schema.domainModels.id })
-            .from(schema.domainModels)
-            .where(eq(schema.domainModels.id, params.id))
-            .get();
-          if (!model) {
-            set.status = 404;
-            return { error: "Domain model not found" };
-          }
-
-          const now = new Date().toISOString();
-          const wfId = crypto.randomUUID();
-          db.insert(schema.domainWorkflows)
-            .values({
-              id: wfId,
-              domainModelId: params.id,
-              slug: body.slug,
-              title: body.title,
-              description: body.description ?? null,
-              states: body.states ?? [],
-              transitions: body.transitions ?? [],
-              createdAt: now,
-              updatedAt: now,
-            })
-            .run();
-          return { id: wfId, slug: body.slug, title: body.title };
+        async ({ params, body }) => {
+          return deps.manageWorkflows.add(params.id, body);
         },
         {
           params: t.Object({ id: t.String() }),
@@ -738,12 +405,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .get(
         "/:id/workflows",
-        ({ params }) => {
-          return db
-            .select()
-            .from(schema.domainWorkflows)
-            .where(eq(schema.domainWorkflows.domainModelId, params.id))
-            .all();
+        async ({ params }) => {
+          return deps.manageWorkflows.list(params.id);
         },
         {
           params: t.Object({ id: t.String() }),
@@ -753,11 +416,8 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
 
       .delete(
         "/:id/workflows/:wfId",
-        ({ params }) => {
-          db.delete(schema.domainWorkflows)
-            .where(eq(schema.domainWorkflows.id, params.wfId))
-            .run();
-          return { message: "Deleted" };
+        async ({ params }) => {
+          return deps.manageWorkflows.delete(params.wfId);
         },
         {
           params: t.Object({ id: t.String(), wfId: t.String() }),

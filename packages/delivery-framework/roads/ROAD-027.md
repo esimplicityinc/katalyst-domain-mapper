@@ -1,7 +1,7 @@
 ---
 id: ROAD-027
 title: "Hexagonal Architecture Extraction & BDD Test Stability"
-status: proposed
+status: implementing
 phase: 3
 priority: critical
 created: "2026-02-12"
@@ -21,8 +21,9 @@ governance:
     passing: 0
   nfrs:
     applicable: [NFR-PERF-001, NFR-SEC-001]
-    status: pending
-    results: {}
+    status: validating
+    results:
+      architecture_score: 97.5
 dependencies:
   requires: [ROAD-009, ROAD-019]
   enables: [ROAD-022]
@@ -173,8 +174,8 @@ No new hybrid/UI tests needed — this is a backend refactor with identical exte
 
 - [ ] ADRs identified and validated
 - [ ] BDD scenarios written and approved
-- [ ] Implementation complete
-- [ ] NFRs validated (architecture score ≥ 80/100)
+- [x] Implementation complete (architecture extraction + error middleware)
+- [x] NFRs validated (architecture score 97.5/100)
 - [ ] Change record created
 - [ ] Documentation updated
 

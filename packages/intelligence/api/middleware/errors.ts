@@ -14,6 +14,11 @@ import {
   GovernanceNotFoundError,
   GovernanceTransitionError,
 } from "../domain/governance/GovernanceErrors.js";
+import {
+  DomainModelNotFoundError,
+  DomainModelValidationError,
+  BoundedContextNotFoundError,
+} from "../domain/domain-model/DomainModelErrors.js";
 
 export const errorMiddleware = new Elysia({ name: "error-handler" }).onError(
   { as: "global" },
@@ -22,7 +27,9 @@ export const errorMiddleware = new Elysia({ name: "error-handler" }).onError(
       error instanceof ReportNotFoundError ||
       error instanceof RepositoryNotFoundError ||
       error instanceof ScanJobNotFoundError ||
-      error instanceof GovernanceNotFoundError
+      error instanceof GovernanceNotFoundError ||
+      error instanceof DomainModelNotFoundError ||
+      error instanceof BoundedContextNotFoundError
     ) {
       set.status = 404;
       return { error: error.message };
@@ -30,12 +37,13 @@ export const errorMiddleware = new Elysia({ name: "error-handler" }).onError(
 
     if (
       error instanceof ReportValidationError ||
-      error instanceof GovernanceValidationError
+      error instanceof GovernanceValidationError ||
+      error instanceof DomainModelValidationError
     ) {
       set.status = 400;
       return {
         error: error.message,
-        details: (error as ReportValidationError | GovernanceValidationError)
+        details: (error as ReportValidationError | GovernanceValidationError | DomainModelValidationError)
           .details,
       };
     }
