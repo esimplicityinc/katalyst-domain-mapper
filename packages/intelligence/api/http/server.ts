@@ -11,6 +11,7 @@ import { createRepositoryRoutes } from "./routes/v1/repositories.js";
 import { createConfigRoutes } from "./routes/v1/config.js";
 import { createDomainModelRoutes } from "./routes/v1/domain-models.js";
 import { createGovernanceRoutes } from "./routes/v1/governance.js";
+import { createTaxonomyRoutes } from "./routes/v1/taxonomy.js";
 import type { Container } from "../bootstrap/container.js";
 import * as path from "node:path";
 import * as fs from "node:fs";
@@ -69,6 +70,7 @@ export function createServer(container: Container) {
             { name: "Repositories", description: "Repository tracking" },
             { name: "Domain Models", description: "DDD domain modeling" },
             { name: "Governance", description: "Governance index management" },
+            { name: "Taxonomy", description: "Taxonomy snapshot management" },
           ],
         },
         path: "/swagger",
@@ -129,6 +131,13 @@ export function createServer(container: Container) {
             getGovernanceTrend: container.getGovernanceTrend,
             governanceRepo: container.governanceRepo,
             validateTransition: container.validateTransition,
+          }),
+        )
+        .use(
+          createTaxonomyRoutes({
+            ingestTaxonomySnapshot: container.ingestTaxonomySnapshot,
+            queryTaxonomyState: container.queryTaxonomyState,
+            taxonomyRepo: container.taxonomyRepo,
           }),
         ),
     )

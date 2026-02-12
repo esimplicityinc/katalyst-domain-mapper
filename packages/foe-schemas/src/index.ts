@@ -26,6 +26,9 @@ export * from "./ddd/index.js";
 // Governance schemas (namespaced to avoid conflicts with existing ddd/ exports)
 export * as governance from "./governance/index.js";
 
+// Taxonomy schemas
+export * as taxonomy from "./taxonomy/index.js";
+
 /**
  * Package version
  */

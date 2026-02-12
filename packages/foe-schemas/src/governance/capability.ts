@@ -14,6 +14,7 @@ export const CapabilitySchema = z.object({
   ]),
   status: z.enum(["planned", "stable", "deprecated"]),
   description: z.string().optional(),
+  taxonomyNode: z.string().optional(),
   path: z.string(),
 });
 

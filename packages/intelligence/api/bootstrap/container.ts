@@ -6,11 +6,13 @@ import type { ReportRepository } from "../ports/ReportRepository.js";
 import type { ScanJobRepository } from "../ports/ScanJobRepository.js";
 import type { ScanRunner } from "../ports/ScanRunner.js";
 import type { GovernanceRepository } from "../ports/GovernanceRepository.js";
+import type { TaxonomyRepository } from "../ports/TaxonomyRepository.js";
 import { StructuredLogger } from "../observability/logging.js";
 import { createDatabase, type DrizzleDB } from "../db/client.js";
 import { ReportRepositorySQLite } from "../adapters/sqlite/ReportRepositorySQLite.js";
 import { ScanJobRepositorySQLite } from "../adapters/sqlite/ScanJobRepositorySQLite.js";
 import { GovernanceRepositorySQLite } from "../adapters/sqlite/GovernanceRepositorySQLite.js";
+import { TaxonomyRepositorySQLite } from "../adapters/sqlite/TaxonomyRepositorySQLite.js";
 import { DockerScanRunner } from "../adapters/docker/DockerScanRunner.js";
 import { IngestReport } from "../usecases/report/IngestReport.js";
 import { GetReport } from "../usecases/report/GetReport.js";
@@ -23,6 +25,8 @@ import { QueryGovernanceState } from "../usecases/governance/QueryGovernanceStat
 import { GetCapabilityCoverage } from "../usecases/governance/GetCapabilityCoverage.js";
 import { GetGovernanceTrend } from "../usecases/governance/GetGovernanceTrend.js";
 import { ValidateTransition } from "../usecases/governance/ValidateTransition.js";
+import { IngestTaxonomySnapshot } from "../usecases/taxonomy/IngestTaxonomySnapshot.js";
+import { QueryTaxonomyState } from "../usecases/taxonomy/QueryTaxonomyState.js";
 
 export interface Container {
   config: AppConfig;
@@ -32,6 +36,7 @@ export interface Container {
   scanJobRepo: ScanJobRepository;
   scanRunner: ScanRunner;
   governanceRepo: GovernanceRepository;
+  taxonomyRepo: TaxonomyRepository;
   ingestReport: IngestReport;
   getReport: GetReport;
   listReports: ListReports;
@@ -43,6 +48,8 @@ export interface Container {
   getCapabilityCoverage: GetCapabilityCoverage;
   getGovernanceTrend: GetGovernanceTrend;
   validateTransition: ValidateTransition;
+  ingestTaxonomySnapshot: IngestTaxonomySnapshot;
+  queryTaxonomyState: QueryTaxonomyState;
   healthCheck: () => boolean;
   shutdown: () => void;
   getAnthropicApiKey: () => string | undefined;
@@ -102,6 +109,7 @@ export function createContainer(config: AppConfig): Container {
   const reportRepo = new ReportRepositorySQLite(db);
   const scanJobRepo = new ScanJobRepositorySQLite(db);
   const governanceRepo = new GovernanceRepositorySQLite(db);
+  const taxonomyRepo = new TaxonomyRepositorySQLite(db);
 
   // Scan runner — uses whichever LLM key is active
   const scanRunner = new DockerScanRunner(
@@ -131,6 +139,11 @@ export function createContainer(config: AppConfig): Container {
   const getCapabilityCoverage = new GetCapabilityCoverage(governanceRepo);
   const getGovernanceTrend = new GetGovernanceTrend(governanceRepo);
   const validateTransitionUseCase = new ValidateTransition();
+  const ingestTaxonomySnapshot = new IngestTaxonomySnapshot(
+    taxonomyRepo,
+    logger.child({ usecase: "ingest-taxonomy" }),
+  );
+  const queryTaxonomyState = new QueryTaxonomyState(taxonomyRepo);
 
   // Health check
   const healthCheck = (): boolean => {
@@ -156,6 +169,7 @@ export function createContainer(config: AppConfig): Container {
     scanJobRepo,
     scanRunner,
     governanceRepo,
+    taxonomyRepo,
     ingestReport,
     getReport,
     listReports,
@@ -167,6 +181,8 @@ export function createContainer(config: AppConfig): Container {
     getCapabilityCoverage,
     getGovernanceTrend,
     validateTransition: validateTransitionUseCase,
+    ingestTaxonomySnapshot,
+    queryTaxonomyState,
     healthCheck,
     shutdown,
     getAnthropicApiKey,

@@ -13,6 +13,11 @@ export const ChangeIdPattern = z.string().regex(/^CHANGE-\d{3,}$/);
 // Slug pattern for DDD artifacts (ADR-012)
 export const SlugPattern = z.string().regex(/^[a-z0-9-]+$/);
 
+// Taxonomy node name pattern (Kubernetes-style kebab-case, max 63 chars)
+export const TaxonomyNodeNamePattern = z
+  .string()
+  .regex(/^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$/);
+
 // Shared enums
 export const PrioritySchema = z.enum(["critical", "high", "medium", "low"]);
 export const GovernancePhaseSchema = z.number().int().min(0).max(3);

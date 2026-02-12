@@ -324,6 +324,7 @@ export const governanceCapabilities = sqliteTable("governance_capabilities", {
   status: text("status").notNull(),
   roadCount: integer("road_count").notNull().default(0),
   storyCount: integer("story_count").notNull().default(0),
+  taxonomyNode: text("taxonomy_node"), // optional FK to taxonomy node name
 });
 
 export const governanceRoadItems = sqliteTable("governance_road_items", {
@@ -336,6 +337,7 @@ export const governanceRoadItems = sqliteTable("governance_road_items", {
   status: text("status").notNull(),
   phase: integer("phase").notNull().default(0),
   priority: text("priority").notNull().default("medium"),
+  taxonomyNode: text("taxonomy_node"), // optional FK to taxonomy node name
 });
 
 export const governanceContexts = sqliteTable("governance_contexts", {
@@ -347,4 +349,128 @@ export const governanceContexts = sqliteTable("governance_contexts", {
   title: text("title").notNull(),
   aggregateCount: integer("aggregate_count").notNull().default(0),
   eventCount: integer("event_count").notNull().default(0),
+});
+
+// ── Taxonomy Snapshots ─────────────────────────────────────────────────────
+
+export const taxonomySnapshots = sqliteTable("taxonomy_snapshots", {
+  id: text("id").primaryKey(), // UUID
+  project: text("project").notNull(),
+  version: text("version").notNull(),
+  generated: text("generated").notNull(),
+  rawSnapshot: text("raw_snapshot", { mode: "json" })
+    .$type<Record<string, unknown>>()
+    .notNull(),
+  nodeCount: integer("node_count").notNull(),
+  environmentCount: integer("environment_count").notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
+export const taxonomyNodes = sqliteTable("taxonomy_nodes", {
+  id: text("id").primaryKey(), // composite: snapshotId:name
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  nodeType: text("node_type").notNull(), // system | subsystem | stack | layer | user | org_unit
+  fqtn: text("fqtn").notNull(), // fully qualified taxonomy name
+  description: text("description"),
+  parentNode: text("parent_node"),
+  owners: text("owners", { mode: "json" }).$type<string[]>().default([]),
+  environments: text("environments", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+  labels: text("labels", { mode: "json" })
+    .$type<Record<string, string>>()
+    .default({}),
+  dependsOn: text("depends_on", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+});
+
+export const taxonomyEnvironments = sqliteTable("taxonomy_environments", {
+  id: text("id").primaryKey(), // composite: snapshotId:name
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  parentEnvironment: text("parent_environment"),
+  promotionTargets: text("promotion_targets", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+  templateReplacements: text("template_replacements", { mode: "json" })
+    .$type<Record<string, string>>()
+    .default({}),
+});
+
+export const taxonomyLayerTypes = sqliteTable("taxonomy_layer_types", {
+  id: text("id").primaryKey(), // composite: snapshotId:name
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  defaultLayerDir: text("default_layer_dir"),
+});
+
+export const taxonomyCapabilities = sqliteTable("taxonomy_capabilities", {
+  id: text("id").primaryKey(), // composite: snapshotId:name
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  categories: text("categories", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+  dependsOn: text("depends_on", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+});
+
+export const taxonomyCapabilityRels = sqliteTable("taxonomy_capability_rels", {
+  id: text("id").primaryKey(), // composite: snapshotId:name
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  node: text("node").notNull(), // taxonomy node name
+  relationshipType: text("relationship_type").notNull(), // supports | depends-on | implements | enables
+  capabilities: text("capabilities", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+});
+
+export const taxonomyActions = sqliteTable("taxonomy_actions", {
+  id: text("id").primaryKey(), // composite: snapshotId:name
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  actionType: text("action_type").notNull(), // shell | http | workflow
+  layerType: text("layer_type"), // nullable FK to layer type name
+  tags: text("tags", { mode: "json" }).$type<string[]>().default([]),
+});
+
+export const taxonomyStages = sqliteTable("taxonomy_stages", {
+  id: text("id").primaryKey(), // composite: snapshotId:name
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  dependsOn: text("depends_on", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+});
+
+export const taxonomyTools = sqliteTable("taxonomy_tools", {
+  id: text("id").primaryKey(), // composite: snapshotId:name
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  actions: text("actions", { mode: "json" }).$type<string[]>().default([]),
 });

@@ -116,6 +116,7 @@ export const RoadItemSchema = z.object({
     nfrs: NfrGovernanceSchema,
     capabilities: z.array(CapabilityIdPattern).default([]),
   }),
+  taxonomyNode: z.string().optional(),
   path: z.string(),
 });
 
