@@ -47,7 +47,7 @@ export function GapsTable({ topGaps }: GapsTableProps) {
               <button
                 onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
                 aria-expanded={expandedIdx === idx}
-                className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
               >
                 <div className="flex items-center gap-4 flex-1 text-left">
                   <div className="flex-shrink-0">
@@ -77,7 +77,7 @@ export function GapsTable({ topGaps }: GapsTableProps) {
               </button>
 
               {expandedIdx === idx && (
-                <div className="px-4 pb-4 bg-gray-50 dark:bg-gray-750 border-t border-gray-200 dark:border-gray-700">
+                <div className="px-4 pb-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-700">
                   <div className="space-y-3 mt-3 text-sm">
                     <div>
                       <div className="font-medium text-gray-900 dark:text-white mb-1">

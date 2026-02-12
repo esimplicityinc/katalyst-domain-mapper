@@ -622,7 +622,7 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
                   </div>
                 </div>
               ))}
-              <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 dark:bg-gray-750 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-700">
                 <button
                   onClick={handleQuestionSubmit}
                   disabled={submittingQuestion}

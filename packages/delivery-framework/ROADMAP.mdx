@@ -6,7 +6,7 @@ description: Consolidated roadmap for the governance pipeline, DDD tooling, and 
 # Katalyst Delivery Framework — Roadmap
 
 > **Last Updated**: 2026-02-12
-> **Total Items**: 28 | **In Progress**: 0 | **Proposed**: 17 | **Complete**: 11
+> **Total Items**: 28 | **In Progress**: 0 | **Proposed**: 15 | **Complete**: 13
 
 Turn this monorepo into a **self-governing delivery framework**. Import governance infrastructure, build Zod-validated schemas, create parsers and CLI tooling, add API endpoints, enhance the scanner, and visualize governance health — all while the framework governs its own development.
 
@@ -489,31 +489,33 @@ Generate a standalone Vite + React + Tailwind site from a domain model with inte
 
 ---
 
-### [ROAD-025] Fix Aggregates View Dark Mode Text Rendering 🎯
-**Status**: Proposed
+### [ROAD-025] Fix Aggregates View Dark Mode Text Rendering ✅
+**Status**: Complete
 **Priority**: Medium
 **Phase**: 3 — API, Scanner, Visualization & Domain Tooling
 **Created**: 2026-02-12
+**Completed**: 2026-02-12
 
-Fix dark mode styling issue in the Aggregates view where aggregate card text (title, slug) is not properly readable. The "Passport Application" aggregate name text is obscured due to incorrect text/background color contrast in dark mode. Technical debt from the ROAD-017 Aggregate Tree Hierarchy View implementation.
+Fixed dark mode styling across the Aggregates view and other components. The original issue in `AggregatesView.tsx` was resolved when ROAD-017 replaced it with `AggregateTreeView.tsx` (which has proper `dark:` variants). Cleaned up dead code and fixed invalid `dark:bg-gray-750` Tailwind classes across 3 components.
 
-- 🎯 Audit `AggregatesView.tsx` aggregate card text colors for dark mode contrast compliance
-- 🎯 Fix aggregate title and slug text rendering in dark mode (ensure proper `dark:text-*` classes)
-- 🎯 Verify expanded card details (entities, value objects, commands, events) are readable in dark mode
-- 🎯 Cross-check `AggregateTreeView.tsx` for the same dark mode issues
-- 🎯 Manually verify fix in both light and dark modes across all aggregate card states (collapsed/expanded)
+- ✅ Audited `AggregateTreeView.tsx` — all dark mode classes correct
+- ✅ Audited `TreeNode.tsx` — proper `dark:text-*` and `dark:bg-*` on all elements
+- ✅ Deleted unused legacy `AggregatesView.tsx` (contained the original bug)
+- ✅ Fixed invalid `dark:bg-gray-750` → `dark:bg-gray-700` in DDDChat, GapsTable, FindingsTable
+- ✅ Visual verification in both light and dark modes (screenshots captured)
 
-**NFR**: NFR-ACC (Accessibility) — text contrast ratio must meet WCAG AA (4.5:1 for normal text)
+**NFR**: NFR-ACC (Accessibility) — text contrast verified meets WCAG AA
 **Requires**: [ROAD-017](#road-017-aggregate-tree-hierarchy-view-) (already complete)
 **Enables**: None (technical debt fix)
 
 ---
 
-### [ROAD-027] Hexagonal Architecture Extraction & BDD Test Stability 🎯
-**Status**: Proposed
+### [ROAD-027] Hexagonal Architecture Extraction & BDD Test Stability ✅
+**Status**: Complete
 **Priority**: Critical
 **Phase**: 3 — API, Scanner, Visualization & Domain Tooling
 **Created**: 2026-02-12
+**Completed**: 2026-02-12
 
 The domain-modeling bounded context (`domain-models.ts`, 772 lines) bypasses the hexagonal architecture that the rest of the codebase follows — raw Drizzle queries inline in route handlers, no domain layer, no port interfaces, no adapters, no use cases. Flagged during ROAD-019 architecture review (score: 52/100). Additionally, 18 BDD tests are failing due to stale test data from a now-fixed cleanup auth bug that left orphaned records with hardcoded UUIDs.
 
