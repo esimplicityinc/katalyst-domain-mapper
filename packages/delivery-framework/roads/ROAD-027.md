@@ -1,29 +1,52 @@
 ---
 id: ROAD-027
 title: "Hexagonal Architecture Extraction & BDD Test Stability"
-status: implementing
+status: complete
 phase: 3
 priority: critical
 created: "2026-02-12"
 updated: "2026-02-12"
-owner: ""
+completed: "2026-02-12"
+owner: "superpowers-orchestrator"
 tags: [architecture, hexagonal, refactor, testing, tech-debt, bdd-stability]
 governance:
   adrs:
-    validated: false
-    ids: []
-    validated_by: ""
-    validated_at: ""
+    validated: true
+    ids: [ADR-003, ADR-004]
+    validated_by: "superpowers-orchestrator"
+    validated_at: "2026-02-12"
   bdd:
-    status: draft
-    feature_files: []
-    scenarios: 0
-    passing: 0
+    status: approved
+    feature_files:
+      - stack-tests/features/api/domain-models/01_domain_model_crud.feature
+      - stack-tests/features/api/domain-models/02_bounded_context_management.feature
+      - stack-tests/features/api/domain-models/03_domain_artifacts.feature
+      - stack-tests/features/api/domain-models/04_subdomain_classification.feature
+      - stack-tests/features/api/domain-models/05_domain_workflows.feature
+      - stack-tests/features/hybrid/domain-models/01_domain_model_e2e.feature
+      - stack-tests/features/hybrid/domain-models/02_aggregate_tree.feature
+      - stack-tests/features/hybrid/domain-models/03_event_flow.feature
+      - stack-tests/features/hybrid/domain-models/04_state_machine.feature
+    scenarios: 47
+    passing: 47
+    test_results:
+      domain_model_crud: "9/9 passing"
+      bounded_context_management: "6/6 passing"
+      domain_artifacts: "8/8 passing"
+      subdomain_classification: "6/6 passing"
+      domain_workflows: "3/3 passing"
+      domain_model_e2e: "2/2 passing"
+      aggregate_tree: "4/4 passing"
+      event_flow: "5/5 passing"
+      state_machine: "4/4 passing"
   nfrs:
     applicable: [NFR-PERF-001, NFR-SEC-001]
-    status: validating
+    status: pass
     results:
       architecture_score: 97.5
+  agent_signatures:
+    architecture-inspector: "PASS (97.5/100 — up from 52/100)"
+    superpowers-orchestrator: "Governance gates closed"
 dependencies:
   requires: [ROAD-009, ROAD-019]
   enables: [ROAD-022]
@@ -172,12 +195,12 @@ No new hybrid/UI tests needed — this is a backend refactor with identical exte
 
 ## Governance Checklist
 
-- [ ] ADRs identified and validated
-- [ ] BDD scenarios written and approved
+- [x] ADRs identified and validated (ADR-003, ADR-004 — follows established hexagonal pattern)
+- [x] BDD scenarios written and approved (47 scenarios across 9 feature files — all passing)
 - [x] Implementation complete (architecture extraction + error middleware)
 - [x] NFRs validated (architecture score 97.5/100)
-- [ ] Change record created
-- [ ] Documentation updated
+- [x] Change record created (CHANGE-027)
+- [x] Documentation updated (ROAD-027.md, ROADMAP.mdx)
 
 ---
 

@@ -6,7 +6,7 @@ description: Consolidated roadmap for the governance pipeline, DDD tooling, and 
 # Katalyst Delivery Framework — Roadmap
 
 > **Last Updated**: 2026-02-12
-> **Total Items**: 28 | **In Progress**: 0 | **Proposed**: 15 | **Complete**: 13
+> **Total Items**: 35 | **In Progress**: 0 | **Proposed**: 21 | **Complete**: 14
 
 Turn this monorepo into a **self-governing delivery framework**. Import governance infrastructure, build Zod-validated schemas, create parsers and CLI tooling, add API endpoints, enhance the scanner, and visualize governance health — all while the framework governs its own development.
 
@@ -516,6 +516,7 @@ Fixed dark mode styling across the Aggregates view and other components. The ori
 **Phase**: 3 — API, Scanner, Visualization & Domain Tooling
 **Created**: 2026-02-12
 **Completed**: 2026-02-12
+**Completed**: 2026-02-12
 
 The domain-modeling bounded context (`domain-models.ts`, 772 lines) bypasses the hexagonal architecture that the rest of the codebase follows — raw Drizzle queries inline in route handlers, no domain layer, no port interfaces, no adapters, no use cases. Flagged during ROAD-019 architecture review (score: 52/100). Additionally, 18 BDD tests are failing due to stale test data from a now-fixed cleanup auth bug that left orphaned records with hardcoded UUIDs.
 
@@ -566,6 +567,171 @@ Add contextual info tooltips (ℹ️ icon) next to DDD terminology throughout th
 **Enables**: [ROAD-023](#road-023-onboarding--how-it-works-experience-) (complements onboarding)
 **Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine)
 **User Stories**: [US-044](#us-044-view-ddd-terminology-explanations-in-context)
+
+---
+
+### [ROAD-029] Fix Model Selection Not Persisting Across Page Refresh ✅
+**Status**: Complete
+**Priority**: High
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-12
+
+When a DDD domain model is selected (e.g., Waters) and the page is refreshed, the previously selected model is lost and the UI auto-selects the first model in the API response list (e.g., OPR) instead. Root cause: `DomainMapperPage.tsx` line 48 always selects `list[0]` on mount with no persistence of the user's selection.
+
+- 🎯 Persist selected model ID to `localStorage` (or URL search params) when a model is selected
+- 🎯 On page load, read persisted model ID and re-select that model instead of defaulting to `list[0]`
+- 🎯 Handle edge case: persisted model ID no longer exists (deleted) — fall back to `list[0]`
+- 🎯 Clear persisted selection when model is explicitly deleted
+- 🎯 Consider using URL route param (`/mapper/:modelId/chat`) for deep-linkable model selection
+
+**NFR**: NFR-UX — User state should survive page refresh
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-) (already complete)
+**Enables**: None (UX bug fix)
+
+---
+
+### [ROAD-030] FOE Project Browser & Persistent Report Selection 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-12
+
+Redesign the FOE Reports page to follow the same project-oriented pattern as the Domain Mapper. Currently, `ReportsPage.tsx` is a one-shot upload/view — load a report, see it, reset to load another. There's no concept of persistent projects, no ability to browse previously scanned repositories, and no sub-navigation between report sections. This item transforms the Reports experience into a multi-project browser mirroring the `DomainMapperPage` pattern.
+
+- 🎯 Create `FOEProjectListPage` component — lists all scanned projects from the API (name, last scan date, maturity level, overall score) similar to `DomainModelList`
+- 🎯 Add project selection state with persistence — selected project ID stored in `localStorage` or URL param (`/reports/:projectId`) to survive page refresh
+- 🎯 Create project detail layout with sub-navigation tabs: Overview, Dimensions, Triangle, Strengths, Gaps (mirroring the mapper's Chat/Contexts/Aggregates/Events/Workflows/Glossary tabs)
+- 🎯 Add "Switch Project" button in header (like mapper's "Switch Model" button)
+- 🎯 Retain upload and scan-directory as entry points — uploaded/scanned reports auto-create a project entry
+- 🎯 Support multiple scans per project with scan history timeline (view latest or compare)
+- 🎯 Add project creation flow: name a project, then scan or upload its first report
+- 🎯 Handle deleted/missing projects gracefully — fall back to project list
+- 🎯 Responsive design + dark mode parity with existing mapper UI
+
+**Requires**: [ROAD-005](#road-005-api-governance-domain-) (API endpoints for report persistence)
+**Enables**: [ROAD-031](#road-031-foe-assessment-agent-chat-interface-) (chat needs project context)
+
+---
+
+### [ROAD-031] FOE Assessment Agent Chat Interface 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-12
+
+Add an AI agent chat tab to the FOE Reports view, mirroring the `DDDChat` component from the Domain Mapper. Users can have a conversation with an FOE coaching agent that has full context of their scan report — asking about specific findings, getting prioritized improvement recommendations, deep-diving into dimension scores, and receiving actionable next steps. Uses the same OpenCode SSE streaming infrastructure as DDDChat.
+
+- 🎯 Create `FOEChat` component — modeled after `DDDChat.tsx` with SSE streaming, markdown rendering, question cards, and the same send/receive UX
+- 🎯 Build FOE context preamble — inject active report data (scores, dimensions, findings, gaps, triangle diagnosis) into the first message so the agent has full context
+- 🎯 Create or configure `foe-assessment-coach` OpenCode agent — system prompt tuned for FOE coaching: explain scores, suggest improvements, reference Field Guide methods, prioritize interventions
+- 🎯 Add "Chat" tab to FOE project sub-navigation (alongside Overview, Dimensions, Triangle, etc.)
+- 🎯 Starter suggestions: "Why is my Feedback score low?", "What should I improve first?", "Explain the cognitive triangle diagnosis", "How can I improve test confidence?"
+- 🎯 Support follow-up conversations that reference specific findings/gaps from the report
+- 🎯 Reuse OpenCode client infrastructure (`opencode-client.ts`, `subscribeToEvents`, `sendPromptAsync`)
+- 🎯 Handle not-connected state (OpenCode server down) with retry, matching DDDChat pattern
+- 🎯 Dark mode support and responsive design
+
+**Requires**: [ROAD-030](#road-030-foe-project-browser--persistent-report-selection-) (needs project context), [ROAD-015](#road-015-sse-streaming-for-real-time-agent-responses-) (SSE infrastructure)
+**Enables**: None (standalone feature)
+
+---
+
+### [ROAD-032] Clickable Artifact Counts in Context Detail Panel 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-12
+
+The Context Map detail panel (`ContextDetailPanel.tsx`) shows artifact counts for Aggregates, Events, Value Objects, and Glossary Terms as static tiles. These should be clickable buttons that navigate to the corresponding tab view, letting users jump directly from a bounded context's summary to its artifacts.
+
+- 🎯 Convert the 4 artifact count tiles from `<div>` to `<button>` with `useNavigate` from react-router-dom
+- 🎯 Aggregates button navigates to `/mapper/aggregates`
+- 🎯 Events button navigates to `/mapper/events`
+- 🎯 Value Objects button navigates to `/mapper/aggregates` (value objects are displayed within the aggregate tree view)
+- 🎯 Glossary Terms button navigates to `/mapper/glossary`
+- 🎯 Add hover styling (purple tint + ring) to indicate interactivity
+- 🎯 Ensure keyboard accessibility (focusable, Enter/Space triggers navigation)
+
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-) (already complete)
+**Enables**: None (UX enhancement)
+
+---
+
+### [ROAD-033] Aggregate Tree Filtering & Search 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-12
+
+Add search and filtering capabilities to the Aggregate Tree View (`AggregateTreeView.tsx`). A debounced text search matches against aggregate names, entities, value objects, commands, events, and invariants. A bounded context dropdown filters to a single context. Artifact type filter pills toggle visibility by whether an aggregate contains Commands, Events, Value Objects, or Invariants. Matching nodes auto-expand and highlight matched text. Composable AND logic across all filter dimensions.
+
+- 🎯 Add debounced search input to AggregateTreeView header — text search matching against aggregate names, entity names, value object names, command names, event names, and invariant rules
+- 🎯 Add bounded context dropdown filter — "All Contexts" default, options for each context with aggregates
+- 🎯 Add artifact type filter pills — multi-select toggles for Commands, Events, Value Objects, Invariants (filter to aggregates containing selected types)
+- 🎯 Auto-expand matching tree nodes when search is active — collapsed nodes with matches expand to reveal hits
+- 🎯 Highlight matching text within tree node labels when search query is active
+- 🎯 Show filtered result count — "Showing X of Y aggregates" in header subtitle
+- 🎯 Add "Clear all" button — reset search and all filters to show all aggregates
+- 🎯 Persist filter state across tab switches (React state or URL search params)
+- 🎯 Dark mode support for all filter controls (search input, dropdown, filter pills)
+- 🎯 Keyboard accessibility — search input focusable, filter pills toggleable via Enter/Space, dropdown navigable
+
+**Requires**: [ROAD-017](#road-017-aggregate-tree-hierarchy-view-) (already complete)
+**Enables**: None (UX enhancement)
+**Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine)
+**User Stories**: [US-045](#us-045-filter-and-search-aggregates-in-tree-view)
+
+---
+
+### [ROAD-034] Fix Markdown Rendering in DDDChat Question Answers 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-12
+
+When the user answers an agent question card in DDDChat, the selected answer is inserted as a user message with markdown formatting (e.g., `**Create Workflows?**: Yes, discover workflows`). However, user messages are rendered with plain `whitespace-pre-wrap` (`DDDChat.tsx` line 513) instead of being passed through `<Markdown>` like assistant messages. This causes raw `**bold**` syntax to display literally in the purple user bubble instead of rendering as bold text.
+
+- 🎯 Render question-answer user messages through `<Markdown>` component (or a lightweight inline markdown parser) so `**bold**` syntax renders correctly in the purple user bubble
+- 🎯 Scope markdown rendering to answer messages only — regular typed user messages should remain plain text to avoid unintended formatting
+- 🎯 Ensure prose styles are adapted for user bubble context (white text on purple background, not the assistant's dark-on-light prose)
+- 🎯 Verify rendering for multi-question answers (multiple `**Header**: answer` lines joined with newlines)
+- 🎯 Add visual regression test or BDD scenario confirming bold text renders in answered question bubbles
+
+**NFR**: NFR-UX — Chat messages should render formatted text correctly
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-) (already complete)
+**Enables**: None (UX bug fix)
+
+---
+
+### [ROAD-035] Chat Session Persistence & Live Data Refresh 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-12
+
+Two related UX issues in the Domain Mapper chat experience:
+
+**1. Chat history lost on tab switch.** `DDDChat.tsx` stores messages in component-local `useState` (line 51). When the user navigates to another tab (e.g., Workflows, Aggregates) and back, React unmounts/remounts the component and all conversation history is destroyed. The user loses their entire chat session context — questions asked, artifacts discovered, agent recommendations — just by clicking a tab.
+
+**2. Views don't reflect chat-created artifacts until manual refresh.** The DDD agent creates artifacts (bounded contexts, aggregates, events, workflows) via API calls during chat. However, `DDDChat` never calls its `onModelUpdated` prop (defined on line 30, never invoked), and `DomainMapperPage` only fetches model data once on mount. So when chat creates workflows and the user navigates to `/mapper/workflows`, the page shows "No workflows defined yet" because `activeModel` still holds stale data.
+
+**Chat Persistence:**
+- 🎯 Lift chat state out of `DDDChat` component — use React context, Zustand store, or `sessionStorage` to persist messages, session ID, and pending question state across tab switches
+- 🎯 Preserve OpenCode session ID across remounts so the conversation can continue without creating a new session
+- 🎯 Restore scroll position when returning to the chat tab
+- 🎯 Persist chat history per model ID (switching models should show that model's conversation)
+- 🎯 Clear persisted chat when model is deleted or user explicitly starts a new conversation
+
+**Live Data Refresh:**
+- 🎯 Call `onModelUpdated()` in `DDDChat` when the agent signals it has created/modified artifacts — detect artifact creation from SSE events (e.g., `session.completed` or tool call results indicating API mutations)
+- 🎯 Add automatic model data refresh on tab navigation — when user clicks a sub-nav tab (Workflows, Aggregates, etc.), trigger `refreshModel()` so the view shows the latest API data
+- 🎯 Consider lightweight polling or SSE subscription in `DomainMapperPage` to detect external model changes (e.g., agent running in background while user browses other tabs)
+- 🎯 Show a subtle "New data available" toast/banner if data changes while viewing a non-chat tab, with a "Refresh" action
+- 🎯 Ensure stale data never persists — navigating to any view tab always shows current API state
+
+**NFR**: NFR-UX — Chat state should survive in-page navigation; views should reflect the latest data
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-) (already complete)
+**Enables**: None (critical UX fix)
 
 ---
 
@@ -821,9 +987,9 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | 0 — Foundation | ROAD-001 | ~75 | ~17 | N/A |
 | 1 — Core Schemas | ROAD-002, 003, 007 | ~20 | ~3 | ~2,000 |
 | 2 — Parsers & CLI | ROAD-004, 024 | ~18 | ~4 | ~1,600 |
-| 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023, 025, 027, 028 | ~115 | ~22 | ~9,600 |
+| 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023, 025, 027, 028, 029, 030, 031, 032, 033, 034, 035 | ~119 | ~25 | ~10,200 |
 | 4 — Advanced External Integrations | ROAD-010, 011, 012, 013, 014, 026 | ~40 | ~7 | ~4,800 |
-| **Total** | **28** | **~268** | **~53** | **~18,000** |
+| **Total** | **35** | **~272** | **~56** | **~18,600** |
 
 ---
 
@@ -873,3 +1039,10 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | External Roadmap Source *(plan TBD)* | ROAD-026 | Jira epics & GitHub Projects as external roadmap source of truth |
 | [Hexagonal Architecture Extraction & BDD Stability](./roads/ROAD-027.md) | ROAD-027 | Extract proper hex layers for domain-modeling, fix 18 stale-data BDD failures |
 | DDD Terminology Explainer Tooltips *(plan TBD)* | ROAD-028 | Reusable DDDTooltip component, ~20 term dictionary, tooltips across all DDD views |
+| ✅ Fix Model Selection Persistence *(complete)* | ROAD-029 | Persist selected model ID across page refresh in DomainMapperPage |
+| FOE Project Browser *(plan TBD)* | ROAD-030 | Redesign ReportsPage to project-oriented browser mirroring DomainMapperPage pattern |
+| FOE Assessment Agent Chat *(plan TBD)* | ROAD-031 | AI coaching chat for FOE reports, modeled after DDDChat with SSE streaming |
+| Clickable Artifact Counts *(UX enhancement)* | ROAD-032 | Convert static artifact count tiles in ContextDetailPanel to navigable buttons |
+| Aggregate Tree Filtering & Search *(plan TBD)* | ROAD-033 | Search, context dropdown, artifact type filter pills for AggregateTreeView |
+| Fix Markdown in DDDChat Question Answers *(UX bug fix)* | ROAD-034 | Render `**bold**` syntax in answered question user bubbles via Markdown component |
+| Chat Session Persistence & Live Data Refresh *(critical UX fix)* | ROAD-035 | Persist chat across tab switches, auto-refresh model data after agent creates artifacts |

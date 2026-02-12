@@ -52,3 +52,5 @@ User stories define requirements from the perspective of personas interacting wi
 | [US-040](US-040) | View Domain Mapper Onboarding and Workflow Guide | PER-005 | CAP-010 | draft |
 | [US-042](US-042) | Import Roadmap from Jira Epics and Boards | PER-002 | CAP-005 | draft |
 | [US-043](US-043) | Import Roadmap from GitHub Projects | PER-002 | CAP-007 | draft |
+| [US-044](US-044) | View DDD Terminology Explanations in Context | PER-006 | CAP-010 | draft |
+| [US-045](US-045) | Filter and Search Aggregates in Tree View | PER-007 | CAP-010 | draft |

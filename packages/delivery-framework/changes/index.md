@@ -14,7 +14,7 @@ Individual change records with full governance tracking. Each change includes co
 
 ### [Unreleased]
 
-*No unreleased changes*
+- [CHANGE-027](./CHANGE-027.md) — Hexagonal Architecture Extraction & BDD Test Stability (ROAD-027)
 
 ## Change Format
 

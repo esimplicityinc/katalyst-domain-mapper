@@ -20,6 +20,8 @@ import { GlossaryView } from "../components/domain/GlossaryView";
 import { WorkflowView } from "../components/domain/WorkflowView";
 import type { DomainModel, DomainModelFull } from "../types/domain";
 
+const STORAGE_KEY = "foe:selectedModelId";
+
 const SUB_NAV = [
   { to: "/mapper/chat", label: "Chat", icon: MessageSquare },
   { to: "/mapper/contexts", label: "Context Map", icon: Layers },
@@ -44,9 +46,10 @@ export function DomainMapperPage() {
     try {
       const list = await api.listDomainModels();
       setModels(list);
-      // Auto-select the first model if one exists
       if (list.length > 0 && !activeModel) {
-        await selectModel(list[0].id);
+        const savedId = localStorage.getItem(STORAGE_KEY);
+        const savedExists = savedId && list.some((m) => m.id === savedId);
+        await selectModel(savedExists ? savedId : list[0].id);
       }
     } catch {
       // API might not be reachable — that's fine
@@ -60,6 +63,7 @@ export function DomainMapperPage() {
       const full = await api.getDomainModel(id);
       setActiveModel(full);
       setShowModelList(false);
+      localStorage.setItem(STORAGE_KEY, id);
     } catch (err) {
       console.error("Failed to load domain model:", err);
     }
@@ -74,6 +78,7 @@ export function DomainMapperPage() {
     setModels((prev) => prev.filter((m) => m.id !== id));
     if (activeModel?.id === id) {
       setActiveModel(null);
+      localStorage.removeItem(STORAGE_KEY);
     }
   };
 
