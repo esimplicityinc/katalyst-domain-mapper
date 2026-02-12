@@ -4,6 +4,7 @@ import {
   MessageSquare,
   Layers,
   Box,
+  Zap,
   BookOpen,
   Loader2,
   Plus,
@@ -13,6 +14,7 @@ import { DomainModelList } from "../components/domain/DomainModelList";
 import { DDDChat } from "../components/domain/DDDChat";
 import { ContextMapView } from "../components/domain/ContextMapView";
 import { AggregateTreeView } from "../components/domain/AggregateTreeView";
+import { EventFlowView } from "../components/domain/EventFlowView";
 import { GlossaryView } from "../components/domain/GlossaryView";
 import type { DomainModel, DomainModelFull } from "../types/domain";
 
@@ -20,6 +22,7 @@ const SUB_NAV = [
   { to: "/mapper/chat", label: "Chat", icon: MessageSquare },
   { to: "/mapper/contexts", label: "Context Map", icon: Layers },
   { to: "/mapper/aggregates", label: "Aggregates", icon: Box },
+  { to: "/mapper/events", label: "Events", icon: Zap },
   { to: "/mapper/glossary", label: "Glossary", icon: BookOpen },
 ];
 
@@ -176,6 +179,10 @@ export function DomainMapperPage() {
           <Route
             path="aggregates"
             element={<AggregateTreeView model={activeModel} />}
+          />
+          <Route
+            path="events"
+            element={<EventFlowView model={activeModel} />}
           />
           <Route
             path="glossary"

@@ -6,7 +6,7 @@ description: Consolidated roadmap for the governance pipeline, DDD tooling, and 
 # Katalyst Delivery Framework — Roadmap
 
 > **Last Updated**: 2026-02-12
-> **Total Items**: 24 | **In Progress**: 0 | **Proposed**: 15 | **Complete**: 9
+> **Total Items**: 25 | **In Progress**: 0 | **Proposed**: 15 | **Complete**: 10
 
 Turn this monorepo into a **self-governing delivery framework**. Import governance infrastructure, build Zod-validated schemas, create parsers and CLI tooling, add API endpoints, enhance the scanner, and visualize governance health — all while the framework governs its own development.
 
@@ -371,21 +371,23 @@ Collapsible tree view for aggregate structure exploration. Shows hierarchical re
 
 ---
 
-### [ROAD-018] Domain Event Flow Visualization 🎯
-**Status**: Proposed
+### [ROAD-018] Domain Event Flow Visualization ✅
+**Status**: Complete
 **Priority**: Medium
 **Phase**: 3 — API, Scanner, Visualization & Domain Tooling
 **Created**: 2026-02-06
+**Completed**: 2026-02-12
 
 Step-by-step event flow timeline with category color coding, sync/async filtering, and click-to-expand detail cards. Includes summary grid of all events.
 
-- 🎯 Build horizontal step-based event flow component
-- 🎯 Category color coding derived from bounded context association
-- 🎯 Filter toggle: All / Synchronous / Asynchronous
-- 🎯 Click-to-expand detail panel (trigger, effect, timing, payload, consumers)
-- 🎯 Async badge on batch-processed events
-- 🎯 Summary grid with all events as clickable chips
-- 🎯 Dark mode support
+- ✅ Build vertical timeline event flow component (EventFlowView.tsx, 533 lines)
+- ✅ Category color coding derived from bounded context association (5-color rotating palette)
+- ✅ Filter toggle: All / Synchronous / Asynchronous (pill-style buttons)
+- ✅ Click-to-expand detail panel (trigger, effect, timing, payload, consumers)
+- ✅ Async badge on cross-context events
+- ✅ Summary grid with all events as clickable chips
+- ✅ Dark mode support
+- ✅ BDD: 5/5 hybrid scenarios passing
 
 **Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-)
 **Enables**: [ROAD-022](#road-022-static-documentation-site-generator-)
@@ -482,6 +484,26 @@ Generate a standalone Vite + React + Tailwind site from a domain model with inte
 **Enables**: None (standalone UX improvement)
 **Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine)
 **User Stories**: [US-040](#us-040-view-domain-mapper-onboarding-and-workflow-guide)
+
+---
+
+### [ROAD-025] Fix Aggregates View Dark Mode Text Rendering 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-12
+
+Fix dark mode styling issue in the Aggregates view where aggregate card text (title, slug) is not properly readable. The "Passport Application" aggregate name text is obscured due to incorrect text/background color contrast in dark mode. Technical debt from the ROAD-017 Aggregate Tree Hierarchy View implementation.
+
+- 🎯 Audit `AggregatesView.tsx` aggregate card text colors for dark mode contrast compliance
+- 🎯 Fix aggregate title and slug text rendering in dark mode (ensure proper `dark:text-*` classes)
+- 🎯 Verify expanded card details (entities, value objects, commands, events) are readable in dark mode
+- 🎯 Cross-check `AggregateTreeView.tsx` for the same dark mode issues
+- 🎯 Manually verify fix in both light and dark modes across all aggregate card states (collapsed/expanded)
+
+**NFR**: NFR-ACC (Accessibility) — text contrast ratio must meet WCAG AA (4.5:1 for normal text)
+**Requires**: [ROAD-017](#road-017-aggregate-tree-hierarchy-view-) (already complete)
+**Enables**: None (technical debt fix)
 
 ---
 
@@ -708,9 +730,9 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | 0 — Foundation | ROAD-001 | ~75 | ~17 | N/A |
 | 1 — Core Schemas | ROAD-002, 003, 007 | ~20 | ~3 | ~2,000 |
 | 2 — Parsers & CLI | ROAD-004, 024 | ~18 | ~4 | ~1,600 |
-| 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023 | ~100 | ~15 | ~8,300 |
+| 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023, 025 | ~100 | ~15 | ~8,300 |
 | 4 — Advanced External Integrations | ROAD-010, 011, 012, 013, 014 | ~35 | ~6 | ~4,200 |
-| **Total** | **24** | **~248** | **~45** | **~16,100** |
+| **Total** | **25** | **~248** | **~45** | **~16,100** |
 
 ---
 
