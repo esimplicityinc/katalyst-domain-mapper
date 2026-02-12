@@ -1,12 +1,13 @@
 ---
 id: ROAD-019
 title: "Application Lifecycle State Machine View"
-status: proposed
+status: complete
 phase: 3
 priority: medium
 created: "2026-02-06"
-updated: "2026-02-06"
-owner: ""
+updated: "2026-02-12"
+completed: "2026-02-12"
+owner: "superpowers-orchestrator"
 tags: [web-ui, visualization, ddd, state-machine, workflow]
 governance:
   adrs:
@@ -15,14 +16,18 @@ governance:
     validated_by: ""
     validated_at: ""
   bdd:
-    status: draft
-    feature_files: []
-    scenarios: 0
-    passing: 0
+    status: approved
+    feature_files:
+      - stack-tests/features/api/domain-models/05_domain_workflows.feature
+      - stack-tests/features/hybrid/domain-models/04_state_machine.feature
+    scenarios: 7
+    passing: 7
   nfrs:
     applicable: [NFR-PERF-001, NFR-A11Y-001]
-    status: pending
-    results: {}
+    status: conditional-pass
+    results:
+      architecture_score: 52
+      architecture_notes: "Conditional pass - follows existing fat-route pattern; frontend is clean"
 dependencies:
   requires: [ROAD-009]
   enables: [ROAD-022]
@@ -123,8 +128,8 @@ New API endpoints:
 ## Governance Checklist
 
 - [ ] ADRs identified and validated
-- [ ] BDD scenarios written and approved
-- [ ] Implementation complete
-- [ ] NFRs validated
+- [x] BDD scenarios written and approved (7 scenarios, 7 passing)
+- [x] Implementation complete
+- [x] NFRs validated (architecture: conditional pass 52/100)
 - [ ] Change record created
-- [ ] Documentation updated
+- [x] Documentation updated

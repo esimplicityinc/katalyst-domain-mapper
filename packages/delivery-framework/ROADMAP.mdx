@@ -6,7 +6,7 @@ description: Consolidated roadmap for the governance pipeline, DDD tooling, and 
 # Katalyst Delivery Framework — Roadmap
 
 > **Last Updated**: 2026-02-12
-> **Total Items**: 25 | **In Progress**: 0 | **Proposed**: 15 | **Complete**: 10
+> **Total Items**: 26 | **In Progress**: 0 | **Proposed**: 16 | **Complete**: 10
 
 Turn this monorepo into a **self-governing delivery framework**. Import governance infrastructure, build Zod-validated schemas, create parsers and CLI tooling, add API endpoints, enhance the scanner, and visualize governance health — all while the framework governs its own development.
 
@@ -641,6 +641,34 @@ Import GitHub data to enrich the Confidence dimension: PR review quality, branch
 
 ---
 
+### [ROAD-026] External Roadmap Source: Jira & GitHub Projects 🎯
+**Status**: Proposed
+**Priority**: High
+**Phase**: 4 — Advanced External Integrations
+**Created**: 2026-02-12
+
+Enable Jira boards/epics and GitHub Projects as external roadmap sources, replacing the need to maintain ROADMAP.mdx manually. Teams manage their roadmap in the tool they already use; Katalyst imports and maps items into ROAD-XXX governance artifacts for tracking, validation, and visualization.
+
+- 🎯 Define `ExternalRoadmapSource` port interface (provider-agnostic adapter pattern)
+- 🎯 Create Jira roadmap adapter: map Jira epics/boards → ROAD-XXX items (status, priority, tasks from subtasks)
+- 🎯 Create GitHub Projects adapter: map GitHub Projects v2 items → ROAD-XXX items (status fields, custom fields for priority/phase)
+- 🎯 Implement field mapping configuration (`roadmap-source.json`) — map Jira/GitHub fields to ROAD schema fields
+- 🎯 Build sync engine: detect new, changed, and removed items on each import
+- 🎯 Conflict resolution: external tool is source of truth, local overrides flagged as drift
+- 🎯 CLI command: `roadmap:import --source jira|github` — one-way import from external source
+- 🎯 CLI command: `roadmap:diff` — show what would change without applying
+- 🎯 API endpoint: `POST /api/v1/roadmap/sync` — trigger import via API
+- 🎯 Generate `governance-index.json` with imported ROAD items (same output as local ROADMAP.mdx parser)
+- 🎯 Dashboard indicator showing roadmap source (local file vs. Jira vs. GitHub Projects)
+- 🎯 Integration tests with Jira and GitHub API mocks
+
+**Requires**: [ROAD-004](#road-004-governance-parsers-index-builder--cli-), [ROAD-005](#road-005-api-governance-domain-), [ROAD-010](#road-010-jira-bidirectional-integration-) (Jira API client), [ROAD-012](#road-012-github-feedback-integration-) (GitHub API client)
+**Enables**: Teams can use their preferred project management tool as the single source of truth for roadmap data
+**Capabilities**: [CAP-005](#cap-005-jira-integration), [CAP-007](#cap-007-github-integration)
+**User Stories**: [US-042](#us-042-import-roadmap-from-jira-epics-and-boards), [US-043](#us-043-import-roadmap-from-github-projects)
+
+---
+
 ## Dependency Graph
 
 ```
@@ -720,6 +748,7 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | **0.11.0** | ROAD-010: Jira integration | N/A | Bidirectional Jira sync, Feedback dimension from Jira metrics | Agents can import/export Jira issues |
 | **0.12.0** | ROAD-011: Confluence integration | N/A | Bidirectional Confluence sync, Understanding dimension from wiki | Agents can import/export Confluence pages |
 | **0.13.0** | ROAD-012 + 013 + 014: GitHub integrations | N/A | Feedback + Understanding + Confidence from GitHub | Full GitHub signal integration |
+| **0.14.0** | ROAD-026: External roadmap source | N/A | Jira epics & GitHub Projects as roadmap source of truth | Teams manage roadmap in existing tools, Katalyst imports |
 
 ---
 
@@ -731,8 +760,8 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | 1 — Core Schemas | ROAD-002, 003, 007 | ~20 | ~3 | ~2,000 |
 | 2 — Parsers & CLI | ROAD-004, 024 | ~18 | ~4 | ~1,600 |
 | 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023, 025 | ~100 | ~15 | ~8,300 |
-| 4 — Advanced External Integrations | ROAD-010, 011, 012, 013, 014 | ~35 | ~6 | ~4,200 |
-| **Total** | **25** | **~248** | **~45** | **~16,100** |
+| 4 — Advanced External Integrations | ROAD-010, 011, 012, 013, 014, 026 | ~40 | ~7 | ~4,800 |
+| **Total** | **26** | **~253** | **~46** | **~16,700** |
 
 ---
 
@@ -779,3 +808,4 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | ContextMapper CML Adapter | ROAD-024 | Zod → CML export adapter with CLI command |
 | Static Documentation Site Generator *(plan TBD)* | ROAD-022 | Generate standalone Vite + React + Tailwind site from domain model |
 | Onboarding & How It Works *(plan TBD)* | ROAD-023 | 4-phase workflow guide, Human-in-the-Loop rationale, quick-start |
+| External Roadmap Source *(plan TBD)* | ROAD-026 | Jira epics & GitHub Projects as external roadmap source of truth |

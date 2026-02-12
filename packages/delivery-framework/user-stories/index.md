@@ -50,3 +50,5 @@ User stories define requirements from the perspective of personas interacting wi
 | [US-038](US-038) | Export Domain Model as Markdown Documentation | PER-001 | CAP-012, CAP-009, CAP-011 | draft |
 | [US-039](US-039) | Generate Standalone Static Documentation Site | PER-005 | CAP-012, CAP-010, CAP-011, CAP-009 | draft |
 | [US-040](US-040) | View Domain Mapper Onboarding and Workflow Guide | PER-005 | CAP-010 | draft |
+| [US-042](US-042) | Import Roadmap from Jira Epics and Boards | PER-002 | CAP-005 | draft |
+| [US-043](US-043) | Import Roadmap from GitHub Projects | PER-002 | CAP-007 | draft |

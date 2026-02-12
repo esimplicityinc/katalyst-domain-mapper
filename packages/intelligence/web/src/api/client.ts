@@ -6,6 +6,9 @@ import type {
   DomainEvent,
   ValueObject,
   GlossaryTerm,
+  WorkflowState,
+  WorkflowTransition,
+  DomainWorkflow,
 } from "../types/domain";
 import type {
   GovernanceSnapshot,
@@ -354,6 +357,41 @@ export const api = {
   /** List glossary terms */
   listGlossaryTerms(modelId: string): Promise<GlossaryTerm[]> {
     return request(`/api/v1/domain-models/${modelId}/glossary`);
+  },
+
+  // ── Workflows ───────────────────────────────────────────────────────────────
+
+  /** Add a workflow */
+  createWorkflow(
+    modelId: string,
+    data: {
+      slug: string;
+      title: string;
+      description?: string;
+      states?: WorkflowState[];
+      transitions?: WorkflowTransition[];
+    },
+  ): Promise<{ id: string; slug: string; title: string }> {
+    return request(`/api/v1/domain-models/${modelId}/workflows`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  /** List workflows */
+  listWorkflows(modelId: string): Promise<DomainWorkflow[]> {
+    return request(`/api/v1/domain-models/${modelId}/workflows`);
+  },
+
+  /** Delete a workflow */
+  deleteWorkflow(
+    modelId: string,
+    workflowId: string,
+  ): Promise<{ message: string }> {
+    return request(
+      `/api/v1/domain-models/${modelId}/workflows/${workflowId}`,
+      { method: "DELETE" },
+    );
   },
 
   // ── Governance ────────────────────────────────────────────────────────────

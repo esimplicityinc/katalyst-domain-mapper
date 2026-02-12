@@ -84,6 +84,11 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
             .from(schema.glossaryTerms)
             .where(eq(schema.glossaryTerms.domainModelId, params.id))
             .all();
+          const workflows = db
+            .select()
+            .from(schema.domainWorkflows)
+            .where(eq(schema.domainWorkflows.domainModelId, params.id))
+            .all();
 
           return {
             ...model,
@@ -92,6 +97,7 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
             valueObjects: vos,
             domainEvents: events,
             glossaryTerms: glossary,
+            workflows: workflows,
           };
         },
         {
@@ -680,6 +686,83 @@ export function createDomainModelRoutes(deps: { db: DrizzleDB }) {
           params: t.Object({ id: t.String(), termId: t.String() }),
           detail: {
             summary: "Delete glossary term",
+            tags: ["Domain Models"],
+          },
+        },
+      )
+
+      // ── Workflows (state machine / lifecycle views) ─────────────────────────
+
+      .post(
+        "/:id/workflows",
+        ({ params, body, set }) => {
+          const model = db
+            .select({ id: schema.domainModels.id })
+            .from(schema.domainModels)
+            .where(eq(schema.domainModels.id, params.id))
+            .get();
+          if (!model) {
+            set.status = 404;
+            return { error: "Domain model not found" };
+          }
+
+          const now = new Date().toISOString();
+          const wfId = crypto.randomUUID();
+          db.insert(schema.domainWorkflows)
+            .values({
+              id: wfId,
+              domainModelId: params.id,
+              slug: body.slug,
+              title: body.title,
+              description: body.description ?? null,
+              states: body.states ?? [],
+              transitions: body.transitions ?? [],
+              createdAt: now,
+              updatedAt: now,
+            })
+            .run();
+          return { id: wfId, slug: body.slug, title: body.title };
+        },
+        {
+          params: t.Object({ id: t.String() }),
+          body: t.Object({
+            slug: t.String(),
+            title: t.String(),
+            description: t.Optional(t.String()),
+            states: t.Optional(t.Array(t.Any())),
+            transitions: t.Optional(t.Array(t.Any())),
+          }),
+          detail: { summary: "Add workflow", tags: ["Domain Models"] },
+        },
+      )
+
+      .get(
+        "/:id/workflows",
+        ({ params }) => {
+          return db
+            .select()
+            .from(schema.domainWorkflows)
+            .where(eq(schema.domainWorkflows.domainModelId, params.id))
+            .all();
+        },
+        {
+          params: t.Object({ id: t.String() }),
+          detail: { summary: "List workflows", tags: ["Domain Models"] },
+        },
+      )
+
+      .delete(
+        "/:id/workflows/:wfId",
+        ({ params }) => {
+          db.delete(schema.domainWorkflows)
+            .where(eq(schema.domainWorkflows.id, params.wfId))
+            .run();
+          return { message: "Deleted" };
+        },
+        {
+          params: t.Object({ id: t.String(), wfId: t.String() }),
+          detail: {
+            summary: "Delete workflow",
             tags: ["Domain Models"],
           },
         },

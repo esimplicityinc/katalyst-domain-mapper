@@ -35,7 +35,8 @@ function stubOpencodeServer(): Plugin {
 
 export default defineConfig(({ mode }) => {
   // Load env from the monorepo root (.env is the single source of truth for ports)
-  const rootDir = path.resolve(__dirname, '../..')
+  // packages/intelligence/web → 3 levels up to reach project root
+  const rootDir = path.resolve(__dirname, '../../..')
   const env = loadEnv(mode, rootDir, '')
 
   const frontendPort = Number(env.FRONTEND_PORT) || 3000

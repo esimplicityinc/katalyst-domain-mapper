@@ -122,6 +122,38 @@ export interface GlossaryTerm {
   updatedAt: string;
 }
 
+// ── Workflow / State Machine types ──────────────────────────────────────────
+
+export interface WorkflowState {
+  id: string;
+  name: string;
+  description?: string;
+  x: number;
+  y: number;
+  isTerminal: boolean;
+  isError: boolean;
+  timestampField?: string;
+}
+
+export interface WorkflowTransition {
+  from: string;
+  to: string;
+  label: string;
+  isAsync: boolean;
+}
+
+export interface DomainWorkflow {
+  id: string;
+  domainModelId: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  states: WorkflowState[];
+  transitions: WorkflowTransition[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ── Full domain model with all artifacts ───────────────────────────────────
 
 export interface DomainModelFull extends DomainModel {
@@ -130,4 +162,5 @@ export interface DomainModelFull extends DomainModel {
   domainEvents: DomainEvent[];
   valueObjects: ValueObject[];
   glossaryTerms: GlossaryTerm[];
+  workflows: DomainWorkflow[];
 }

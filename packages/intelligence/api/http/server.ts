@@ -195,6 +195,14 @@ export function createServer(container: Container) {
         }
       }
 
+      // ── Guard: never serve HTML for /api paths (return 404 JSON) ────────
+      if (url.pathname.startsWith("/api")) {
+        return new Response(
+          JSON.stringify({ error: "Not Found", path: url.pathname }),
+          { status: 404, headers: { "Content-Type": "application/json" } },
+        );
+      }
+
       // ── Static file serving + SPA fallback ──────────────────────────────
       let filePath = path.join(WEB_DIST_DIR, url.pathname);
 

@@ -8,6 +8,7 @@ import {
   BookOpen,
   Loader2,
   Plus,
+  GitBranch,
 } from "lucide-react";
 import { api } from "../api/client";
 import { DomainModelList } from "../components/domain/DomainModelList";
@@ -16,6 +17,7 @@ import { ContextMapView } from "../components/domain/ContextMapView";
 import { AggregateTreeView } from "../components/domain/AggregateTreeView";
 import { EventFlowView } from "../components/domain/EventFlowView";
 import { GlossaryView } from "../components/domain/GlossaryView";
+import { WorkflowView } from "../components/domain/WorkflowView";
 import type { DomainModel, DomainModelFull } from "../types/domain";
 
 const SUB_NAV = [
@@ -23,6 +25,7 @@ const SUB_NAV = [
   { to: "/mapper/contexts", label: "Context Map", icon: Layers },
   { to: "/mapper/aggregates", label: "Aggregates", icon: Box },
   { to: "/mapper/events", label: "Events", icon: Zap },
+  { to: "/mapper/workflows", label: "Workflows", icon: GitBranch },
   { to: "/mapper/glossary", label: "Glossary", icon: BookOpen },
 ];
 
@@ -183,6 +186,10 @@ export function DomainMapperPage() {
           <Route
             path="events"
             element={<EventFlowView model={activeModel} />}
+          />
+          <Route
+            path="workflows"
+            element={<WorkflowView model={activeModel} />}
           />
           <Route
             path="glossary"

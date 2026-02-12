@@ -266,6 +266,24 @@ export const glossaryTerms = sqliteTable("glossary_terms", {
   updatedAt: text("updated_at").notNull(),
 });
 
+// ── Domain Workflows (state machine / lifecycle views) ─────────────────────────
+
+export const domainWorkflows = sqliteTable("domain_workflows", {
+  id: text("id").primaryKey(),
+  domainModelId: text("domain_model_id")
+    .notNull()
+    .references(() => domainModels.id, { onDelete: "cascade" }),
+  slug: text("slug").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  states: text("states", { mode: "json" }).$type<unknown[]>().default([]),
+  transitions: text("transitions", { mode: "json" })
+    .$type<unknown[]>()
+    .default([]),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
 // ── Chat Messages (DDD conversation history) ──────────────────────────────────
 
 export const chatSessions = sqliteTable("chat_sessions", {
