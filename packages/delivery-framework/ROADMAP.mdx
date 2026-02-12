@@ -6,7 +6,7 @@ description: Consolidated roadmap for the governance pipeline, DDD tooling, and 
 # Katalyst Delivery Framework — Roadmap
 
 > **Last Updated**: 2026-02-12
-> **Total Items**: 26 | **In Progress**: 0 | **Proposed**: 16 | **Complete**: 10
+> **Total Items**: 27 | **In Progress**: 0 | **Proposed**: 16 | **Complete**: 11
 
 Turn this monorepo into a **self-governing delivery framework**. Import governance infrastructure, build Zod-validated schemas, create parsers and CLI tooling, add API endpoints, enhance the scanner, and visualize governance health — all while the framework governs its own development.
 
@@ -396,26 +396,28 @@ Step-by-step event flow timeline with category color coding, sync/async filterin
 
 ---
 
-### [ROAD-019] Application Lifecycle State Machine View 🎯
-**Status**: Proposed
+### [ROAD-019] Application Lifecycle State Machine View ✅
+**Status**: Complete
 **Priority**: Medium
 **Phase**: 3 — API, Scanner, Visualization & Domain Tooling
 **Created**: 2026-02-06
+**Completed**: 2026-02-12
 
-SVG state machine visualization for domain workflows with positioned state nodes, transition arrows, sync/async distinction, terminal/error marking, and interactive detail panels. Requires new DomainWorkflow API entity.
+SVG state machine visualization for domain workflows with positioned state nodes, transition arrows, sync/async distinction, terminal/error marking, and interactive detail panels. New DomainWorkflow API entity with CRUD endpoints.
 
-- 🎯 Design DomainWorkflow API model (states, transitions, sync/async, terminal/error)
-- 🎯 Add API endpoints for workflow CRUD
-- 🎯 Build SVG state machine renderer with positioned nodes
-- 🎯 Solid lines for sync transitions, dashed for async
-- 🎯 Terminal/error state badges
-- 🎯 Hover highlighting and click detail panels
-- 🎯 Dark mode support
+- ✅ Design DomainWorkflow API model (states, transitions, sync/async, terminal/error)
+- ✅ Add API endpoints for workflow CRUD (POST/GET/DELETE)
+- ✅ Build SVG state machine renderer with positioned nodes (WorkflowView.tsx)
+- ✅ Solid lines for sync transitions, dashed for async
+- ✅ Terminal/error state badges
+- ✅ Hover highlighting and click detail panels
+- ✅ Dark mode support
+- ✅ BDD: 7/7 scenarios passing (3 API + 4 hybrid)
 
 **Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-)
 **Enables**: [ROAD-022](#road-022-static-documentation-site-generator-)
 **Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine)
-**User Stories**: [US-035](#us-035-view-application-lifecycle-state-machine)
+**User Stories**: [US-035](#us-035-view-application-lifecycle-state-machine), [US-042](#us-042), [US-043](#us-043)
 
 ---
 
@@ -504,6 +506,37 @@ Fix dark mode styling issue in the Aggregates view where aggregate card text (ti
 **NFR**: NFR-ACC (Accessibility) — text contrast ratio must meet WCAG AA (4.5:1 for normal text)
 **Requires**: [ROAD-017](#road-017-aggregate-tree-hierarchy-view-) (already complete)
 **Enables**: None (technical debt fix)
+
+---
+
+### [ROAD-027] Hexagonal Architecture Extraction & BDD Test Stability 🎯
+**Status**: Proposed
+**Priority**: Critical
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-12
+
+The domain-modeling bounded context (`domain-models.ts`, 772 lines) bypasses the hexagonal architecture that the rest of the codebase follows — raw Drizzle queries inline in route handlers, no domain layer, no port interfaces, no adapters, no use cases. Flagged during ROAD-019 architecture review (score: 52/100). Additionally, 18 BDD tests are failing due to stale test data from a now-fixed cleanup auth bug that left orphaned records with hardcoded UUIDs.
+
+**Architecture Extraction:**
+- 🎯 Create `DomainModelRepository` port interface with all CRUD operations
+- 🎯 Create `DomainModelRepositorySQLite` adapter implementing the port
+- 🎯 Extract 5 use cases: `CreateDomainModel`, `GetDomainModelWithArtifacts`, `CreateWorkflow`, `DeleteWorkflow`, `DeleteDomainModel`
+- 🎯 Create domain objects with workflow state machine validation (no orphan transitions, no duplicate state IDs)
+- 🎯 Slim `domain-models.ts` from 772 lines to ~200 lines (thin HTTP layer)
+- 🎯 Update container wiring to pass ports/use cases instead of raw `db` handle
+
+**BDD Test Stability:**
+- 🎯 Reset Docker volume to clear stale test data from broken cleanup runs
+- 🎯 Fix report ingestion tests: 16 failures from `UNIQUE constraint failed: scans.id` (hardcoded UUIDs colliding with orphaned data)
+- 🎯 Fix governance dashboard test: 1 failure from stale governance data breaking empty-state assertion
+- 🎯 Add test isolation: database reset or dynamic UUIDs to prevent cross-run data leakage
+- 🎯 Achieve 123/123 BDD tests passing on clean runs
+
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-), [ROAD-019](#road-019-application-lifecycle-state-machine-view-)
+**Enables**: [ROAD-022](#road-022-static-documentation-site-generator-) (cleaner domain model access)
+**NFRs**: Architecture score ≥ 80/100 for domain-modeling bounded context
+
+**Detailed Plan**: [ROAD-027.md](./roads/ROAD-027.md) | **Est. 3-5 days**
 
 ---
 
@@ -759,9 +792,9 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | 0 — Foundation | ROAD-001 | ~75 | ~17 | N/A |
 | 1 — Core Schemas | ROAD-002, 003, 007 | ~20 | ~3 | ~2,000 |
 | 2 — Parsers & CLI | ROAD-004, 024 | ~18 | ~4 | ~1,600 |
-| 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023, 025 | ~100 | ~15 | ~8,300 |
+| 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023, 025, 027 | ~110 | ~20 | ~9,300 |
 | 4 — Advanced External Integrations | ROAD-010, 011, 012, 013, 014, 026 | ~40 | ~7 | ~4,800 |
-| **Total** | **26** | **~253** | **~46** | **~16,700** |
+| **Total** | **27** | **~263** | **~51** | **~17,700** |
 
 ---
 
@@ -809,3 +842,4 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | Static Documentation Site Generator *(plan TBD)* | ROAD-022 | Generate standalone Vite + React + Tailwind site from domain model |
 | Onboarding & How It Works *(plan TBD)* | ROAD-023 | 4-phase workflow guide, Human-in-the-Loop rationale, quick-start |
 | External Roadmap Source *(plan TBD)* | ROAD-026 | Jira epics & GitHub Projects as external roadmap source of truth |
+| [Hexagonal Architecture Extraction & BDD Stability](./roads/ROAD-027.md) | ROAD-027 | Extract proper hex layers for domain-modeling, fix 18 stale-data BDD failures |
