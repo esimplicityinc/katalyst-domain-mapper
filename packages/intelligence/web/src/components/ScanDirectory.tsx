@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { api } from "../api/client";
 import type { FOEReport } from "../types/report";
+import { adaptReport } from "../adapters/reportAdapter";
 
 interface ScanDirectoryProps {
   onReportLoaded: (report: FOEReport) => void;
@@ -107,7 +108,7 @@ export function ScanDirectory({ onReportLoaded }: ScanDirectoryProps) {
   const loadReport = async (reportId: string) => {
     try {
       const raw = await api.getReportRaw(reportId);
-      onReportLoaded(raw as FOEReport);
+      onReportLoaded(adaptReport(raw as Record<string, unknown>));
       setPhase({ step: "done" });
     } catch (err) {
       setPhase({

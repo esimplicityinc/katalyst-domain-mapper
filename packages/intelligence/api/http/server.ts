@@ -110,6 +110,10 @@ export function createServer(container: Container) {
           createConfigRoutes({
             getAnthropicApiKey: container.getAnthropicApiKey,
             setAnthropicApiKey: container.setAnthropicApiKey,
+            getOpenrouterApiKey: container.getOpenrouterApiKey,
+            setOpenrouterApiKey: container.setOpenrouterApiKey,
+            getLlmApiKey: container.getLlmApiKey,
+            setLlmApiKey: container.setLlmApiKey,
           }),
         )
         .use(

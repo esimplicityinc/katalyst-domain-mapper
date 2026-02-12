@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { api, type ReportSummary } from "../api/client";
 import type { FOEReport } from "../types/report";
+import { adaptReport } from "../adapters/reportAdapter";
 
 interface ReportBrowserProps {
   onReportLoaded: (report: FOEReport) => void;
@@ -67,15 +68,15 @@ export function ReportBrowser({ onReportLoaded }: ReportBrowserProps) {
     setLoadingReport(id);
     setError(null);
     try {
-      // Try to get the raw report first (scanner format matches web-ui types)
+      // Get the raw report and adapt it to the UI's FOEReport shape
       const raw = await api.getReportRaw(id);
       if (raw && typeof raw === "object") {
-        onReportLoaded(raw as FOEReport);
+        onReportLoaded(adaptReport(raw as Record<string, unknown>));
         return;
       }
-      // Fallback: get the canonical report
+      // Fallback: get the canonical report and adapt
       const report = await api.getReport(id);
-      onReportLoaded(report as FOEReport);
+      onReportLoaded(adaptReport(report as Record<string, unknown>));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load report");
     } finally {
@@ -157,7 +158,7 @@ export function ReportBrowser({ onReportLoaded }: ReportBrowserProps) {
               key={report.id}
               onClick={() => handleLoadReport(report.id)}
               disabled={loadingReport !== null}
-              className="w-full text-left p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-sm transition-all disabled:opacity-50"
+              className="w-full text-left p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-sm transition-all disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">

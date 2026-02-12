@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import type { AppConfig } from "../config/env.js";
+import { detectProvider, type LlmProvider } from "../config/env.js";
 import type { Logger } from "../ports/Logger.js";
 import type { ReportRepository } from "../ports/ReportRepository.js";
 import type { ScanJobRepository } from "../ports/ScanJobRepository.js";
@@ -46,6 +47,12 @@ export interface Container {
   shutdown: () => void;
   getAnthropicApiKey: () => string | undefined;
   setAnthropicApiKey: (key: string) => void;
+  getOpenrouterApiKey: () => string | undefined;
+  setOpenrouterApiKey: (key: string) => void;
+  /** Returns the active LLM API key (prefers OpenRouter if set, falls back to Anthropic) */
+  getLlmApiKey: () => { key: string; provider: LlmProvider } | undefined;
+  /** Auto-detect provider and set the appropriate key */
+  setLlmApiKey: (key: string) => void;
 }
 
 export function createContainer(config: AppConfig): Container {
@@ -54,8 +61,9 @@ export function createContainer(config: AppConfig): Container {
   // Database
   const db = createDatabase(config.databaseUrl);
 
-  // Mutable API key — can be set at runtime via the config endpoint
+  // Mutable API keys — can be set at runtime via the config endpoint
   let anthropicApiKey = config.anthropicApiKey;
+  let openrouterApiKey = config.openrouterApiKey;
 
   const getAnthropicApiKey = () => anthropicApiKey;
   const setAnthropicApiKey = (key: string) => {
@@ -63,15 +71,42 @@ export function createContainer(config: AppConfig): Container {
     logger.info("Anthropic API key updated at runtime");
   };
 
+  const getOpenrouterApiKey = () => openrouterApiKey;
+  const setOpenrouterApiKey = (key: string) => {
+    openrouterApiKey = key;
+    logger.info("OpenRouter API key updated at runtime");
+  };
+
+  /** Returns whichever LLM key is active (prefers OpenRouter if set) */
+  const getLlmApiKey = ():
+    | { key: string; provider: LlmProvider }
+    | undefined => {
+    if (openrouterApiKey) return { key: openrouterApiKey, provider: "openrouter" };
+    if (anthropicApiKey) return { key: anthropicApiKey, provider: "anthropic" };
+    return undefined;
+  };
+
+  /** Auto-detect provider from key prefix and store in the right slot */
+  const setLlmApiKey = (key: string) => {
+    const provider = detectProvider(key);
+    if (provider === "openrouter") {
+      openrouterApiKey = key;
+      logger.info("OpenRouter API key set via auto-detect");
+    } else {
+      anthropicApiKey = key;
+      logger.info("Anthropic API key set via auto-detect");
+    }
+  };
+
   // Repositories (adapters)
   const reportRepo = new ReportRepositorySQLite(db);
   const scanJobRepo = new ScanJobRepositorySQLite(db);
   const governanceRepo = new GovernanceRepositorySQLite(db);
 
-  // Scan runner
+  // Scan runner — uses whichever LLM key is active
   const scanRunner = new DockerScanRunner(
     config.scannerImage,
-    getAnthropicApiKey,
+    getLlmApiKey,
     logger.child({ component: "scan-runner" }),
   );
 
@@ -136,5 +171,9 @@ export function createContainer(config: AppConfig): Container {
     shutdown,
     getAnthropicApiKey,
     setAnthropicApiKey,
+    getOpenrouterApiKey,
+    setOpenrouterApiKey,
+    getLlmApiKey,
+    setLlmApiKey,
   };
 }

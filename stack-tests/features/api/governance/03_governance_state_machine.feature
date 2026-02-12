@@ -1,4 +1,4 @@
-@api @gov-validation @ROAD-002 @CAP-002 @wip
+@api @gov-validation @ROAD-002 @CAP-002
 Feature: Governance State Machine Transitions
   As an AI Agent
   I want the API to enforce valid governance state transitions

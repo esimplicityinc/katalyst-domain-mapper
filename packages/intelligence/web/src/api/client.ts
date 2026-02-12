@@ -111,15 +111,21 @@ export const api = {
   /** Get config status (is API key set, etc.) */
   getConfigStatus(): Promise<{
     anthropicApiKey: boolean;
+    openrouterApiKey: boolean;
+    activeProvider: "anthropic" | "openrouter" | null;
     scannerEnabled: boolean;
   }> {
     return request("/api/v1/config/status");
   },
 
-  /** Set the Anthropic API key at runtime */
+  /** Set an LLM API key at runtime (auto-detects Anthropic vs OpenRouter) */
   setApiKey(
     apiKey: string,
-  ): Promise<{ message: string; scannerEnabled: boolean }> {
+  ): Promise<{
+    message: string;
+    provider: "anthropic" | "openrouter" | null;
+    scannerEnabled: boolean;
+  }> {
     return request("/api/v1/config/api-key", {
       method: "PUT",
       body: JSON.stringify({ apiKey }),

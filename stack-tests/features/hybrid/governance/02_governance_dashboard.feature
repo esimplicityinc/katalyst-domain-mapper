@@ -255,18 +255,22 @@ Feature: Governance Dashboard (Template 12)
 
   # ── Empty State ────────────────────────────────────────────────
 
-  @empty-state @wip
+  @empty-state
   Scenario: Dashboard shows empty state when no governance data exists
-    # Ensure no governance data exists (clean up from prior scenarios)
+    # First, try to clean up any existing governance data (ignore 404 if none exists)
     When I DELETE "/api/v1/governance"
-    Then the response status should be 200
+    Then the response status should be one of:
+      | 200 |
+      | 404 |
     
-    # Navigate to UI
+    # Navigate to UI - should show empty state
     Given I navigate to "/governance"
     Then I wait for the page to load
+    
+    # Handle API key prompt if present
     When I click the button "Skip for now"
     Then I wait for the page to load
 
-    # Verify empty state
+    # Verify empty state is displayed
     Then the element "[data-testid='empty-state']" should be visible
     And I should see text "No Governance Data"

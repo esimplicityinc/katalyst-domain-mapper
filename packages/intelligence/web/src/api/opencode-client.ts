@@ -38,15 +38,22 @@ export async function sendPromptAsync(
   sessionId: string,
   text: string,
   agent?: string,
+  model?: { providerID: string; modelID: string },
 ) {
-  const res = await opencode.session.promptAsync({
-    path: { id: sessionId },
-    body: {
+  // Use raw fetch since the SDK may throw on 204 No Content responses
+  const res = await fetch(`${OPENCODE_BASE}/session/${sessionId}/prompt_async`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
       ...(agent ? { agent } : {}),
+      ...(model ? { model } : {}),
       parts: [{ type: "text", text }],
-    },
+    }),
   });
-  return res.data;
+  if (!res.ok && res.status !== 204) {
+    throw new Error(`Prompt failed: ${res.status} ${res.statusText}`);
+  }
+  return true;
 }
 
 // ── Helper: list messages in a session ─────────────────────────────────────

@@ -30,7 +30,8 @@ export function FindingsTable({ topStrengths }: FindingsTableProps) {
           >
             <button
               onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
-              className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+              aria-expanded={expandedIdx === idx}
+              className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
             >
               <div className="flex items-center gap-4 flex-1 text-left">
                 <div className="flex-shrink-0 w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">

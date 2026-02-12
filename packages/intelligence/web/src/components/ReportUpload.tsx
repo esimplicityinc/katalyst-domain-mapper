@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { useState, useCallback } from "react";
 import type { FOEReport } from "../types/report";
+import { adaptReport } from "../adapters/reportAdapter";
 import { ReportBrowser } from "./ReportBrowser";
 import { ScanDirectory } from "./ScanDirectory";
 
@@ -21,12 +22,12 @@ export function ReportUpload({ onReportLoaded }: ReportUploadProps) {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("upload");
 
-  const validateReport = (data: any): data is FOEReport => {
-    // Basic validation - check for required top-level fields
+  const validateReport = (data: any): boolean => {
+    // Accept both scanner format (version + repository object) and
+    // canonical format (scannerVersion + repository string) 
     return (
       data &&
       typeof data === "object" &&
-      "version" in data &&
       "repository" in data &&
       "dimensions" in data &&
       "overallScore" in data
@@ -55,7 +56,7 @@ export function ReportUpload({ onReportLoaded }: ReportUploadProps) {
             return;
           }
 
-          onReportLoaded(data);
+          onReportLoaded(adaptReport(data));
         } catch (err) {
           setError("Failed to parse JSON file. Please check the file format.");
         }

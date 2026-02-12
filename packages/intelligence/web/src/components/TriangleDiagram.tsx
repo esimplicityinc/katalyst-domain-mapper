@@ -23,7 +23,7 @@ export function TriangleDiagram({ report }: TriangleDiagramProps) {
       (dimensions.confidence.score / dimensions.confidence.maxScore) * 100,
   };
 
-  // Triangle dimensions
+  // Triangle dimensions (using viewBox for scaling)
   const size = 300;
   const center = size / 2;
   const radius = size * 0.35;
@@ -79,6 +79,8 @@ export function TriangleDiagram({ report }: TriangleDiagramProps) {
     confidence: getThresholdPoint("confidence"),
   };
 
+  const ariaLabel = `Cognitive triangle diagram showing Understanding at ${Math.round(scores.understanding)}, Feedback at ${Math.round(scores.feedback)}, Confidence at ${Math.round(scores.confidence)}`;
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
@@ -86,9 +88,33 @@ export function TriangleDiagram({ report }: TriangleDiagramProps) {
       </h3>
 
       <div className="flex flex-col lg:flex-row gap-6 items-center">
-        {/* SVG Triangle */}
-        <div className="flex-shrink-0">
-          <svg width={size} height={size} className="mx-auto">
+        {/* SVG Triangle - scales via viewBox */}
+        <div className="flex-shrink-0 w-full max-w-[300px]">
+          <svg
+            viewBox={`0 0 ${size} ${size}`}
+            className="w-full h-auto"
+            role="img"
+            aria-label={ariaLabel}
+          >
+            <title>{ariaLabel}</title>
+
+            {/* Pattern definitions for color-blind accessibility */}
+            <defs>
+              {/* Understanding: diagonal lines */}
+              <pattern id="pattern-understanding" patternUnits="userSpaceOnUse" width="6" height="6">
+                <line x1="0" y1="6" x2="6" y2="0" stroke="#9333ea" strokeWidth="1.5" opacity="0.5" />
+              </pattern>
+              {/* Feedback: dots */}
+              <pattern id="pattern-feedback" patternUnits="userSpaceOnUse" width="6" height="6">
+                <circle cx="3" cy="3" r="1" fill="#3b82f6" opacity="0.5" />
+              </pattern>
+              {/* Confidence: crosshatch */}
+              <pattern id="pattern-confidence" patternUnits="userSpaceOnUse" width="6" height="6">
+                <line x1="0" y1="0" x2="6" y2="6" stroke="#10b981" strokeWidth="1" opacity="0.5" />
+                <line x1="6" y1="0" x2="0" y2="6" stroke="#10b981" strokeWidth="1" opacity="0.5" />
+              </pattern>
+            </defs>
+
             {/* Background triangle */}
             <polygon
               points={`${vertices.understanding.x},${vertices.understanding.y} ${vertices.feedback.x},${vertices.feedback.y} ${vertices.confidence.x},${vertices.confidence.y}`}
@@ -145,15 +171,13 @@ export function TriangleDiagram({ report }: TriangleDiagramProps) {
               strokeWidth="2"
             />
 
-            {/* Score points */}
-            <circle
-              cx={scorePoints.understanding.x}
-              cy={scorePoints.understanding.y}
-              r="6"
-              fill="#9333ea"
-              stroke="white"
-              strokeWidth="2"
-            />
+            {/* Score points with distinct shapes for color-blind accessibility */}
+            {/* Understanding: diamond (rotated square) */}
+            <g transform={`translate(${scorePoints.understanding.x}, ${scorePoints.understanding.y})`}>
+              <rect x="-5" y="-5" width="10" height="10" rx="1" transform="rotate(45)" fill="#9333ea" stroke="white" strokeWidth="2" />
+            </g>
+
+            {/* Feedback: circle */}
             <circle
               cx={scorePoints.feedback.x}
               cy={scorePoints.feedback.y}
@@ -162,10 +186,14 @@ export function TriangleDiagram({ report }: TriangleDiagramProps) {
               stroke="white"
               strokeWidth="2"
             />
-            <circle
-              cx={scorePoints.confidence.x}
-              cy={scorePoints.confidence.y}
-              r="6"
+
+            {/* Confidence: square */}
+            <rect
+              x={scorePoints.confidence.x - 5}
+              y={scorePoints.confidence.y - 5}
+              width="10"
+              height="10"
+              rx="1"
               fill="#10b981"
               stroke="white"
               strokeWidth="2"
@@ -305,19 +333,19 @@ export function TriangleDiagram({ report }: TriangleDiagramProps) {
                 <span className="text-purple-600 dark:text-purple-400 font-medium">
                   Understanding:
                 </span>{" "}
-                ≥{MIN_THRESHOLDS.understanding}
+                &ge;{MIN_THRESHOLDS.understanding}
               </div>
               <div>
                 <span className="text-blue-600 dark:text-blue-400 font-medium">
                   Feedback:
                 </span>{" "}
-                ≥{MIN_THRESHOLDS.feedback}
+                &ge;{MIN_THRESHOLDS.feedback}
               </div>
               <div>
                 <span className="text-green-600 dark:text-green-400 font-medium">
                   Confidence:
                 </span>{" "}
-                ≥{MIN_THRESHOLDS.confidence}
+                &ge;{MIN_THRESHOLDS.confidence}
               </div>
             </div>
           </div>

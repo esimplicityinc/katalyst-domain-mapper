@@ -1,6 +1,5 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
-import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import type { DimensionReport } from "../types/report";
 
 interface DimensionCardProps {
@@ -31,19 +30,38 @@ const confidenceBadgeColors = {
   low: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200",
 };
 
+/** Convert a slug like "ci-pipeline-speed" or "ciPipelineSpeed" to "CI Pipeline Speed" */
+function toTitleCase(key: string): string {
+  // Split on hyphens or camelCase boundaries
+  const words = key
+    .replace(/[-_]/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .split(/\s+/);
+
+  return words
+    .map((word) => {
+      // Keep known acronyms uppercase
+      const upper = word.toUpperCase();
+      if (["CI", "CD", "API", "DDD", "BDD", "TDD", "ADR"].includes(upper)) {
+        return upper;
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(" ");
+}
+
 export function DimensionCard({ name, dimension, color }: DimensionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { score, maxScore, subscores, findings, gaps } = dimension;
   const percentage = Math.round((score / maxScore) * 100);
   const info = dimensionInfo[name.toLowerCase()];
 
-  const chartData = [
-    {
-      name,
-      value: percentage,
-      fill: color,
-    },
-  ];
+  // SVG circle parameters for the score ring
+  const ringSize = 120;
+  const strokeWidth = 14;
+  const radius = (ringSize - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
@@ -68,25 +86,39 @@ export function DimensionCard({ name, dimension, color }: DimensionCardProps) {
 
       {/* Score visualization */}
       <div className="flex items-center gap-6 mb-6">
-        <div className="w-32 h-32">
-          <ResponsiveContainer width="100%" height="100%">
-            <RadialBarChart
-              cx="50%"
-              cy="50%"
-              innerRadius="60%"
-              outerRadius="100%"
-              data={chartData}
-              startAngle={90}
-              endAngle={-270}
-            >
-              <RadialBar
-                dataKey="value"
-                cornerRadius={10}
-                background={{ fill: "#e5e7eb" }}
-              />
-            </RadialBarChart>
-          </ResponsiveContainer>
-          <div className="flex flex-col items-center -mt-24">
+        <div className="relative flex-shrink-0" style={{ width: ringSize, height: ringSize }}>
+          <svg
+            width={ringSize}
+            height={ringSize}
+            viewBox={`0 0 ${ringSize} ${ringSize}`}
+            className="transform -rotate-90"
+          >
+            {/* Background track */}
+            <circle
+              cx={ringSize / 2}
+              cy={ringSize / 2}
+              r={radius}
+              fill="none"
+              stroke="#e5e7eb"
+              strokeWidth={strokeWidth}
+              className="dark:stroke-gray-700"
+            />
+            {/* Score arc */}
+            <circle
+              cx={ringSize / 2}
+              cy={ringSize / 2}
+              r={radius}
+              fill="none"
+              stroke={color}
+              strokeWidth={strokeWidth}
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              className="transition-all duration-500"
+            />
+          </svg>
+          {/* Score text centered */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
             <div className="text-3xl font-bold" style={{ color }}>
               {score}
             </div>
@@ -98,36 +130,47 @@ export function DimensionCard({ name, dimension, color }: DimensionCardProps) {
 
         {/* Subscores */}
         <div className="flex-1 space-y-3">
-          {Object.entries(subscores).map(([key, subscore]) => (
-            <div key={key}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
-                  {key.replace(/([A-Z])/g, " $1").trim()}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {subscore.score}/{subscore.max}
+          {Object.entries(subscores).map(([key, subscore]) => {
+            const pct = Math.round((subscore.score / subscore.max) * 100);
+            const label = toTitleCase(key);
+            return (
+              <div key={key}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {label}
                   </span>
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded ${
-                      confidenceBadgeColors[subscore.confidence]
-                    }`}
-                  >
-                    {subscore.confidence}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {subscore.score}/{subscore.max}
+                    </span>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded ${
+                        confidenceBadgeColors[subscore.confidence]
+                      }`}
+                    >
+                      {subscore.confidence}
+                    </span>
+                  </div>
+                </div>
+                <div
+                  className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"
+                  role="progressbar"
+                  aria-valuenow={subscore.score}
+                  aria-valuemin={0}
+                  aria-valuemax={subscore.max}
+                  aria-label={`${label}: ${subscore.score} of ${subscore.max}`}
+                >
+                  <div
+                    className="h-2 rounded-full transition-all"
+                    style={{
+                      width: `${pct}%`,
+                      backgroundColor: color,
+                    }}
+                  />
                 </div>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                <div
-                  className="h-2 rounded-full transition-all"
-                  style={{
-                    width: `${(subscore.score / subscore.max) * 100}%`,
-                    backgroundColor: color,
-                  }}
-                />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -135,12 +178,12 @@ export function DimensionCard({ name, dimension, color }: DimensionCardProps) {
       <div className="flex gap-4 mb-4 text-sm">
         <div className="flex-1 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
           <div className="font-medium text-green-900 dark:text-green-100">
-            {findings.length} Strengths
+            {findings.length} {findings.length === 1 ? "Strength" : "Strengths"}
           </div>
         </div>
         <div className="flex-1 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
           <div className="font-medium text-orange-900 dark:text-orange-100">
-            {gaps.length} Gaps
+            {gaps.length} {gaps.length === 1 ? "Gap" : "Gaps"}
           </div>
         </div>
       </div>
@@ -148,7 +191,9 @@ export function DimensionCard({ name, dimension, color }: DimensionCardProps) {
       {/* Expandable details */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-center gap-2 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+        aria-expanded={isExpanded}
+        aria-label={`${isExpanded ? "Hide" : "Show"} details for ${name} dimension`}
+        className="w-full flex items-center justify-center gap-2 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         {isExpanded ? (
           <>

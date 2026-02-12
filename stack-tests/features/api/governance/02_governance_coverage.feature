@@ -1,4 +1,4 @@
-@api @gov-validation @ROAD-005 @CAP-002 @wip
+@api @gov-validation @ROAD-005 @CAP-002
 Feature: Governance Coverage & Trend Tracking
   As an Engineering Team Lead
   I want to query governance coverage and health trends

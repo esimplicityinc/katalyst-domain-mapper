@@ -30,8 +30,8 @@ export function ApiKeyPrompt({ onConfigured, onSkip }: ApiKeyPromptProps) {
       return;
     }
 
-    if (!trimmed.startsWith("sk-ant-")) {
-      setError("Key should start with sk-ant-");
+    if (!trimmed.startsWith("sk-ant-") && !trimmed.startsWith("sk-or-")) {
+      setError("Key should start with sk-ant- (Anthropic) or sk-or- (OpenRouter)");
       return;
     }
 
@@ -57,9 +57,9 @@ export function ApiKeyPrompt({ onConfigured, onSkip }: ApiKeyPromptProps) {
             Welcome to Katalyst
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-sm">
-            An Anthropic API key is needed to power FOE scans and the AI domain
-            mapping assistant. You can still upload and view existing reports
-            without one.
+            An LLM API key is needed to power FOE scans and the AI domain
+            mapping assistant. Supports Anthropic or OpenRouter keys. You can
+            still upload and view existing reports without one.
           </p>
         </div>
 
@@ -69,7 +69,7 @@ export function ApiKeyPrompt({ onConfigured, onSkip }: ApiKeyPromptProps) {
               htmlFor="apiKey"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
             >
-              Anthropic API Key
+              LLM API Key
             </label>
             <div className="relative">
               <input
@@ -80,7 +80,7 @@ export function ApiKeyPrompt({ onConfigured, onSkip }: ApiKeyPromptProps) {
                   setApiKey(e.target.value);
                   setError(null);
                 }}
-                placeholder="sk-ant-..."
+                placeholder="sk-ant-... or sk-or-..."
                 autoFocus
                 className="w-full px-4 py-2.5 pr-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm font-mono"
               />

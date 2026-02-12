@@ -159,7 +159,7 @@
       "description": "Interactive DDD domain discovery agent. Helps map bounded contexts, aggregates, domain events, value objects, and ubiquitous language through conversational exploration.",
       "mode": "primary",
       "prompt": "{file:./.opencode/agents/ddd-domain-mapper.md}",
-      "model": "anthropic/claude-sonnet-4-20250514",
+      "model": "amazon-bedrock/us.anthropic.claude-sonnet-4-5-20250929-v1:0",
       "temperature": 0.3,
       "tools": {
         "read": true,
@@ -389,6 +389,13 @@
       "type": "remote",
       "url": "https://mcp.context7.com/mcp",
       "enabled": true
+    }
+  },
+  "provider": {
+    "amazon-bedrock": {
+      "options": {
+        "region": "us-east-1"
+      }
     }
   },
   "permission": {

@@ -1,4 +1,4 @@
-@api @gov-validation @ROAD-005 @CAP-002 @wip
+@api @gov-validation @ROAD-005 @CAP-002
 Feature: Governance Index Ingestion
   As a Platform Engineer
   I want to ingest governance index snapshots via the API

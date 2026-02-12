@@ -6,6 +6,7 @@ import {
   registerHybridSuite,
   registerTuiSteps,
 } from '@esimplicity/stack-tests/steps';
+import './custom-steps.js';
 
 registerApiSteps(test);
 registerUiSteps(test);

@@ -21,20 +21,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/* \
   && opencode --version
 
-# Copy agent definitions
-COPY packages/foe-scanner/.opencode ./.opencode
-
-# Copy pre-built Field Guide indices (already built by foe-field-guide-tools)
-COPY packages/foe-field-guide-tools/dist/methods-index.json ./data/
-COPY packages/foe-field-guide-tools/dist/observations-index.json ./data/
+# Copy agent definitions and OpenCode config
+COPY packages/assessment/.opencode ./.opencode
+COPY packages/assessment/opencode.json ./opencode.json
 
 # Copy entrypoint script
-COPY packages/foe-scanner/entrypoint.sh ./
+COPY packages/assessment/entrypoint.sh ./
 RUN chmod +x ./entrypoint.sh
-
-# Set environment variables
-ENV FOE_METHODS_INDEX=/app/data/methods-index.json
-ENV FOE_OBSERVATIONS_INDEX=/app/data/observations-index.json
 
 # Default to scanning /repo
 VOLUME ["/repo"]

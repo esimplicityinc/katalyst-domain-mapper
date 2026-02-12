@@ -1,3 +1,6 @@
+/** Supported LLM providers for the scanner */
+export type LlmProvider = "anthropic" | "openrouter";
+
 export interface AppConfig {
   /** Port to listen on */
   port: number;
@@ -14,11 +17,20 @@ export interface AppConfig {
   /** Anthropic API key — passed to scanner containers */
   anthropicApiKey: string | undefined;
 
+  /** OpenRouter API key — alternative provider for scanner */
+  openrouterApiKey: string | undefined;
+
   /** Background scan polling interval in milliseconds */
   scanPollIntervalMs: number;
 
   /** Log level */
   logLevel: "debug" | "info" | "warn" | "error";
+}
+
+/** Detect which LLM provider a key belongs to based on its prefix */
+export function detectProvider(key: string): LlmProvider {
+  if (key.startsWith("sk-or-")) return "openrouter";
+  return "anthropic";
 }
 
 export function loadConfig(): AppConfig {
@@ -28,6 +40,7 @@ export function loadConfig(): AppConfig {
     databaseUrl: process.env.DATABASE_URL ?? "./data/foe.db",
     scannerImage: process.env.SCANNER_IMAGE ?? "foe-scanner",
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
+    openrouterApiKey: process.env.OPENROUTER_API_KEY,
     scanPollIntervalMs: Number(process.env.SCAN_POLL_INTERVAL_MS ?? 5000),
     logLevel: (process.env.LOG_LEVEL as AppConfig["logLevel"]) ?? "info",
   };

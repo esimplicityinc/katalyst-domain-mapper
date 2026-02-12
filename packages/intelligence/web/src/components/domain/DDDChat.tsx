@@ -141,28 +141,28 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
 
       // ── Text streaming ─────────────────────────────────────────────────
       if (event.type === "message.part.updated") {
-        const { part, delta } = event.properties as {
-          part: {
-            id: string;
-            sessionID: string;
-            messageID: string;
-            type: string;
-            text?: string;
-          };
-          delta?: string;
-        };
+        const props = event.properties as Record<string, unknown>;
+        const part = props?.part as {
+          id: string;
+          sessionID: string;
+          messageID: string;
+          type: string;
+          text?: unknown;
+        } | undefined;
+        const delta = props?.delta;
 
-        if (part.sessionID !== targetSessionId || part.type !== "text") return;
+        if (!part || part.sessionID !== targetSessionId || part.type !== "text") return;
 
         // Only render text for assistant messages (skip echoed user messages)
         if (!assistantMsgIdsRef.current.has(part.messageID)) return;
 
         const msgId = part.messageID;
 
-        if (delta) {
+        // Guard: ensure delta and text are actually strings before using them
+        if (typeof delta === "string" && delta) {
           const current = streamingTextRef.current.get(msgId) ?? "";
           streamingTextRef.current.set(msgId, current + delta);
-        } else if (part.text) {
+        } else if (typeof part.text === "string" && part.text) {
           streamingTextRef.current.set(msgId, part.text);
         }
 
@@ -224,9 +224,22 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
 
       // ── Session error ──────────────────────────────────────────────────
       if (event.type === "session.error") {
-        const props = event.properties as { sessionID: string; error: string };
+        const props = event.properties as { sessionID: string; error: unknown };
         if (props.sessionID !== targetSessionId) return;
-        setError(props.error || "An error occurred");
+        // Error can be a string or an object like {name, data: {message, statusCode}}
+        let errMsg = "An error occurred";
+        if (typeof props.error === "string") {
+          errMsg = props.error;
+        } else if (props.error && typeof props.error === "object") {
+          const errObj = props.error as Record<string, unknown>;
+          const data = errObj.data as Record<string, unknown> | undefined;
+          if (data?.message && typeof data.message === "string") {
+            errMsg = data.message;
+          } else if (errObj.name && typeof errObj.name === "string") {
+            errMsg = errObj.name;
+          }
+        }
+        setError(errMsg);
         setSending(false);
         sseAbortRef.current?.abort();
       }
@@ -372,7 +385,10 @@ IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_M
         isFirstMessageRef.current = false;
       }
 
-      await sendPromptAsync(sessionId, promptText, "ddd-domain-mapper");
+      await sendPromptAsync(sessionId, promptText, "ddd-domain-mapper", {
+        providerID: "amazon-bedrock",
+        modelID: "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+      });
 
       // Safety timeout
       setTimeout(

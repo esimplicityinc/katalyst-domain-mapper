@@ -16,11 +16,11 @@ FROM oven/bun:1 AS web-builder
 WORKDIR /build
 
 COPY package.json bun.lock ./
-COPY packages/foe-web-ui ./packages/foe-web-ui
+COPY packages/intelligence/web ./packages/intelligence/web
 
-RUN bun install
+RUN cd packages/intelligence/web && bun install
 
-WORKDIR /build/packages/foe-web-ui
+WORKDIR /build/packages/intelligence/web
 
 # In unified mode, the browser talks to the same origin — no separate hosts
 ARG VITE_API_URL=
@@ -30,13 +30,16 @@ ENV VITE_OPENCODE_URL=$VITE_OPENCODE_URL
 
 RUN bunx vite build
 
-# ── Stage 2: Build schemas (API dependency) ──────────────────────────────────
+# ── Stage 2: Build schemas + API (intelligence package) ──────────────────────
 FROM oven/bun:1 AS api-builder
 WORKDIR /build
 
 COPY package.json bun.lock ./
 COPY packages/foe-schemas ./packages/foe-schemas
-COPY packages/foe-api ./packages/foe-api
+COPY packages/intelligence/package.json ./packages/intelligence/package.json
+COPY packages/intelligence/tsconfig.json ./packages/intelligence/tsconfig.json
+COPY packages/intelligence/api ./packages/intelligence/api
+COPY packages/intelligence/drizzle ./packages/intelligence/drizzle
 
 RUN bun install --ignore-scripts
 
@@ -60,14 +63,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && docker --version \
   && opencode --version
 
-# Copy API workspace (schemas + api + node_modules)
+# Copy API workspace (schemas + intelligence + node_modules)
 COPY --from=api-builder /build/package.json /build/bun.lock ./
 COPY --from=api-builder /build/node_modules ./node_modules
 COPY --from=api-builder /build/packages/foe-schemas ./packages/foe-schemas
-COPY --from=api-builder /build/packages/foe-api ./packages/foe-api
+COPY --from=api-builder /build/packages/intelligence/package.json ./packages/intelligence/package.json
+COPY --from=api-builder /build/packages/intelligence/tsconfig.json ./packages/intelligence/tsconfig.json
+COPY --from=api-builder /build/packages/intelligence/api ./packages/intelligence/api
+COPY --from=api-builder /build/packages/intelligence/drizzle ./packages/intelligence/drizzle
+COPY --from=api-builder /build/packages/intelligence/node_modules ./packages/intelligence/node_modules
 
 # Copy built web UI static files
-COPY --from=web-builder /build/packages/foe-web-ui/dist ./web-dist
+COPY --from=web-builder /build/packages/intelligence/web/dist ./web-dist
 
 # Copy OpenCode agents and project config (for the AI chat server)
 COPY .opencode ./.opencode

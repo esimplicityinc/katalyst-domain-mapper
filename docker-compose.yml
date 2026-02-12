@@ -11,6 +11,9 @@ services:
       - DATABASE_URL=/app/data/foe.db
       - SCANNER_IMAGE=foe-scanner
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - AWS_BEARER_TOKEN_BEDROCK=${AWS_BEARER_TOKEN_BEDROCK:-}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
       - SCAN_POLL_INTERVAL_MS=5000
       - LOG_LEVEL=info
     volumes:
@@ -25,7 +28,7 @@ services:
   scanner:
     build:
       context: .
-      dockerfile: packages/foe-scanner/Dockerfile
+      dockerfile: packages/assessment/Dockerfile
     image: foe-scanner
     profiles:
       - build-only  # Prevents `docker compose up` from starting this as a service

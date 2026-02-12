@@ -1,22 +1,66 @@
 import type { ScanRunner, ScanResult } from "../../ports/ScanRunner.js";
 import type { Logger } from "../../ports/Logger.js";
+import type { LlmProvider } from "../../config/env.js";
 
 export class DockerScanRunner implements ScanRunner {
   constructor(
     private image: string,
-    private getApiKey: () => string | undefined,
+    private getLlmApiKey: () =>
+      | { key: string; provider: LlmProvider }
+      | undefined,
     private logger: Logger,
   ) {}
 
+  /**
+   * Extract a balanced JSON object from a string starting at the first '{'.
+   * Handles nested braces properly.
+   */
+  private extractBalancedJson(text: string): string | null {
+    const start = text.indexOf("{");
+    if (start < 0) return null;
+    let depth = 0;
+    let inString = false;
+    let escape = false;
+    for (let i = start; i < text.length; i++) {
+      const ch = text[i];
+      if (escape) {
+        escape = false;
+        continue;
+      }
+      if (ch === "\\") {
+        escape = true;
+        continue;
+      }
+      if (ch === '"') {
+        inString = !inString;
+        continue;
+      }
+      if (inString) continue;
+      if (ch === "{") depth++;
+      else if (ch === "}") {
+        depth--;
+        if (depth === 0) return text.slice(start, i + 1);
+      }
+    }
+    return null;
+  }
+
   async run(repositoryPath: string): Promise<ScanResult> {
-    const apiKey = this.getApiKey();
-    if (!apiKey) {
+    const llm = this.getLlmApiKey();
+    if (!llm) {
       return {
         success: false,
         report: null,
-        error: "ANTHROPIC_API_KEY is not configured. Cannot run scanner.",
+        error:
+          "No LLM API key configured (ANTHROPIC_API_KEY or OPENROUTER_API_KEY). Cannot run scanner.",
       };
     }
+
+    // Pass the correct environment variable based on detected provider
+    const envVarName =
+      llm.provider === "openrouter"
+        ? "OPENROUTER_API_KEY"
+        : "ANTHROPIC_API_KEY";
 
     const args = [
       "run",
@@ -24,7 +68,10 @@ export class DockerScanRunner implements ScanRunner {
       "-v",
       `${repositoryPath}:/repo`,
       "-e",
-      `ANTHROPIC_API_KEY=${apiKey}`,
+      `${envVarName}=${llm.key}`,
+      // Tell the scanner which provider to use
+      "-e",
+      `LLM_PROVIDER=${llm.provider}`,
       this.image,
     ];
 
@@ -61,7 +108,9 @@ export class DockerScanRunner implements ScanRunner {
         };
       }
 
-      // Parse JSON from stdout
+      // Parse report from stdout.
+      // `opencode run --format json` outputs NDJSON (one JSON event per line).
+      // The final FOE report is embedded in the last "text" event's part.text field.
       const trimmed = stdout.trim();
       if (!trimmed) {
         return {
@@ -71,36 +120,98 @@ export class DockerScanRunner implements ScanRunner {
         };
       }
 
+      // Strategy 1: If the whole output is a single JSON object (direct output)
       try {
         const report = JSON.parse(trimmed);
-        this.logger.info("Scanner completed successfully");
-        return { success: true, report };
+        if (report && !report.type && report.dimensions) {
+          this.logger.info("Scanner completed successfully (direct JSON)");
+          return { success: true, report };
+        }
       } catch {
-        // Sometimes the scanner outputs non-JSON before the actual JSON
-        // Try to find the JSON object in the output
-        const jsonStart = trimmed.indexOf("{");
-        const jsonEnd = trimmed.lastIndexOf("}");
+        // Not a single JSON object — expected for NDJSON event stream
+      }
+
+      // Strategy 2: Parse NDJSON event stream from `opencode run --format json`
+      // Collect all text parts and extract JSON from the final agent message
+      const lines = trimmed.split("\n");
+      let allText = "";
+
+      for (const line of lines) {
+        try {
+          const event = JSON.parse(line);
+          if (event.type === "text" && event.part?.text) {
+            allText += event.part.text;
+          }
+        } catch {
+          // Skip non-JSON lines (stderr leakage, etc.)
+        }
+      }
+
+      if (allText) {
+        this.logger.debug("Extracted text from event stream", {
+          textLength: allText.length,
+        });
+
+        // The agent's final text should contain a JSON report block
+        // Look for the outermost JSON object in the accumulated text
+        const jsonMatch = allText.match(/\{[\s\S]*"dimensions"[\s\S]*\}/);
+        if (jsonMatch) {
+          // Find the balanced braces
+          const candidate = this.extractBalancedJson(jsonMatch[0]);
+          if (candidate) {
+            try {
+              const report = JSON.parse(candidate);
+              this.logger.info(
+                "Scanner completed successfully (extracted from event stream)",
+              );
+              return { success: true, report };
+            } catch {
+              this.logger.warn("Found JSON-like block but failed to parse");
+            }
+          }
+        }
+
+        // Fallback: try the simple first-{ to last-} extraction on allText
+        const jsonStart = allText.indexOf("{");
+        const jsonEnd = allText.lastIndexOf("}");
         if (jsonStart >= 0 && jsonEnd > jsonStart) {
           try {
-            const report = JSON.parse(trimmed.slice(jsonStart, jsonEnd + 1));
+            const report = JSON.parse(allText.slice(jsonStart, jsonEnd + 1));
             this.logger.info(
-              "Scanner completed successfully (extracted JSON from output)",
+              "Scanner completed successfully (extracted JSON from text)",
             );
             return { success: true, report };
           } catch {
-            return {
-              success: false,
-              report: null,
-              error: "Scanner output is not valid JSON",
-            };
+            // Fall through
           }
         }
-        return {
-          success: false,
-          report: null,
-          error: "Scanner output is not valid JSON",
-        };
       }
+
+      // Strategy 3: Legacy fallback — try first-{ to last-} on raw stdout
+      const jsonStart = trimmed.indexOf("{");
+      const jsonEnd = trimmed.lastIndexOf("}");
+      if (jsonStart >= 0 && jsonEnd > jsonStart) {
+        try {
+          const report = JSON.parse(trimmed.slice(jsonStart, jsonEnd + 1));
+          this.logger.info(
+            "Scanner completed successfully (legacy JSON extraction)",
+          );
+          return { success: true, report };
+        } catch {
+          // Fall through
+        }
+      }
+
+      this.logger.error("Could not extract valid JSON from scanner output", {
+        outputLength: trimmed.length,
+        textLength: allText.length,
+        firstChars: trimmed.slice(0, 200),
+      });
+      return {
+        success: false,
+        report: null,
+        error: "Scanner output is not valid JSON",
+      };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       this.logger.error("Failed to run scanner container", { error: message });

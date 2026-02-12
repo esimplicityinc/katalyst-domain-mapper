@@ -212,7 +212,7 @@ export function ContextMapDiagram({ model }: ContextMapDiagramProps) {
       </svg>
 
       {/* Legend overlay — bottom-left */}
-      <div className="absolute bottom-4 left-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs">
+      <div data-testid="context-map-legend" className="absolute bottom-4 left-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs">
         <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
           Legend
         </h4>

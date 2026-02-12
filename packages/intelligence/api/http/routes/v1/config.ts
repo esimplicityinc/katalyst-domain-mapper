@@ -1,8 +1,13 @@
 import Elysia, { t } from "elysia";
+import type { LlmProvider } from "../../../config/env.js";
 
 export function createConfigRoutes(deps: {
   getAnthropicApiKey: () => string | undefined;
   setAnthropicApiKey: (key: string) => void;
+  getOpenrouterApiKey: () => string | undefined;
+  setOpenrouterApiKey: (key: string) => void;
+  getLlmApiKey: () => { key: string; provider: LlmProvider } | undefined;
+  setLlmApiKey: (key: string) => void;
 }) {
   return (
     new Elysia({ prefix: "/config" })
@@ -11,10 +16,14 @@ export function createConfigRoutes(deps: {
       .get(
         "/status",
         () => {
-          const hasKey = !!deps.getAnthropicApiKey();
+          const llm = deps.getLlmApiKey();
           return {
-            anthropicApiKey: hasKey,
-            scannerEnabled: hasKey,
+            // Backward compat: true if any LLM key is set
+            anthropicApiKey: !!deps.getAnthropicApiKey(),
+            openrouterApiKey: !!deps.getOpenrouterApiKey(),
+            // Which provider is currently active
+            activeProvider: llm?.provider ?? null,
+            scannerEnabled: !!llm,
           };
         },
         {
@@ -25,19 +34,20 @@ export function createConfigRoutes(deps: {
         },
       )
 
-      // DELETE /config/api-key — clear the API key (used by BDD tests for isolation)
+      // DELETE /config/api-key — clear all API keys
       .delete(
         "/api-key",
         () => {
           deps.setAnthropicApiKey("");
+          deps.setOpenrouterApiKey("");
           return { message: "API key cleared" };
         },
         {
-          detail: { summary: "Clear Anthropic API key", tags: ["Config"] },
+          detail: { summary: "Clear all LLM API keys", tags: ["Config"] },
         },
       )
 
-      // PUT /config/api-key — set the Anthropic API key at runtime
+      // PUT /config/api-key — set an LLM API key (auto-detects provider from prefix)
       .put(
         "/api-key",
         ({ body, set }) => {
@@ -46,18 +56,28 @@ export function createConfigRoutes(deps: {
             return { error: "apiKey is required" };
           }
 
-          deps.setAnthropicApiKey(body.apiKey.trim());
+          const trimmed = body.apiKey.trim();
+          deps.setLlmApiKey(trimmed);
+
+          const llm = deps.getLlmApiKey();
 
           return {
-            message: "API key configured",
+            message: `API key configured (${llm?.provider ?? "unknown"} provider)`,
+            provider: llm?.provider ?? null,
             scannerEnabled: true,
           };
         },
         {
           body: t.Object({
-            apiKey: t.String({ description: "Anthropic API key (sk-ant-...)" }),
+            apiKey: t.String({
+              description:
+                "LLM API key — Anthropic (sk-ant-...) or OpenRouter (sk-or-...)",
+            }),
           }),
-          detail: { summary: "Set Anthropic API key", tags: ["Config"] },
+          detail: {
+            summary: "Set LLM API key (auto-detects provider)",
+            tags: ["Config"],
+          },
         },
       )
   );

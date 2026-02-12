@@ -5,7 +5,7 @@ description: >
   Use this agent for domain mapping sessions, event storming, context mapping, and building
   a shared ubiquitous language. Can analyze code repositories to discover implicit domain models.
 mode: primary
-model: anthropic/claude-sonnet-4-20250514
+model: openrouter/anthropic/claude-sonnet-4-20250514
 temperature: 0.3
 tools:
   read: true
