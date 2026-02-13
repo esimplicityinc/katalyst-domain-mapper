@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Plus, Loader2, BookOpen, Search } from "lucide-react";
 import { api } from "../../api/client";
 import type { DomainModelFull, GlossaryTerm } from "../../types/domain";
+import { DDDTooltip } from "./DDDTooltip";
 
 interface GlossaryViewProps {
   model: DomainModelFull;
@@ -88,8 +89,8 @@ export function GlossaryView({ model, onModelUpdated }: GlossaryViewProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Ubiquitous Language
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+            Ubiquitous Language <DDDTooltip termKey="ubiquitous-language" />
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             {model.glossaryTerms.length} term

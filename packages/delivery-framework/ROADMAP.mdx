@@ -5,8 +5,8 @@ description: Consolidated roadmap for the governance pipeline, DDD tooling, and 
 
 # Katalyst Delivery Framework — Roadmap
 
-> **Last Updated**: 2026-02-12
-> **Total Items**: 35 | **In Progress**: 0 | **Proposed**: 21 | **Complete**: 14
+> **Last Updated**: 2026-02-13
+> **Total Items**: 38 | **In Progress**: 0 | **Proposed**: 23 | **Complete**: 15
 
 Turn this monorepo into a **self-governing delivery framework**. Import governance infrastructure, build Zod-validated schemas, create parsers and CLI tooling, add API endpoints, enhance the scanner, and visualize governance health — all while the framework governs its own development.
 
@@ -105,24 +105,25 @@ Create Zod schemas for 4 DDD artifact types: BoundedContext, Aggregate, ValueObj
 
 ---
 
-### [ROAD-007] BDD Agent Skills 🎯
-**Status**: Proposed
+### [ROAD-007] BDD Agent Skills ✅
+**Status**: Complete
 **Priority**: Medium
 **Phase**: 1 — Core
 **Created**: 2026-02-05
+**Completed**: 2026-02-13
 
 Install 5 OpenCode agent skills for the `@esimplicity/stack-tests` BDD framework. Pure static markdown reference docs that enable agents to write, run, and troubleshoot BDD tests.
 
-- 🎯 Create `katalyst-bdd-quickstart/SKILL.md` — setup, running tests, tag system
-- 🎯 Create `katalyst-bdd-step-reference/SKILL.md` — complete step catalog (API/UI/TUI/hybrid)
-- 🎯 Create `katalyst-bdd-create-test/SKILL.md` — test creation patterns and examples
-- 🎯 Create `katalyst-bdd-troubleshooting/SKILL.md` — common errors and debugging
-- 🎯 Create `katalyst-bdd-architecture/SKILL.md` — ports & adapters, custom steps
+- ✅ Create `katalyst-bdd-quickstart/SKILL.md` — setup, running tests, tag system (226 lines)
+- ✅ Create `katalyst-bdd-step-reference/SKILL.md` — complete step catalog (API/UI/TUI/hybrid) (348 lines)
+- ✅ Create `katalyst-bdd-create-test/SKILL.md` — test creation patterns and examples (394 lines)
+- ✅ Create `katalyst-bdd-troubleshooting/SKILL.md` — common errors and debugging (476 lines)
+- ✅ Create `katalyst-bdd-architecture/SKILL.md` — ports & adapters, custom steps (574 lines)
 
 **Requires**: None (independent of governance pipeline)
 **Enables**: None (standalone reference docs)
 
-**Detailed Plan**: [05-katalyst-bdd-skills.md](../plans/katalyst-bdd-skills.md) | **~1,200 lines, ~5 files**
+**Delivered**: 2,018 lines across 5 comprehensive skills (68% over original 1,200 line estimate)
 
 ---
 
@@ -735,6 +736,126 @@ Two related UX issues in the Domain Mapper chat experience:
 
 ---
 
+### [ROAD-036] Fix Workflow State Machine Diagram Text Readability 🎯
+**Status**: Proposed
+**Priority**: Critical
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-13
+
+The workflow state machine visualization (`WorkflowView.tsx`) has severe readability issues that violate NFR-ACC (Accessibility) and NFR-UX requirements. Transition labels overlap each other, have insufficient text contrast against the dark background, and are poorly positioned relative to transition arrows. The screenshot shows "VerifyAndActivate", "SuspendForNonPayment", "SetDelinquentActivate", "EscalateToDelinquent", and other labels colliding in an unreadable cluster. This makes the workflow diagrams effectively unusable for understanding application lifecycle state machines.
+
+**Identified Issues:**
+- **Label Overlap**: Multiple transition arrows have labels that overlap each other (e.g., between Active↔Suspended, Active→Delinquent, Suspended→Delinquent)
+- **Poor Text Contrast**: Transition label text has insufficient contrast against the dark background (WCAG AA failure)
+- **Inadequate Label Positioning**: Labels positioned directly on top of arrows in cluttered areas compound the readability problem
+- **Layout Density**: Too many transitions in tight vertical/horizontal space without strategic label offset
+
+**Tasks:**
+- 🎯 **Improve label positioning algorithm** — implement smart label placement that detects and avoids overlaps (offset labels perpendicular to arrow direction, use bezier path midpoint calculations)
+- 🎯 **Enhance text contrast** — add semi-transparent background rectangles behind transition labels (white bg with 80% opacity in light mode, dark gray with 90% opacity in dark mode) to ensure WCAG AA compliance (minimum 4.5:1 contrast ratio)
+- 🎯 **Add label collision detection** — implement bounding box collision detection and automatic label repositioning when overlaps are detected
+- 🎯 **Optimize arrow routing** — consider curved/bezier arrows for bidirectional transitions (e.g., Active↔Suspended) to create more label placement space
+- 🎯 **Add interactive label repositioning** — allow users to drag transition labels to custom positions (persist to API model) for complex diagrams where automatic placement fails
+- 🎯 **Implement label toggle** — add UI control to show/hide transition labels temporarily for users who want to see the state machine structure without text clutter
+- 🎯 **Add zoom/pan support** — enhance existing SVG canvas with better zoom controls to let users magnify crowded diagram regions
+- 🎯 **Audit all dark mode text contrast** — verify WCAG AA compliance (4.5:1) for all text elements in workflow diagrams across both light and dark modes
+- 🎯 **Add BDD scenarios** — create accessibility test scenarios verifying label readability (contrast ratios, no overlaps, readable at 100% zoom)
+
+**NFRs**: 
+- NFR-ACC (Accessibility) — WCAG AA text contrast (4.5:1 minimum)
+- NFR-UX — Diagrams must be readable without manual zooming or guesswork
+
+**Requires**: [ROAD-019](#road-019-application-lifecycle-state-machine-view-) (already complete)
+**Enables**: [ROAD-022](#road-022-static-documentation-site-generator-) (ensures exported diagrams are readable)
+**Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine)
+**Related Issues**: Similar to [ROAD-025](#road-025-fix-aggregates-view-dark-mode-text-rendering-) (dark mode text contrast fix)
+
+---
+
+### [ROAD-037] Enhance Chat Tab with AI Branding & Right Justification 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-13
+
+The Chat tab in the Domain Mapper navigation (`DomainMapperPage.tsx`) currently uses a generic speech bubble icon and is left-aligned with all other tabs. This doesn't communicate that it's an AI-powered feature, and the positioning doesn't emphasize its special nature as an intelligent assistant. Enhance the chat tab to stand out with AI-specific iconography, right-aligned positioning, and clear "Prima Powered" branding to signal it's a conversational AI feature distinct from the standard document tabs.
+
+**Current State:**
+- Chat tab positioned leftmost in tab bar with speech bubble icon (`💬` or `<MessageSquare>`)
+- No visual distinction from other navigation tabs
+- No indication that it's AI-powered or Prima-branded
+- Consistent with other tabs in size, color, and positioning
+
+**Proposed Changes:**
+- Move Chat tab to **right side** of navigation bar (separated from document tabs)
+- Replace speech bubble icon with **sparkle/star icon** (`✨` or Lucide's `Sparkles` component) — universal AI indicator
+- Add **"Prima Powered"** text annotation below or beside the Chat label (small, muted text)
+- Subtle visual separator (vertical divider or extra spacing) between document tabs and AI chat
+- Optional: Add pulsing/shimmer effect to sparkle icon when chat is active
+
+**Tasks:**
+- 🎯 **Update tab layout in `DomainMapperPage.tsx`** — restructure tab container to separate left-aligned document tabs (Context Map, Aggregates, Events, Workflows, Glossary) from right-aligned AI chat
+- 🎯 **Replace chat icon with Sparkles** — change from `<MessageSquare>` to `<Sparkles>` icon from Lucide React
+- 🎯 **Add "Prima Powered" branding** — insert small text annotation (e.g., `<span className="text-xs text-gray-500 dark:text-gray-400 ml-1">Prima Powered</span>`) next to Chat label
+- 🎯 **Add visual separator** — insert subtle vertical divider (1px border or increased gap) between document tabs and chat tab
+- 🎯 **Responsive design** — ensure right-aligned chat works on mobile (consider collapsing to icon-only or moving to overflow menu on narrow screens)
+- 🎯 **Dark mode styling** — verify Prima Powered text, separator, and sparkle icon have appropriate contrast in both light and dark modes
+- 🎯 **Hover/active states** — ensure sparkle icon and branding maintain consistent styling with active tab purple underline treatment
+- 🎯 **Optional: Add subtle animation** — consider pulsing or shimmer effect on sparkle icon when chat session is active (low priority)
+
+**Design Notes:**
+- Right-justification emphasizes chat as a special "assistant" feature rather than just another document view
+- Sparkle icon universally recognized as AI/magic (used by ChatGPT, Notion AI, GitHub Copilot, etc.)
+- "Prima Powered" credits the Prima delivery framework AI capabilities
+- Visual separation prevents user confusion about chat being a document type
+
+**NFR**: NFR-UX — UI should clearly communicate AI-powered features
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-) (already complete)
+**Enables**: None (standalone UX enhancement)
+**Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine)
+**Related**: Could extend to FOE Reports chat tab when [ROAD-031](#road-031-foe-assessment-agent-chat-interface-) is implemented
+
+---
+
+### [ROAD-038] Filter Glossary Terms by Clickable Tags 🎯
+**Status**: Proposed
+**Priority**: Medium
+**Phase**: 3 — API, Scanner, Visualization & Domain Tooling
+**Created**: 2026-02-13
+
+Make alias tags in the Ubiquitous Language glossary clickable to filter terms. Users can select multiple tags to apply AND logic filtering (term must have ALL selected tags). Enhances glossary usability for large domain models with 20+ terms by allowing quick filtering to domain concepts, aggregates, or bounded contexts (e.g., show only terms tagged "Citizen" or "Passport Processing").
+
+**Current State:**
+- Alias tags in GlossaryView are static badge components with no interactivity
+- Users must manually scan the entire glossary list to find terms related to a specific concept
+- No way to focus on terms belonging to a particular bounded context or aggregate
+
+**Tasks:**
+- 🎯 Convert alias tag badges from static `<span>` elements to clickable `<button>` elements with hover states
+- 🎯 Add click handler to toggle tag selection state (multi-select with AND logic)
+- 🎯 Style selected tags with filled background/darker color to indicate active filter state
+- 🎯 Filter glossary term list to show only terms that have ALL selected tags
+- 🎯 Add "Clear filters" button in header that appears when any tag is active
+- 🎯 Update header subtitle to show "Showing X of Y terms" when filters are active
+- 🎯 Display empty state message ("No terms match the selected filters") if filtering results in zero terms
+- 🎯 Persist filter state when switching away from Glossary tab and back (React state or URL params)
+- 🎯 Ensure tag buttons render correctly in dark mode with appropriate contrast
+- 🎯 Add keyboard accessibility — tag buttons focusable, toggleable via Enter/Space
+
+**Design Notes:**
+- Follows the same multi-select AND logic pattern used in ROAD-033 (Aggregate Tree Filtering)
+- Tags remain visible above the term list even when not selected to show available filter options
+- Selected tags highlighted, unselected tags remain muted but clickable
+- Clicking an already-active tag deselects it (toggle behavior)
+
+**NFR**: NFR-UX — Interactive elements should provide immediate visual feedback; filters should compose logically
+**Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-) (already complete)
+**Enables**: None (UX enhancement)
+**Capabilities**: [CAP-010](#cap-010-interactive-domain-visualization-engine), [CAP-009](#cap-009-ddd-domain-modeling-api)
+**User Stories**: [US-046](#us-046-filter-glossary-terms-by-clickable-tags)
+
+---
+
 ## Phase 4: Advanced External Integrations
 
 > **Goal**: Connect the governance pipeline to external project management and documentation tools for bidirectional data flow. Extend scanner data sources beyond repository analysis.
@@ -987,9 +1108,9 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | 0 — Foundation | ROAD-001 | ~75 | ~17 | N/A |
 | 1 — Core Schemas | ROAD-002, 003, 007 | ~20 | ~3 | ~2,000 |
 | 2 — Parsers & CLI | ROAD-004, 024 | ~18 | ~4 | ~1,600 |
-| 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023, 025, 027, 028, 029, 030, 031, 032, 033, 034, 035 | ~119 | ~25 | ~10,200 |
+| 3 — API, Scanner, Viz & Domain Tooling | ROAD-005, 006, 008, 009, 015, 016..023, 025, 027, 028, 029, 030, 031, 032, 033, 034, 035, 036, 037, 038 | ~119 | ~25 | ~10,200 |
 | 4 — Advanced External Integrations | ROAD-010, 011, 012, 013, 014, 026 | ~40 | ~7 | ~4,800 |
-| **Total** | **35** | **~272** | **~56** | **~18,600** |
+| **Total** | **38** | **~272** | **~56** | **~18,600** |
 
 ---
 
@@ -1046,3 +1167,6 @@ Each release swaps one layer of the old system with the new. Domain visualizatio
 | Aggregate Tree Filtering & Search *(plan TBD)* | ROAD-033 | Search, context dropdown, artifact type filter pills for AggregateTreeView |
 | Fix Markdown in DDDChat Question Answers *(UX bug fix)* | ROAD-034 | Render `**bold**` syntax in answered question user bubbles via Markdown component |
 | Chat Session Persistence & Live Data Refresh *(critical UX fix)* | ROAD-035 | Persist chat across tab switches, auto-refresh model data after agent creates artifacts |
+| Fix Workflow State Machine Diagram Text Readability *(accessibility fix)* | ROAD-036 | Improve label positioning, text contrast, collision detection for workflow diagrams |
+| Enhance Chat Tab with AI Branding *(UX enhancement)* | ROAD-037 | Right-align chat tab, add sparkle icon, Prima Powered branding |
+| Filter Glossary Terms by Clickable Tags *(UX enhancement)* | ROAD-038 | Make alias tags clickable with multi-select AND logic filtering in GlossaryView |

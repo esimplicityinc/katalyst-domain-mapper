@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { TreeNode } from "./TreeNode";
 import { TreeLegend } from "./TreeLegend";
+import { DDDTooltip } from "./DDDTooltip";
 import type {
   DomainModelFull,
   Aggregate,
@@ -88,8 +89,8 @@ export function AggregateTreeView({ model }: AggregateTreeViewProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Aggregates
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+            Aggregates <DDDTooltip termKey="aggregate" />
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             {totalAggregates} aggregate{totalAggregates !== 1 ? "s" : ""} across{" "}

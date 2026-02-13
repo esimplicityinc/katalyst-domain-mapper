@@ -22,6 +22,8 @@ services:
       - ./packages/intelligence/drizzle:/app/packages/intelligence/drizzle
       - ./packages/foe-schemas/src:/app/packages/foe-schemas/src
       - ./packages/vocabulary/src:/app/packages/vocabulary/src
+      - ./.opencode/agents:/app/.opencode/agents:ro
+      - ./opencode.json:/app/opencode.json:ro
       - ./.env:/app/.env:ro
       - ./entrypoint-dev.sh:/app/entrypoint-dev.sh:ro
       - foe-data:/app/data

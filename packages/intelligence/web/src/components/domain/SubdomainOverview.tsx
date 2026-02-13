@@ -1,4 +1,5 @@
 import type { BoundedContext, SubdomainType } from "../../types/domain";
+import { DDDTooltip } from "./DDDTooltip";
 
 interface SubdomainOverviewProps {
   contexts: BoundedContext[];
@@ -11,6 +12,7 @@ interface SubdomainSection {
   strategy: string;
   headerColor: string;
   dotColor: string;
+  termKey?: string;
 }
 
 const SECTIONS: SubdomainSection[] = [
@@ -21,6 +23,7 @@ const SECTIONS: SubdomainSection[] = [
     strategy: "Build",
     headerColor: "text-blue-700 dark:text-blue-300",
     dotColor: "bg-blue-500",
+    termKey: "core-subdomain",
   },
   {
     type: "supporting",
@@ -29,6 +32,7 @@ const SECTIONS: SubdomainSection[] = [
     strategy: "Integrate",
     headerColor: "text-green-700 dark:text-green-300",
     dotColor: "bg-green-500",
+    termKey: "supporting-subdomain",
   },
   {
     type: "generic",
@@ -37,6 +41,7 @@ const SECTIONS: SubdomainSection[] = [
     strategy: "Buy",
     headerColor: "text-gray-600 dark:text-gray-400",
     dotColor: "bg-gray-400",
+    termKey: "generic-subdomain",
   },
   {
     type: "unclassified",
@@ -84,6 +89,9 @@ export function SubdomainOverview({ contexts }: SubdomainOverviewProps) {
                 <h4 className={`text-sm font-semibold ${section.headerColor}`}>
                   {section.label}
                 </h4>
+                {section.termKey && (
+                  <DDDTooltip termKey={section.termKey} position="bottom" />
+                )}
                 <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">
                   {sectionContexts.length}
                 </span>

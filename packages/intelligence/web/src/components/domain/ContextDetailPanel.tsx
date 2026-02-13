@@ -2,6 +2,7 @@ import { X, ArrowRight, FolderOpen, Users, Info, Layers } from "lucide-react";
 import type { BoundedContext, DomainModelFull } from "../../types/domain";
 import { SubdomainBadge } from "./SubdomainBadge";
 import { RELATIONSHIP_LABELS, STATUS_STYLES } from "./constants";
+import { DDDTooltip } from "./DDDTooltip";
 
 interface ContextDetailPanelProps {
   context: BoundedContext;
@@ -119,8 +120,8 @@ export function ContextDetailPanel({
         {/* Relationships */}
         {context.relationships.length > 0 && (
           <div>
-            <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
-              Relationships
+            <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1">
+              Relationships <DDDTooltip termKey="context-map" position="right" />
             </h4>
             <div className="space-y-1.5">
               {context.relationships.map((rel, i) => (
@@ -151,32 +152,32 @@ export function ContextDetailPanel({
               <div className="text-lg font-bold text-gray-900 dark:text-white">
                 {aggregates.length}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Aggregates
+              <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
+                Aggregates <DDDTooltip termKey="aggregate" position="bottom" />
               </div>
             </div>
             <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700/50 rounded text-center">
               <div className="text-lg font-bold text-gray-900 dark:text-white">
                 {events.length}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Events
+              <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
+                Events <DDDTooltip termKey="domain-event" position="bottom" />
               </div>
             </div>
             <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700/50 rounded text-center">
               <div className="text-lg font-bold text-gray-900 dark:text-white">
                 {vos.length}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Value Objects
+              <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
+                Value Objects <DDDTooltip termKey="value-object" position="bottom" />
               </div>
             </div>
             <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700/50 rounded text-center">
               <div className="text-lg font-bold text-gray-900 dark:text-white">
                 {terms.length}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Glossary Terms
+              <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
+                Glossary Terms <DDDTooltip termKey="ubiquitous-language" position="bottom" />
               </div>
             </div>
           </div>

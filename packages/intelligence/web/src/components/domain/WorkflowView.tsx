@@ -12,6 +12,7 @@ import type {
   WorkflowState,
   WorkflowTransition,
 } from "../../types/domain";
+import { DDDTooltip } from "./DDDTooltip";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -177,8 +178,8 @@ export function WorkflowView({ model }: WorkflowViewProps) {
   if (workflows.length === 0) {
     return (
       <div className="p-6" data-testid="workflow-view">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-          Workflows
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-1.5">
+          Workflows <DDDTooltip termKey="workflow" position="right" />
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8">
           Application lifecycle state machines
@@ -199,8 +200,8 @@ export function WorkflowView({ model }: WorkflowViewProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Workflows
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+            Workflows <DDDTooltip termKey="workflow" position="right" />
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             {workflows.length} workflow{workflows.length !== 1 ? "s" : ""}{" "}

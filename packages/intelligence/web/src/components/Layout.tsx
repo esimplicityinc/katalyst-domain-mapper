@@ -97,9 +97,14 @@ export function Layout() {
               <h1 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">
                 Katalyst
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Domain Mapper
-              </p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Domain Mapper
+                </p>
+                <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 leading-none">
+                  Alpha
+                </span>
+              </div>
             </div>
           </div>
           {/* Close button (mobile only) */}
@@ -160,6 +165,9 @@ export function Layout() {
           <div className="flex items-center gap-2">
             <Hexagon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <span className="font-semibold text-gray-900 dark:text-white">Katalyst</span>
+            <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 leading-none">
+              Alpha
+            </span>
           </div>
         </div>
 

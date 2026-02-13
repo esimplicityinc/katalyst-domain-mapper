@@ -13,6 +13,7 @@ import type {
   DomainEvent,
   BoundedContext,
 } from "../../types/domain";
+import { DDDTooltip } from "./DDDTooltip";
 
 // ── Context color palette ───────────────────────────────────────────────────
 
@@ -135,8 +136,8 @@ export function EventFlowView({ model }: EventFlowViewProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Domain Events
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+            Domain Events <DDDTooltip termKey="domain-event" />
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             {totalEvents} domain event{totalEvents !== 1 ? "s" : ""} across{" "}

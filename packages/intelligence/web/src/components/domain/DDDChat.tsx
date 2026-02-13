@@ -89,8 +89,8 @@ export function DDDChat({ model }: DDDChatProps) {
   const buildContextPreamble = () => {
     return `[Context: You are helping map the domain model "${model.name}"${model.description ? ` — ${model.description}` : ""}.
 DOMAIN_MODEL_ID: ${model.id}
-Current state: ${model.boundedContexts.length} bounded contexts (${model.boundedContexts.map((c) => c.title).join(", ") || "none yet"}), ${model.aggregates.length} aggregates, ${model.domainEvents.length} domain events, ${model.glossaryTerms.length} glossary terms.
-IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_MODEL_ID above. Create bounded contexts first, then aggregates and events using the context IDs from the responses.]
+Current state: ${model.boundedContexts.length} bounded contexts (${model.boundedContexts.map((c) => c.title).join(", ") || "none yet"}), ${model.aggregates.length} aggregates, ${model.domainEvents.length} domain events, ${model.glossaryTerms.length} glossary terms, ${(model.workflows ?? []).length} workflows.
+IMPORTANT: Save all discovered artifacts to the API using curl with the DOMAIN_MODEL_ID above. Create bounded contexts first, then aggregates and events using the context IDs from the responses. Create workflows for key business process lifecycles.]
 
 `;
   };

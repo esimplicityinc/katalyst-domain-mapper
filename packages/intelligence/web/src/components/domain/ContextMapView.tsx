@@ -16,6 +16,7 @@ import { SubdomainBadge } from "./SubdomainBadge";
 import { SubdomainOverview } from "./SubdomainOverview";
 import { ContextMapDiagram } from "./ContextMapDiagram";
 import { RELATIONSHIP_LABELS, STATUS_STYLES } from "./constants";
+import { DDDTooltip } from "./DDDTooltip";
 
 interface ContextMapViewProps {
   model: DomainModelFull;
@@ -122,8 +123,8 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Context Map
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+            Context Map <DDDTooltip termKey="context-map" />
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             {model.boundedContexts.length} bounded context
@@ -174,8 +175,8 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
           onSubmit={handleCreate}
           className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 mb-6"
         >
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
-            New Bounded Context
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-1.5">
+            New Bounded Context <DDDTooltip termKey="bounded-context" position="right" />
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
@@ -223,16 +224,19 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
               onChange={(e) => setTeamOwner(e.target.value)}
               className="px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
-            <select
-              value={subdomainType}
-              onChange={(e) => setSubdomainType(e.target.value)}
-              className="px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
-              <option value="">Subdomain type (optional)</option>
-              <option value="core">Core</option>
-              <option value="supporting">Supporting</option>
-              <option value="generic">Generic</option>
-            </select>
+            <div className="flex items-center gap-1.5">
+              <select
+                value={subdomainType}
+                onChange={(e) => setSubdomainType(e.target.value)}
+                className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="">Subdomain type (optional)</option>
+                <option value="core">Core</option>
+                <option value="supporting">Supporting</option>
+                <option value="generic">Generic</option>
+              </select>
+              <DDDTooltip termKey="core-subdomain" position="bottom" />
+            </div>
           </div>
           <div className="flex gap-2 mt-4">
             <button
