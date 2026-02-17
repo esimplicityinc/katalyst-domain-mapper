@@ -1,5 +1,5 @@
 /** Supported LLM providers for the scanner */
-export type LlmProvider = "anthropic" | "openrouter";
+export type LlmProvider = "anthropic" | "openrouter" | "bedrock";
 
 export interface AppConfig {
   /** Port to listen on */
@@ -19,6 +19,12 @@ export interface AppConfig {
 
   /** OpenRouter API key — alternative provider for scanner */
   openrouterApiKey: string | undefined;
+
+  /** AWS Bedrock bearer token — alternative provider for scanner */
+  awsBedrockToken: string | undefined;
+
+  /** AWS Region for Bedrock */
+  awsRegion: string | undefined;
 
   /** Background scan polling interval in milliseconds */
   scanPollIntervalMs: number;
@@ -41,6 +47,8 @@ export function loadConfig(): AppConfig {
     scannerImage: process.env.SCANNER_IMAGE ?? "foe-scanner",
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
     openrouterApiKey: process.env.OPENROUTER_API_KEY,
+    awsBedrockToken: process.env.AWS_BEARER_TOKEN_BEDROCK,
+    awsRegion: process.env.AWS_REGION ?? "us-east-1",
     scanPollIntervalMs: Number(process.env.SCAN_POLL_INTERVAL_MS ?? 5000),
     logLevel: (process.env.LOG_LEVEL as AppConfig["logLevel"]) ?? "info",
   };

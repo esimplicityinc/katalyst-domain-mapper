@@ -52,32 +52,50 @@ export class DockerScanRunner implements ScanRunner {
         success: false,
         report: null,
         error:
-          "No LLM API key configured (ANTHROPIC_API_KEY or OPENROUTER_API_KEY). Cannot run scanner.",
+          "No LLM API key configured (ANTHROPIC_API_KEY, OPENROUTER_API_KEY, or AWS_BEARER_TOKEN_BEDROCK). Cannot run scanner.",
       };
     }
 
-    // Pass the correct environment variable based on detected provider
-    const envVarName =
-      llm.provider === "openrouter"
-        ? "OPENROUTER_API_KEY"
-        : "ANTHROPIC_API_KEY";
-
+    // Build docker run arguments based on provider
     const args = [
       "run",
       "--rm",
       "-v",
       `${repositoryPath}:/repo`,
-      "-e",
-      `${envVarName}=${llm.key}`,
-      // Tell the scanner which provider to use
-      "-e",
-      `LLM_PROVIDER=${llm.provider}`,
-      this.image,
     ];
+
+    // Add environment variables based on provider
+    if (llm.provider === "bedrock") {
+      args.push(
+        "-e",
+        `AWS_BEARER_TOKEN_BEDROCK=${llm.key}`,
+        "-e",
+        `AWS_REGION=${process.env.AWS_REGION ?? "us-east-1"}`,
+        "-e",
+        "LLM_PROVIDER=bedrock",
+      );
+    } else if (llm.provider === "openrouter") {
+      args.push(
+        "-e",
+        `OPENROUTER_API_KEY=${llm.key}`,
+        "-e",
+        "LLM_PROVIDER=openrouter",
+      );
+    } else {
+      args.push(
+        "-e",
+        `ANTHROPIC_API_KEY=${llm.key}`,
+        "-e",
+        "LLM_PROVIDER=anthropic",
+      );
+    }
+
+    args.push(this.image);
 
     this.logger.info("Starting scanner container", {
       image: this.image,
       repositoryPath,
+      provider: llm.provider,
     });
 
     try {

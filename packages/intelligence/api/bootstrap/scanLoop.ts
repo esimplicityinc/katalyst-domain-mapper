@@ -44,6 +44,16 @@ export function startScanLoop(deps: {
 
         if (result.success && result.report) {
           try {
+            // Log scanner output for debugging
+            logger.debug("Scanner output structure", {
+              jobId: job.id,
+              reportKeys: Object.keys(result.report as any),
+              hasVersion: "version" in (result.report as any),
+              hasRepository: "repository" in (result.report as any),
+              repositoryType: typeof (result.report as any).repository,
+              reportPreview: JSON.stringify(result.report).slice(0, 500),
+            });
+            
             // Normalize and save the report
             const normalized = normalizeReport(result.report);
             const reportId = await reportRepo.save(normalized, result.report);

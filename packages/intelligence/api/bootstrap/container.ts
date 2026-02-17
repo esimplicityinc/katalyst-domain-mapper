@@ -103,10 +103,11 @@ export function createContainer(config: AppConfig): Container {
     logger.info("OpenRouter API key updated at runtime");
   };
 
-  /** Returns whichever LLM key is active (prefers OpenRouter if set) */
+  /** Returns whichever LLM key is active (prefers Bedrock > OpenRouter > Anthropic) */
   const getLlmApiKey = ():
     | { key: string; provider: LlmProvider }
     | undefined => {
+    if (config.awsBedrockToken) return { key: config.awsBedrockToken, provider: "bedrock" };
     if (openrouterApiKey) return { key: openrouterApiKey, provider: "openrouter" };
     if (anthropicApiKey) return { key: anthropicApiKey, provider: "anthropic" };
     return undefined;

@@ -276,10 +276,15 @@ export function normalizeReport(data: unknown): FOEReport {
     }
   }
 
+  // Log the actual data structure to help debugging
+  const dataPreview = JSON.stringify(data, null, 2).slice(0, 1000);
   throw new ReportValidationError(
     "Invalid report format: does not match canonical or scanner schema",
     {
       zodErrors: zodResult.error.issues,
+      dataPreview,
+      dataKeys: data && typeof data === "object" ? Object.keys(data) : [],
+      repositoryType: data && typeof data === "object" && "repository" in data ? typeof (data as any).repository : "missing",
     },
   );
 }

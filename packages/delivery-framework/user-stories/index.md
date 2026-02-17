@@ -57,3 +57,9 @@ User stories define requirements from the perspective of personas interacting wi
 | [US-046](US-046) | Filter Glossary Terms by Clickable Tags | PER-007 | CAP-010, CAP-009 | draft |
 | [US-047](US-047) | View FOE Score Trends Over Time | PER-001 | CAP-014, CAP-001 | draft |
 | [US-048](US-048) | Track Maturity Level Progression | PER-001 | CAP-014, CAP-001 | draft |
+| [US-049](US-049) | Add Organizational Systems to Taxonomy | PER-002 | CAP-013 | planned |
+| [US-050](US-050) | Define Architectural Layer Standards | PER-002 | CAP-013 | planned |
+| [US-051](US-051) | Map Capabilities to Organizational Nodes | PER-002 | CAP-013 | planned |
+| [US-052](US-052) | Configure System Environments | PER-002 | CAP-013 | planned |
+| [US-053](US-053) | Define Actions and Tools for Capabilities | PER-002 | CAP-013 | planned |
+| [US-054](US-054) | GitOps Workflow for Taxonomy Management | PER-005 | CAP-013 | planned |

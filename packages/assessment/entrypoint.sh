@@ -4,8 +4,8 @@ set -euo pipefail
 REPO_PATH="${1:-/repo}"
 
 # Validate at least one LLM API key is set
-if [ -z "${ANTHROPIC_API_KEY:-}" ] && [ -z "${OPENROUTER_API_KEY:-}" ]; then
-  echo '{"error": "Either ANTHROPIC_API_KEY or OPENROUTER_API_KEY environment variable is required"}' >&2
+if [ -z "${ANTHROPIC_API_KEY:-}" ] && [ -z "${OPENROUTER_API_KEY:-}" ] && [ -z "${AWS_BEARER_TOKEN_BEDROCK:-}" ]; then
+  echo '{"error": "Either ANTHROPIC_API_KEY, OPENROUTER_API_KEY, or AWS_BEARER_TOKEN_BEDROCK environment variable is required"}' >&2
   exit 1
 fi
 
@@ -25,7 +25,10 @@ fi
 PROVIDER="${LLM_PROVIDER:-}"
 MODEL_FLAG=""
 
-if [ -n "${OPENROUTER_API_KEY:-}" ] || [ "$PROVIDER" = "openrouter" ]; then
+if [ -n "${AWS_BEARER_TOKEN_BEDROCK:-}" ] || [ "$PROVIDER" = "bedrock" ]; then
+  echo "Using AWS Bedrock provider" >&2
+  MODEL_FLAG="--model amazon-bedrock/anthropic.claude-sonnet-4-5-20250929-v1:0"
+elif [ -n "${OPENROUTER_API_KEY:-}" ] || [ "$PROVIDER" = "openrouter" ]; then
   echo "Using OpenRouter provider" >&2
   MODEL_FLAG="--model openrouter/anthropic/claude-sonnet-4"
 elif [ -n "${ANTHROPIC_API_KEY:-}" ] || [ "$PROVIDER" = "anthropic" ]; then
