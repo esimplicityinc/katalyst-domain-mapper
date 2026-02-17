@@ -68,3 +68,7 @@ package-lock.json
 
 # OS
 Thumbs.db
+
+# SQLite shared memory files
+*.db-shm
+*.db-wal
