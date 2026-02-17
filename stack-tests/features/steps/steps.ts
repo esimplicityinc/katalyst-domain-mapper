@@ -8,6 +8,7 @@ import {
 } from '@esimplicity/stack-tests/steps';
 import './custom-steps.js';
 import './navigation-restructure-steps.js';
+import './foe-project-browser-steps.js';
 
 registerApiSteps(test);
 registerUiSteps(test);
