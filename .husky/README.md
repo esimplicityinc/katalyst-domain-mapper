@@ -1,17 +1,25 @@
 # Git Hooks with Husky
 
-This project uses [Husky](https://typicode.github.io/husky/) to run quality checks before commits.
+This project uses [Husky](https://typicode.github.io/husky/) to run quality checks before commits and pushes.
 
 ## Pre-commit Hook
 
 The pre-commit hook runs the following checks:
 
 1. **Type checking** - `just typecheck`
-2. **Linting** - `just lint`
-3. **Format checking** - `just format-check`
-4. **Unit tests** - `just test`
+2. **Format checking** - `just format-check`
+3. **Unit tests** - `just test`
 
 All checks must pass before a commit is allowed.
+
+## Pre-push Hook
+
+The pre-push hook runs more comprehensive checks:
+
+1. **Full check suite** - `just check` (typecheck + format + test)
+2. **BDD smoke tests** - `just bdd-api` (API-only tests for speed)
+
+These ensure code quality before pushing to the remote repository.
 
 ## Setup
 
@@ -31,7 +39,7 @@ mv .husky/pre-commit .husky/pre-commit.full
 mv .husky/pre-commit.light .husky/pre-commit
 ```
 
-This runs only typecheck, lint, and format checks. **Make sure to run tests manually before pushing!**
+This runs only typecheck and format checks. **Make sure to run tests manually before pushing!**
 
 To restore the full version:
 ```bash
@@ -41,9 +49,13 @@ mv .husky/pre-commit.full .husky/pre-commit
 
 ## Bypassing Hooks (Emergency Only)
 
-If you need to bypass the pre-commit hook in an emergency:
+If you need to bypass hooks in an emergency:
 ```bash
+# Skip pre-commit
 git commit --no-verify -m "your message"
+
+# Skip pre-push
+git push --no-verify
 ```
 
 **⚠️ Use this sparingly!** The hooks exist to maintain code quality.
@@ -65,9 +77,9 @@ cargo install just
 
 ### Hook not running
 
-Make sure the hook is executable:
+Make sure the hooks are executable:
 ```bash
-chmod +x .husky/pre-commit
+chmod +x .husky/pre-commit .husky/pre-push
 ```
 
 ### Checks failing
@@ -75,13 +87,13 @@ chmod +x .husky/pre-commit
 Run the checks manually to see details:
 ```bash
 just typecheck
-just lint
 just format-check
 just test
+just bdd-api
 ```
 
-Fix issues and try committing again. Or use auto-fix where available:
+Fix issues and try committing/pushing again. Or use auto-fix where available:
 ```bash
-just lint-fix
-just format
+just fix         # Auto-fix lint + format
+just format      # Auto-format only
 ```

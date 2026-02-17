@@ -1,0 +1,25 @@
+#!/bin/sh
+# Run comprehensive checks before push
+
+echo "🚀 Running pre-push checks..."
+
+# Check if just is installed
+if ! command -v just &> /dev/null; then
+    echo "❌ Error: 'just' command not found. Please install justfile: https://github.com/casey/just"
+    exit 1
+fi
+
+# Run full check suite
+echo "🔍 Running full check suite..."
+just check || exit 1
+
+# Run BDD smoke tests (API only for speed)
+echo "🧪 Running BDD smoke tests..."
+just bdd-api || {
+    echo ""
+    echo "❌ BDD tests failed. Fix issues before pushing."
+    exit 1
+}
+
+echo "✅ All pre-push checks passed!"
+echo "💪 Ready to push!"
