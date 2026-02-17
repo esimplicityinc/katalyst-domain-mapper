@@ -24,3 +24,4 @@ Capabilities represent the core functional areas the system provides. Each capab
 | [CAP-012](CAP-012) | Domain Model Export Pipeline | Business | planned |
 | [CAP-013](CAP-013) | System Taxonomy Management | Business | planned |
 | [CAP-014](CAP-014) | FOE Report Trend Analysis & History | Business | planned |
+| [CAP-015](CAP-015) | Manual FOE Assessment Creation | Business | planned |
