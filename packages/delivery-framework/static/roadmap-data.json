@@ -1133,7 +1133,7 @@
             },
             "NFR-PERF-002": {
               "status": "fail",
-              "score": "TTI: 9.7s (target: <3.0s)",
+              "score": "TTI: 9.7s (target: &lt;3.0s)",
               "validated_at": "2026-02-16",
               "validated_by": "ci-runner",
               "notes": "Performance optimization pending - requires lazy loading for dropdown components (~6-8 hours)"
@@ -1145,9 +1145,313 @@
       "depends_on": [],
       "blocked_by": [],
       "filePath": "roads/ROAD-029"
+    },
+    {
+      "id": "ROAD-030",
+      "title": "FOE Project Browser & Persistent Report Selection",
+      "status": "proposed",
+      "phase": 3,
+      "priority": "high",
+      "created": "2026-02-17",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": [],
+          "notes": "Follows established patterns from DomainMapperPage (ROAD-029). No new architectural decisions needed."
+        },
+        "bdd": {
+          "status": "ready",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [
+            "stack-tests/features/ui/reporting/02_foe_project_browser.feature"
+          ],
+          "scenarios": 24,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-A11Y-001",
+            "NFR-PERF-002",
+            "NFR-SEC-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-030"
+    },
+    {
+      "id": "ROAD-039",
+      "title": "Lifecycle-Oriented Navigation + System Taxonomy (Docs Site)",
+      "status": "nfr_validating",
+      "phase": 4,
+      "priority": "high",
+      "created": "2026-02-16",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "roadmap-addition",
+          "validated_at": "2026-02-16",
+          "compliance_check": [],
+          "ids": [
+            "ADR-013"
+          ]
+        },
+        "bdd": {
+          "status": "implemented",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [
+            "stack-tests/features/ui/navigation-restructure.feature"
+          ],
+          "scenarios": 42,
+          "passing": 0,
+          "notes": "Step definitions implemented (100+ steps), test execution pending"
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-A11Y-001",
+            "NFR-MAINT-001",
+            "NFR-PERF-002"
+          ],
+          "status": "partial_pass",
+          "results": {
+            "NFR-A11Y-001": {
+              "status": "pass",
+              "score": "94-96%",
+              "validated_at": "2026-02-16",
+              "validated_by": "ci-runner",
+              "notes": "WCAG 2.1 AA compliance achieved after contrast and label fixes"
+            },
+            "NFR-MAINT-001": {
+              "status": "pass",
+              "score": "100%",
+              "validated_at": "2026-02-16",
+              "validated_by": "ci-runner",
+              "notes": "Zero broken links, all 18 internal links tested and passing"
+            },
+            "NFR-PERF-002": {
+              "status": "fail",
+              "score": "TTI: 9.7s (target: &lt;3.0s)",
+              "validated_at": "2026-02-16",
+              "validated_by": "ci-runner",
+              "notes": "Performance optimization pending - requires lazy loading for dropdown components (~6-8 hours)"
+            }
+          }
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-039"
+    },
+    {
+      "id": "ROAD-040",
+      "title": "Lifecycle Navigation + Interactive Taxonomy (Web App)",
+      "status": "complete",
+      "phase": 4,
+      "priority": "high",
+      "created": "2026-02-16",
+      "started": "",
+      "completed": "2026-02-17",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": [],
+          "notes": "Leverages ADR-013 (Lifecycle-Oriented IA). Interactive visualization patterns deferred to ROAD-040-MVP-2"
+        },
+        "bdd": {
+          "status": "complete",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%",
+            "executed_at": "2026-02-17",
+            "duration": "50.8s",
+            "pass_rate": "100%"
+          },
+          "feature_files": [
+            "stack-tests/features/ui/web-app-lifecycle-navigation.feature"
+          ],
+          "scenarios": 33,
+          "passing": 28
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-A11Y-001",
+            "NFR-PERF-002",
+            "NFR-SEC-001"
+          ],
+          "status": "validated",
+          "results": {
+            "NFR-A11Y-001": "PASS - WCAG 2.1 AA compliance verified via BDD tests",
+            "NFR-PERF-002": "PASS - Navigation loads &lt;2s, interactions &lt;200ms",
+            "NFR-SEC-001": "PASS - No auth changes, existing security maintained"
+          }
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-040"
+    },
+    {
+      "id": "ROAD-041",
+      "title": "Taxonomy CRUD Operations with Port/Adapter Pattern",
+      "status": "proposed",
+      "phase": 2,
+      "priority": "high",
+      "created": "2026-02-17",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": [],
+          "notes": "Will reference ADR-013 (Hexagonal Architecture). May need new ADR for dual persistence strategy."
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001",
+            "NFR-PERF-002",
+            "NFR-SEC-001",
+            "NFR-A11Y-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-041"
+    },
+    {
+      "id": "ROAD-042",
+      "title": "FOE Report Trend Visualization (Web UI)",
+      "status": "proposed",
+      "phase": 3,
+      "priority": "high",
+      "created": "2026-02-17",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": [],
+          "ids": [],
+          "notes": "No new ADR required. Follows existing React component patterns."
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-002",
+            "NFR-A11Y-001"
+          ],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-042"
+    },
+    {
+      "id": "ROAD-043",
+      "title": "Manual FOE Assessment Wizard UI",
+      "status": "proposed",
+      "phase": 3,
+      "priority": "medium",
+      "created": "2026-02-17T00:00:00.000Z",
+      "started": "",
+      "completed": "",
+      "governance": {
+        "adrs": {
+          "validated": false,
+          "validated_by": "",
+          "validated_at": "",
+          "compliance_check": []
+        },
+        "bdd": {
+          "status": "draft",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          }
+        },
+        "nfrs": {
+          "applicable": [],
+          "status": "pending",
+          "results": {}
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-043"
     }
   ],
-  "generatedAt": "2026-02-16T17:27:11.549Z",
+  "generatedAt": "2026-02-17T18:42:19.868Z",
   "validStatuses": [
     "proposed",
     "adr_validated",
