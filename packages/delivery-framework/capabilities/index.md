@@ -22,3 +22,4 @@ Capabilities represent the core functional areas the system provides. Each capab
 | [CAP-010](CAP-010) | Interactive Domain Visualization Engine | Business | in_progress |
 | [CAP-011](CAP-011) | Subdomain Classification | Business | planned |
 | [CAP-012](CAP-012) | Domain Model Export Pipeline | Business | planned |
+| [CAP-013](CAP-013) | System Taxonomy Management | Business | planned |
