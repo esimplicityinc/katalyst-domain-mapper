@@ -278,27 +278,35 @@ export function TriangleDiagram({ report }: TriangleDiagramProps) {
             </div>
           </div>
 
-          {triangleDiagnosis.belowMinimum.length > 0 && (
+          {triangleDiagnosis.belowMinimum && triangleDiagnosis.belowMinimum.length > 0 && (
             <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-                <div>
+                <div className="flex-1">
                   <div className="text-sm font-semibold text-red-800 dark:text-red-200 mb-1">
                     Below Minimum Threshold
                   </div>
-                  <div className="text-sm text-red-700 dark:text-red-300">
-                    {triangleDiagnosis.belowMinimum
-                      .map((dim) => (
-                        <span key={dim} className="capitalize">
-                          {dim} (min:{" "}
-                          {MIN_THRESHOLDS[dim as keyof typeof MIN_THRESHOLDS]})
-                        </span>
-                      ))
-                      .reduce((prev, curr) => (
-                        <>
-                          {prev}, {curr}
-                        </>
-                      ))}
+                  <div className="text-sm text-red-700 dark:text-red-300 space-y-2">
+                    {triangleDiagnosis.belowMinimum.map((item) => {
+                      // Handle both string[] and object[] formats
+                      const dim = typeof item === 'string' ? item : item.dimension;
+                      const score = typeof item === 'object' && 'score' in item ? item.score : scores[dim as keyof typeof scores];
+                      const minimum = typeof item === 'object' && 'minimum' in item ? item.minimum : MIN_THRESHOLDS[dim as keyof typeof MIN_THRESHOLDS];
+                      const risk = typeof item === 'object' && 'risk' in item ? item.risk : undefined;
+                      
+                      return (
+                        <div key={dim} className="border-l-2 border-red-400 pl-2">
+                          <div className="font-medium capitalize">
+                            {dim}: {Math.round(score)} / {minimum}
+                          </div>
+                          {risk && (
+                            <div className="text-xs mt-1 text-red-600 dark:text-red-400">
+                              {risk}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

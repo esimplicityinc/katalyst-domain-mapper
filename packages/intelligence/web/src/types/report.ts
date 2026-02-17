@@ -18,7 +18,12 @@ export interface FOEReport {
     weakestScore: number;
     pattern: string;
     intervention: string;
-    belowMinimum: string[];
+    belowMinimum: Array<string | {
+      dimension: string;
+      score: number;
+      minimum: number;
+      risk: string;
+    }>;
   };
   overallScore: number;
   maturityLevel: string;
