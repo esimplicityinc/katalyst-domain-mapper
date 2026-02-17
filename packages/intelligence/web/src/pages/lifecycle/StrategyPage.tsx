@@ -1,4 +1,4 @@
-import { Target, TestTube, ArrowRight, Shield } from "lucide-react";
+import { Target, TestTube, ArrowRight, Shield, FolderKanban } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function StrategyPage() {
@@ -34,7 +34,7 @@ export function StrategyPage() {
           </div>
 
           {/* Available Tools */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* FOE Scanner */}
             <Link
               to="/strategy/foe-scanner"
@@ -48,8 +48,30 @@ export function StrategyPage() {
                 FOE Scanner
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Flow Optimized Engineering assessment reports. Upload scan results to visualize 
-                your engineering health across Understanding, Feedback, and Confidence dimensions.
+                Quick FOE assessment. Upload a single scan report to visualize 
+                engineering health across Understanding, Feedback, and Confidence dimensions.
+              </p>
+              <div className="flex items-center gap-2 text-sm text-brand-primary-600 dark:text-brand-primary-400">
+                <span className="font-medium">Open Tool</span>
+                <ArrowRight className="w-4 h-4" />
+              </div>
+            </Link>
+
+            {/* FOE Projects */}
+            <Link
+              to="/strategy/foe-projects"
+              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:border-brand-primary-400 dark:hover:border-brand-primary-500 transition-colors group"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <FolderKanban className="w-8 h-8 text-brand-primary-500 dark:text-brand-primary-400" />
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-brand-primary-500 dark:group-hover:text-brand-primary-400 transition-colors" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                FOE Projects
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Multi-project browser with scan history, AI coaching chat, and persistent 
+                project tracking. Compare scores over time and get personalized improvement guidance.
               </p>
               <div className="flex items-center gap-2 text-sm text-brand-primary-600 dark:text-brand-primary-400">
                 <span className="font-medium">Open Tool</span>
@@ -88,15 +110,19 @@ export function StrategyPage() {
             <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
               <div className="flex items-start gap-2">
                 <span className="text-brand-primary-500 dark:text-brand-primary-400 font-medium">1.</span>
-                <span>Run the FOE Scanner on your repository to assess engineering practices</span>
+                <span>Run the FOE Scanner CLI on your repository to assess engineering practices</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-brand-primary-500 dark:text-brand-primary-400 font-medium">2.</span>
-                <span>Upload the scan report to the FOE Scanner tool to visualize results</span>
+                <span>Upload scan reports to <strong>FOE Projects</strong> to track progress over time</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-brand-primary-500 dark:text-brand-primary-400 font-medium">3.</span>
-                <span>Use the Governance Dashboard to track roadmap items and NFR compliance</span>
+                <span>Use the <strong>AI Chat</strong> in FOE Projects to get personalized improvement recommendations</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-brand-primary-500 dark:text-brand-primary-400 font-medium">4.</span>
+                <span>Monitor governance compliance with the <strong>Governance Dashboard</strong></span>
               </div>
             </div>
           </div>
