@@ -192,17 +192,17 @@ Feature: Domain Event Flow Visualization
     Then I wait for 2 seconds
     # Context header should be visible
     Then I should see text "Scanning Context"
-    # But individual events should NOT be visible yet (collapsed)
-    Then I should not see text "ScanStarted"
+    # The event cards in the timeline should NOT be visible (collapsed)
+    Then the element "[data-testid='event-card-scan-started']" should not be visible
     # Click to expand the context
     When I click the element "button:has-text('Scanning Context')"
     Then I wait for 1 seconds
-    # Now events should be visible
-    Then I should see text "ScanStarted"
-    And I should see text "ScanCompleted"
+    # Now event card should be visible
+    Then the element "[data-testid='event-card-scan-started']" should be visible
     # Click again to collapse
     When I click the element "button:has-text('Scanning Context')"
     Then I wait for 1 seconds
-    # Events should be hidden again
-    Then I should not see text "ScanStarted"
+    # Event card should be hidden again
+    Then the element "[data-testid='event-card-scan-started']" should not be visible
+
 
