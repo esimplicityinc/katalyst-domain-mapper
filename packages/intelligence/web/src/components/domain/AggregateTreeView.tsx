@@ -6,6 +6,8 @@ import {
   FileCode,
   ChevronsUpDown,
   ChevronsDownUp,
+  ChevronRight,
+  ChevronDown,
 } from "lucide-react";
 import { TreeNode } from "./TreeNode";
 import { TreeLegend } from "./TreeLegend";
@@ -22,6 +24,7 @@ interface AggregateTreeViewProps {
 
 export function AggregateTreeView({ model }: AggregateTreeViewProps) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [expandedContexts, setExpandedContexts] = useState<Set<string>>(new Set());
 
   // Build a slug→ValueObject lookup for cross-referencing
   const voBySlug = useMemo(() => {
@@ -51,6 +54,15 @@ export function AggregateTreeView({ model }: AggregateTreeViewProps) {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleContext = useCallback((contextId: string) => {
+    setExpandedContexts((prev) => {
+      const next = new Set(prev);
+      if (next.has(contextId)) next.delete(contextId);
+      else next.add(contextId);
       return next;
     });
   }, []);
@@ -143,33 +155,46 @@ export function AggregateTreeView({ model }: AggregateTreeViewProps) {
           <div className="space-y-4">
             {grouped
               .filter((g) => g.aggregates.length > 0)
-              .map((group) => (
-                <div key={group.context.id}>
-                  {/* Context header */}
-                  <div className="flex items-center gap-2 mb-2 pb-1 border-b border-gray-100 dark:border-gray-700">
-                    <div className="w-3 h-3 rounded-full bg-purple-500" />
-                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      {group.context.title}
-                    </h3>
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
-                      ({group.aggregates.length})
-                    </span>
-                  </div>
+              .map((group) => {
+                const isContextExpanded = expandedContexts.has(group.context.id);
+                return (
+                  <div key={group.context.id}>
+                    {/* Context header - now clickable */}
+                    <button
+                      onClick={() => toggleContext(group.context.id)}
+                      className="flex items-center gap-2 mb-2 pb-1 border-b border-gray-100 dark:border-gray-700 w-full text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded transition-colors px-2 -mx-2"
+                    >
+                      {isContextExpanded ? (
+                        <ChevronDown className="w-4 h-4 text-gray-500" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-gray-500" />
+                      )}
+                      <div className="w-3 h-3 rounded-full bg-purple-500" />
+                      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        {group.context.title}
+                      </h3>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                        ({group.aggregates.length})
+                      </span>
+                    </button>
 
-                  {/* Aggregate tree nodes */}
-                  <div className="space-y-1 ml-2">
-                    {group.aggregates.map((agg) => (
-                      <AggregateNode
-                        key={agg.id}
-                        aggregate={agg}
-                        expanded={expanded}
-                        onToggle={toggleExpand}
-                        voBySlug={voBySlug}
-                      />
-                    ))}
+                    {/* Aggregate tree nodes - only show when expanded */}
+                    {isContextExpanded && (
+                      <div className="space-y-1 ml-2">
+                        {group.aggregates.map((agg) => (
+                          <AggregateNode
+                            key={agg.id}
+                            aggregate={agg}
+                            expanded={expanded}
+                            onToggle={toggleExpand}
+                            voBySlug={voBySlug}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
             {/* Orphan aggregates */}
             {orphanAggregates.length > 0 && (

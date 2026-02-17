@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Routes, Route, NavLink, Navigate } from "react-router-dom";
 import {
-  MessageSquare,
+  Sparkles,
   Layers,
   Box,
   Zap,
@@ -23,33 +23,42 @@ import type { DomainModel, DomainModelFull } from "../types/domain";
 const STORAGE_KEY = "foe:selectedModelId";
 
 const SUB_NAV = [
-  { to: "/mapper/chat", label: "Chat", icon: MessageSquare },
-  { to: "/mapper/contexts", label: "Context Map", icon: Layers },
-  { to: "/mapper/aggregates", label: "Aggregates", icon: Box },
-  { to: "/mapper/events", label: "Events", icon: Zap },
-  { to: "/mapper/workflows", label: "Workflows", icon: GitBranch },
-  { to: "/mapper/glossary", label: "Glossary", icon: BookOpen },
+  { to: "/design/business-domain/contexts", label: "Context Map", icon: Layers },
+  { to: "/design/business-domain/aggregates", label: "Aggregates", icon: Box },
+  { to: "/design/business-domain/events", label: "Events", icon: Zap },
+  { to: "/design/business-domain/workflows", label: "Workflows", icon: GitBranch },
+  { to: "/design/business-domain/glossary", label: "Glossary", icon: BookOpen },
 ];
+
+const CHAT_NAV = { to: "/design/business-domain/chat", label: "Chat", icon: Sparkles };
 
 export function DomainMapperPage() {
   const [models, setModels] = useState<DomainModel[]>([]);
   const [activeModel, setActiveModel] = useState<DomainModelFull | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModelList, setShowModelList] = useState(false);
+  const initialLoadDone = useRef(false);
 
   useEffect(() => {
-    loadModels();
-  }, []);
+    // Only load once on mount
+    if (!initialLoadDone.current) {
+      initialLoadDone.current = true;
+      loadModels();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadModels = async () => {
     setLoading(true);
     try {
       const list = await api.listDomainModels();
       setModels(list);
+      
+      // Only auto-select if no model is currently active
       if (list.length > 0 && !activeModel) {
         const savedId = localStorage.getItem(STORAGE_KEY);
         const savedExists = savedId && list.some((m) => m.id === savedId);
-        await selectModel(savedExists ? savedId : list[0].id);
+        const modelIdToLoad = savedExists ? savedId : list[0].id;
+        await selectModel(modelIdToLoad);
       }
     } catch {
       // API might not be reachable — that's fine
@@ -146,29 +155,47 @@ export function DomainMapperPage() {
 
         {/* Sub-navigation tabs */}
         <div className="px-4 sm:px-6 flex gap-1 overflow-x-auto">
-          {SUB_NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `flex items-center gap-1.5 px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  isActive
-                    ? "border-purple-500 text-purple-700 dark:text-purple-300"
-                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600"
-                }`
-              }
-            >
-              <item.icon className="w-4 h-4" />
-              {item.label}
-            </NavLink>
-          ))}
+          <div className="flex gap-1 flex-1">
+            {SUB_NAV.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `flex items-center gap-1.5 px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                    isActive
+                      ? "border-brand-primary-500 text-brand-primary-600 dark:text-brand-primary-300"
+                      : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600"
+                  }`
+                }
+              >
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+          
+          {/* Chat tab on the right */}
+          <NavLink
+            to={CHAT_NAV.to}
+            className={({ isActive }) =>
+              `flex items-center gap-1.5 px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ml-auto ${
+                isActive
+                  ? "border-brand-accent-lavender text-brand-accent-lavender dark:text-brand-accent-lavender"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600"
+              }`
+            }
+          >
+            <CHAT_NAV.icon className="w-4 h-4" />
+            <span>{CHAT_NAV.label}</span>
+            <span className="text-xs text-brand-accent-steel opacity-70">(Powered by Prima)</span>
+          </NavLink>
         </div>
       </header>
 
       {/* Sub-route content */}
       <div className="flex-1 overflow-auto">
         <Routes>
-          <Route index element={<Navigate to="/mapper/chat" replace />} />
+          <Route index element={<Navigate to="chat" replace />} />
           <Route
             path="chat"
             element={

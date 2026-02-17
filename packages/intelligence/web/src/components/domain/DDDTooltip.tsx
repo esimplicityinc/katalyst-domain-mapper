@@ -87,9 +87,9 @@ export function DDDTooltip({
       <span
         className={`absolute z-50 ${POSITION_CLASSES[position]} pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200`}
       >
-        <span className="block bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs rounded-lg shadow-lg px-3 py-2 max-w-xs">
-          <span className="font-semibold block mb-0.5">{entry.term}</span>
-          <span className="text-gray-300 dark:text-gray-600 text-xs leading-relaxed block">
+        <span className="block bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs rounded-lg shadow-lg px-4 py-3 w-72">
+          <span className="font-semibold block mb-1">{entry.term}</span>
+          <span className="text-gray-300 dark:text-gray-600 text-xs leading-relaxed block mb-2">
             {entry.definition}
           </span>
           {entry.learnMore && (
@@ -97,7 +97,7 @@ export function DDDTooltip({
               href={entry.learnMore}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-400 dark:text-blue-600 hover:underline text-xs mt-1 inline-block"
+              className="text-blue-400 dark:text-blue-600 hover:underline text-xs inline-flex items-center gap-1"
             >
               Learn more →
             </a>
