@@ -63,3 +63,4 @@ User stories define requirements from the perspective of personas interacting wi
 | [US-052](US-052) | Configure System Environments | PER-002 | CAP-013 | planned |
 | [US-053](US-053) | Define Actions and Tools for Capabilities | PER-002 | CAP-013 | planned |
 | [US-054](US-054) | GitOps Workflow for Taxonomy Management | PER-005 | CAP-013 | planned |
+| [US-055](US-055) | Create Manual FOE Assessment | PER-001 | CAP-015, CAP-001, CAP-002 | draft |

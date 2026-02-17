@@ -161,9 +161,9 @@ No architecture score change — UI-only refactoring maintains existing patterns
 
 #### Performance Impact
 
-- Navigation loads within 300ms (target: <300ms) ✅
+- Navigation loads within 300ms (target: &lt;300ms) ✅
 - Route changes within 100ms ✅
-- First Contentful Paint <1.5 seconds ✅
+- First Contentful Paint &lt;1.5 seconds ✅
 - No performance regression detected
 
 #### Accessibility Improvements
