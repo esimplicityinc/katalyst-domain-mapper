@@ -124,7 +124,7 @@ Build React UI components to visualize FOE report history and trends over time. 
    - High contrast mode compatible
 
 ### 8. ✅ **Performance**
-   - Trend page loads in <2s with 50 data points
+   - Trend page loads in &lt;2s with 50 data points
    - Chart renders without lag
    - Smooth hover interactions
    - No memory leaks on component unmount
@@ -409,7 +409,7 @@ Feature: FOE Report Trend Visualization
 
 | NFR | Requirement | Test Approach |
 |-----|-------------|---------------|
-| NFR-PERF-002 | Page loads <2s with 50 data points | Lighthouse audit, BDD timing assertions |
+| NFR-PERF-002 | Page loads &lt;2s with 50 data points | Lighthouse audit, BDD timing assertions |
 | NFR-A11Y-001 | WCAG 2.1 AA compliant | axe-core automated testing, manual keyboard nav |
 
 ---

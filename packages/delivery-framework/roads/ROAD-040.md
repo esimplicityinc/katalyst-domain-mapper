@@ -30,7 +30,7 @@ governance:
     status: validated
     results:
       NFR-A11Y-001: "PASS - WCAG 2.1 AA compliance verified via BDD tests"
-      NFR-PERF-002: "PASS - Navigation loads <2s, interactions <200ms"
+      NFR-PERF-002: "PASS - Navigation loads &lt;2s, interactions &lt;200ms"
       NFR-SEC-001: "PASS - No auth changes, existing security maintained"
 dependencies:
   requires: [ROAD-039]
@@ -145,7 +145,7 @@ The following features were scoped out for faster delivery:
 | NFR | Status | Evidence |
 |-----|--------|----------|
 | NFR-A11Y-001 | ✅ PASS | WCAG 2.1 AA verified via BDD tests (keyboard nav, ARIA, focus indicators) |
-| NFR-PERF-002 | ✅ PASS | Navigation loads <2s, interactions <200ms |
+| NFR-PERF-002 | ✅ PASS | Navigation loads &lt;2s, interactions &lt;200ms |
 | NFR-SEC-001 | ✅ PASS | No auth changes, existing security maintained |
 
 ## Migration Notes

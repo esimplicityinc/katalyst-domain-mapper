@@ -119,7 +119,7 @@ This roadmap item transforms the Reports experience into a **multi-project brows
 35. ✅ Keyboard navigation works for all tabs and buttons
 36. ✅ Mobile responsive on 375px, 768px, 1920px viewports
 37. ✅ Dark mode support for all new components
-38. ✅ Page loads in <2s (Time to Interactive)
+38. ✅ Page loads in &lt;2s (Time to Interactive)
 39. ✅ Zero console errors or warnings
 
 ## Technical Approach
@@ -227,7 +227,7 @@ This roadmap item transforms the Reports experience into a **multi-project brows
 - Keyboard navigation testing
 - Accessibility audit (WCAG 2.1 AA)
 - Dark mode verification
-- Performance testing (TTI <2s)
+- Performance testing (TTI &lt;2s)
 - Cross-browser testing
 
 **Phase 10: Documentation (1 hour)**
@@ -349,7 +349,7 @@ packages/intelligence/web/src/
 **Mitigation**:
 - Implement pagination (20 projects per page)
 - Add virtualization for infinite scroll
-- Optimize search with client-side filtering (fast enough for <500 projects)
+- Optimize search with client-side filtering (fast enough for &lt;500 projects)
 
 ### Risk 3: URL Conflicts
 **Impact**: New routing may conflict with legacy routes  
@@ -376,7 +376,7 @@ packages/intelligence/web/src/
 - **Measurement**: Track clicks from landing to target report
 
 ### Performance
-- **Target**: Project list loads in <1s, project detail loads in <2s
+- **Target**: Project list loads in &lt;1s, project detail loads in &lt;2s
 - **Measurement**: Lighthouse CI, real user monitoring
 
 ### Adoption

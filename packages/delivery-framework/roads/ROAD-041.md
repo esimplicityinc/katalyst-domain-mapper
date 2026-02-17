@@ -666,8 +666,8 @@ Feature: Taxonomy Node CRUD Operations
 
 | NFR | Requirement | Test Approach |
 |-----|-------------|---------------|
-| NFR-PERF-001 | CRUD operations <200ms | BDD timing assertions |
-| NFR-PERF-002 | Hierarchy queries <2s for <500 nodes | Load test with synthetic data |
+| NFR-PERF-001 | CRUD operations &lt;200ms | BDD timing assertions |
+| NFR-PERF-002 | Hierarchy queries &lt;2s for &lt;500 nodes | Load test with synthetic data |
 | NFR-SEC-001 | Authenticated mutations | BDD scenarios with auth headers |
 | NFR-A11Y-001 | WCAG 2.1 AA compliant forms | Phase 2: axe-core + keyboard testing |
 

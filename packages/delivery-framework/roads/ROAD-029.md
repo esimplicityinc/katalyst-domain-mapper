@@ -38,7 +38,7 @@ governance:
         notes: "Zero broken links, all 18 internal links tested and passing"
       NFR-PERF-002:
         status: fail
-        score: "TTI: 9.7s (target: <3.0s)"
+        score: "TTI: 9.7s (target: &lt;3.0s)"
         validated_at: "2026-02-16"
         validated_by: "ci-runner"
         notes: "Performance optimization pending - requires lazy loading for dropdown components (~6-8 hours)"
