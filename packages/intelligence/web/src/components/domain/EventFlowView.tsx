@@ -61,6 +61,7 @@ interface EventFlowViewProps {
 export function EventFlowView({ model }: EventFlowViewProps) {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
+  const [expandedContexts, setExpandedContexts] = useState<Set<string>>(new Set());
 
   // Build a context-index → color lookup
   const contextColorMap = useMemo(() => {
@@ -117,6 +118,15 @@ export function EventFlowView({ model }: EventFlowViewProps) {
 
   const toggleEventExpand = useCallback((id: string) => {
     setExpandedEvents((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleContextExpand = useCallback((id: string) => {
+    setExpandedContexts((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -212,10 +222,19 @@ export function EventFlowView({ model }: EventFlowViewProps) {
                 .map((group) => {
                   const colors =
                     contextColorMap.get(group.context.id) ?? CONTEXT_COLORS[0];
+                  const isContextExpanded = expandedContexts.has(group.context.id);
                   return (
                     <div key={group.context.id}>
                       {/* Context header */}
-                      <div className="flex items-center gap-2 mb-3 pb-1 border-b border-gray-100 dark:border-gray-700">
+                      <button
+                        onClick={() => toggleContextExpand(group.context.id)}
+                        className="w-full flex items-center gap-2 mb-3 pb-1 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors px-2 py-1 -mx-2 rounded-t"
+                      >
+                        {isContextExpanded ? (
+                          <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                        )}
                         <div
                           className={`w-3 h-3 rounded-full ${colors.dot}`}
                         />
@@ -225,23 +244,25 @@ export function EventFlowView({ model }: EventFlowViewProps) {
                         <span className="text-xs text-gray-400 dark:text-gray-500">
                           ({group.events.length})
                         </span>
-                      </div>
+                      </button>
 
                       {/* Event cards in a timeline */}
-                      <div className="relative ml-4 border-l-2 border-gray-200 dark:border-gray-600 pl-4 space-y-3">
-                        {group.events.map((evt) => (
-                          <EventCard
-                            key={evt.id}
-                            event={evt}
-                            colors={colors}
-                            isAsync={isAsync(evt)}
-                            dimmed={!matchesFilter(evt)}
-                            expanded={expandedEvents.has(evt.id)}
-                            onToggle={() => toggleEventExpand(evt.id)}
-                            contextById={contextById}
-                          />
-                        ))}
-                      </div>
+                      {isContextExpanded && (
+                        <div className="relative ml-4 border-l-2 border-gray-200 dark:border-gray-600 pl-4 space-y-3">
+                          {group.events.map((evt) => (
+                            <EventCard
+                              key={evt.id}
+                              event={evt}
+                              colors={colors}
+                              isAsync={isAsync(evt)}
+                              dimmed={!matchesFilter(evt)}
+                              expanded={expandedEvents.has(evt.id)}
+                              onToggle={() => toggleEventExpand(evt.id)}
+                              contextById={contextById}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -249,7 +270,15 @@ export function EventFlowView({ model }: EventFlowViewProps) {
               {/* Orphan events */}
               {orphanEvents.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-2 mb-3 pb-1 border-b border-gray-100 dark:border-gray-700">
+                  <button
+                    onClick={() => toggleContextExpand("orphan")}
+                    className="w-full flex items-center gap-2 mb-3 pb-1 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors px-2 py-1 -mx-2 rounded-t"
+                  >
+                    {expandedContexts.has("orphan") ? (
+                      <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    )}
                     <div className="w-3 h-3 rounded-full bg-gray-400" />
                     <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400">
                       Unassigned
@@ -257,21 +286,23 @@ export function EventFlowView({ model }: EventFlowViewProps) {
                     <span className="text-xs text-gray-400 dark:text-gray-500">
                       ({orphanEvents.length})
                     </span>
-                  </div>
-                  <div className="relative ml-4 border-l-2 border-gray-200 dark:border-gray-600 pl-4 space-y-3">
-                    {orphanEvents.map((evt) => (
-                      <EventCard
-                        key={evt.id}
-                        event={evt}
-                        colors={CONTEXT_COLORS[0]}
-                        isAsync={isAsync(evt)}
-                        dimmed={!matchesFilter(evt)}
-                        expanded={expandedEvents.has(evt.id)}
-                        onToggle={() => toggleEventExpand(evt.id)}
-                        contextById={contextById}
-                      />
-                    ))}
-                  </div>
+                  </button>
+                  {expandedContexts.has("orphan") && (
+                    <div className="relative ml-4 border-l-2 border-gray-200 dark:border-gray-600 pl-4 space-y-3">
+                      {orphanEvents.map((evt) => (
+                        <EventCard
+                          key={evt.id}
+                          event={evt}
+                          colors={CONTEXT_COLORS[0]}
+                          isAsync={isAsync(evt)}
+                          dimmed={!matchesFilter(evt)}
+                          expanded={expandedEvents.has(evt.id)}
+                          onToggle={() => toggleEventExpand(evt.id)}
+                          contextById={contextById}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
