@@ -37,7 +37,9 @@ const program = new Command();
 
 program
   .name("katalyst-vocab")
-  .description("Katalyst Vocabulary - manage methods, observations, and ubiquitous language")
+  .description(
+    "Katalyst Vocabulary - manage methods, observations, and ubiquitous language",
+  )
   .version("0.1.0");
 
 program
@@ -747,7 +749,9 @@ program
       await writeFile(options.output, cml, "utf-8");
 
       console.log(chalk.green(`✓ Exported to ${options.output}`));
-      console.log(`  - ${domainModel.boundedContexts?.length ?? 0} bounded contexts`);
+      console.log(
+        `  - ${domainModel.boundedContexts?.length ?? 0} bounded contexts`,
+      );
       console.log(`  - Output size: ${(cml.length / 1024).toFixed(1)} KB`);
     } catch (err) {
       console.error(chalk.red("Export failed:"), err);

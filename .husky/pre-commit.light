@@ -1,0 +1,26 @@
+#!/bin/sh
+# Lighter pre-commit checks (no tests)
+# To use this instead: mv .husky/pre-commit.light .husky/pre-commit
+
+echo "🔍 Running light pre-commit checks..."
+
+# Check if just is installed
+if ! command -v just &> /dev/null; then
+    echo "❌ Error: 'just' command not found. Please install justfile: https://github.com/casey/just"
+    exit 1
+fi
+
+# Run typecheck
+echo "📝 Type checking..."
+just typecheck || exit 1
+
+# Run formatting check
+echo "✨ Checking formatting..."
+just format-check || {
+    echo ""
+    echo "⚠️  Formatting issues found. Auto-fix with: just format"
+    exit 1
+}
+
+echo "✅ Light pre-commit checks passed!"
+echo "ℹ️  Note: Tests skipped. Run 'just test' manually before pushing."

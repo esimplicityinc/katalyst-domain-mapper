@@ -20,7 +20,7 @@ describe("CMLWriter", () => {
     };
 
     const cml = writer.write(model);
-    
+
     expect(cml).toContain("ContextMap TestDomainContextMap");
     expect(cml).toContain("type SYSTEM_LANDSCAPE");
     expect(cml).toContain("state AS_IS");
@@ -71,7 +71,9 @@ describe("CMLWriter", () => {
     expect(cml).toContain("BoundedContext OrderManagementContext");
     expect(cml).toContain("type CORE_DOMAIN");
     expect(cml).toContain("type SUPPORTING_DOMAIN");
-    expect(cml).toContain('domainVisionStatement "Manages orders and fulfillment"');
+    expect(cml).toContain(
+      'domainVisionStatement "Manages orders and fulfillment"',
+    );
   });
 
   it("should export upstream-downstream relationships", () => {
@@ -265,7 +267,9 @@ describe("CMLWriter", () => {
 
     const cml = writer.write(model);
 
-    expect(cml).toContain("SeparateAContext [PL] Separate-Ways SeparateBContext");
+    expect(cml).toContain(
+      "SeparateAContext [PL] Separate-Ways SeparateBContext",
+    );
   });
 
   it("should include generation metadata", () => {
