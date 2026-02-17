@@ -13,7 +13,7 @@ export function EmptyProjectState({ onUpload }: EmptyProjectStateProps) {
       {/* Icon */}
       <div className="relative mb-6">
         <FileQuestion className="w-24 h-24 text-gray-300 dark:text-gray-600" />
-        <Upload className="w-10 h-10 text-blue-500 dark:text-blue-400 absolute -bottom-2 -right-2" />
+        <Upload className="w-10 h-10 text-teal-500 dark:text-teal-400 absolute -bottom-2 -right-2" />
       </div>
 
       {/* Message */}
@@ -31,11 +31,11 @@ export function EmptyProjectState({ onUpload }: EmptyProjectStateProps) {
           onClick={onUpload}
           className="
             flex items-center gap-2 px-6 py-3
-            text-white bg-blue-600 hover:bg-blue-700
-            dark:bg-blue-500 dark:hover:bg-blue-600
+            text-white bg-teal-600 hover:bg-teal-700
+            dark:bg-teal-500 dark:hover:bg-teal-600
             rounded-lg font-medium
             transition-colors
-            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+            focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2
             dark:focus:ring-offset-gray-900
           "
         >

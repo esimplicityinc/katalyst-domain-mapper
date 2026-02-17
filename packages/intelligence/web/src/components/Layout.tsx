@@ -16,7 +16,8 @@ import {
   ChevronDown,
   ChevronRight,
   Network,
-  Shield
+  Shield,
+  FolderKanban
 } from "lucide-react";
 import { ApiKeyPrompt } from "./ApiKeyPrompt";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -47,10 +48,10 @@ const NAV_ITEMS = [
     comingSoon: false,
     children: [
       {
-        to: "/strategy/foe-scanner",
-        label: "FOE Scanner",
-        icon: TestTube,
-        description: "Flow Optimized Engineering reports"
+        to: "/strategy/foe-projects",
+        label: "FOE Projects",
+        icon: FolderKanban,
+        description: "Flow Optimized Engineering"
       },
       {
         to: "/strategy/governance",

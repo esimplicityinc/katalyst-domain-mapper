@@ -2,12 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Layout } from "./components/Layout";
 
 // Legacy pages (will be nested under lifecycle stages)
-import { ReportsPage } from "./pages/ReportsPage";
 import { DomainMapperPage } from "./pages/DomainMapperPage";
 import { GovernanceDashboard } from "./pages/GovernanceDashboard";
 
 // FOE Project Browser pages
-import { FOEProjectListPage, FOEProjectDetailPage } from "./pages/reports";
+import { FOEProjectsPage } from "./pages/FOEProjectsPage";
 
 // Lifecycle pages
 import { StrategyPage } from "./pages/lifecycle/StrategyPage";
@@ -39,16 +38,14 @@ function App() {
           <Route path="design/business-domain/*" element={<DomainMapperPage />} />
 
           {/* Strategy tools under /strategy */}
-          <Route path="strategy/foe-scanner" element={<ReportsPage />} />
-          <Route path="strategy/foe-projects" element={<FOEProjectListPage />} />
-          <Route path="strategy/foe-projects/:repositoryId/*" element={<FOEProjectDetailPage />} />
+          <Route path="strategy/foe-projects/*" element={<FOEProjectsPage />} />
           <Route path="strategy/governance" element={<GovernanceDashboard />} />
 
           {/* Legacy redirects (backward compatibility) */}
-          <Route path="reports" element={<Navigate to="/strategy/foe-scanner" replace />} />
+          <Route path="strategy/foe-scanner" element={<Navigate to="/strategy/foe-projects/scanner" replace />} />
+          <Route path="reports" element={<Navigate to="/strategy/foe-projects/scanner" replace />} />
           <Route path="reports/projects" element={<Navigate to="/strategy/foe-projects" replace />} />
-          <Route path="reports/projects/:repositoryId/*" element={<Navigate to="/strategy/foe-projects" replace />} />
-          <Route path="testing/reports" element={<Navigate to="/strategy/foe-scanner" replace />} />
+          <Route path="testing/reports" element={<Navigate to="/strategy/foe-projects/scanner" replace />} />
           <Route path="mapper/*" element={<Navigate to="/design/business-domain" replace />} />
           <Route path="design/mapper/*" element={<Navigate to="/design/business-domain" replace />} />
           <Route path="governance" element={<Navigate to="/strategy/governance" replace />} />

@@ -1,4 +1,4 @@
-import { Target, TestTube, ArrowRight, Shield, FolderKanban } from "lucide-react";
+import { Target, ArrowRight, Shield, FolderKanban } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function StrategyPage() {
@@ -34,29 +34,7 @@ export function StrategyPage() {
           </div>
 
           {/* Available Tools */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* FOE Scanner */}
-            <Link
-              to="/strategy/foe-scanner"
-              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:border-brand-primary-400 dark:hover:border-brand-primary-500 transition-colors group"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <TestTube className="w-8 h-8 text-brand-primary-500 dark:text-brand-primary-400" />
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-brand-primary-500 dark:group-hover:text-brand-primary-400 transition-colors" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                FOE Scanner
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Quick FOE assessment. Upload a single scan report to visualize 
-                engineering health across Understanding, Feedback, and Confidence dimensions.
-              </p>
-              <div className="flex items-center gap-2 text-sm text-brand-primary-600 dark:text-brand-primary-400">
-                <span className="font-medium">Open Tool</span>
-                <ArrowRight className="w-4 h-4" />
-              </div>
-            </Link>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* FOE Projects */}
             <Link
               to="/strategy/foe-projects"
@@ -70,8 +48,8 @@ export function StrategyPage() {
                 FOE Projects
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Multi-project browser with scan history, AI coaching chat, and persistent 
-                project tracking. Compare scores over time and get personalized improvement guidance.
+                Scan repositories, upload reports, browse project history with AI coaching chat. 
+                Track engineering health over time and get personalized improvement guidance.
               </p>
               <div className="flex items-center gap-2 text-sm text-brand-primary-600 dark:text-brand-primary-400">
                 <span className="font-medium">Open Tool</span>
@@ -110,15 +88,15 @@ export function StrategyPage() {
             <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
               <div className="flex items-start gap-2">
                 <span className="text-brand-primary-500 dark:text-brand-primary-400 font-medium">1.</span>
-                <span>Run the FOE Scanner CLI on your repository to assess engineering practices</span>
+                <span>Open <strong>FOE Projects</strong> and use the Scanner tab to upload or scan a repository</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-brand-primary-500 dark:text-brand-primary-400 font-medium">2.</span>
-                <span>Upload scan reports to <strong>FOE Projects</strong> to track progress over time</span>
+                <span>View comprehensive reports across Overview, Dimensions, Triangle, Strengths, and Gaps tabs</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-brand-primary-500 dark:text-brand-primary-400 font-medium">3.</span>
-                <span>Use the <strong>AI Chat</strong> in FOE Projects to get personalized improvement recommendations</span>
+                <span>Use the <strong>AI Chat</strong> tab to get personalized improvement recommendations</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-brand-primary-500 dark:text-brand-primary-400 font-medium">4.</span>

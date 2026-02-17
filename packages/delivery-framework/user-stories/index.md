@@ -39,7 +39,7 @@ User stories define requirements from the perspective of personas interacting wi
 | [US-027](US-027) | View Live Agent Progress in UI | PER-001 | CAP-008, CAP-001 | draft |
 | [US-028](US-028) | Create and Manage DDD Domain Models via API | PER-002 | CAP-009 | draft |
 | [US-029](US-029) | View DDD Domain Model in Context Map UI | PER-001 | CAP-009, CAP-001 | draft |
-| [US-030](US-030) | Compare FOE Reports to Track Improvement | PER-001 | CAP-001 | draft |
+| [US-030](US-030) | Compare FOE Reports to Track Improvement | PER-001 | CAP-014, CAP-001 | draft |
 | [US-031](US-031) | Filter and Paginate Report Listings | PER-001 | CAP-001 | draft |
 | [US-032](US-032) | Configure API Key and Scanner Settings | PER-002 | CAP-004 | draft |
 | [US-033](US-033) | Visualize Context Map as Interactive SVG Diagram | PER-007 | CAP-010, CAP-011, CAP-009 | draft |
@@ -55,3 +55,5 @@ User stories define requirements from the perspective of personas interacting wi
 | [US-044](US-044) | View DDD Terminology Explanations in Context | PER-006 | CAP-010 | draft |
 | [US-045](US-045) | Filter and Search Aggregates in Tree View | PER-007 | CAP-010 | draft |
 | [US-046](US-046) | Filter Glossary Terms by Clickable Tags | PER-007 | CAP-010, CAP-009 | draft |
+| [US-047](US-047) | View FOE Score Trends Over Time | PER-001 | CAP-014, CAP-001 | draft |
+| [US-048](US-048) | Track Maturity Level Progression | PER-001 | CAP-014, CAP-001 | draft |

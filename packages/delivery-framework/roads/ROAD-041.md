@@ -33,7 +33,17 @@ dependencies:
 
 ## Summary
 
-Implement full CRUD (Create, Read, Update, Delete) operations for individual taxonomy items (nodes, environments, capabilities) with a port/adapter pattern supporting both database and file-based persistence. This enables incremental taxonomy updates without requiring full snapshot re-ingestion and supports both operational API queries and GitOps workflows.
+Implement full CRUD (Create, Read, Update, Delete) operations for ALL taxonomy entity types (8 total) with a port/adapter pattern supporting both database and file-based persistence. This enables incremental taxonomy updates without requiring full snapshot re-ingestion and supports both operational API queries and GitOps workflows.
+
+**Taxonomy Entity Types:**
+1. **Nodes** — Organizational hierarchy (systems, subsystems, layers)
+2. **Environments** — Deployment environments (dev, staging, prod)
+3. **Layer Types** — Canonical architectural layers (presentation, domain, infrastructure)
+4. **Capabilities** — System features and functionality
+5. **Capability Relationships** — How capabilities relate to nodes
+6. **Actions** — Automation workflows (shell, http, workflow)
+7. **Stages** — Pipeline stages
+8. **Tools** — Automation tools
 
 ## Business Value
 
@@ -55,8 +65,10 @@ Implement full CRUD (Create, Read, Update, Delete) operations for individual tax
 
 ## Acceptance Criteria
 
-1. ✅ **Individual Node CRUD via API**
+1. ✅ **Node CRUD via API**
    - POST /api/v1/taxonomy/nodes — Create single node
+   - GET /api/v1/taxonomy/nodes — List all nodes (already exists)
+   - GET /api/v1/taxonomy/nodes/:name — Get single node
    - PUT /api/v1/taxonomy/nodes/:name — Update node properties
    - DELETE /api/v1/taxonomy/nodes/:name — Remove node (cascade children)
    - Validates parent references exist before creation
@@ -64,17 +76,99 @@ Implement full CRUD (Create, Read, Update, Delete) operations for individual tax
 
 2. ✅ **Environment CRUD via API**
    - POST /api/v1/taxonomy/environments — Create environment
+   - GET /api/v1/taxonomy/environments — List all environments (already exists)
+   - GET /api/v1/taxonomy/environments/:name — Get single environment
    - PUT /api/v1/taxonomy/environments/:name — Update environment
    - DELETE /api/v1/taxonomy/environments/:name — Remove environment
 
-3. ✅ **Port Interface Extension**
-   - Extend TaxonomyRepository interface with mutation methods
+3. ✅ **Layer Type CRUD via API**
+   - POST /api/v1/taxonomy/layer-types — Create layer type
+   - GET /api/v1/taxonomy/layer-types — List all layer types
+   - GET /api/v1/taxonomy/layer-types/:name — Get single layer type
+   - PUT /api/v1/taxonomy/layer-types/:name — Update layer type
+   - DELETE /api/v1/taxonomy/layer-types/:name — Remove layer type
+   - Validate layer type referenced by actions before deletion
+
+4. ✅ **Capability CRUD via API**
+   - POST /api/v1/taxonomy/capabilities — Create capability
+   - GET /api/v1/taxonomy/capabilities — List all capabilities
+   - GET /api/v1/taxonomy/capabilities/:name — Get single capability
+   - PUT /api/v1/taxonomy/capabilities/:name — Update capability
+   - DELETE /api/v1/taxonomy/capabilities/:name — Remove capability
+   - Validate capability dependencies and relationships
+
+5. ✅ **Capability Relationship CRUD via API**
+   - POST /api/v1/taxonomy/capability-rels — Create relationship
+   - GET /api/v1/taxonomy/capability-rels — List all relationships
+   - GET /api/v1/taxonomy/capability-rels/:name — Get single relationship
+   - PUT /api/v1/taxonomy/capability-rels/:name — Update relationship
+   - DELETE /api/v1/taxonomy/capability-rels/:name — Remove relationship
+   - Validate node and capability references exist
+
+6. ✅ **Action CRUD via API**
+   - POST /api/v1/taxonomy/actions — Create action
+   - GET /api/v1/taxonomy/actions — List all actions
+   - GET /api/v1/taxonomy/actions/:name — Get single action
+   - PUT /api/v1/taxonomy/actions/:name — Update action
+   - DELETE /api/v1/taxonomy/actions/:name — Remove action
+   - Validate layerType reference if provided
+
+7. ✅ **Stage CRUD via API**
+   - POST /api/v1/taxonomy/stages — Create stage
+   - GET /api/v1/taxonomy/stages — List all stages
+   - GET /api/v1/taxonomy/stages/:name — Get single stage
+   - PUT /api/v1/taxonomy/stages/:name — Update stage
+   - DELETE /api/v1/taxonomy/stages/:name — Remove stage
+   - Validate stage dependencies exist
+
+8. ✅ **Tool CRUD via API**
+   - POST /api/v1/taxonomy/tools — Create tool
+   - GET /api/v1/taxonomy/tools — List all tools
+   - GET /api/v1/taxonomy/tools/:name — Get single tool
+   - PUT /api/v1/taxonomy/tools/:name — Update tool
+   - DELETE /api/v1/taxonomy/tools/:name — Remove tool
+   - Validate action references exist
+
+9. ✅ **Port Interface Extension**
+   - Extend TaxonomyRepository interface with mutation methods for ALL 8 entity types
    - Maintain backward compatibility with existing query methods
    - Add validation methods for referential integrity
 
-4. ✅ **SQLite Adapter Implementation**
-   - Implement mutation methods in TaxonomyRepositorySQLite
+10. ✅ **SQLite Adapter Implementation**
+   - Implement mutation methods in TaxonomyRepositorySQLite for ALL entity types
    - Add transaction support for multi-step operations
+   - Maintain denormalized tables for fast queries
+
+11. ✅ **File Adapter Implementation (TaxonomyRepositoryFile)**
+   - Read/write taxonomy from directory of YAML files
+   - Structure: 
+     - `taxonomy/nodes/*.yaml`
+     - `taxonomy/environments/*.yaml`
+     - `taxonomy/layer-types/*.yaml`
+     - `taxonomy/capabilities/*.yaml`
+     - `taxonomy/capability-rels/*.yaml`
+     - `taxonomy/actions/*.yaml`
+     - `taxonomy/stages/*.yaml`
+     - `taxonomy/tools/*.yaml`
+   - Parse on read, serialize on write
+   - Validate referential integrity across files
+
+12. ✅ **Web UI Forms (Optional Phase 2)**
+   - React forms for all entity types creation/editing
+   - Autocomplete for parent node selection
+   - Dropdown for layer type references
+   - Validation feedback in real-time
+   - WCAG 2.1 AA compliant
+
+13. ✅ **Referential Integrity**
+   - Cannot delete node with children (or cascade)
+   - Cannot delete layer type referenced by actions
+   - Cannot delete capability referenced by relationships
+   - Cannot delete action referenced by tools
+   - Cannot delete stage with dependent stages
+   - Cannot set non-existent parent
+   - Cannot create circular dependencies
+   - Return clear error messages
    - Maintain denormalized tables for fast queries
 
 5. ✅ **File Adapter Implementation (TaxonomyRepositoryFile)**
@@ -127,20 +221,70 @@ export interface TaxonomyRepository {
   getLatestSnapshot(): Promise<StoredTaxonomySnapshot | null>;
   getNodes(nodeType?: string): Promise<TaxonomyNodeSummary[]>;
   getHierarchy(): Promise<TaxonomyHierarchy>;
+  getEnvironments(): Promise<TaxonomyEnvironmentSummary[]>;
   
-  // ── NEW: Individual CRUD ─────────────────────────────────
+  // ── NEW: Node CRUD ─────────────────────────────────────
   createNode(node: TaxonomyNode): Promise<TaxonomyNode>;
+  getNode(name: string): Promise<TaxonomyNode | null>;
   updateNode(name: string, updates: Partial<TaxonomyNode>): Promise<TaxonomyNode>;
   deleteNode(name: string, cascade?: boolean): Promise<boolean>;
   
+  // ── NEW: Environment CRUD ──────────────────────────────
   createEnvironment(env: TaxonomyEnvironment): Promise<TaxonomyEnvironment>;
+  getEnvironment(name: string): Promise<TaxonomyEnvironment | null>;
   updateEnvironment(name: string, updates: Partial<TaxonomyEnvironment>): Promise<TaxonomyEnvironment>;
   deleteEnvironment(name: string): Promise<boolean>;
   
-  // ── NEW: Validation ──────────────────────────────────────
+  // ── NEW: Layer Type CRUD ───────────────────────────────
+  createLayerType(layerType: TaxonomyLayerType): Promise<TaxonomyLayerType>;
+  getLayerType(name: string): Promise<TaxonomyLayerType | null>;
+  getLayerTypes(): Promise<TaxonomyLayerType[]>;
+  updateLayerType(name: string, updates: Partial<TaxonomyLayerType>): Promise<TaxonomyLayerType>;
+  deleteLayerType(name: string): Promise<boolean>;
+  
+  // ── NEW: Capability CRUD ───────────────────────────────
+  createCapability(capability: TaxonomyCapability): Promise<TaxonomyCapability>;
+  getCapability(name: string): Promise<TaxonomyCapability | null>;
+  getCapabilities(): Promise<TaxonomyCapability[]>;
+  updateCapability(name: string, updates: Partial<TaxonomyCapability>): Promise<TaxonomyCapability>;
+  deleteCapability(name: string): Promise<boolean>;
+  
+  // ── NEW: Capability Relationship CRUD ──────────────────
+  createCapabilityRel(rel: TaxonomyCapabilityRel): Promise<TaxonomyCapabilityRel>;
+  getCapabilityRel(name: string): Promise<TaxonomyCapabilityRel | null>;
+  getCapabilityRels(): Promise<TaxonomyCapabilityRel[]>;
+  updateCapabilityRel(name: string, updates: Partial<TaxonomyCapabilityRel>): Promise<TaxonomyCapabilityRel>;
+  deleteCapabilityRel(name: string): Promise<boolean>;
+  
+  // ── NEW: Action CRUD ───────────────────────────────────
+  createAction(action: TaxonomyAction): Promise<TaxonomyAction>;
+  getAction(name: string): Promise<TaxonomyAction | null>;
+  getActions(): Promise<TaxonomyAction[]>;
+  updateAction(name: string, updates: Partial<TaxonomyAction>): Promise<TaxonomyAction>;
+  deleteAction(name: string): Promise<boolean>;
+  
+  // ── NEW: Stage CRUD ────────────────────────────────────
+  createStage(stage: TaxonomyStage): Promise<TaxonomyStage>;
+  getStage(name: string): Promise<TaxonomyStage | null>;
+  getStages(): Promise<TaxonomyStage[]>;
+  updateStage(name: string, updates: Partial<TaxonomyStage>): Promise<TaxonomyStage>;
+  deleteStage(name: string): Promise<boolean>;
+  
+  // ── NEW: Tool CRUD ─────────────────────────────────────
+  createTool(tool: TaxonomyTool): Promise<TaxonomyTool>;
+  getTool(name: string): Promise<TaxonomyTool | null>;
+  getTools(): Promise<TaxonomyTool[]>;
+  updateTool(name: string, updates: Partial<TaxonomyTool>): Promise<TaxonomyTool>;
+  deleteTool(name: string): Promise<boolean>;
+  
+  // ── NEW: Validation helpers ────────────────────────────
   validateNodeParent(parentName: string): Promise<boolean>;
   detectCircularDependency(nodeName: string, parentName: string): Promise<boolean>;
   getNodeChildren(nodeName: string): Promise<TaxonomyNode[]>;
+  validateLayerTypeInUse(layerTypeName: string): Promise<boolean>;
+  validateCapabilityInUse(capabilityName: string): Promise<boolean>;
+  validateActionInUse(actionName: string): Promise<boolean>;
+  validateStageHasDependents(stageName: string): Promise<boolean>;
 }
 ```
 
@@ -159,18 +303,6 @@ labels:
   tech-stack: "bun,react,typescript"
 dependsOn: []
 
-# taxonomy/nodes/intelligence.yaml
-name: intelligence
-nodeType: subsystem
-fqtn: katalyst.intelligence
-description: "Intelligence API subsystem"
-parentNode: katalyst
-owners: ["backend-team"]
-environments: ["dev", "prod"]
-labels:
-  language: "typescript"
-dependsOn: []
-
 # taxonomy/environments/dev.yaml
 name: dev
 description: "Development environment"
@@ -178,11 +310,50 @@ parentEnvironment: null
 promotionTargets: ["staging"]
 templateReplacements:
   domain: "dev.katalyst.local"
+
+# taxonomy/layer-types/presentation.yaml
+name: presentation
+description: "HTTP APIs, CLI, UI components"
+defaultLayerDir: "src/presentation"
+
+# taxonomy/layer-types/domain.yaml
+name: domain
+description: "Business logic, entities, aggregates"
+defaultLayerDir: "src/domain"
+
+# taxonomy/capabilities/user-auth.yaml
+name: user-auth
+description: "User authentication and authorization"
+categories: ["security", "identity"]
+dependsOnCapabilities: ["session-management"]
+
+# taxonomy/capability-rels/katalyst-supports-user-auth.yaml
+name: katalyst-supports-user-auth
+node: katalyst
+relationshipType: supports
+capabilities: ["user-auth", "api-gateway"]
+
+# taxonomy/actions/deploy-api.yaml
+name: deploy-api
+actionType: shell
+layerType: application
+tags: ["deployment", "api"]
+
+# taxonomy/stages/build.yaml
+name: build
+description: "Compile and bundle application"
+dependsOn: []
+
+# taxonomy/tools/kubectl.yaml
+name: kubectl
+description: "Kubernetes CLI tool"
+actions: ["deploy-api", "rollback"]
 ```
 
 ### API Routes
 
 ```typescript
+// ── Nodes ──────────────────────────────────────────────
 // POST /api/v1/taxonomy/nodes
 {
   "name": "new-subsystem",
@@ -205,6 +376,77 @@ templateReplacements:
 // DELETE /api/v1/taxonomy/nodes/new-subsystem?cascade=false
 // Returns 400 if node has children and cascade=false
 // Returns 204 if successful
+
+// ── Environments ───────────────────────────────────────
+// POST /api/v1/taxonomy/environments
+{
+  "name": "staging",
+  "description": "Staging environment",
+  "parentEnvironment": "dev",
+  "promotionTargets": ["prod"],
+  "templateReplacements": {
+    "domain": "staging.katalyst.io"
+  }
+}
+
+// ── Layer Types ────────────────────────────────────────
+// POST /api/v1/taxonomy/layer-types
+{
+  "name": "infrastructure",
+  "description": "Databases, external APIs, file systems",
+  "defaultLayerDir": "src/infrastructure"
+}
+
+// GET /api/v1/taxonomy/layer-types
+// Returns array of all layer types
+
+// DELETE /api/v1/taxonomy/layer-types/infrastructure
+// Returns 400 if layer type is referenced by actions
+
+// ── Capabilities ───────────────────────────────────────
+// POST /api/v1/taxonomy/capabilities
+{
+  "name": "user-auth",
+  "description": "User authentication and authorization",
+  "categories": ["security", "identity"],
+  "dependsOnCapabilities": ["session-management"]
+}
+
+// ── Capability Relationships ───────────────────────────
+// POST /api/v1/taxonomy/capability-rels
+{
+  "name": "katalyst-supports-user-auth",
+  "node": "katalyst",
+  "relationshipType": "supports",
+  "capabilities": ["user-auth", "api-gateway"]
+}
+
+// ── Actions ────────────────────────────────────────────
+// POST /api/v1/taxonomy/actions
+{
+  "name": "deploy-api",
+  "actionType": "shell",
+  "layerType": "application",
+  "tags": ["deployment", "api"]
+}
+
+// Returns 400 if layerType doesn't exist
+
+// ── Stages ─────────────────────────────────────────────
+// POST /api/v1/taxonomy/stages
+{
+  "name": "test",
+  "description": "Run automated tests",
+  "dependsOn": ["build"]
+}
+
+// ── Tools ──────────────────────────────────────────────
+// POST /api/v1/taxonomy/tools
+{
+  "name": "kubectl",
+  "description": "Kubernetes CLI tool",
+  "actions": ["deploy-api", "rollback"]
+}
 ```
 
 ### Use Case Implementation
@@ -359,35 +601,64 @@ Feature: Taxonomy Node CRUD Operations
 
 ## Estimation
 
-- **Complexity**: High (dual adapters, referential integrity)
-- **Estimated Effort**: 3-5 days
+- **Complexity**: High (8 entity types, dual adapters, referential integrity)
+- **Estimated Effort**: 5-7 days
 
-### Breakdown:
-1. Port interface extension (4 hours)
-2. SQLite adapter implementation (8 hours)
-3. Use case implementations (6 hours)
-4. API routes + validation (4 hours)
-5. BDD scenarios + tests (8 hours)
-6. File adapter implementation (8 hours) — Optional Phase 2
-7. Web UI forms (16 hours) — Optional Phase 2
+### Breakdown by Entity Type:
 
-**Phase 1 Total**: ~30 hours (SQLite adapter only)
-**Phase 2 Total**: +24 hours (File adapter + Web UI)
+**Core Infrastructure (8 hours):**
+1. Port interface extension for all 8 entity types (4 hours)
+2. Base validation helpers and referential integrity checks (4 hours)
+
+**SQLite Adapter Implementation (40 hours):**
+1. Node CRUD (5 hours)
+2. Environment CRUD (4 hours)
+3. Layer Type CRUD (4 hours)
+4. Capability CRUD (4 hours)
+5. Capability Relationship CRUD (5 hours)
+6. Action CRUD (4 hours)
+7. Stage CRUD (4 hours)
+8. Tool CRUD (4 hours)
+9. Transaction support + referential integrity validation (6 hours)
+
+**Use Case Implementations (24 hours):**
+- Create/Update/Delete use cases for each entity type (3 hours × 8 = 24 hours)
+
+**API Routes + Validation (16 hours):**
+- HTTP routes for all 8 entity types (2 hours × 8 = 16 hours)
+
+**BDD Scenarios + Tests (24 hours):**
+- CRUD scenarios for each entity type (3 hours × 8 = 24 hours)
+- Referential integrity edge cases (4 scenarios estimated)
+
+**File Adapter Implementation (32 hours) — Optional Phase 2:**
+- YAML parser/serializer for all 8 entity types (4 hours × 8 = 32 hours)
+
+**Web UI Forms (48 hours) — Optional Phase 2:**
+- React forms for all 8 entity types (6 hours × 8 = 48 hours)
+
+**Phase 1 Total**: ~112 hours (SQLite adapter + API + BDD)
+**Phase 2 Total**: +80 hours (File adapter + Web UI)
+
+**Realistic Estimate**: 
+- Phase 1: 14-16 working days (2 weeks)
+- Phase 2: +10 working days (2 additional weeks)
 
 ## Phased Delivery
 
 ### Phase 1: Database CRUD (Immediate Value)
-- ✅ Port interface extension
-- ✅ SQLite adapter with CRUD methods
-- ✅ API routes for nodes and environments
-- ✅ Use case implementations
-- ✅ BDD scenarios for CRUD operations
+- ✅ Port interface extension for all 8 entity types
+- ✅ SQLite adapter with CRUD methods for all 8 types
+- ✅ API routes for: nodes, environments, layer-types, capabilities, capability-rels, actions, stages, tools
+- ✅ Use case implementations for all entity types
+- ✅ BDD scenarios for CRUD operations across all types
+- ✅ Referential integrity validation (20+ validation rules)
 - ✅ NFR validation (performance, security)
 
 ### Phase 2: File Adapter + Web UI (Future)
-- ⏱️ TaxonomyRepositoryFile implementation
-- ⏱️ YAML parsing and serialization
-- ⏱️ React forms for taxonomy editing
+- ⏱️ TaxonomyRepositoryFile implementation for all 8 types
+- ⏱️ YAML parsing and serialization (8 directories)
+- ⏱️ React forms for all entity types editing
 - ⏱️ BDD scenarios for file adapter
 - ⏱️ GitOps workflow documentation
 
@@ -405,12 +676,12 @@ Feature: Taxonomy Node CRUD Operations
 ## Governance Checklist
 
 - [ ] ADRs identified and validated (ADR-013 Hexagonal Architecture applies)
-- [ ] BDD scenarios written and approved (~20 scenarios estimated)
-- [ ] Phase 1 implementation complete (SQLite adapter + API)
+- [ ] BDD scenarios written and approved (~80 scenarios estimated across 8 entity types)
+- [ ] Phase 1 implementation complete (SQLite adapter + API for all 8 types)
 - [ ] NFRs validated (performance, security)
 - [ ] Phase 2 scoped (File adapter + Web UI) — Optional
 - [ ] Change record created (CHANGE-041.md)
-- [ ] Documentation updated (API docs, adapter pattern guide)
+- [ ] Documentation updated (API docs, adapter pattern guide, entity type reference)
 
 ---
 
