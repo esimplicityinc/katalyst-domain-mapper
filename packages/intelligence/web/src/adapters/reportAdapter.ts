@@ -97,10 +97,23 @@ export function adaptReport(raw: RawReport): FOEReport {
 
   // Build triangle diagnosis
   const tri = raw.triangleDiagnosis ?? {};
+  const weakestDimension = tri.weakestDimension ?? tri.weakestPrinciple ?? "unknown";
+  
+  // Calculate weakestScore from dimension scores if not provided
+  let weakestScore = tri.weakestScore ?? 0;
+  if (!tri.weakestScore && raw.dimensions) {
+    const dimScores = {
+      feedback: raw.dimensions.feedback?.score ?? 0,
+      understanding: raw.dimensions.understanding?.score ?? 0,
+      confidence: raw.dimensions.confidence?.score ?? 0,
+    };
+    weakestScore = Math.min(dimScores.feedback, dimScores.understanding, dimScores.confidence);
+  }
+  
   const triangleDiagnosis = {
     cycleHealth: tri.cycleHealth ?? "unknown",
-    weakestDimension: tri.weakestDimension ?? tri.weakestPrinciple ?? "unknown",
-    weakestScore: tri.weakestScore ?? 0,
+    weakestDimension,
+    weakestScore,
     pattern: tri.pattern ?? "",
     intervention: tri.intervention ?? "",
     belowMinimum: Array.isArray(tri.belowMinimum) ? tri.belowMinimum : [],
