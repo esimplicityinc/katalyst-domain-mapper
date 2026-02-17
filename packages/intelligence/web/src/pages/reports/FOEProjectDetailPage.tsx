@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   TrendingUp,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { api } from "../../api/client";
 import { ProjectHeader } from "../../components/reports/ProjectHeader";
@@ -20,6 +21,7 @@ import {
   TriangleTab,
   StrengthsTab,
   GapsTab,
+  ChatTab,
 } from "./tabs";
 import {
   setSelectedProjectId,
@@ -33,6 +35,7 @@ const TABS: Tab[] = [
   { id: "triangle", label: "Triangle", icon: Triangle },
   { id: "strengths", label: "Strengths", icon: CheckCircle2 },
   { id: "gaps", label: "Gaps", icon: TrendingUp },
+  { id: "chat", label: "Chat", icon: Sparkles },
 ];
 
 export function FOEProjectDetailPage() {
@@ -183,6 +186,7 @@ export function FOEProjectDetailPage() {
         {activeTab === "triangle" && <TriangleTab report={report} />}
         {activeTab === "strengths" && <StrengthsTab report={report} />}
         {activeTab === "gaps" && <GapsTab report={report} />}
+        {activeTab === "chat" && <ChatTab report={report} project={project} />}
       </div>
     </div>
   );
