@@ -1,0 +1,141 @@
+/**
+ * Katalyst Domain Mapper - Color System
+ * 
+ * CSS Custom Properties for dynamic theming
+ * Based on Katalyst brand guidelines
+ */
+
+:root {
+  /* ============================================
+     KATALYST BRAND COLORS
+     ============================================ */
+  --brand-primary: #2ECED0;
+  --brand-primary-light: #6BE6E7;
+  --brand-primary-dark: #1FA3A6;
+  --brand-primary-darker: #158688;
+  
+  --brand-accent-lavender: #8B93B6;
+  --brand-accent-steel: #5C7C99;
+
+  /* ============================================
+     FOE SEMANTIC COLORS
+     ============================================ */
+  --foe-feedback: #4DA3FF;
+  --foe-feedback-dark: #3B82F6;
+  
+  --foe-understanding: #5C7C99;
+  --foe-understanding-dark: #4A6B85;
+  
+  --foe-confidence: #2DD4A7;
+  --foe-confidence-dark: #22C597;
+
+  /* ============================================
+     UI FUNCTIONAL COLORS
+     ============================================ */
+  --ui-success: #2DD4A7;
+  --ui-warning: #F5B942;
+  --ui-error: #E5533D;
+  --ui-info: #4DA3FF;
+
+  /* ============================================
+     GOVERNANCE STATES (5 consolidated)
+     ============================================ */
+  --governance-draft: #8B93B6;
+  --governance-active: #4DA3FF;
+  --governance-validating: #F5B942;
+  --governance-blocked: #E5533D;
+  --governance-complete: #2DD4A7;
+
+  /* ============================================
+     LIGHT MODE
+     ============================================ */
+  --bg-primary: #F7FAFC;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #E5EDF3;
+  
+  --text-primary: #1A2333;
+  --text-secondary: #4A5D73;
+  --text-tertiary: #6B7C93;
+  
+  --border-subtle: #E5EDF3;
+  --border-default: #D1D5DB;
+  --border-emphasis: #9CA3AF;
+}
+
+/* ============================================
+   DARK MODE OVERRIDES
+   ============================================ */
+.dark {
+  /* Brand colors - lighter for contrast */
+  --brand-primary: #6BE6E7;
+  --brand-primary-dark: #2ECED0;
+  
+  /* Backgrounds */
+  --bg-primary: #0B1220;
+  --bg-elevated: #1A2333;
+  --bg-subtle: #2E3A4F;
+  
+  /* Text */
+  --text-primary: #F7FAFC;
+  --text-secondary: #A8B8CC;
+  --text-tertiary: #6B7C93;
+  
+  /* Borders */
+  --border-subtle: #2E3A4F;
+  --border-default: #3A4A63;
+  --border-emphasis: #4A5D73;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.bg-brand {
+  background-color: var(--brand-primary);
+}
+
+.text-brand {
+  color: var(--brand-primary);
+}
+
+.border-brand {
+  border-color: var(--brand-primary);
+}
+
+/* FOE Dimension utilities */
+.text-feedback {
+  color: var(--foe-feedback);
+}
+
+.text-understanding {
+  color: var(--foe-understanding);
+}
+
+.text-confidence {
+  color: var(--foe-confidence);
+}
+
+/* Governance state utilities */
+.badge-draft {
+  background-color: var(--governance-draft);
+  color: white;
+}
+
+.badge-active {
+  background-color: var(--governance-active);
+  color: white;
+}
+
+.badge-validating {
+  background-color: var(--governance-validating);
+  color: white;
+}
+
+.badge-blocked {
+  background-color: var(--governance-blocked);
+  color: white;
+}
+
+.badge-complete {
+  background-color: var(--governance-complete);
+  color: white;
+}
