@@ -6,6 +6,9 @@ import { ReportsPage } from "./pages/ReportsPage";
 import { DomainMapperPage } from "./pages/DomainMapperPage";
 import { GovernanceDashboard } from "./pages/GovernanceDashboard";
 
+// FOE Project Browser pages
+import { FOEProjectListPage, FOEProjectDetailPage } from "./pages/reports";
+
 // Lifecycle pages
 import { StrategyPage } from "./pages/lifecycle/StrategyPage";
 import { DiscoveryPage } from "./pages/lifecycle/DiscoveryPage";
@@ -38,6 +41,10 @@ function App() {
           {/* Strategy tools under /strategy (Governance) */}
           <Route path="strategy/foe-scanner" element={<ReportsPage />} />
           <Route path="strategy/governance" element={<GovernanceDashboard />} />
+
+          {/* FOE Project Browser under /reports */}
+          <Route path="reports/projects" element={<FOEProjectListPage />} />
+          <Route path="reports/projects/:repositoryId/*" element={<FOEProjectDetailPage />} />
 
           {/* Legacy redirects (backward compatibility) */}
           <Route path="reports" element={<Navigate to="/strategy/foe-scanner" replace />} />

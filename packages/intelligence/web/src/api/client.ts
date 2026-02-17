@@ -18,6 +18,8 @@ import type {
   IntegrityReport,
   TrendPoint,
 } from "../types/governance";
+import type { Project, ProjectDetail } from "../types/project";
+import { normalizeRepoUrl } from "../utils/url";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
@@ -432,4 +434,170 @@ export const api = {
   getGovernanceIntegrity(): Promise<IntegrityReport> {
     return request("/api/v1/governance/integrity");
   },
+
+  // ── Projects ───────────────────────────────────────────────────────────────
+
+  /**
+   * List all projects (repositories with scans)
+   *
+   * Performs client-side grouping of reports by repository.
+   * Each project aggregates metadata from the latest scan.
+   *
+   * @returns Array of projects sorted by last scan date (newest first)
+   *
+   * @example
+   * ```typescript
+   * const projects = await api.listProjects();
+   * projects.forEach(project => {
+   *   console.log(`${project.name}: ${project.latestScore}`);
+   * });
+   * ```
+   */
+  async listProjects(): Promise<Project[]> {
+    try {
+      // Get all repositories with aggregated scan data
+      const repositories = await this.listRepositories();
+
+      // Transform repository summaries into project format
+      const projects: Project[] = repositories.map((repo) => ({
+        id: repo.id,
+        name: repo.name,
+        url: repo.url,
+        techStack: repo.techStack || [],
+        isMonorepo: repo.isMonorepo,
+        lastScanDate: repo.lastScannedAt,
+        latestScore: repo.latestScore,
+        maturityLevel:
+          repo.latestScore !== null
+            ? calculateMaturityLevel(repo.latestScore)
+            : null,
+        scanCount: repo.scanCount,
+      }));
+
+      // Sort by last scan date (newest first), nulls last
+      projects.sort((a, b) => {
+        if (!a.lastScanDate && !b.lastScanDate) return 0;
+        if (!a.lastScanDate) return 1;
+        if (!b.lastScanDate) return -1;
+        return (
+          new Date(b.lastScanDate).getTime() -
+          new Date(a.lastScanDate).getTime()
+        );
+      });
+
+      return projects;
+    } catch (error) {
+      console.error("Failed to list projects:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get detailed information for a specific project
+   *
+   * Retrieves the latest scan and scan history for a repository.
+   *
+   * @param repositoryId - The repository ID (normalized URL or database ID)
+   * @returns Project details with scan history
+   * @throws {Error} If the repository is not found or has no scans
+   *
+   * @example
+   * ```typescript
+   * const project = await api.getProjectDetail("repo-123");
+   * console.log(`Latest score: ${project.latestScore}`);
+   * console.log(`Scan history: ${project.scanIds.length} scans`);
+   * ```
+   */
+  async getProjectDetail(repositoryId: string): Promise<ProjectDetail> {
+    if (!repositoryId) {
+      throw new Error("Repository ID is required");
+    }
+
+    try {
+      // Get all reports for this repository
+      const reports = await this.listReports({ repositoryId });
+
+      if (!reports || reports.length === 0) {
+        throw new Error(
+          `No scans found for repository: ${repositoryId}`,
+        );
+      }
+
+      // Sort reports by scan date (newest first)
+      const sortedReports = [...reports].sort(
+        (a, b) =>
+          new Date(b.scanDate).getTime() - new Date(a.scanDate).getTime(),
+      );
+
+      // Get the latest report for project metadata
+      const latestReport = sortedReports[0];
+      const firstReport = sortedReports[sortedReports.length - 1];
+
+      // Calculate average score
+      const scores = sortedReports
+        .map((r) => r.overallScore)
+        .filter((s): s is number => s !== null && s !== undefined);
+      const averageScore =
+        scores.length > 0
+          ? scores.reduce((sum, score) => sum + score, 0) / scores.length
+          : null;
+
+      // Calculate score trend (latest - previous)
+      const scoreTrend =
+        sortedReports.length >= 2
+          ? sortedReports[0].overallScore - sortedReports[1].overallScore
+          : null;
+
+      // Build project detail
+      const projectDetail: ProjectDetail = {
+        id: latestReport.repositoryId,
+        name: latestReport.repositoryName,
+        url: normalizeRepoUrl(latestReport.repositoryName) || null,
+        techStack: [], // Will be populated from repository data if available
+        isMonorepo: false, // Will be populated from repository data if available
+        lastScanDate: latestReport.scanDate,
+        latestScore: latestReport.overallScore,
+        maturityLevel: latestReport.maturityLevel as Project["maturityLevel"],
+        scanCount: sortedReports.length,
+        firstScanDate: firstReport.scanDate,
+        averageScore,
+        scoreTrend,
+        scanIds: sortedReports.map((r) => r.id),
+      };
+
+      // Enrich with repository metadata if available
+      try {
+        const repositories = await this.listRepositories();
+        const repoData = repositories.find((r) => r.id === repositoryId);
+        if (repoData) {
+          projectDetail.techStack = repoData.techStack || [];
+          projectDetail.isMonorepo = repoData.isMonorepo;
+          projectDetail.url = repoData.url;
+        }
+      } catch (error) {
+        // Non-critical - continue without repository metadata
+        console.warn("Could not fetch repository metadata:", error);
+      }
+
+      return projectDetail;
+    } catch (error) {
+      console.error(`Failed to get project detail for ${repositoryId}:`, error);
+      throw error;
+    }
+  },
 };
+
+/**
+ * Helper to calculate maturity level from overall score
+ *
+ * Matches the thresholds defined in FOE schemas.
+ *
+ * @param score - Overall FOE score (0-100)
+ * @returns Maturity level
+ */
+function calculateMaturityLevel(score: number): Project["maturityLevel"] {
+  if (score >= 76) return "Optimized";
+  if (score >= 51) return "Practicing";
+  if (score >= 26) return "Emerging";
+  return "Hypothesized";
+}
