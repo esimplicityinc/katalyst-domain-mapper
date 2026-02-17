@@ -79,7 +79,7 @@ COPY --from=web-builder /build/packages/intelligence/web/dist ./web-dist
 # Copy OpenCode agents and project config (for the AI chat server)
 COPY .opencode ./.opencode
 COPY opencode.json ./
-COPY AGENTS.md ./
+COPY agents.md ./
 
 # Copy entrypoint
 COPY entrypoint.sh ./
