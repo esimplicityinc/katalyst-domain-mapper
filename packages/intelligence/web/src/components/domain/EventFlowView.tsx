@@ -412,15 +412,6 @@ function EventCard({
           </div>
         </button>
 
-        {/* Description (always visible if present and not expanded) */}
-        {event.description && !expanded && (
-          <div className="px-3 pb-2 -mt-1">
-            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 pl-9">
-              {event.description}
-            </p>
-          </div>
-        )}
-
         {/* Expanded detail panel */}
         {expanded && (
           <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-3 space-y-3">
