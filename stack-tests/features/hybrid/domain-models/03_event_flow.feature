@@ -118,7 +118,7 @@ Feature: Domain Event Flow Visualization
     When I click the link "Events"
     Then I wait for 2 seconds
     # Context sections are collapsed by default - expand "Scanning Context"
-    When I click the element "button:has-text('Scanning Context')"
+    When I click the element "button >> text=Scanning Context >> nth=0"
     Then I wait for 1 seconds
     # Now events should be visible
     Then I should see text "ScanStarted"
@@ -136,7 +136,7 @@ Feature: Domain Event Flow Visualization
     When I click the link "Events"
     Then I wait for 2 seconds
     # Context sections are collapsed by default - expand "Scanning Context"
-    When I click the element "button:has-text('Scanning Context')"
+    When I click the element "button >> text=Scanning Context >> nth=0"
     Then I wait for 1 seconds
     # Click the ScanCompleted event card to expand details
     When I click the element "[data-testid='event-card-scan-completed']"
@@ -194,13 +194,13 @@ Feature: Domain Event Flow Visualization
     Then I should see text "Scanning Context"
     # The event cards in the timeline should NOT be visible (collapsed)
     Then the element "[data-testid='event-card-scan-started']" should not be visible
-    # Click to expand the context
-    When I click the element "button:has-text('Scanning Context')"
+    # Click to expand the context (use getByRole to get the context header button)
+    When I click the element "button >> text=Scanning Context >> nth=0"
     Then I wait for 1 seconds
     # Now event card should be visible
     Then the element "[data-testid='event-card-scan-started']" should be visible
     # Click again to collapse
-    When I click the element "button:has-text('Scanning Context')"
+    When I click the element "button >> text=Scanning Context >> nth=0"
     Then I wait for 1 seconds
     # Event card should be hidden again
     Then the element "[data-testid='event-card-scan-started']" should not be visible
