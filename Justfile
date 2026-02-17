@@ -183,25 +183,26 @@ ci: check bdd-api
 typecheck:
     bunx tsc --noEmit --project packages/foe-schemas/tsconfig.json
     bunx tsc --noEmit --project packages/foe-api/tsconfig.json
-    bunx tsc --noEmit --project packages/foe-web-ui/tsconfig.json
+    bunx tsc --noEmit --project packages/intelligence/web/tsconfig.json
+    bunx tsc --noEmit --project packages/web-report/tsconfig.json
 
 # Watch mode typecheck
 [group('quality')]
-[working-directory: 'packages/foe-web-ui']
+[working-directory: 'packages/intelligence/web']
 typecheck-watch:
     bunx tsc --noEmit --watch
 
 # Run ESLint
 [group('quality')]
-[working-directory: 'packages/foe-web-ui']
 lint:
-    bunx eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0
+    bunx eslint packages/intelligence/web --ext ts,tsx --report-unused-disable-directives --max-warnings 0
+    bunx eslint packages/web-report/src --ext ts,tsx --report-unused-disable-directives --max-warnings 0
 
 # Auto-fix lint issues
 [group('quality')]
-[working-directory: 'packages/foe-web-ui']
 lint-fix:
-    bunx eslint . --ext ts,tsx --report-unused-disable-directives --fix
+    bunx eslint packages/intelligence/web --ext ts,tsx --report-unused-disable-directives --fix
+    bunx eslint packages/web-report/src --ext ts,tsx --report-unused-disable-directives --fix
 
 # Check formatting
 [group('quality')]
