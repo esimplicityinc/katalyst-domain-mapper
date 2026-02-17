@@ -128,7 +128,7 @@ export function FOEProjectListPage() {
     setSelectedProjectId(projectId);
     setSelectedProjectIdState(projectId);
     // Navigate to project detail page
-    navigate(`/reports/projects/${projectId}/overview`);
+    navigate(`/strategy/foe-projects/${projectId}/overview`);
   };
 
   // Handle sort change

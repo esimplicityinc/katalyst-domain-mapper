@@ -70,7 +70,7 @@ export function FOEProjectDetailPage() {
   useEffect(() => {
     const unsubscribe = onSelectedProjectChange((newProjectId) => {
       if (newProjectId && newProjectId !== repositoryId) {
-        navigate(`/reports/projects/${newProjectId}/overview`);
+        navigate(`/strategy/foe-projects/${newProjectId}/overview`);
       }
     });
 
@@ -113,11 +113,11 @@ export function FOEProjectDetailPage() {
   };
 
   const handleTabChange = (tabId: string) => {
-    navigate(`/reports/projects/${repositoryId}/${tabId}`, { replace: true });
+    navigate(`/strategy/foe-projects/${repositoryId}/${tabId}`, { replace: true });
   };
 
   const handleSwitchProject = () => {
-    navigate("/reports/projects");
+    navigate("/strategy/foe-projects");
   };
 
   const handleRefresh = () => {

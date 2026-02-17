@@ -38,16 +38,16 @@ function App() {
           {/* Design tools under /design */}
           <Route path="design/business-domain/*" element={<DomainMapperPage />} />
 
-          {/* Strategy tools under /strategy (Governance) */}
+          {/* Strategy tools under /strategy */}
           <Route path="strategy/foe-scanner" element={<ReportsPage />} />
+          <Route path="strategy/foe-projects" element={<FOEProjectListPage />} />
+          <Route path="strategy/foe-projects/:repositoryId/*" element={<FOEProjectDetailPage />} />
           <Route path="strategy/governance" element={<GovernanceDashboard />} />
-
-          {/* FOE Project Browser under /reports */}
-          <Route path="reports/projects" element={<FOEProjectListPage />} />
-          <Route path="reports/projects/:repositoryId/*" element={<FOEProjectDetailPage />} />
 
           {/* Legacy redirects (backward compatibility) */}
           <Route path="reports" element={<Navigate to="/strategy/foe-scanner" replace />} />
+          <Route path="reports/projects" element={<Navigate to="/strategy/foe-projects" replace />} />
+          <Route path="reports/projects/:repositoryId/*" element={<Navigate to="/strategy/foe-projects" replace />} />
           <Route path="testing/reports" element={<Navigate to="/strategy/foe-scanner" replace />} />
           <Route path="mapper/*" element={<Navigate to="/design/business-domain" replace />} />
           <Route path="design/mapper/*" element={<Navigate to="/design/business-domain" replace />} />
