@@ -43,6 +43,15 @@ coverage/
 .cache/
 .temp/
 
+# Root-level screenshots (development artifacts)
+/*.png
+
+# OpenCode session files
+/session-*.md
+
+# Temporary summary files
+/*_SUMMARY.md
+
 # Docker
 # (Keep .dockerignore tracked — it's needed for builds)
 
