@@ -62,8 +62,8 @@ Feature: Application Lifecycle State Machine View
     Then I wait for 1 seconds
     When I click the element "button:has-text('State Machine E2E')"
     Then I wait for 2 seconds
-    # Navigate to the Workflows tab
-    When I click the link "Workflows"
+    # Navigate to the Workflows tab using direct link
+    When I click the element "[href='/design/business-domain/workflows']"
     Then I wait for 2 seconds
     Then I should see text "Workflows"
 
@@ -76,7 +76,7 @@ Feature: Application Lifecycle State Machine View
     Then I wait for 1 seconds
     When I click the element "button:has-text('State Machine E2E')"
     Then I wait for 2 seconds
-    When I click the link "Workflows"
+    When I click the element "[href='/design/business-domain/workflows']"
     Then I wait for 2 seconds
     Then I should see text "Proposed"
     And I should see text "Implementing"
@@ -92,7 +92,7 @@ Feature: Application Lifecycle State Machine View
     Then I wait for 1 seconds
     When I click the element "button:has-text('State Machine E2E')"
     Then I wait for 2 seconds
-    When I click the link "Workflows"
+    When I click the element "[href='/design/business-domain/workflows']"
     Then I wait for 2 seconds
     # Click the Implementing state node to expand details
     When I click the element "[data-testid='state-node-implementing']"
@@ -113,7 +113,7 @@ Feature: Application Lifecycle State Machine View
     Then I wait for 1 seconds
     When I click the element "button:has-text('State Machine E2E')"
     Then I wait for 2 seconds
-    When I click the link "Workflows"
+    When I click the element "[href='/design/business-domain/workflows']"
     Then I wait for 2 seconds
     # Assert terminal badge is visible near the Complete state
     Then I should see text "Terminal"

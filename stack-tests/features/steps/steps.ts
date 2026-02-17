@@ -1,4 +1,4 @@
-import { test } from './fixtures';
+import { test } from './fixtures.js';
 import {
   registerApiSteps,
   registerUiSteps,
@@ -7,6 +7,7 @@ import {
   registerTuiSteps,
 } from '@esimplicity/stack-tests/steps';
 import './custom-steps.js';
+import './navigation-restructure-steps.js';
 
 registerApiSteps(test);
 registerUiSteps(test);

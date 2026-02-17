@@ -104,8 +104,10 @@ Feature: Aggregate Tree Hierarchy View
     Then I wait for 2 seconds
     When I click the link "Aggregates"
     Then I wait for 2 seconds
+    Then I should see text "Scanning Context"
+    When I click the button "Scanning Context"
+    Then I wait for 1 seconds
     Then I should see text "Scan Job"
-    And I should see text "Scanning Context"
 
   @tree @controls
   Scenario: Expand All reveals child entities and value objects
@@ -118,6 +120,8 @@ Feature: Aggregate Tree Hierarchy View
     Then I wait for 2 seconds
     When I click the link "Aggregates"
     Then I wait for 2 seconds
+    When I click the button "Scanning Context"
+    Then I wait for 1 seconds
     When I click the button "Expand All"
     Then I wait for 1 seconds
     Then I should see text "ScanStep"
@@ -135,6 +139,8 @@ Feature: Aggregate Tree Hierarchy View
     Then I wait for 2 seconds
     When I click the link "Aggregates"
     Then I wait for 2 seconds
+    When I click the button "Scanning Context"
+    Then I wait for 1 seconds
     When I click the button "Expand All"
     Then I wait for 1 seconds
     When I click the button "Collapse All"
