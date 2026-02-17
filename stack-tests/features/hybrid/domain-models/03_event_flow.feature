@@ -117,6 +117,10 @@ Feature: Domain Event Flow Visualization
     Then I wait for 2 seconds
     When I click the link "Events"
     Then I wait for 2 seconds
+    # Context sections are collapsed by default - expand "Scanning Context"
+    When I click the element "button:has-text('Scanning Context')"
+    Then I wait for 1 seconds
+    # Now events should be visible
     Then I should see text "ScanStarted"
     And I should see text "ScanCompleted"
 
@@ -131,6 +135,9 @@ Feature: Domain Event Flow Visualization
     Then I wait for 2 seconds
     When I click the link "Events"
     Then I wait for 2 seconds
+    # Context sections are collapsed by default - expand "Scanning Context"
+    When I click the element "button:has-text('Scanning Context')"
+    Then I wait for 1 seconds
     # Click the ScanCompleted event card to expand details
     When I click the element "[data-testid='event-card-scan-completed']"
     Then I wait for 1 seconds
@@ -171,3 +178,31 @@ Feature: Domain Event Flow Visualization
     Then the element "[data-testid='event-summary-grid']" should be visible
     And I should see text "ScanStarted"
     And I should see text "ScanCompleted"
+
+  @events @collapse
+  Scenario: Context sections are collapsed by default
+    Given I navigate to "/mapper"
+    Then I wait for the page to load
+    Then I wait for 2 seconds
+    When I click the button "Switch Model"
+    Then I wait for 1 seconds
+    When I click the element "button:has-text('Event Flow E2E')"
+    Then I wait for 2 seconds
+    When I click the link "Events"
+    Then I wait for 2 seconds
+    # Context header should be visible
+    Then I should see text "Scanning Context"
+    # But individual events should NOT be visible yet (collapsed)
+    Then I should not see text "ScanStarted"
+    # Click to expand the context
+    When I click the element "button:has-text('Scanning Context')"
+    Then I wait for 1 seconds
+    # Now events should be visible
+    Then I should see text "ScanStarted"
+    And I should see text "ScanCompleted"
+    # Click again to collapse
+    When I click the element "button:has-text('Scanning Context')"
+    Then I wait for 1 seconds
+    # Events should be hidden again
+    Then I should not see text "ScanStarted"
+
