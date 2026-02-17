@@ -136,7 +136,7 @@ test_results:
 - No migration required
 
 **Performance Impact:**
-- New endpoints average response time: `<200ms`
+- New endpoints average response time: `&lt;200ms`
 - Database query optimization: N/A
 
 **Security Considerations:**

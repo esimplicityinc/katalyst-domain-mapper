@@ -125,7 +125,7 @@ Consumes `DomainModelFull.domainEvents` from CAP-009 API. Events grouped by boun
 ## Estimation
 
 - **Complexity**: Medium
-- **Actual Effort**: <1 day
+- **Actual Effort**: &lt;1 day
 
 ---
 

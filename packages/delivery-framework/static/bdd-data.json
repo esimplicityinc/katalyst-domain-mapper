@@ -1,4 +1,65 @@
 {
-  "tests": [],
-  "generatedAt": "2026-02-10T16:38:26.684Z"
+  "tests": [
+    {
+      "changeId": "CHANGE-029",
+      "roadId": "ROAD-029",
+      "title": "Lifecycle-Oriented Navigation + System Taxonomy — Complete",
+      "date": "2026-02-16",
+      "total": 42,
+      "passed": 0,
+      "failed": 42,
+      "status": "pending"
+    },
+    {
+      "changeId": "CHANGE-007",
+      "roadId": "ROAD-007",
+      "title": "BDD Agent Skills — Complete",
+      "date": "2026-02-13",
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "status": "na"
+    },
+    {
+      "changeId": "CHANGE-027",
+      "roadId": "ROAD-027",
+      "title": "Hexagonal Architecture Extraction & BDD Test Stability — Complete",
+      "date": "2026-02-12",
+      "total": 47,
+      "passed": 47,
+      "failed": 0,
+      "status": "pass"
+    },
+    {
+      "changeId": "CHANGE-017",
+      "roadId": "ROAD-017",
+      "title": "Aggregate Tree Hierarchy View — Complete",
+      "date": "2026-02-12",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "status": "pass"
+    },
+    {
+      "changeId": "CHANGE-005",
+      "roadId": "ROAD-005",
+      "title": "API Governance Domain — Complete",
+      "date": "2026-02-12",
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "status": "pass"
+    },
+    {
+      "changeId": "CHANGE-009",
+      "roadId": "ROAD-009",
+      "title": "Governance & DDD Web Visualization — Complete",
+      "date": "2026-02-10",
+      "total": 16,
+      "passed": 16,
+      "failed": 0,
+      "status": "pass"
+    }
+  ],
+  "generatedAt": "2026-02-16T17:27:11.545Z"
 }

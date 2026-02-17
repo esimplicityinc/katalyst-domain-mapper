@@ -32,7 +32,7 @@ governance:
     applicable: [NFR-PERF-001, NFR-PERF-002, NFR-SEC-001, NFR-REL-001]
     status: pass
     results:
-      NFR-PERF-002: "All endpoints <5ms (target <200ms p95)"
+      NFR-PERF-002: "All endpoints &lt;5ms (target &lt;200ms p95)"
       NFR-SEC-001: ".env in .gitignore, no secrets in source, input validation on all endpoints"
       NFR-REL-001: "Invalid payloads rejected with structured errors (400 + field-level details)"
   quality_gates:
@@ -141,7 +141,7 @@ See [API Governance Domain Plan](../plans/api-governance-domain.md) for the full
 - [x] ADRs identified and validated (ADR-003, ADR-004)
 - [x] BDD scenarios written (10 active scenarios across 2 API feature files, 2 hybrid @wip)
 - [x] Implementation complete (10 new files, 4 modified, tsc 0 errors)
-- [x] NFRs validated (PERF-002: <5ms, SEC-001: pass, REL-001: pass)
+- [x] NFRs validated (PERF-002: &lt;5ms, SEC-001: pass, REL-001: pass)
 - [x] Change record created (CHANGE-005)
 - [x] Documentation updated
 - [x] Quality gates passed (architecture 82/100, DDD conditional pass, BDD 10/10, TypeScript 0 errors)

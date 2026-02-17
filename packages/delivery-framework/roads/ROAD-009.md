@@ -29,7 +29,7 @@ governance:
     applicable: [NFR-PERF-001, NFR-A11Y-001]
     status: deferred
     results:
-      note: "NFR validation deferred — dashboard renders in <100ms, accessibility review pending"
+      note: "NFR validation deferred — dashboard renders in &lt;100ms, accessibility review pending"
   quality_gates:
     architecture:
       status: conditional_pass
@@ -165,7 +165,7 @@ See [Web Visualization Plan](../plans/web-visualization.md) for the full spec wi
 - [x] ADRs identified and validated
 - [x] BDD scenarios written and approved (16/16 hybrid tests passing)
 - [x] Implementation complete (Template 12 - Governance Dashboard)
-- [x] NFRs deferred (NFR-PERF-001 renders <100ms, NFR-A11Y-001 pending formal audit)
+- [x] NFRs deferred (NFR-PERF-001 renders &lt;100ms, NFR-A11Y-001 pending formal audit)
 - [x] Change record created (CHANGE-009)
 - [x] Documentation updated
 - [x] Quality gates passed (architecture, DDD, TypeScript, CI, BDD)

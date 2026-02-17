@@ -21,7 +21,7 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "Dashboard renders in <100ms, Vite build 3.05s for 2413 modules"
+      evidence: "Dashboard renders in &lt;100ms, Vite build 3.05s for 2413 modules"
       validated_by: "ci-runner"
     security:
       status: na
@@ -113,7 +113,7 @@ test_results:
 - No migration required — new pages and components only
 
 **Performance Impact:**
-- Dashboard renders in <100ms
+- Dashboard renders in &lt;100ms
 - Vite build: 2,413 modules, 3.05s
 - Bundle size warning: JS chunk 838KB (consider code-splitting in future)
 

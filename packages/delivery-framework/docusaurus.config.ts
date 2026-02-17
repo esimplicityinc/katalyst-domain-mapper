@@ -30,7 +30,7 @@ const config: Config = {
           routeBasePath: 'docs',
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/esimplicity/katalyst-domain-mapper/tree/main/packages/delivery-framework/',
-          include: ['ddd/**/*.md', 'ddd/**/*.mdx', 'bdd/**/*.md', 'bdd/**/*.mdx', 'plans/**/*.md', 'plans/**/*.mdx', 'roads/**/*.md', 'roads/**/*.mdx', 'changes/**/*.md', 'changes/**/*.mdx', 'agents/**/*.md', 'agents/**/*.mdx', 'adr/**/*.md', 'adr/**/*.mdx', 'nfr/**/*.md', 'nfr/**/*.mdx', 'personas/**/*.md', 'personas/**/*.mdx', 'capabilities/**/*.md', 'capabilities/**/*.mdx', 'user-stories/**/*.md', 'user-stories/**/*.mdx', 'index.md', 'index.mdx'],
+          include: ['ddd/**/*.md', 'ddd/**/*.mdx', 'bdd/**/*.md', 'bdd/**/*.mdx', 'plans/**/*.md', 'plans/**/*.mdx', 'roads/**/*.md', 'roads/**/*.mdx', 'changes/**/*.md', 'changes/**/*.mdx', 'agents/**/*.md', 'agents/**/*.mdx', 'adr/**/*.md', 'adr/**/*.mdx', 'nfr/**/*.md', 'nfr/**/*.mdx', 'personas/**/*.md', 'personas/**/*.mdx', 'capabilities/**/*.md', 'capabilities/**/*.mdx', 'user-stories/**/*.md', 'user-stories/**/*.mdx', 'taxonomy/**/*.md', 'taxonomy/**/*.mdx', 'index.md', 'index.mdx'],
         },
         blog: false,
         theme: {
@@ -53,11 +53,11 @@ const config: Config = {
 
   themeConfig: {
     announcementBar: {
-      id: 'alpha_notice',
+      id: 'navigation_update',
       content:
-        'This project is currently in <strong>Alpha</strong>. Features and documentation may change.',
-      backgroundColor: '#ffd700',
-      textColor: '#1a1a1a',
+        '<strong>Navigation Updated!</strong> Documentation now organized by software delivery lifecycle. <a href="/docs/taxonomy/index">See what\'s new →</a>',
+      backgroundColor: '#2e7d32', // Darker green for WCAG 2.1 AA contrast (4.51:1)
+      textColor: '#ffffff',
       isCloseable: true,
     },
     navbar: {
@@ -68,70 +68,88 @@ const config: Config = {
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'dddSidebar',
+          type: 'dropdown',
+          label: 'Strategy',
           position: 'left',
-          label: 'DDD',
+          items: [
+            {
+              type: 'docSidebar',
+              sidebarId: 'strategySidebar',
+              label: 'Roadmap & Taxonomy',
+            },
+          ],
         },
         {
-          type: 'docSidebar',
-          sidebarId: 'planningSidebar',
+          type: 'dropdown',
+          label: 'Discovery',
           position: 'left',
+          items: [
+            {
+              type: 'docSidebar',
+              sidebarId: 'discoverySidebar',
+              label: 'Personas & Stories',
+            },
+          ],
+        },
+        {
+          type: 'dropdown',
           label: 'Planning',
+          position: 'left',
+          items: [
+            {
+              type: 'docSidebar',
+              sidebarId: 'planningSidebar',
+              label: 'Plans & Capabilities',
+            },
+          ],
         },
         {
-          type: 'docSidebar',
-          sidebarId: 'bddSidebar',
+          type: 'dropdown',
+          label: 'Design',
           position: 'left',
-          label: 'BDD',
+          items: [
+            {
+              type: 'docSidebar',
+              sidebarId: 'designSidebar',
+              label: 'DDD & ADRs',
+            },
+          ],
         },
         {
-          type: 'docSidebar',
-          sidebarId: 'agentsSidebar',
+          type: 'dropdown',
+          label: 'Testing',
           position: 'left',
-          label: 'Agents',
+          items: [
+            {
+              type: 'docSidebar',
+              sidebarId: 'testingSidebar',
+              label: 'BDD & NFRs',
+            },
+          ],
         },
         {
-          type: 'docSidebar',
-          sidebarId: 'personasSidebar',
+          type: 'dropdown',
+          label: 'Automation',
           position: 'left',
-          label: 'Personas',
+          items: [
+            {
+              type: 'docSidebar',
+              sidebarId: 'automationSidebar',
+              label: 'AI Agents',
+            },
+          ],
         },
         {
-          type: 'docSidebar',
-          sidebarId: 'capabilitiesSidebar',
+          type: 'dropdown',
+          label: 'History',
           position: 'left',
-          label: 'Capabilities',
-        },
-        {
-          type: 'docSidebar',
-          sidebarId: 'storiesSidebar',
-          position: 'left',
-          label: 'Stories',
-        },
-        {
-          type: 'docSidebar',
-          sidebarId: 'roadsSidebar',
-          position: 'left',
-          label: 'Roadmap',
-        },
-        {
-          type: 'docSidebar',
-          sidebarId: 'adrSidebar',
-          position: 'left',
-          label: 'ADRs',
-        },
-        {
-          type: 'docSidebar',
-          sidebarId: 'nfrSidebar',
-          position: 'left',
-          label: 'NFRs',
-        },
-        {
-          type: 'docSidebar',
-          sidebarId: 'changesSidebar',
-          position: 'left',
-          label: 'Changes',
+          items: [
+            {
+              type: 'docSidebar',
+              sidebarId: 'historySidebar',
+              label: 'Change Log',
+            },
+          ],
         },
         {
           href: 'https://github.com/esimplicity/katalyst-domain-mapper',

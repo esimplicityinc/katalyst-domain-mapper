@@ -21,7 +21,7 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "All governance endpoints respond in <5ms (p95). NFR-PERF-002 target was <200ms p95. GET /latest: 1.2ms avg, GET /roads: 1.6ms avg, GET /coverage/capabilities: 1.3ms avg, GET /trends: 1.6ms avg, GET /integrity: 1.3ms avg."
+      evidence: "All governance endpoints respond in &lt;5ms (p95). NFR-PERF-002 target was &lt;200ms p95. GET /latest: 1.2ms avg, GET /roads: 1.6ms avg, GET /coverage/capabilities: 1.3ms avg, GET /trends: 1.6ms avg, GET /integrity: 1.3ms avg."
       validated_by: "superpowers-orchestrator"
     security:
       status: pass
@@ -128,7 +128,7 @@ test_results:
 | Architecture Review | ✅ CONDITIONAL PASS | @architecture-inspector | 82/100 — domain purity excellent, 2 medium violations (DELETE bypasses use case, domain validation divergence) |
 | DDD Alignment | ✅ CONDITIONAL PASS | @ddd-aligner | Ubiquitous language consistent, state machine aligned, bounded context isolation strong. 4 recommendations (domain validation divergence, unused error class, missing value objects, UI state duplication) |
 | BDD Tests | ✅ PASS | @bdd-runner | 10/10 scenarios passing |
-| NFR-PERF-002 | ✅ PASS | benchmark | All endpoints <5ms (target <200ms p95) |
+| NFR-PERF-002 | ✅ PASS | benchmark | All endpoints &lt;5ms (target &lt;200ms p95) |
 | NFR-SEC-001 | ✅ PASS | audit | .env in .gitignore, no secrets in source |
 | NFR-REL-001 | ✅ PASS | integration test | Invalid payloads rejected with structured errors |
 | TypeScript | ✅ PASS | tsc | 0 errors in @foe/schemas |
@@ -146,7 +146,7 @@ test_results:
 - Migration `0002_hard_gargoyle.sql` auto-applied on server start
 
 **Performance Impact:**
-- All governance API endpoints respond in <5ms
+- All governance API endpoints respond in &lt;5ms
 - SQLite with Drizzle ORM — efficient query patterns with proper indexing
 - Snapshot denormalization enables fast reads without joins
 

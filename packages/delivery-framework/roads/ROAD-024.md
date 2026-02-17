@@ -206,7 +206,7 @@ docker run -v $(pwd):/workspace contextmapper/context-mapper-cli \
 ## NFR Considerations
 
 - CML output must be valid according to ContextMapper's grammar
-- Export must complete in <500ms for typical domain models (<50 contexts)
+- Export must complete in &lt;500ms for typical domain models (&lt;50 contexts)
 - No Java runtime required in core pipeline (Java only needed for ContextMapper CLI)
 
 ## Acceptance Criteria
