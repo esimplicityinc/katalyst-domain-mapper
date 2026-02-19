@@ -15,6 +15,14 @@ export const CommunicationPatternSchema = z.enum([
 export const SubdomainTypeSchema = z.enum(["core", "supporting", "generic"]);
 export type SubdomainType = z.infer<typeof SubdomainTypeSchema>;
 
+export const ContextTypeSchema = z.enum([
+  "internal",
+  "external-system",
+  "human-process",
+  "unknown",
+]);
+export type ContextType = z.infer<typeof ContextTypeSchema>;
+
 export const BoundedContextSchema = z.object({
   slug: SlugPattern,
   title: z.string(),
@@ -28,6 +36,8 @@ export const BoundedContextSchema = z.object({
   teamOwnership: z.string().optional(),
   status: z.enum(["draft", "stable", "deprecated"]).default("draft"),
   subdomainType: SubdomainTypeSchema.nullable().default(null),
+  contextType: ContextTypeSchema.default("internal"),
+  taxonomyNode: z.string().optional(),
   path: z.string(),
 });
 

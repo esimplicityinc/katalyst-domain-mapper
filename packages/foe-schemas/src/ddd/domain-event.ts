@@ -21,5 +21,7 @@ export const DomainEventSchema = z.object({
   sourceFile: z.string().optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
+  sourceCapabilityId: z.string().optional(),
+  targetCapabilityIds: z.array(z.string()).default([]),
 });
 export type DomainEvent = z.infer<typeof DomainEventSchema>;

@@ -19,6 +19,8 @@ export const DomainEventSchema = z.object({
   sideEffects: z.array(z.string()).default([]),
   sourceFile: z.string().optional(),
   path: z.string(),
+  sourceCapabilityId: z.string().optional(),
+  targetCapabilityIds: z.array(z.string()).default([]),
 });
 
 export type DomainEvent = z.infer<typeof DomainEventSchema>;
