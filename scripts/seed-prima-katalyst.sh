@@ -358,13 +358,262 @@ post "$API/taxonomy" '{
       "spec": { "parents": { "environment": "prod" }, "promotionTargets": ["prod"], "templateReplacements": { "domain": "prima-staging.esimplicity.com" } }
     }
   ],
-  "capabilities": [],
-  "capabilityRels": [],
+  "capabilities": [
+    {
+      "name": "prima-platform",
+      "description": "Top-level capability grouping all Prima AI Platform capabilities across governance, AI engine, knowledge, workspace, infrastructure, and delivery domains",
+      "categories": ["platform"],
+      "dependsOnCapabilities": [],
+      "parentCapability": null,
+      "tag": null
+    },
+    {
+      "name": "governance-and-admin",
+      "description": "Capabilities supporting user governance, LLM model registry, guardrail policy management, tool provider management, and usage analytics",
+      "categories": ["governance"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "prima-platform",
+      "tag": null
+    },
+    {
+      "name": "ai-engine",
+      "description": "Capabilities powering AI orchestration, LLM provider routing, PII detection, and async task execution",
+      "categories": ["ai"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "prima-platform",
+      "tag": null
+    },
+    {
+      "name": "knowledge-and-rag",
+      "description": "Capabilities supporting document ingestion, data connector extensions, and vector storage for retrieval-augmented generation",
+      "categories": ["knowledge"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "prima-platform",
+      "tag": null
+    },
+    {
+      "name": "workspace-and-collaboration",
+      "description": "Capabilities enabling workspace chat UI, agent builder, data connector UI, web API server, agent flow engine, and embeddable chat widgets",
+      "categories": ["collaboration"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "prima-platform",
+      "tag": null
+    },
+    {
+      "name": "platform-infrastructure",
+      "description": "Capabilities supporting shared infrastructure including DNS, API gateway, database, cache, and service mesh networking",
+      "categories": ["infrastructure"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "prima-platform",
+      "tag": null
+    },
+    {
+      "name": "delivery-and-docs",
+      "description": "Capabilities supporting agent skill distribution, CI/CD bootstrap, and platform documentation",
+      "categories": ["delivery", "docs"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "prima-platform",
+      "tag": null
+    },
+    {
+      "name": "user-workspace-governance",
+      "description": "User registration, JWT/SSO authentication, SCIM provisioning, team/workspace RBAC, and rate limit enforcement",
+      "categories": ["governance"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "governance-and-admin",
+      "tag": "CAP-001"
+    },
+    {
+      "name": "llm-model-registry",
+      "description": "Registration of Prima Model abstractions over LLM providers, Fernet-encrypted credential vault, workspace model assignment",
+      "categories": ["governance"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "governance-and-admin",
+      "tag": "CAP-002"
+    },
+    {
+      "name": "guardrail-policy-management",
+      "description": "Guardrail rule creation and management, PII policy configuration, content safety policy enforcement across models",
+      "categories": ["governance", "safety"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "governance-and-admin",
+      "tag": "CAP-003"
+    },
+    {
+      "name": "tool-provider-management",
+      "description": "MCP tool provider registration, instance configuration, workspace-level tool assignments",
+      "categories": ["governance"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "governance-and-admin",
+      "tag": "CAP-004"
+    },
+    {
+      "name": "usage-analytics",
+      "description": "Token usage ingestion, cost tracking per workspace and provider, analytics dashboards",
+      "categories": ["observability"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "governance-and-admin",
+      "tag": "CAP-005"
+    },
+    {
+      "name": "ai-chat-orchestration",
+      "description": "OpenAI-compatible chat completion gateway routing requests through guardrails to LLM providers, MCP tool gateway, and RAG context injection",
+      "categories": ["ai"],
+      "dependsOnCapabilities": ["llm-model-registry", "guardrail-policy-management"],
+      "parentCapability": "ai-engine",
+      "tag": "CAP-008"
+    },
+    {
+      "name": "llm-provider-routing",
+      "description": "Unified LLM proxy routing requests to 100+ providers with load balancing, failover, and spend tracking",
+      "categories": ["ai"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "ai-engine",
+      "tag": "CAP-011"
+    },
+    {
+      "name": "pii-detection-anonymization",
+      "description": "Microsoft Presidio PII entity recognition and anonymization scanning input/output content",
+      "categories": ["safety"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "ai-engine",
+      "tag": "CAP-012"
+    },
+    {
+      "name": "async-task-execution",
+      "description": "Celery workers for background AI tool calls, document processing, and batch operations",
+      "categories": ["engine"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "ai-engine",
+      "tag": "CAP-013"
+    },
+    {
+      "name": "document-ingestion-pipeline",
+      "description": "Document collector with 9 file converters, OCR, Whisper transcription, web scraping, and chunking/embedding pipeline",
+      "categories": ["knowledge"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "knowledge-and-rag",
+      "tag": "CAP-020"
+    },
+    {
+      "name": "data-connector-extensions",
+      "description": "7 data connectors enabling sync from GitHub, GitLab, Confluence, YouTube, Obsidian, Drupal, and websites",
+      "categories": ["knowledge"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "knowledge-and-rag",
+      "tag": "CAP-021"
+    },
+    {
+      "name": "document-vector-storage",
+      "description": "PostgreSQL + pgvector document and vector storage with 9 vector DB provider adapters",
+      "categories": ["knowledge"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "knowledge-and-rag",
+      "tag": "CAP-022"
+    },
+    {
+      "name": "workspace-chat-ui",
+      "description": "Multi-threaded AI chat UI with slash commands, prompt sidebar, citations, TTS/STT, i18n, and community hub",
+      "categories": ["collaboration"],
+      "dependsOnCapabilities": ["ai-chat-orchestration"],
+      "parentCapability": "workspace-and-collaboration",
+      "tag": "CAP-017"
+    },
+    {
+      "name": "agent-builder-ui",
+      "description": "Visual no-code agent flow builder with 9 node types for chaining LLM, API, and tool calls",
+      "categories": ["collaboration"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "workspace-and-collaboration",
+      "tag": "CAP-018"
+    },
+    {
+      "name": "web-api-server",
+      "description": "Express.js backend handling chat sessions, workspace CRUD, knowledge base management, and OpenAI-compatible endpoints",
+      "categories": ["backend"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "workspace-and-collaboration",
+      "tag": "CAP-014"
+    },
+    {
+      "name": "api-gateway-routing",
+      "description": "Kong API Gateway for request routing, rate limiting, and authentication across Prima services",
+      "categories": ["infrastructure"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "platform-infrastructure",
+      "tag": "CAP-026"
+    },
+    {
+      "name": "shared-database-service",
+      "description": "Shared PostgreSQL instance for Control Tower and Web services",
+      "categories": ["infrastructure"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "platform-infrastructure",
+      "tag": "CAP-027"
+    },
+    {
+      "name": "cache-message-broker",
+      "description": "Redis for caching, Celery task queues, and SSE streaming across Prima services",
+      "categories": ["infrastructure"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "platform-infrastructure",
+      "tag": "CAP-028"
+    },
+    {
+      "name": "service-mesh-networking",
+      "description": "Istio service mesh for inter-service networking, mTLS, and traffic management",
+      "categories": ["infrastructure"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "platform-infrastructure",
+      "tag": "CAP-029"
+    },
+    {
+      "name": "dns-certificate-management",
+      "description": "Public DNS zones and wildcard TLS certificates for alvisprima.com domains via Route53",
+      "categories": ["infrastructure"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "platform-infrastructure",
+      "tag": "CAP-025"
+    },
+    {
+      "name": "agent-skill-distribution",
+      "description": "Distribution hub for 108+ AI agents, 140 skills, and 72 plugins via OpenPackage",
+      "categories": ["delivery"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "delivery-and-docs",
+      "tag": "CAP-030"
+    },
+    {
+      "name": "cicd-bootstrap",
+      "description": "Bootstrap pipeline assets — terragrunt wrappers and shared GitHub/AWS configuration for Prima CI/CD",
+      "categories": ["cicd"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "delivery-and-docs",
+      "tag": "CAP-024"
+    },
+    {
+      "name": "platform-documentation",
+      "description": "Prima documentation site with platform guides, API references, and onboarding materials",
+      "categories": ["docs"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "delivery-and-docs",
+      "tag": "CAP-023"
+    }
+  ],
+  "capabilityRels": [
+    { "name": "control-tower-governs-platform", "node": "control_tower", "relationshipType": "implements", "capabilities": ["user-workspace-governance", "llm-model-registry", "guardrail-policy-management", "tool-provider-management", "usage-analytics"] },
+    { "name": "engine-powers-ai", "node": "engine", "relationshipType": "implements", "capabilities": ["ai-chat-orchestration", "llm-provider-routing", "pii-detection-anonymization", "async-task-execution"] },
+    { "name": "web-enables-collaboration", "node": "web", "relationshipType": "implements", "capabilities": ["workspace-chat-ui", "agent-builder-ui", "web-api-server", "document-ingestion-pipeline", "document-vector-storage"] },
+    { "name": "foundation-supports-infra", "node": "foundation", "relationshipType": "supports", "capabilities": ["api-gateway-routing", "shared-database-service", "cache-message-broker", "service-mesh-networking", "dns-certificate-management"] },
+    { "name": "delivery-hub-distributes-skills", "node": "prima-delivery-hub", "relationshipType": "implements", "capabilities": ["agent-skill-distribution"] },
+    { "name": "atlas-provides-docs", "node": "atlas", "relationshipType": "implements", "capabilities": ["platform-documentation"] },
+    { "name": "cicd-enables-delivery", "node": "cicd", "relationshipType": "implements", "capabilities": ["cicd-bootstrap"] }
+  ],
   "actions": [],
   "stages": [],
   "tools": []
 }' > /dev/null
-echo "  Taxonomy snapshot ingested (1 system, 6 subsystems, 18 stacks, 1 external system)"
+echo "  Taxonomy snapshot ingested (1 system, 6 subsystems, 18 stacks, 1 external system, 29 capabilities [3-level hierarchy], 7 capabilityRels)"
 echo ""
 
 # =============================================================================

@@ -276,14 +276,110 @@ post "$API/taxonomy" '{
     }
   ],
   "capabilities": [
-    { "name": "water-quality-monitoring", "description": "Real-time and periodic water quality parameter monitoring", "categories": ["compliance", "operations"], "dependsOnCapabilities": [] },
-    { "name": "automated-meter-reading", "description": "Drive-by AMR data collection from customer meters", "categories": ["infrastructure", "billing"], "dependsOnCapabilities": [] },
-    { "name": "bill-generation", "description": "Calculate tiered water/sewer bills from meter readings", "categories": ["billing"], "dependsOnCapabilities": ["automated-meter-reading"] },
-    { "name": "sso-detection", "description": "Detect and report sanitary sewer overflows", "categories": ["compliance", "emergency"], "dependsOnCapabilities": [] },
-    { "name": "emergency-dispatch", "description": "24/7/365 field crew dispatching for emergencies", "categories": ["operations", "emergency"], "dependsOnCapabilities": [] },
-    { "name": "online-self-service", "description": "Customer portal for bill pay, service requests, and account management", "categories": ["customer-service"], "dependsOnCapabilities": [] },
-    { "name": "regulatory-reporting", "description": "EPA/NC DEQ compliance report generation and submission", "categories": ["compliance"], "dependsOnCapabilities": ["water-quality-monitoring"] },
-    { "name": "capital-project-mgmt", "description": "Infrastructure improvement project tracking and engineering", "categories": ["engineering"], "dependsOnCapabilities": [] }
+    {
+      "name": "water-operations",
+      "description": "Top-level capability grouping all Durham Water Management operational capabilities across field, compliance, customer, and infrastructure domains",
+      "categories": ["operations"],
+      "dependsOnCapabilities": [],
+      "parentCapability": null,
+      "tag": null
+    },
+    {
+      "name": "field-operations-cap",
+      "description": "Capabilities supporting 24/7/365 field crew operations including emergency dispatch and sewer overflow response",
+      "categories": ["operations", "emergency"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "water-operations",
+      "tag": null
+    },
+    {
+      "name": "compliance-services-cap",
+      "description": "Capabilities supporting regulatory compliance including water quality monitoring and EPA/NC DEQ reporting",
+      "categories": ["compliance"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "water-operations",
+      "tag": null
+    },
+    {
+      "name": "customer-services-cap",
+      "description": "Capabilities enabling customer interactions including billing, self-service, and account management",
+      "categories": ["customer-service", "billing"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "water-operations",
+      "tag": null
+    },
+    {
+      "name": "infrastructure-management-cap",
+      "description": "Capabilities supporting physical infrastructure including AMR meter reading and capital project management",
+      "categories": ["infrastructure", "engineering"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "water-operations",
+      "tag": null
+    },
+    {
+      "name": "water-quality-monitoring",
+      "description": "Real-time and periodic water quality parameter monitoring",
+      "categories": ["compliance", "operations"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "compliance-services-cap",
+      "tag": "CAP-005"
+    },
+    {
+      "name": "automated-meter-reading",
+      "description": "Drive-by AMR data collection from customer meters",
+      "categories": ["infrastructure", "billing"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "infrastructure-management-cap",
+      "tag": "CAP-006"
+    },
+    {
+      "name": "bill-generation",
+      "description": "Calculate tiered water/sewer bills from meter readings",
+      "categories": ["billing"],
+      "dependsOnCapabilities": ["automated-meter-reading"],
+      "parentCapability": "customer-services-cap",
+      "tag": "CAP-001"
+    },
+    {
+      "name": "sso-detection",
+      "description": "Detect and report sanitary sewer overflows",
+      "categories": ["compliance", "emergency"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "field-operations-cap",
+      "tag": "CAP-011"
+    },
+    {
+      "name": "emergency-dispatch",
+      "description": "24/7/365 field crew dispatching for emergencies",
+      "categories": ["operations", "emergency"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "field-operations-cap",
+      "tag": "CAP-004"
+    },
+    {
+      "name": "online-self-service",
+      "description": "Customer portal for bill pay, service requests, and account management",
+      "categories": ["customer-service"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "customer-services-cap",
+      "tag": "CAP-002"
+    },
+    {
+      "name": "regulatory-reporting",
+      "description": "EPA/NC DEQ compliance report generation and submission",
+      "categories": ["compliance"],
+      "dependsOnCapabilities": ["water-quality-monitoring"],
+      "parentCapability": "compliance-services-cap",
+      "tag": "CAP-007"
+    },
+    {
+      "name": "capital-project-mgmt",
+      "description": "Infrastructure improvement project tracking and engineering",
+      "categories": ["engineering"],
+      "dependsOnCapabilities": [],
+      "parentCapability": "infrastructure-management-cap",
+      "tag": "CAP-008"
+    }
   ],
   "capabilityRels": [
     { "name": "compliance-supports-wq-monitoring", "node": "compliance-lab", "relationshipType": "supports", "capabilities": ["water-quality-monitoring", "regulatory-reporting"] },
@@ -299,7 +395,7 @@ post "$API/taxonomy" '{
   "stages": [],
   "tools": []
 }' > /dev/null
-echo "  Taxonomy snapshot ingested (3 systems, 7 subsystems, 7 stacks, 9 capabilities, 8 capabilityRels)"
+echo "  Taxonomy snapshot ingested (3 systems, 7 subsystems, 7 stacks, 13 capabilities [3-level hierarchy], 8 capabilityRels)"
 echo ""
 
 # =============================================================================

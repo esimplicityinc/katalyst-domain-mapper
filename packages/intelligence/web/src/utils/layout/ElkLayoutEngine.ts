@@ -75,15 +75,19 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
     const edges: ElkExtendedEdge[] = [];
 
     // Index capabilities by their resolved taxonomy node FQTN
+    // Prefer taxonomyNodes[0] (from capability rels) over the legacy taxonomyNode field
     const capsByFqtn = new Map<string, typeof graph.capabilities>();
     for (const cap of graph.capabilities) {
-      if (!cap.taxonomyNode) continue;
+      const taxNode = (cap.taxonomyNodes && cap.taxonomyNodes.length > 0)
+        ? cap.taxonomyNodes[0]
+        : cap.taxonomyNode;
+      if (!taxNode) continue;
       // Find deepest matching FQTN
       let resolved: string | undefined;
-      if (fqtnSet.has(cap.taxonomyNode)) {
-        resolved = cap.taxonomyNode;
+      if (fqtnSet.has(taxNode)) {
+        resolved = taxNode;
       } else {
-        const parts = cap.taxonomyNode.split(".");
+        const parts = taxNode.split(".");
         for (let i = parts.length - 1; i >= 1; i--) {
           const candidate = parts.slice(0, i).join(".");
           if (fqtnSet.has(candidate)) { resolved = candidate; break; }

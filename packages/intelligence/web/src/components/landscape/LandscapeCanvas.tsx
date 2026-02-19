@@ -90,6 +90,17 @@ const EVENT_COLOR = "#8b5cf6";
 const UNRESOLVED_COLOR = "#dc2626";
 const WORKFLOW_COLOR = "#14b8a6";
 const CAP_COLOR = "#f97316";
+// Capability colors by derivedStatus
+const CAP_STATUS_COLOR: Record<string, string> = {
+  stable: "#f97316",       // orange
+  planned: "#eab308",      // yellow
+  deprecated: "#ef4444",   // red
+};
+const CAP_STATUS_LABEL_COLOR: Record<string, string> = {
+  stable: "#9a3412",
+  planned: "#713f12",
+  deprecated: "#991b1b",
+};
 const STORY_LINE_COLOR = EVENT_COLOR; // Same as event flows — story lines are the start of the flow
 
 const PERSONA_COLORS = ["#ec4899", "#06b6d4", "#84cc16", "#f59e0b", "#8b5cf6", "#ef4444"];
@@ -880,36 +891,52 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             labelDir.set(cur.cap.id, needsFlip ? -1 : 1);
           }
 
-          return graph.capabilities.map((cap) => {
+           return graph.capabilities.map((cap) => {
             const pos = positions.capabilityPositions.get(cap.id);
             if (!pos) return null;
             const isSelected = selection?.kind === "capability" && selection.data.id === cap.id;
             const dir = labelDir.get(cap.id) || 1;
+            // Use derivedStatus for color if available, fall back to status
+            const effectiveStatus = (cap as { derivedStatus?: string }).derivedStatus ?? cap.status;
+            const fillColor = CAP_STATUS_COLOR[effectiveStatus] ?? CAP_COLOR;
+            const labelColor = CAP_STATUS_LABEL_COLOR[effectiveStatus] ?? "#9a3412";
+            // Show a small indicator for non-root capabilities (has a parent)
+            const hasParent = !!(cap as { parentName?: string | null }).parentName;
 
             if (isTaxonomyMode) {
               const pw = 18;
               const ph = 18;
-              // Label offset: below (+) or above (-)
               const labelY = dir === 1 ? pos.y + ph + 14 : pos.y - ph - 6;
               return (
                 <g key={cap.id} onClick={() => setSelection({ kind: "capability", data: cap })} style={{ cursor: "pointer" }}>
                   <rect
                     x={pos.x - pw} y={pos.y - ph}
                     width={pw * 2} height={ph * 2}
-                    fill={CAP_COLOR} fillOpacity="0.9"
+                    fill={fillColor} fillOpacity="0.9"
                     stroke={isSelected ? "#fff" : "#fff"}
                     strokeWidth={isSelected ? 3 : 1.5}
                     rx="5"
                     filter={isSelected ? "url(#glow)" : undefined}
                   />
-                  <circle cx={pos.x - pw} cy={pos.y} r="4" fill={CAP_COLOR} stroke="#fff" strokeWidth="1.5" />
-                  <circle cx={pos.x + pw} cy={pos.y} r="4" fill={CAP_COLOR} stroke="#fff" strokeWidth="1.5" />
+                  {/* Port connectors */}
+                  <circle cx={pos.x - pw} cy={pos.y} r="4" fill={fillColor} stroke="#fff" strokeWidth="1.5" />
+                  <circle cx={pos.x + pw} cy={pos.y} r="4" fill={fillColor} stroke="#fff" strokeWidth="1.5" />
+                  {/* Small indent indicator for child capabilities */}
+                  {hasParent && (
+                    <circle cx={pos.x} cy={pos.y - ph + 4} r="2.5" fill="#fff" fillOpacity="0.6" />
+                  )}
                   <text x={pos.x} y={pos.y + 4} textAnchor="middle" fill="#fff" fontSize="9" fontWeight="700">
                     {cap.tag || cap.id}
                   </text>
-                  <text x={pos.x} y={labelY} textAnchor="middle" fill="#9a3412" fontSize="9" fontWeight="600">
+                  <text x={pos.x} y={labelY} textAnchor="middle" fill={labelColor} fontSize="9" fontWeight="600">
                     {cap.name.length > 20 ? cap.name.slice(0, 20) + ".." : cap.name}
                   </text>
+                  {/* Status badge for non-stable */}
+                  {effectiveStatus !== "stable" && (
+                    <text x={pos.x} y={dir === 1 ? labelY + 10 : labelY - 10} textAnchor="middle" fill={labelColor} fontSize="8" fontStyle="italic">
+                      {effectiveStatus}
+                    </text>
+                  )}
                 </g>
               );
             } else {
@@ -917,14 +944,19 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
                 <g key={cap.id} onClick={() => setSelection({ kind: "capability", data: cap })} style={{ cursor: "pointer" }}>
                   <polygon
                     points={`${pos.x},${pos.y - 14} ${pos.x + 14},${pos.y} ${pos.x},${pos.y + 14} ${pos.x - 14},${pos.y}`}
-                    fill={CAP_COLOR} fillOpacity="0.85" stroke="#fff" strokeWidth="2"
+                    fill={fillColor} fillOpacity="0.85" stroke="#fff" strokeWidth="2"
                   />
-                  <text x={pos.x} y={pos.y + 30} textAnchor="middle" fill="#9a3412" fontSize="10" fontWeight="600">
+                  <text x={pos.x} y={pos.y + 30} textAnchor="middle" fill={labelColor} fontSize="10" fontWeight="600">
                     {cap.name.length > 18 ? cap.name.slice(0, 18) + ".." : cap.name}
                   </text>
-                  <text x={pos.x} y={pos.y + 42} textAnchor="middle" fill="#c2410c" fontSize="9">
+                  <text x={pos.x} y={pos.y + 42} textAnchor="middle" fill={labelColor} fontSize="9">
                     {cap.tag || cap.id}
                   </text>
+                  {effectiveStatus !== "stable" && (
+                    <text x={pos.x} y={pos.y + 53} textAnchor="middle" fill={labelColor} fontSize="8" fontStyle="italic">
+                      {effectiveStatus}
+                    </text>
+                  )}
                 </g>
               );
             }
@@ -1148,12 +1180,12 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
               background:
                 selection.kind === "context" ? CTX_COLORS[selection.data.contextType] + "22"
                 : selection.kind === "event" ? EVENT_COLOR + "22"
-                : selection.kind === "capability" ? CAP_COLOR + "22"
+                : selection.kind === "capability" ? (CAP_STATUS_COLOR[(selection.data as LandscapeCapability & { derivedStatus?: string }).derivedStatus ?? selection.data.status] ?? CAP_COLOR) + "22"
                 : "#e5e7eb",
               color:
                 selection.kind === "context" ? CTX_COLORS[selection.data.contextType]
                 : selection.kind === "event" ? EVENT_COLOR
-                : selection.kind === "capability" ? CAP_COLOR
+                : selection.kind === "capability" ? (CAP_STATUS_COLOR[(selection.data as LandscapeCapability & { derivedStatus?: string }).derivedStatus ?? selection.data.status] ?? CAP_COLOR)
                 : "#6b7280",
             }}
           >
@@ -1195,14 +1227,43 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
           )}
 
           {/* Capability detail */}
-          {selection.kind === "capability" && (
-            <dl className="text-sm space-y-2">
-              <div><dt className="text-gray-500 dark:text-gray-400 text-xs">ID</dt><dd className="font-mono">{selection.data.id}</dd></div>
-              <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Category</dt><dd>{selection.data.category}</dd></div>
-              <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Status</dt><dd>{selection.data.status}</dd></div>
-              <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Taxonomy Node</dt><dd className="font-mono">{selection.data.taxonomyNode || "—"}</dd></div>
-            </dl>
-          )}
+          {selection.kind === "capability" && (() => {
+            const cap = selection.data as LandscapeCapability & {
+              derivedStatus?: string; source?: string; parentName?: string | null; taxonomyNodes?: string[];
+            };
+            const effectiveStatus = cap.derivedStatus ?? cap.status;
+            const statusColor = CAP_STATUS_COLOR[effectiveStatus] ?? CAP_COLOR;
+            return (
+              <dl className="text-sm space-y-2">
+                <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Tag / ID</dt><dd className="font-mono">{cap.tag || cap.id}</dd></div>
+                {cap.source && (
+                  <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Source</dt>
+                    <dd><span className="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800">{cap.source}</span></dd>
+                  </div>
+                )}
+                <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Status</dt>
+                  <dd style={{ color: statusColor }} className="font-semibold capitalize">{effectiveStatus}</dd>
+                </div>
+                {effectiveStatus !== cap.status && (
+                  <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Declared status</dt><dd className="capitalize text-gray-500">{cap.status}</dd></div>
+                )}
+                {cap.parentName && (
+                  <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Parent capability</dt><dd className="font-mono text-xs">{cap.parentName}</dd></div>
+                )}
+                {cap.taxonomyNodes && cap.taxonomyNodes.length > 0 && (
+                  <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Taxonomy nodes</dt>
+                    <dd className="space-y-0.5">{cap.taxonomyNodes.map((n: string) => <div key={n} className="font-mono text-xs">{n}</div>)}</dd>
+                  </div>
+                )}
+                {(!cap.taxonomyNodes || cap.taxonomyNodes.length === 0) && cap.taxonomyNode && (
+                  <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Taxonomy node</dt><dd className="font-mono">{cap.taxonomyNode}</dd></div>
+                )}
+                {cap.category && (
+                  <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Category</dt><dd>{cap.category}</dd></div>
+                )}
+              </dl>
+            );
+          })()}
 
           {/* Persona detail */}
           {selection.kind === "persona" && (

@@ -40,10 +40,31 @@ export interface LandscapeCapability {
   name: string;
   category: string;
   taxonomyNode?: string;
-  tag?: string; // @CAP-xxx
+  tag?: string; // display tag, e.g. "CAP-xxx"
   status: "planned" | "stable" | "deprecated";
+  /** Derived status rolled up bottom-up from children (equals status for leaves) */
+  derivedStatus: "planned" | "stable" | "deprecated";
   // From taxonomy capability relationships
   relationshipType?: "supports" | "depends-on" | "implements" | "enables";
+  /** Where this capability came from */
+  source: "governance" | "taxonomy" | "merged";
+  /** Slug of the parent taxonomy capability (null = root) */
+  parentName: string | null;
+  /** Taxonomy node(s) that implement this capability */
+  taxonomyNodes: string[];
+}
+
+// ── Capability Tree Node (for hierarchy-aware rendering) ──────────────────
+
+export interface LandscapeCapabilityNode {
+  id: string;
+  name: string;
+  description: string;
+  tag: string | null;
+  status: "planned" | "stable" | "deprecated";
+  derivedStatus: "planned" | "stable" | "deprecated";
+  taxonomyNodes: string[];
+  children: LandscapeCapabilityNode[];
 }
 
 // ── Domain Events (Cross-System Edges) ─────────────────────────────────────
@@ -193,20 +214,28 @@ export interface InferredSystem {
 export interface LandscapeGraph {
   // Taxonomy hierarchy
   systems: TaxonomySystemNode[];
-  
+
   // Domain Model entities
   contexts: ResolvedContext[];
   events: LandscapeEvent[];
   workflows: LandscapeWorkflow[];
-  
-  // Governance entities
+
+  // Governance + Taxonomy capabilities (merged flat list)
   capabilities: LandscapeCapability[];
+
+  /**
+   * Hierarchical capability tree from taxonomy.
+   * Use for tree-based rendering; use `capabilities` for flat lookups.
+   */
+  capabilityTree: LandscapeCapabilityNode[];
+
+  // Governance entities
   personas: LandscapePersona[];
   userStories: LandscapeUserStory[];
-  
+
   // Inferred entities
   inferredSystems: InferredSystem[];
-  
+
   // Metadata
   domainModelId?: string;
   taxonomySnapshotId?: string;
