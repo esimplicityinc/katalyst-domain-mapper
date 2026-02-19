@@ -755,14 +755,19 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             const lineOpacity = animatedLayout.collapsedLineOpacity.get(key) ?? 1;
             if (lineOpacity <= 0.01) continue;
 
+            const isHighlighted = !!activePersonaId && line.personaId === activePersonaId;
+            const lineColor = isHighlighted
+              ? PERSONA_COLORS[line.personaIndex % PERSONA_COLORS.length]
+              : STORY_LINE_COLOR;
+
             elements.push(
               <path
                 key={key}
                 d={line.path.d}
                 fill="none"
-                stroke={STORY_LINE_COLOR}
-                strokeWidth="1.8"
-                strokeOpacity={0.4 * lineOpacity}
+                stroke={lineColor}
+                strokeWidth={isHighlighted ? "2.5" : "1.8"}
+                strokeOpacity={(isHighlighted ? 0.8 : 0.4) * lineOpacity}
                 markerEnd="url(#ea)"
               />
             );
@@ -777,17 +782,23 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             const lineOpacity = animatedLayout.storyLineOpacity.get(key) ?? 1;
             if (lineOpacity <= 0.01) continue;
 
-            const baseOpacity = isImplementing ? 0.15 : 0.35;
+            const isHighlighted = !!activePersonaId && line.personaId === activePersonaId;
+            const baseOpacity = isHighlighted
+              ? (isImplementing ? 0.5 : 0.8)
+              : (isImplementing ? 0.15 : 0.35);
+            const lineColor = isHighlighted
+              ? PERSONA_COLORS[line.personaIndex % PERSONA_COLORS.length]
+              : STORY_LINE_COLOR;
 
             elements.push(
               <path
                 key={key}
                 d={line.path.d}
                 fill="none"
-                stroke={STORY_LINE_COLOR}
-                strokeWidth="1.5"
+                stroke={lineColor}
+                strokeWidth={isHighlighted ? "2" : "1.5"}
                 strokeOpacity={baseOpacity * lineOpacity}
-                markerEnd={isImplementing ? undefined : "url(#ea)"}
+                markerEnd={isImplementing && !isHighlighted ? undefined : "url(#ea)"}
               />
             );
           }
