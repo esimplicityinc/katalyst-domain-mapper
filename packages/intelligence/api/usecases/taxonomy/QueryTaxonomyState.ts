@@ -5,6 +5,7 @@ import type {
   TaxonomyEnvironmentSummary,
   TaxonomyHierarchy,
   TaxonomyPluginSummary,
+  CapabilityTree,
 } from "../../ports/TaxonomyRepository.js";
 
 export class QueryTaxonomyState {
@@ -40,5 +41,13 @@ export class QueryTaxonomyState {
 
   async getCapabilitiesForNode(nodeName: string): Promise<string[]> {
     return this.taxonomyRepo.getCapabilitiesByNode(nodeName);
+  }
+
+  async getCapabilityTree(): Promise<CapabilityTree> {
+    return this.taxonomyRepo.getCapabilityTree();
+  }
+
+  async getCapabilityTreeBySnapshotId(snapshotId: string): Promise<CapabilityTree> {
+    return this.taxonomyRepo.getCapabilityTreeBySnapshotId(snapshotId);
   }
 }

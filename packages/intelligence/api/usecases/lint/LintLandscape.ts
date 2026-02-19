@@ -21,6 +21,7 @@ import type {
   LintUserStory,
   LintCapability,
   LintTaxonomyNode,
+  LintTaxonomyCapability,
   LintBoundedContext,
   LintAggregate,
   LintDomainEvent,
@@ -179,6 +180,41 @@ export class LintLandscape {
       );
     }
 
+    // Taxonomy: load capability tree and flatten to LintTaxonomyCapability list
+    const taxonomyCapabilities: LintTaxonomyCapability[] = [];
+    if (taxonomySnapshotId) {
+      const capTree = await this.taxonomyRepo
+        .getCapabilityTreeBySnapshotId(taxonomySnapshotId)
+        .catch(() => null);
+      if (capTree) {
+        const flattenCapTree = (
+          nodes: Array<{ name: string; description: string; tag: string | null; derivedStatus: "planned" | "stable" | "deprecated"; taxonomyNodes: string[]; children: unknown[] }>,
+          parentName: string | null,
+        ): void => {
+          for (const node of nodes) {
+            taxonomyCapabilities.push({
+              name: node.name,
+              description: node.description,
+              tag: node.tag,
+              parentName,
+              derivedStatus: node.derivedStatus,
+              taxonomyNodes: node.taxonomyNodes,
+            });
+            if (node.children.length > 0) {
+              flattenCapTree(
+                node.children as Array<{ name: string; description: string; tag: string | null; derivedStatus: "planned" | "stable" | "deprecated"; taxonomyNodes: string[]; children: unknown[] }>,
+                node.name,
+              );
+            }
+          }
+        };
+        flattenCapTree(
+          capTree.roots as Array<{ name: string; description: string; tag: string | null; derivedStatus: "planned" | "stable" | "deprecated"; taxonomyNodes: string[]; children: unknown[] }>,
+          null,
+        );
+      }
+    }
+
     // Domain model: bounded contexts (now with contextType + taxonomyNode from port)
     const boundedContexts: LintBoundedContext[] = domainModel.boundedContexts.map((bc) => ({
       id: bc.id,
@@ -243,6 +279,7 @@ export class LintLandscape {
       glossaryTerms,
       workflows,
       taxonomyNodes,
+      taxonomyCapabilities,
     };
 
     // ── 4. Run the linter ───────────────────────────────────────────────────

@@ -210,6 +210,19 @@ export interface LintWorkflow {
 }
 
 /**
+ * A flattened taxonomy capability used in lint context.
+ * Includes hierarchy info (parentName) and derivedStatus from the capability tree.
+ */
+export interface LintTaxonomyCapability {
+  name: string;
+  description: string;
+  tag: string | null;
+  parentName: string | null;
+  derivedStatus: "planned" | "stable" | "deprecated";
+  taxonomyNodes: string[];
+}
+
+/**
  * The full input context passed to every lint rule.
  * All data pre-loaded; rules are pure functions.
  */
@@ -232,4 +245,6 @@ export interface LintContext {
 
   // Taxonomy domain
   taxonomyNodes: LintTaxonomyNode[];
+  /** Flattened taxonomy capability list (from capability tree), empty if no taxonomy snapshot loaded */
+  taxonomyCapabilities: LintTaxonomyCapability[];
 }

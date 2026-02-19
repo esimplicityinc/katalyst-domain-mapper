@@ -455,6 +455,41 @@ export function checkGlossaryCoversAggregates(ctx: LintContext): LintFinding[] {
   return findings;
 }
 
+// ── Rule: taxonomy-capability-has-node ───────────────────────────────────────
+
+/**
+ * Every taxonomy capability should be mapped to at least one taxonomy node via
+ * a capability relationship. A capability with no node mapping is declared but
+ * unimplemented — it floats free of the architecture.
+ *
+ * Only runs when taxonomyCapabilities are loaded in the context.
+ */
+export function checkTaxonomyCapabilityHasNode(ctx: LintContext): LintFinding[] {
+  const findings: LintFinding[] = [];
+
+  // Only run when taxonomy capabilities are loaded
+  if (ctx.taxonomyCapabilities.length === 0) return findings;
+
+  for (const cap of ctx.taxonomyCapabilities) {
+    if (cap.taxonomyNodes.length === 0) {
+      findings.push({
+        rule: "taxonomy-capability-has-node",
+        severity: "warning",
+        category: "missing-link",
+        message: `Taxonomy capability "${cap.name}" is not mapped to any taxonomy node — it is declared but unimplemented in the architecture.`,
+        entityType: "taxonomyCapability",
+        entityId: cap.name,
+        entityName: cap.name,
+        suggestion: cap.tag
+          ? `Add a capability relationship entry mapping "${cap.name}" (${cap.tag}) to the taxonomy node(s) that implement it.`
+          : `Add a capability relationship entry mapping "${cap.name}" to the taxonomy node(s) that implement it.`,
+      });
+    }
+  }
+
+  return findings;
+}
+
 // ── Composite export ──────────────────────────────────────────────────────────
 
 export function runCoverageRules(ctx: LintContext): LintFinding[] {
@@ -471,5 +506,6 @@ export function runCoverageRules(ctx: LintContext): LintFinding[] {
     ...checkWorkflowHasEvents(ctx),
     ...checkAggregateHasEvents(ctx),
     ...checkGlossaryCoversAggregates(ctx),
+    ...checkTaxonomyCapabilityHasNode(ctx),
   ];
 }

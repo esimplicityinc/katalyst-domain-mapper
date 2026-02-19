@@ -14,6 +14,7 @@ import {
   makeDomainEvent,
   makeGlossaryTerm,
   makeWorkflow,
+  makeTaxonomyCapability,
 } from "./fixtures.js";
 
 describe("coverage rules", () => {
@@ -280,6 +281,59 @@ describe("coverage rules", () => {
       });
       const findings = runCoverageRules(ctx).filter((f) => f.rule === "glossary-covers-aggregates");
       expect(findings).toHaveLength(0);
+    });
+  });
+
+  describe("taxonomy-capability-has-node", () => {
+    it("skips check when no taxonomy capabilities loaded", () => {
+      const ctx = emptyContext({ taxonomyCapabilities: [] });
+      const findings = runCoverageRules(ctx).filter((f) => f.rule === "taxonomy-capability-has-node");
+      expect(findings).toHaveLength(0);
+    });
+
+    it("flags taxonomy capability with no taxonomy node mapping", () => {
+      const ctx = emptyContext({
+        taxonomyCapabilities: [
+          makeTaxonomyCapability({ name: "unmapped-cap", taxonomyNodes: [] }),
+        ],
+      });
+      const findings = runCoverageRules(ctx).filter((f) => f.rule === "taxonomy-capability-has-node");
+      expect(findings).toHaveLength(1);
+      expect(findings[0].severity).toBe("warning");
+      expect(findings[0].category).toBe("missing-link");
+      expect(findings[0].entityId).toBe("unmapped-cap");
+    });
+
+    it("includes tag in suggestion when tag is set", () => {
+      const ctx = emptyContext({
+        taxonomyCapabilities: [
+          makeTaxonomyCapability({ name: "unmapped-cap", tag: "CAP-042", taxonomyNodes: [] }),
+        ],
+      });
+      const findings = runCoverageRules(ctx).filter((f) => f.rule === "taxonomy-capability-has-node");
+      expect(findings[0].suggestion).toContain("CAP-042");
+    });
+
+    it("passes when taxonomy capability has at least one node", () => {
+      const ctx = emptyContext({
+        taxonomyCapabilities: [
+          makeTaxonomyCapability({ name: "mapped-cap", taxonomyNodes: ["lims-stack"] }),
+        ],
+      });
+      const findings = runCoverageRules(ctx).filter((f) => f.rule === "taxonomy-capability-has-node");
+      expect(findings).toHaveLength(0);
+    });
+
+    it("only flags unmapped capabilities, not mapped ones", () => {
+      const ctx = emptyContext({
+        taxonomyCapabilities: [
+          makeTaxonomyCapability({ name: "mapped-cap", taxonomyNodes: ["system-a"] }),
+          makeTaxonomyCapability({ name: "unmapped-cap", taxonomyNodes: [] }),
+        ],
+      });
+      const findings = runCoverageRules(ctx).filter((f) => f.rule === "taxonomy-capability-has-node");
+      expect(findings).toHaveLength(1);
+      expect(findings[0].entityId).toBe("unmapped-cap");
     });
   });
 });

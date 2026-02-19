@@ -160,6 +160,51 @@ export function createTaxonomyRoutes(deps: {
         },
       )
 
+      // GET /capabilities/tree — Capability hierarchy tree (latest snapshot)
+      .get(
+        "/capabilities/tree",
+        async ({ set }) => {
+          const tree = await deps.queryTaxonomyState.getCapabilityTree();
+          if (tree.roots.length === 0 && tree.byName.size === 0) {
+            set.status = 404;
+            return { error: "No taxonomy capabilities found" };
+          }
+          return {
+            roots: tree.roots,
+            byName: Object.fromEntries(tree.byName),
+          };
+        },
+        {
+          detail: {
+            summary: "Get capability hierarchy tree for the latest snapshot",
+            tags: ["Taxonomy"],
+          },
+        },
+      )
+
+      // GET /capabilities/tree/:snapshotId — Capability hierarchy tree for a specific snapshot
+      .get(
+        "/capabilities/tree/:snapshotId",
+        async ({ params, set }) => {
+          const tree = await deps.queryTaxonomyState.getCapabilityTreeBySnapshotId(params.snapshotId);
+          if (tree.roots.length === 0 && tree.byName.size === 0) {
+            set.status = 404;
+            return { error: `No taxonomy capabilities found for snapshot: ${params.snapshotId}` };
+          }
+          return {
+            roots: tree.roots,
+            byName: Object.fromEntries(tree.byName),
+          };
+        },
+        {
+          params: t.Object({ snapshotId: t.String() }),
+          detail: {
+            summary: "Get capability hierarchy tree for a specific snapshot",
+            tags: ["Taxonomy"],
+          },
+        },
+      )
+
       // DELETE / — Delete ALL snapshots
       .delete(
         "/",

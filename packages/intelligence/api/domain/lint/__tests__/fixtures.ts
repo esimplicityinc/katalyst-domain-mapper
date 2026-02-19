@@ -11,6 +11,7 @@ import type {
   LintUserStory,
   LintCapability,
   LintTaxonomyNode,
+  LintTaxonomyCapability,
   LintBoundedContext,
   LintAggregate,
   LintDomainEvent,
@@ -58,6 +59,18 @@ export function makeTaxonomyNode(overrides: Partial<LintTaxonomyNode> = {}): Lin
     name: "system-a",
     fqtn: "system-a",
     nodeType: "system",
+    ...overrides,
+  };
+}
+
+export function makeTaxonomyCapability(overrides: Partial<LintTaxonomyCapability> = {}): LintTaxonomyCapability {
+  return {
+    name: "regulatory-compliance",
+    description: "Regulatory compliance capability",
+    tag: null,
+    parentName: null,
+    derivedStatus: "stable",
+    taxonomyNodes: ["system-a"],
     ...overrides,
   };
 }
@@ -139,6 +152,7 @@ export function emptyContext(overrides: Partial<LintContext> = {}): LintContext 
     glossaryTerms: [],
     workflows: [],
     taxonomyNodes: [],
+    taxonomyCapabilities: [],
     ...overrides,
   };
 }
@@ -181,5 +195,6 @@ export function validContext(): LintContext {
     glossaryTerms: [glossary],
     workflows: [workflow],
     taxonomyNodes: [taxNode],
+    taxonomyCapabilities: [],
   };
 }
