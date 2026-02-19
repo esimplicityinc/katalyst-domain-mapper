@@ -11,16 +11,39 @@ help:
 
 # ─── Development ──────────────────────────────────────────────
 
+# Start API + Web UI (the two services needed for BDD tests)
+[group('development')]
+dev:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "Starting API and Web UI dev servers..."
+    trap 'kill 0' INT TERM EXIT
+    just dev-intelligence-api &
+    just dev-intelligence-web &
+    wait
+
 # Start all dev servers (API + Web UI + Docs)
 [group('development')]
 dev-all:
     #!/usr/bin/env bash
     set -euo pipefail
     echo "Starting all development servers..."
-    just dev-api &
-    just dev-ui &
+    just dev-intelligence-api &
+    just dev-intelligence-web &
     just dev-docs &
     wait
+
+# Start Intelligence API server (Bun with hot reload) — serves on API_PORT (default 3001)
+[group('development')]
+[working-directory: 'packages/intelligence']
+dev-intelligence-api:
+    bun --watch api/main.ts
+
+# Start Intelligence Web UI (Vite) — serves on FRONTEND_PORT (default 3002), proxies /api → API_PORT
+[group('development')]
+[working-directory: 'packages/intelligence/web']
+dev-intelligence-web:
+    bunx vite
 
 # Start API server (Elysia with hot reload)
 [group('development')]
