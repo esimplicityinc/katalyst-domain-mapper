@@ -39,10 +39,18 @@ export interface LandscapeCapability {
   name: string;
   category: string;
   taxonomyNode?: string;
-  tag?: string; // @CAP-xxx
+  tag?: string; // @CAP-xxx or display tag for traceability
   status: "planned" | "stable" | "deprecated";
+  /** Derived status rolled up from children (equals status for leaves) */
+  derivedStatus: "planned" | "stable" | "deprecated";
   // From taxonomy capability relationships
   relationshipType?: "supports" | "depends-on" | "implements" | "enables";
+  /** Source of this capability: "governance" | "taxonomy" | "merged" */
+  source: "governance" | "taxonomy" | "merged";
+  /** Slug of the parent taxonomy capability (null = root) */
+  parentName: string | null;
+  /** Taxonomy node(s) that implement this capability */
+  taxonomyNodes: string[];
 }
 
 // ── Domain Events (Cross-System Edges) ─────────────────────────────────────
@@ -126,25 +134,46 @@ export interface InferredSystem {
   contextType: "unknown";
 }
 
+// ── Capability Tree Node (for hierarchy-aware consumers) ──────────────────
+
+export interface LandscapeCapabilityNode {
+  id: string;
+  name: string;
+  description: string;
+  tag: string | null;
+  status: "planned" | "stable" | "deprecated";
+  derivedStatus: "planned" | "stable" | "deprecated";
+  taxonomyNodes: string[];
+  children: LandscapeCapabilityNode[];
+}
+
 // ── The Complete Landscape Graph ───────────────────────────────────────────
 
 export interface LandscapeGraph {
   // Taxonomy hierarchy
   systems: TaxonomySystemNode[];
-  
+
   // Domain Model entities
   contexts: ResolvedContext[];
   events: LandscapeEvent[];
   workflows: LandscapeWorkflow[];
-  
-  // Governance entities
+
+  // Governance + Taxonomy capabilities (merged flat list for indexing)
   capabilities: LandscapeCapability[];
+
+  /**
+   * Hierarchical capability tree sourced from taxonomy.
+   * Use this for tree-based UI rendering; use `capabilities` for flat lookups.
+   */
+  capabilityTree: LandscapeCapabilityNode[];
+
+  // Governance entities
   personas: LandscapePersona[];
   userStories: LandscapeUserStory[];
-  
+
   // Inferred entities
   inferredSystems: InferredSystem[];
-  
+
   // Metadata
   domainModelId?: string;
   taxonomySnapshotId?: string;
