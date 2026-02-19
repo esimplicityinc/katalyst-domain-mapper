@@ -21,6 +21,105 @@ const NODE_HEIGHT = 56;
 const VIEWBOX_PADDING = 60;
 const ARROW_SIZE = 8;
 
+// ── Auto-layout for states without x/y positions ────────────────────────────
+
+/** A WorkflowState guaranteed to have x/y coordinates. */
+interface PositionedState extends WorkflowState {
+  x: number;
+  y: number;
+}
+
+/**
+ * Normalize raw state data from the API.
+ * The API may return states with only { name, type, isError? }
+ * but the component needs { id, name, isTerminal, isError, x?, y? }.
+ * Transitions reference states by name, so id = name.
+ */
+function normalizeStates(rawStates: WorkflowState[]): WorkflowState[] {
+  return rawStates.map((s) => ({
+    ...s,
+    id: s.id || s.name,
+    isTerminal: s.isTerminal ?? (s as any).type === "terminal",
+    isError: s.isError ?? (s as any).isError === true,
+  }));
+}
+
+/**
+ * Assign x/y positions to workflow states that are missing them.
+ * Uses a simple topological layout: arrange states by their
+ * distance (rank) from initial states, flowing left-to-right.
+ * States at the same rank are stacked vertically.
+ */
+function autoLayoutStates(
+  rawStates: WorkflowState[],
+  transitions: WorkflowTransition[],
+): PositionedState[] {
+  const states = normalizeStates(rawStates);
+
+  // If all states already have positions, return as-is
+  if (states.every((s) => s.x != null && s.y != null)) {
+    return states as PositionedState[];
+  }
+
+  const H_GAP = 220;
+  const V_GAP = 100;
+
+  // Build adjacency from transitions (which reference states by name/id)
+  const adj = new Map<string, string[]>();
+  for (const s of states) adj.set(s.id, []);
+  for (const t of transitions) {
+    adj.get(t.from)?.push(t.to);
+  }
+
+  const rank = new Map<string, number>();
+  const initials = states.filter(
+    (s) => (s as any).type === "initial" || !transitions.some((t) => t.to === s.id),
+  );
+  const queue: Array<{ id: string; r: number }> = initials.map((s) => ({
+    id: s.id,
+    r: 0,
+  }));
+  for (const s of initials) rank.set(s.id, 0);
+
+  while (queue.length > 0) {
+    const { id, r } = queue.shift()!;
+    for (const next of adj.get(id) ?? []) {
+      if (!rank.has(next) || rank.get(next)! < r + 1) {
+        rank.set(next, r + 1);
+        queue.push({ id: next, r: r + 1 });
+      }
+    }
+  }
+
+  // States not reached by BFS (disconnected) get appended at the end
+  let maxRank = 0;
+  for (const v of rank.values()) if (v > maxRank) maxRank = v;
+  for (const s of states) {
+    if (!rank.has(s.id)) rank.set(s.id, ++maxRank);
+  }
+
+  // Group by rank
+  const byRank = new Map<number, WorkflowState[]>();
+  for (const s of states) {
+    const r = rank.get(s.id) ?? 0;
+    if (!byRank.has(r)) byRank.set(r, []);
+    byRank.get(r)!.push(s);
+  }
+
+  // Assign positions: rank → x column, index-within-rank → y row
+  return states.map((s) => {
+    if (s.x != null && s.y != null) return s as PositionedState;
+    const r = rank.get(s.id) ?? 0;
+    const siblings = byRank.get(r) ?? [s];
+    const idx = siblings.indexOf(s);
+    return {
+      ...s,
+      x: VIEWBOX_PADDING + r * H_GAP,
+      y: VIEWBOX_PADDING + idx * V_GAP,
+    };
+  });
+}
+
 // ── Color helpers ────────────────────────────────────────────────────────────
 
 function stateColor(state: WorkflowState): {
@@ -106,15 +205,20 @@ export function WorkflowView({ model }: WorkflowViewProps) {
     [workflows, selectedWorkflowId],
   );
 
+  // Ensure all states have x/y positions (auto-layout if missing)
+  const positionedStates = useMemo<PositionedState[]>(() => {
+    if (!activeWorkflow) return [];
+    return autoLayoutStates(activeWorkflow.states, activeWorkflow.transitions);
+  }, [activeWorkflow]);
+
   // State lookup
   const stateById = useMemo(() => {
-    if (!activeWorkflow) return new Map<string, WorkflowState>();
-    const map = new Map<string, WorkflowState>();
-    for (const s of activeWorkflow.states) {
+    const map = new Map<string, PositionedState>();
+    for (const s of positionedStates) {
       map.set(s.id, s);
     }
     return map;
-  }, [activeWorkflow]);
+  }, [positionedStates]);
 
   // Connected transition IDs for a hovered/selected state
   const connectedTransitions = useMemo(() => {
@@ -145,13 +249,12 @@ export function WorkflowView({ model }: WorkflowViewProps) {
 
   // Compute viewBox from state positions
   const viewBox = useMemo(() => {
-    if (!activeWorkflow || activeWorkflow.states.length === 0)
-      return "0 0 600 400";
+    if (positionedStates.length === 0) return "0 0 600 400";
     let minX = Infinity,
       minY = Infinity,
       maxX = -Infinity,
       maxY = -Infinity;
-    for (const s of activeWorkflow.states) {
+    for (const s of positionedStates) {
       if (s.x < minX) minX = s.x;
       if (s.y < minY) minY = s.y;
       if (s.x + NODE_WIDTH > maxX) maxX = s.x + NODE_WIDTH;
@@ -162,7 +265,7 @@ export function WorkflowView({ model }: WorkflowViewProps) {
     const w = maxX - minX + NODE_WIDTH + VIEWBOX_PADDING * 2;
     const h = maxY - minY + NODE_HEIGHT + VIEWBOX_PADDING * 2;
     return `${x} ${y} ${w} ${h}`;
-  }, [activeWorkflow]);
+  }, [positionedStates]);
 
   const handleStateHover = useCallback(
     (id: string | null) => setHoveredState(id),
@@ -326,7 +429,7 @@ export function WorkflowView({ model }: WorkflowViewProps) {
               ))}
 
               {/* State nodes */}
-              {activeWorkflow.states.map((state) => (
+              {positionedStates.map((state) => (
                 <StateNode
                   key={state.id}
                   state={state}
@@ -511,7 +614,7 @@ export function WorkflowView({ model }: WorkflowViewProps) {
 // ── StateNode (SVG) ──────────────────────────────────────────────────────────
 
 interface StateNodeProps {
-  state: WorkflowState;
+  state: PositionedState;
   hovered: boolean;
   selected: boolean;
   dimmed: boolean;
@@ -643,7 +746,7 @@ function StateNode({
 
 interface TransitionPathProps {
   transition: WorkflowTransition;
-  states: Map<string, WorkflowState>;
+  states: Map<string, PositionedState>;
   highlighted: boolean;
   dimmed: boolean;
 }
@@ -716,7 +819,7 @@ function TransitionPath({
 
 /** Compute the point on the edge of a node rect that faces toward (tx, ty) */
 function edgePoint(
-  state: WorkflowState,
+  state: PositionedState,
   tx: number,
   ty: number,
 ): { x: number; y: number } {

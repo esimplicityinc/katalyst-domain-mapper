@@ -9,6 +9,7 @@ import {
   Loader2,
   Plus,
   GitBranch,
+  Map,
 } from "lucide-react";
 import { api } from "../api/client";
 import { DomainModelList } from "../components/domain/DomainModelList";
@@ -18,6 +19,7 @@ import { AggregateTreeView } from "../components/domain/AggregateTreeView";
 import { EventFlowView } from "../components/domain/EventFlowView";
 import { GlossaryView } from "../components/domain/GlossaryView";
 import { WorkflowView } from "../components/domain/WorkflowView";
+import { LandscapeView } from "../components/domain/LandscapeView";
 import type { DomainModel, DomainModelFull } from "../types/domain";
 
 const STORAGE_KEY = "foe:selectedModelId";
@@ -28,6 +30,7 @@ const SUB_NAV = [
   { to: "/design/business-domain/events", label: "Events", icon: Zap },
   { to: "/design/business-domain/workflows", label: "Workflows", icon: GitBranch },
   { to: "/design/business-domain/glossary", label: "Glossary", icon: BookOpen },
+  { to: "/design/business-domain/landscape", label: "Landscape", icon: Map },
 ];
 
 const CHAT_NAV = { to: "/design/business-domain/chat", label: "Chat", icon: Sparkles };
@@ -228,6 +231,10 @@ export function DomainMapperPage() {
             element={
               <GlossaryView model={activeModel} onModelUpdated={refreshModel} />
             }
+          />
+          <Route
+            path="landscape"
+            element={<LandscapeView model={activeModel} />}
           />
         </Routes>
       </div>

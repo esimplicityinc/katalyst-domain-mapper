@@ -20,7 +20,7 @@ interface ContextMapDiagramProps {
  */
 export function ContextMapDiagram({ model }: ContextMapDiagramProps) {
   const positions = useAutoLayout(model.boundedContexts);
-  const { viewBox, handlers, resetView } = useSvgPanZoom();
+  const { viewBox, handlers, svgRef, resetView } = useSvgPanZoom();
   const [selectedContextId, setSelectedContextId] = useState<string | null>(
     null,
   );
@@ -159,6 +159,7 @@ export function ContextMapDiagram({ model }: ContextMapDiagramProps) {
     <div className="relative w-full" style={{ height: "500px" }}>
       {/* SVG Canvas */}
       <svg
+        ref={svgRef}
         viewBox={viewBoxStr}
         className="w-full h-full select-none"
         style={{ cursor: "grab" }}
