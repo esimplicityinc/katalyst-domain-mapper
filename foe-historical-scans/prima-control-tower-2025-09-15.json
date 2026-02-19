@@ -1,0 +1,399 @@
+{
+  "version": "1.0",
+  "generated": "2026-02-18T00:13:13Z",
+  "repository": {
+    "path": "/repo",
+    "name": "prima-control_tower",
+    "techStack": [
+      "python"
+    ],
+    "monorepo": true
+  },
+  "dimensions": {
+    "feedback": {
+      "score": 85,
+      "maxScore": 100,
+      "subscores": {
+        "ciPipelineSpeed": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "deploymentFrequency": {
+          "score": 10,
+          "max": 25,
+          "confidence": "medium"
+        },
+        "feedbackLoopInvestment": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "pipelineCompleteness": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "CI Pipeline Speed",
+          "type": "strength",
+          "description": "GitHub Actions with Docker build caching, test parallelization (pytest -n 4), and concurrency controls",
+          "evidence": [
+            ".github/workflows/backend-ci.yml",
+            "Docker caching via type=gha",
+            "Multiple focused workflows"
+          ]
+        },
+        {
+          "area": "Feedback Loop Investment",
+          "type": "strength",
+          "description": "Comprehensive pre-commit hooks with Black, Ruff, MyPy, Flake8, isort, and Pyright",
+          "evidence": [
+            ".pre-commit-config.yaml",
+            "Early feedback before CI"
+          ]
+        },
+        {
+          "area": "Security Scanning",
+          "type": "strength",
+          "description": "Multi-layered security with Semgrep (SAST), Trivy (vulnerabilities + secrets), and separate compliance job",
+          "evidence": [
+            "backend-ci.yml compliance job",
+            ".trivyignore"
+          ]
+        },
+        {
+          "area": "Test Coverage",
+          "type": "strength",
+          "description": "Unit tests, E2E tests with Playwright, linting, type checking, circular import detection",
+          "evidence": [
+            "pytest suite",
+            "Playwright E2E",
+            "codecov.yaml"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Automated Deployment",
+          "currentState": "Deployments triggered manually via workflow_dispatch",
+          "hypothesis": "If we add automated deployments on merge to main, then we'll increase deployment frequency and reduce lead time because manual deployment friction will be eliminated",
+          "recommendation": "Enable automated deployment to staging/production on successful CI runs for main branch",
+          "impact": "high",
+          "foeMethod": "M111",
+          "foeInsights": {
+            "understanding": "Automated deployments document the deployment process as code and make it repeatable",
+            "feedback": "Faster path from commit to production feedback - currently blocked by manual trigger",
+            "confidence": "Repeatable automated deployments reduce 'works on my machine' uncertainty and deployment errors"
+          }
+        },
+        {
+          "area": "Deployment Metrics Visibility",
+          "currentState": "No explicit tracking of deployment frequency or lead time metrics",
+          "hypothesis": "If we track DORA metrics (deployment frequency, lead time), then we'll identify bottlenecks in our delivery pipeline because measurement drives improvement",
+          "recommendation": "Implement deployment frequency and lead time tracking in CI/CD pipeline",
+          "impact": "medium",
+          "foeMethod": "M130",
+          "foeInsights": {
+            "understanding": "Metrics reveal patterns in how code flows from commit to production",
+            "feedback": "Tracking provides feedback on process effectiveness, not just code quality",
+            "confidence": "Known metrics enable confident decisions about process changes"
+          }
+        }
+      ]
+    },
+    "understanding": {
+      "score": 50,
+      "maxScore": 100,
+      "subscores": {
+        "architectureClarity": {
+          "score": 15,
+          "max": 25,
+          "confidence": "high"
+        },
+        "dependencyDirection": {
+          "score": 15,
+          "max": 25,
+          "confidence": "high"
+        },
+        "modularity": {
+          "score": 18,
+          "max": 25,
+          "confidence": "high"
+        },
+        "documentationQuality": {
+          "score": 12,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "Hexagonal Architecture",
+          "type": "strength",
+          "description": "control_tower shows clean hexagonal architecture with adapters/, core/, api/ separation",
+          "evidence": [
+            "control_tower/app/src/app/adapters",
+            "control_tower/app/src/app/core",
+            "control_tower/app/src/app/api"
+          ]
+        },
+        {
+          "area": "Bounded Contexts",
+          "type": "strength",
+          "description": "9 well-separated bounded contexts with clear folder structure",
+          "evidence": [
+            "user",
+            "team",
+            "workspace",
+            "knowledgebase",
+            "llm",
+            "scim",
+            "external_service",
+            "tool",
+            "prompt"
+          ]
+        },
+        {
+          "area": "Ubiquitous Language",
+          "type": "strength",
+          "description": "Strong domain terminology with 60+ schema classes using consistent, domain-specific names",
+          "evidence": [
+            "Workspace",
+            "Team",
+            "Knowledgebase",
+            "PrimaModel",
+            "GuardrailRule",
+            "ToolProvider"
+          ]
+        },
+        {
+          "area": "Documentation Site",
+          "type": "strength",
+          "description": "Docusaurus-based documentation site for litellm workspace with 500+ docstrings",
+          "evidence": [
+            "global/libraries/litellm/docs/my-website/"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Architecture Documentation",
+          "currentState": "No ADRs or architecture overview found in any service",
+          "hypothesis": "If we add architecture decision records, then new team members will understand design rationale because decisions are documented with context",
+          "recommendation": "Add ADRs documenting: (1) Why hexagonal for control_tower, (2) Monorepo service boundaries, (3) litellm's feature-based organization",
+          "impact": "high",
+          "foeMethod": "M151",
+          "foeInsights": {
+            "understanding": "ADRs capture the 'why' behind architecture choices, building team mental models",
+            "feedback": "Written decisions can be reviewed and challenged, improving quality",
+            "confidence": "Documented rationale reduces uncertainty when making related decisions"
+          }
+        },
+        {
+          "area": "litellm Module Size",
+          "currentState": "Very large files (main.py: 5563 lines, utils.py: 7136 lines, router.py: 6611 lines)",
+          "hypothesis": "If we refactor large files into smaller, focused modules, then code will be easier to understand because each module has a single clear responsibility",
+          "recommendation": "Refactor utils.py and main.py into domain-specific modules (e.g., token_utils, model_utils, request_utils)",
+          "impact": "high",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Smaller modules with clear names make the codebase navigable",
+            "feedback": "Focused modules are easier to test and validate",
+            "confidence": "Single-responsibility modules can be changed independently"
+          }
+        },
+        {
+          "area": "litellm Bidirectional Dependencies",
+          "currentState": "types <-> proxy (120 imports) and types <-> llms (355 imports) bidirectional dependencies",
+          "hypothesis": "If we apply dependency inversion, then types can depend on abstractions while proxy/llms depend on types because we introduce interface layers",
+          "recommendation": "Introduce abstract base classes in types, make proxy/llms depend only on types, not vice versa",
+          "impact": "medium",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Clear dependency direction makes the architecture easier to reason about",
+            "feedback": "Import errors immediately signal violations of dependency rules",
+            "confidence": "Stable types module can be relied upon without fear of cascading changes"
+          }
+        },
+        {
+          "area": "Runbooks",
+          "currentState": "No runbooks or incident response documentation",
+          "hypothesis": "If we add runbooks, then operational incidents will be resolved faster because responders will have documented procedures",
+          "recommendation": "Create docs/runbooks/ with incident response procedures, common issues, and resolution steps",
+          "impact": "high",
+          "foeMethod": "M147",
+          "foeInsights": {
+            "understanding": "Runbooks document operational knowledge for system understanding",
+            "feedback": "Documented procedures enable faster feedback during incidents",
+            "confidence": "Teams operate with confidence when procedures are documented"
+          }
+        }
+      ]
+    },
+    "confidence": {
+      "score": 58,
+      "maxScore": 100,
+      "subscores": {
+        "testQuality": {
+          "score": 23,
+          "max": 25,
+          "confidence": "high"
+        },
+        "testCoverage": {
+          "score": 15,
+          "max": 25,
+          "confidence": "medium"
+        },
+        "contractTesting": {
+          "score": 10,
+          "max": 25,
+          "confidence": "high"
+        },
+        "circularDependencies": {
+          "score": 10,
+          "max": 25,
+          "confidence": "medium"
+        }
+      },
+      "findings": [
+        {
+          "area": "Test:Code Ratio",
+          "type": "strength",
+          "description": "Exceptional ratio of 0.768 with 564 test files covering 734 source files",
+          "evidence": [
+            "564 test files",
+            "3,650 test functions",
+            "9,562 assertions"
+          ]
+        },
+        {
+          "area": "Test Organization",
+          "type": "strength",
+          "description": "Well-structured test suite with 57 subdirectories and 9 conftest files for fixtures",
+          "evidence": [
+            "57 test subdirectories",
+            "9 conftest.py files"
+          ]
+        },
+        {
+          "area": "Modern Testing Practices",
+          "type": "strength",
+          "description": "1,341 async tests showing adoption of async/await patterns",
+          "evidence": [
+            "1,341 async test functions"
+          ]
+        },
+        {
+          "area": "CI Integration",
+          "type": "strength",
+          "description": "Comprehensive CI setup with coverage tracking and Codecov integration",
+          "evidence": [
+            "codecov.yaml",
+            ".coverage file",
+            "CircleCI config"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Coverage Visibility",
+          "currentState": "Coverage collected in CI but not easily accessible in repository",
+          "hypothesis": "If we generate and commit coverage reports (HTML or badges), then developers will have immediate visibility into coverage gaps because the data becomes accessible without running CI",
+          "recommendation": "Add coverage report generation to CI and publish coverage badge in README",
+          "impact": "low",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Visible metrics help teams understand test coverage at a glance",
+            "feedback": "Coverage reports provide immediate feedback on untested code",
+            "confidence": "Transparency in coverage builds confidence in code quality"
+          }
+        },
+        {
+          "area": "Contract Testing",
+          "currentState": "OpenAPI spec exists but no consumer contract testing or validation",
+          "hypothesis": "If we add contract validation tests and consumer-driven contract testing, then we'll catch API breaking changes before deployment because contracts encode consumer expectations and are validated automatically",
+          "recommendation": "Add OpenAPI schema validation tests and consider Pact for consumer contracts",
+          "impact": "medium",
+          "foeMethod": "M145",
+          "foeInsights": {
+            "understanding": "Contracts document service boundaries and API expectations explicitly",
+            "feedback": "Breaking changes detected immediately in test suite, not in production",
+            "confidence": "Consumer contracts provide assurance that API changes won't break integrations"
+          }
+        },
+        {
+          "area": "Dependency Analysis Tooling",
+          "currentState": "No dependency analysis tools configured (madge, dependency-cruiser, pydeps)",
+          "hypothesis": "If we add dependency analysis to CI, then circular dependencies will be caught early because automated checks prevent violations",
+          "recommendation": "Add pydeps or similar Python dependency analyzer to CI pipeline",
+          "impact": "medium",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Dependency graphs make implicit relationships explicit and visible",
+            "feedback": "CI checks provide immediate feedback on dependency violations",
+            "confidence": "Automated checks prevent architectural drift"
+          }
+        }
+      ]
+    }
+  },
+  "triangleDiagnosis": {
+    "cycleHealth": "practicing",
+    "weakestDimension": "understanding",
+    "weakestScore": 50,
+    "pattern": "Feedback without full Understanding",
+    "intervention": "Add architecture documentation (ADRs, context maps, runbooks) to match the strong feedback loops. Refactor large modules and resolve bidirectional dependencies.",
+    "belowMinimum": []
+  },
+  "overallScore": 65,
+  "maturityLevel": "practicing",
+  "topStrengths": [
+    {
+      "area": "Feedback Loops",
+      "score": 85,
+      "reason": "Comprehensive pre-commit hooks, fast CI with caching and parallelization, multi-layered security scanning"
+    },
+    {
+      "area": "Test Quality",
+      "score": 92,
+      "reason": "Exceptional test:code ratio (0.768), 3,650 test functions with 9,562 assertions, only 7.3% skipped"
+    },
+    {
+      "area": "CI Pipeline",
+      "score": 100,
+      "reason": "Modern CI with GitHub Actions, Docker caching, test parallelization, security scanning, and E2E tests"
+    }
+  ],
+  "topGaps": [
+    {
+      "area": "Architecture Documentation",
+      "score": 0,
+      "reason": "No ADRs or architecture decision records found"
+    },
+    {
+      "area": "Automated Deployment",
+      "score": 40,
+      "reason": "Deployment workflow exists but requires manual trigger, no automated deployment on merge"
+    },
+    {
+      "area": "Circular Dependencies",
+      "score": 40,
+      "reason": "Bidirectional dependencies detected between types/proxy and types/llms modules, no dependency analysis tooling"
+    }
+  ],
+  "methodology": {
+    "scanDuration": "45s",
+    "agentsUsed": [
+      "ci",
+      "tests",
+      "arch",
+      "domain",
+      "docs"
+    ],
+    "filesAnalyzed": 1526,
+    "confidenceLevel": "high"
+  }
+}

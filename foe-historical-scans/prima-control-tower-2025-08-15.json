@@ -1,0 +1,453 @@
+{
+  "version": "1.0",
+  "generated": "2026-02-17T23:04:46Z",
+  "repository": {
+    "path": "/repo",
+    "name": "prima-control_tower",
+    "techStack": [
+      "python",
+      "fastapi",
+      "prisma"
+    ],
+    "monorepo": true,
+    "workspaceType": "uv_workspace"
+  },
+  "dimensions": {
+    "feedback": {
+      "score": 76,
+      "maxScore": 100,
+      "subscores": {
+        "ciPipelineSpeed": {
+          "score": 20,
+          "max": 25,
+          "confidence": "high"
+        },
+        "deploymentFrequency": {
+          "score": 15,
+          "max": 25,
+          "confidence": "medium"
+        },
+        "feedbackLoopInvestment": {
+          "score": 16,
+          "max": 25,
+          "confidence": "high"
+        },
+        "pipelineCompleteness": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "CI Pipeline",
+          "type": "strength",
+          "description": "GitHub Actions with Docker caching and 3 parallel jobs",
+          "evidence": [
+            ".github/workflows/ci.yml",
+            "matrix builds detected",
+            "concurrency control with cancel-in-progress"
+          ]
+        },
+        {
+          "area": "Security Scanning",
+          "type": "strength",
+          "description": "Comprehensive security layers with Semgrep SAST and Trivy scanning",
+          "evidence": [
+            "Semgrep for Python code",
+            "Trivy filesystem scan",
+            "Trivy secrets scan",
+            "Trivy image scan"
+          ]
+        },
+        {
+          "area": "E2E Testing",
+          "type": "strength",
+          "description": "Full stack tests with Playwright ensure system-level quality",
+          "evidence": [
+            "23 BDD feature files",
+            "74 scenarios",
+            "637 Gherkin steps"
+          ]
+        },
+        {
+          "area": "High Commit Frequency",
+          "type": "strength",
+          "description": "Very active development with iterative changes",
+          "evidence": [
+            "1213 commits in 6 months",
+            "~202 commits per month"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Pre-commit Hooks",
+          "currentState": "No pre-commit hooks configured; developers must manually run format/lint",
+          "hypothesis": "If we add pre-commit hooks for formatting and linting, then we'll catch issues before CI because developers get instant feedback at commit time",
+          "recommendation": "Add pre-commit hooks using pre-commit framework for Python",
+          "impact": "medium",
+          "foeMethod": "M146",
+          "foeInsights": {
+            "understanding": "Pre-commit hooks document expected code quality standards",
+            "feedback": "Instant feedback at commit time vs waiting for CI (minutes saved per commit)",
+            "confidence": "Developers can commit with confidence knowing format/lint issues are caught locally"
+          }
+        },
+        {
+          "area": "Deployment Automation",
+          "currentState": "No automated deployment stage; 19 deploy-related commits suggest manual deployments",
+          "hypothesis": "If we add automated CD pipeline, then we'll increase deployment frequency and reduce lead time because manual deployment friction will be eliminated",
+          "recommendation": "Add CD workflow for automated deployments to staging/production environments",
+          "impact": "high",
+          "foeMethod": "M111",
+          "foeInsights": {
+            "understanding": "Automated deployments document the deployment process as code",
+            "feedback": "Faster path from commit to production feedback (currently manual bottleneck)",
+            "confidence": "Repeatable deployments reduce uncertainty and 'works on my machine' issues"
+          }
+        },
+        {
+          "area": "Dependency Caching",
+          "currentState": "Docker layer caching enabled, but no Python/Node dependency caching",
+          "hypothesis": "If we add dependency caching for uv and npm, then we'll reduce CI pipeline time because package installation is a significant time sink",
+          "recommendation": "Add actions/cache for Python uv cache and Node.js npm cache",
+          "impact": "medium",
+          "foeMethod": "M124",
+          "foeInsights": {
+            "understanding": "Faster CI helps developers understand impact of changes sooner",
+            "feedback": "Reduced wait time means faster iteration cycles",
+            "confidence": "Faster feedback increases confidence in making frequent small changes"
+          }
+        }
+      ]
+    },
+    "understanding": {
+      "score": 53,
+      "maxScore": 100,
+      "subscores": {
+        "architectureClarity": {
+          "score": 18,
+          "max": 25,
+          "confidence": "high"
+        },
+        "dependencyDirection": {
+          "score": 15,
+          "max": 25,
+          "confidence": "high"
+        },
+        "modularity": {
+          "score": 18,
+          "max": 25,
+          "confidence": "high"
+        },
+        "documentationQuality": {
+          "score": 15,
+          "max": 25,
+          "confidence": "high"
+        },
+        "dddTacticalPatterns": {
+          "score": 8,
+          "max": 25,
+          "confidence": "high"
+        },
+        "boundedContexts": {
+          "score": 12,
+          "max": 25,
+          "confidence": "medium"
+        },
+        "ubiquitousLanguage": {
+          "score": 20,
+          "max": 25,
+          "confidence": "high"
+        },
+        "domainDocumentation": {
+          "score": 8,
+          "max": 25,
+          "confidence": "high"
+        },
+        "adrPractice": {
+          "score": 0,
+          "max": 25,
+          "confidence": "high"
+        },
+        "readmeQuality": {
+          "score": 19,
+          "max": 25,
+          "confidence": "high"
+        },
+        "apiDocumentation": {
+          "score": 15,
+          "max": 25,
+          "confidence": "high"
+        },
+        "operationalDocs": {
+          "score": 12,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "Layered Architecture",
+          "type": "strength",
+          "description": "Clear separation of API, CRUD, Core, and DB layers",
+          "evidence": [
+            "api/",
+            "crud/",
+            "core/",
+            "db/",
+            "schemas/",
+            "types/"
+          ]
+        },
+        {
+          "area": "Ubiquitous Language",
+          "type": "strength",
+          "description": "Strong, consistent domain terminology across all layers",
+          "evidence": [
+            "User, Team, Workspace, Knowledgebase concepts consistently named",
+            "Only 1 generic term found"
+          ]
+        },
+        {
+          "area": "BDD Documentation",
+          "type": "strength",
+          "description": "24 BDD feature files document expected behavior from user perspective",
+          "evidence": [
+            "23 feature files",
+            "74 scenarios",
+            "637 Gherkin steps"
+          ]
+        },
+        {
+          "area": "Comprehensive README",
+          "type": "strength",
+          "description": "217-line README with clear sections and component-specific READMEs",
+          "evidence": [
+            "Getting Started",
+            "Configuration",
+            "Project Structure",
+            "Multiple sub-READMEs"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Architecture Decision Records",
+          "currentState": "No ADR practice exists",
+          "hypothesis": "If we establish ADR practice, then future architectural decisions will be documented and traceable because we'll have a systematic way to capture the context and rationale",
+          "recommendation": "Create docs/adr/ directory and add ADR template using MADR format",
+          "impact": "high",
+          "foeMethod": "M147",
+          "foeInsights": {
+            "understanding": "ADRs capture the 'why' behind architectural choices, making the system more understandable",
+            "feedback": "Documented decisions reduce back-and-forth questions about past choices",
+            "confidence": "Teams can confidently build on documented architectural foundations"
+          }
+        },
+        {
+          "area": "Dependency Direction Violation",
+          "currentState": "Core security layer imports CRUD layer (app.core.security imports app.crud)",
+          "hypothesis": "If we invert this dependency using dependency injection or interfaces, then the core domain will be independent of data access because it will depend on abstractions",
+          "recommendation": "Apply dependency inversion principle: have security logic depend on abstractions (ports/interfaces) that CRUD implements",
+          "impact": "high",
+          "foeMethod": "M150",
+          "foeInsights": {
+            "understanding": "Proper dependency direction makes the domain model explicit and independent of infrastructure concerns",
+            "feedback": "Inverted dependencies enable testing core logic in isolation with fast feedback",
+            "confidence": "Independent core logic can be changed without cascading effects"
+          }
+        },
+        {
+          "area": "Domain Events",
+          "currentState": "No domain events detected. Cross-context communication likely happens via direct database access",
+          "hypothesis": "If we introduce domain events, then contexts will be more decoupled because they communicate via events rather than direct dependencies",
+          "recommendation": "Implement domain events for significant state changes (UserCreated, TeamMemberAdded, WorkspaceDeleted)",
+          "impact": "medium",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Events make domain state changes explicit",
+            "feedback": "Event logs provide audit trail and debugging capability",
+            "confidence": "Loose coupling reduces cascading failures"
+          }
+        },
+        {
+          "area": "AGENTS.md",
+          "currentState": "No agentic coding guidance exists",
+          "hypothesis": "If we add AGENTS.md, then AI coding assistants will produce better results because they'll understand codebase conventions, architecture patterns, and development workflows",
+          "recommendation": "Add AGENTS.md with codebase context: monorepo structure, FastAPI patterns, Prisma schema extensions, test conventions, and Makefile workflows",
+          "impact": "medium",
+          "foeMethod": "M159",
+          "foeInsights": {
+            "understanding": "AGENTS.md captures codebase conventions and context for AI understanding",
+            "feedback": "AI assistants provide faster, more accurate feedback when they understand the codebase",
+            "confidence": "Governed AI agents with context produce more predictable, maintainable outputs"
+          }
+        }
+      ]
+    },
+    "confidence": {
+      "score": 75,
+      "maxScore": 100,
+      "subscores": {
+        "testCoverage": {
+          "score": 15,
+          "max": 25,
+          "confidence": "medium"
+        },
+        "bddAdoption": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "testCodeRatio": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "contractTesting": {
+          "score": 10,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "BDD Implementation",
+          "type": "strength",
+          "description": "Comprehensive BDD test suite with playwright-bdd",
+          "evidence": [
+            "23 feature files",
+            "74 scenarios",
+            "637 Gherkin steps",
+            "Cucumber reporter"
+          ]
+        },
+        {
+          "area": "Test:Code Ratio",
+          "type": "strength",
+          "description": "Outstanding ratio of 1.29 with 419 test files covering 325 source files",
+          "evidence": [
+            "419 test files",
+            "325 source files",
+            "Only 3 skipped tests",
+            "No TODO/FIXME markers"
+          ]
+        },
+        {
+          "area": "CI Integration",
+          "type": "strength",
+          "description": "Both unit tests and E2E tests run automatically in CI",
+          "evidence": [
+            "pytest in functionality job",
+            "BDD tests in e2e job"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Contract Testing",
+          "currentState": "FastAPI generates OpenAPI spec but no consumer contract testing",
+          "hypothesis": "If we add consumer-driven contract testing with Pact, then we'll catch API breaking changes before deployment because contracts encode consumer expectations explicitly",
+          "recommendation": "Implement Pact for consumer-driven contract testing between services",
+          "impact": "medium",
+          "foeMethod": "M145",
+          "foeInsights": {
+            "understanding": "Contracts document service boundaries and expectations explicitly, making integration points clear",
+            "feedback": "Breaking changes detected at test time through contract verification, not in production",
+            "confidence": "Consumer contracts provide assurance that API changes won't break dependent services"
+          }
+        },
+        {
+          "area": "Coverage Visibility",
+          "currentState": "Coverage configured locally but not reported in CI",
+          "hypothesis": "If we add coverage reporting to CI with thresholds, then we'll maintain test quality over time because coverage metrics become visible and enforced",
+          "recommendation": "Add coverage reporting step to CI workflow with minimum threshold enforcement",
+          "impact": "low",
+          "foeMethod": null,
+          "foeInsights": {
+            "feedback": "Coverage metrics in CI provide immediate feedback on test completeness",
+            "confidence": "Coverage thresholds prevent quality regression"
+          }
+        }
+      ]
+    }
+  },
+  "triangleDiagnosis": {
+    "cycleHealth": "practicing",
+    "weakestDimension": "understanding",
+    "weakestScore": 53,
+    "pattern": "Feedback and Confidence without full Understanding",
+    "intervention": "Add ADRs and fix dependency inversions to strengthen architectural understanding. The strong feedback loops and test confidence are excellent, but architectural documentation gaps limit team understanding of system design rationale.",
+    "belowMinimum": []
+  },
+  "overallScore": 68,
+  "maturityLevel": "practicing",
+  "topStrengths": [
+    {
+      "area": "Feedback Loops",
+      "score": 76,
+      "reason": "Comprehensive CI pipeline with security scanning, parallel jobs, and E2E tests"
+    },
+    {
+      "area": "Test Confidence",
+      "score": 75,
+      "reason": "Outstanding test:code ratio (1.29) with comprehensive BDD test suite"
+    },
+    {
+      "area": "BDD Implementation",
+      "score": 100,
+      "reason": "Exemplary BDD adoption with 23 feature files serving as executable specifications"
+    },
+    {
+      "area": "Ubiquitous Language",
+      "score": 80,
+      "reason": "Strong, consistent domain terminology across all layers"
+    },
+    {
+      "area": "Pipeline Completeness",
+      "score": 100,
+      "reason": "All essential stages present: test, lint, build, security scanning, E2E"
+    }
+  ],
+  "topGaps": [
+    {
+      "area": "Architecture Decision Records",
+      "score": 0,
+      "reason": "No ADR practice exists to document architectural decisions"
+    },
+    {
+      "area": "DDD Tactical Patterns",
+      "score": 32,
+      "reason": "Anemic domain model with no aggregates or domain events"
+    },
+    {
+      "area": "Contract Testing",
+      "score": 40,
+      "reason": "OpenAPI spec exists but no consumer-driven contract testing"
+    },
+    {
+      "area": "Deployment Automation",
+      "score": 60,
+      "reason": "No automated CD pipeline; deployments appear manual"
+    },
+    {
+      "area": "Dependency Direction",
+      "score": 60,
+      "reason": "Core security layer imports CRUD layer (should be inverted)"
+    }
+  ],
+  "methodology": {
+    "scanDuration": "180s",
+    "agentsUsed": [
+      "ci",
+      "tests",
+      "arch",
+      "domain",
+      "docs"
+    ],
+    "filesAnalyzed": 744,
+    "confidenceLevel": "high"
+  }
+}

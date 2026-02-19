@@ -1,0 +1,471 @@
+{
+  "version": "1.0",
+  "generated": "2026-02-18T01:10:26Z",
+  "repository": {
+    "path": "/repo",
+    "name": "prima-control_tower",
+    "techStack": [
+      "python",
+      "fastapi",
+      "typescript",
+      "react"
+    ],
+    "monorepo": true
+  },
+  "dimensions": {
+    "feedback": {
+      "score": 92,
+      "maxScore": 100,
+      "subscores": {
+        "ciPipelineSpeed": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "deploymentFrequency": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "feedbackLoopInvestment": {
+          "score": 17,
+          "max": 25,
+          "confidence": "high"
+        },
+        "pipelineCompleteness": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "CI Pipeline",
+          "type": "strength",
+          "description": "GitHub Actions with modern workflow configuration, Docker build caching, and parallel job execution",
+          "evidence": [
+            ".github/workflows/backend-ci.yml",
+            "3 parallel jobs (understandability, functionality, compliance)",
+            "cache-from/cache-to: type=gha"
+          ]
+        },
+        {
+          "area": "Deployment Frequency",
+          "type": "strength",
+          "description": "High deployment frequency with automated CD pipeline",
+          "evidence": [
+            "1213 commits in 6 months (202/month)",
+            "19 deploy commits (~3.2 deploys/month)",
+            "Automated Kubernetes rollout"
+          ]
+        },
+        {
+          "area": "Security Scanning",
+          "type": "strength",
+          "description": "Comprehensive security scanning with multiple tools",
+          "evidence": [
+            "Semgrep SAST",
+            "Trivy filesystem scan",
+            "Trivy secrets scan",
+            "Trivy Docker image scan"
+          ]
+        },
+        {
+          "area": "Testing",
+          "type": "strength",
+          "description": "Comprehensive testing with unit tests and E2E tests",
+          "evidence": [
+            "pytest with coverage",
+            "Playwright E2E tests",
+            "37 BDD feature files"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Pre-commit Hooks",
+          "currentState": "No pre-commit hooks configured; formatting and linting only run in CI",
+          "hypothesis": "If we add pre-commit hooks with ruff, then developers will catch formatting and linting issues before pushing because hooks provide immediate local feedback",
+          "recommendation": "Add pre-commit framework with ruff hooks",
+          "impact": "medium",
+          "foeMethod": "M146",
+          "foeInsights": {
+            "understanding": "Pre-commit hooks document code quality standards as executable checks",
+            "feedback": "Shift-left from CI (minutes) to pre-commit (seconds) for format/lint feedback",
+            "confidence": "Developers gain confidence that their code will pass CI checks before pushing"
+          }
+        }
+      ]
+    },
+    "understanding": {
+      "score": 65,
+      "maxScore": 100,
+      "subscores": {
+        "architectureClarity": {
+          "score": 20,
+          "max": 25,
+          "confidence": "high"
+        },
+        "dependencyDirection": {
+          "score": 18,
+          "max": 25,
+          "confidence": "high"
+        },
+        "modularity": {
+          "score": 22,
+          "max": 25,
+          "confidence": "high"
+        },
+        "documentationQuality": {
+          "score": 21,
+          "max": 25,
+          "confidence": "high"
+        },
+        "dddTacticalPatterns": {
+          "score": 12,
+          "max": 25,
+          "confidence": "high"
+        },
+        "boundedContexts": {
+          "score": 12,
+          "max": 25,
+          "confidence": "medium"
+        },
+        "ubiquitousLanguage": {
+          "score": 20,
+          "max": 25,
+          "confidence": "high"
+        },
+        "domainDocumentation": {
+          "score": 10,
+          "max": 25,
+          "confidence": "high"
+        },
+        "adrPractice": {
+          "score": 10,
+          "max": 25,
+          "confidence": "high"
+        },
+        "readmeQuality": {
+          "score": 20,
+          "max": 25,
+          "confidence": "high"
+        },
+        "apiDocumentation": {
+          "score": 20,
+          "max": 25,
+          "confidence": "high"
+        },
+        "operationalDocs": {
+          "score": 15,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "Layered Architecture",
+          "type": "strength",
+          "description": "Clear layered architecture with distinct responsibilities",
+          "evidence": [
+            "api/",
+            "core/",
+            "crud/",
+            "schemas/",
+            "adapters/",
+            "db/",
+            "bootstrap/"
+          ]
+        },
+        {
+          "area": "Modularity",
+          "type": "strength",
+          "description": "Strong module organization with clear boundaries",
+          "evidence": [
+            "9 modules in control_tower",
+            "38 __init__.py files",
+            "4 workspace packages"
+          ]
+        },
+        {
+          "area": "Ubiquitous Language",
+          "type": "strength",
+          "description": "Strong domain-specific terminology with consistent naming",
+          "evidence": [
+            "PrimaModel",
+            "GuardrailRule",
+            "ToolProvider",
+            "UsageEvent",
+            "UsageRollup"
+          ]
+        },
+        {
+          "area": "Documentation",
+          "type": "strength",
+          "description": "Comprehensive README and FastAPI auto-generated docs",
+          "evidence": [
+            "277-line README",
+            "FastAPI /docs endpoint",
+            "148 docstrings"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Architecture Documentation",
+          "currentState": "2 ADRs exist but no architecture overview or layer documentation",
+          "hypothesis": "If we add ADRs for the layered structure and dependency rules, then new team members will understand the intended design because the rationale and constraints are documented",
+          "recommendation": "Add ADR documenting the layered architecture pattern and dependency flow rules",
+          "impact": "medium",
+          "foeMethod": "M151",
+          "foeInsights": {
+            "understanding": "ADRs capture the 'why' behind layered architecture, making implicit design explicit",
+            "feedback": "Written architecture decisions can be reviewed during code review",
+            "confidence": "Documented patterns reduce uncertainty when adding new features"
+          }
+        },
+        {
+          "area": "Dependency Direction Violations",
+          "currentState": "Core/security modules directly import from CRUD layer",
+          "hypothesis": "If we refactor core/security to use dependency injection instead of direct CRUD imports, then the core layer will be truly independent because it won't depend on data access details",
+          "recommendation": "Refactor core/security modules to accept repository interfaces via dependency injection",
+          "impact": "medium",
+          "foeMethod": "M150",
+          "foeInsights": {
+            "understanding": "Dependency inversion makes layer responsibilities explicit and visible",
+            "feedback": "Import errors provide immediate feedback on layer violations",
+            "confidence": "Independent layers can be changed and tested in isolation"
+          }
+        },
+        {
+          "area": "Automated Dependency Analysis",
+          "currentState": "No dependency analysis tool configured (pydeps, import-linter)",
+          "hypothesis": "If we add import-linter with layer rules to CI, then dependency violations will be caught automatically because the tool enforces architectural constraints",
+          "recommendation": "Add import-linter to dev dependencies and configure layer rules in pyproject.toml",
+          "impact": "high",
+          "foeMethod": "M151",
+          "foeInsights": {
+            "understanding": "Automated checks make architecture rules explicit and enforceable",
+            "feedback": "Immediate feedback on dependency violations during development",
+            "confidence": "Enforced rules prevent architectural drift over time"
+          }
+        },
+        {
+          "area": "Domain Events",
+          "currentState": "State changes not captured as domain events",
+          "hypothesis": "If we introduce domain events, then system behavior will be more observable because state transitions are explicitly recorded",
+          "recommendation": "Introduce domain events for significant state changes (WorkspaceCreated, ToolProviderInstanceConfigured, UsageThresholdExceeded)",
+          "impact": "low",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Events make state transitions explicit",
+            "feedback": "Event logs provide immediate feedback on system behavior",
+            "confidence": "Event sourcing reduces uncertainty about system state history"
+          }
+        },
+        {
+          "area": "Context Maps",
+          "currentState": "8 bounded contexts exist but relationships undocumented",
+          "hypothesis": "If we create context maps, then integration patterns will be clearer because context relationships are visually documented",
+          "recommendation": "Document context map showing relationships between usage, llm, workspace, team, user, knowledgebase, tool, and scim contexts",
+          "impact": "medium",
+          "foeMethod": "M147",
+          "foeInsights": {
+            "understanding": "Context maps make domain boundaries and relationships explicit",
+            "feedback": "Visualizations enable faster reviews and discussions",
+            "confidence": "Documented boundaries reduce uncertainty about where changes should occur"
+          }
+        },
+        {
+          "area": "AGENTS.md",
+          "currentState": "No agentic coding guidance",
+          "hypothesis": "If we add AGENTS.md with codebase context, then AI coding assistants will produce better results because they'll understand the FastAPI structure, Prisma patterns, and testing conventions",
+          "recommendation": "Create AGENTS.md documenting: FastAPI router patterns, Prisma schema conventions, uv workspace structure, testing approach (pytest + BDD), and key architectural patterns",
+          "impact": "low",
+          "foeMethod": "M159",
+          "foeInsights": {
+            "understanding": "AGENTS.md captures codebase conventions and context for AI understanding",
+            "feedback": "AI assistants provide faster feedback when they understand the codebase",
+            "confidence": "Governed AI agents with context produce more predictable outputs"
+          }
+        }
+      ]
+    },
+    "confidence": {
+      "score": 75,
+      "maxScore": 100,
+      "subscores": {
+        "testCoverage": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "bddAdoption": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "testCodeRatio": {
+          "score": 15,
+          "max": 25,
+          "confidence": "high"
+        },
+        "contractTesting": {
+          "score": 10,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "Test Coverage",
+          "type": "strength",
+          "description": "100% line coverage with pytest-cov integration",
+          "evidence": [
+            ".coverage file",
+            "100.0% line coverage",
+            "pytest-cov configured"
+          ]
+        },
+        {
+          "area": "BDD Practices",
+          "type": "strength",
+          "description": "Comprehensive BDD test suite with Gherkin feature files",
+          "evidence": [
+            "37 feature files",
+            "190 scenarios",
+            "1030 Given-When-Then steps",
+            "playwright-bdd framework"
+          ]
+        },
+        {
+          "area": "Test Quality",
+          "type": "strength",
+          "description": "High-quality tests with good assertion coverage",
+          "evidence": [
+            "77 test functions",
+            "351 assertions",
+            "Only 7 skipped tests (9%)"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Contract Testing",
+          "currentState": "FastAPI generates OpenAPI spec but no consumer-driven contracts",
+          "hypothesis": "If we add consumer-driven contract testing with Pact, then we'll catch API breaking changes before deployment because contracts encode consumer expectations",
+          "recommendation": "Add Pact for consumer-driven contract testing between services",
+          "impact": "medium",
+          "foeMethod": "M145",
+          "foeInsights": {
+            "understanding": "Contracts document service boundaries and expectations explicitly",
+            "feedback": "Breaking changes detected at test time, not in production",
+            "confidence": "Consumer contracts provide assurance that changes won't break integrations"
+          }
+        },
+        {
+          "area": "Unit Test Coverage",
+          "currentState": "17 unit test files for 142 source files (0.120 ratio)",
+          "hypothesis": "If we increase unit test coverage to match source file growth, then we'll have faster feedback on regressions because unit tests run quickly and pinpoint failures",
+          "recommendation": "Add unit tests for core business logic modules to reach 0.3+ test:source ratio",
+          "impact": "low",
+          "foeMethod": "M152",
+          "foeInsights": {
+            "understanding": "Unit tests document expected behavior at the module level",
+            "feedback": "Fast-running unit tests provide immediate feedback on changes",
+            "confidence": "Comprehensive unit tests increase confidence in refactoring"
+          }
+        },
+        {
+          "area": "Contract Validation in CI",
+          "currentState": "OpenAPI spec exists but not validated in CI pipeline",
+          "hypothesis": "If we add OpenAPI spec validation to CI, then we'll prevent accidental breaking changes because spec changes are reviewed and validated",
+          "recommendation": "Add OpenAPI spec validation and breaking change detection to CI workflow",
+          "impact": "low",
+          "foeMethod": "M145",
+          "foeInsights": {
+            "understanding": "Versioned API specs make contract changes explicit and reviewable",
+            "feedback": "CI fails when breaking changes are introduced without version bump",
+            "confidence": "Validated contracts ensure API stability for consumers"
+          }
+        }
+      ]
+    }
+  },
+  "triangleDiagnosis": {
+    "cycleHealth": "practicing",
+    "weakestDimension": "understanding",
+    "weakestScore": 65,
+    "pattern": "Feedback Excellence with Understanding Gap",
+    "intervention": "Strengthen architecture documentation and domain modeling to match strong feedback practices. Add ADRs, context maps, and automated dependency analysis.",
+    "belowMinimum": []
+  },
+  "overallScore": 78,
+  "maturityLevel": "practicing",
+  "topStrengths": [
+    {
+      "area": "Feedback Loops",
+      "score": 92,
+      "reason": "Excellent CI/CD with GitHub Actions, comprehensive security scanning, high deployment frequency (3.2/month), and parallel pipeline execution"
+    },
+    {
+      "area": "Test Coverage",
+      "score": 100,
+      "reason": "100% line coverage with pytest-cov, comprehensive BDD test suite with 37 feature files and 190 scenarios"
+    },
+    {
+      "area": "CI Pipeline Completeness",
+      "score": 100,
+      "reason": "Complete pipeline with test, lint, build, and multiple security scanning stages (Semgrep, Trivy)"
+    },
+    {
+      "area": "Modularity",
+      "score": 88,
+      "reason": "Strong module organization with 9 modules, 38 __init__.py files, and 4 workspace packages in monorepo"
+    },
+    {
+      "area": "BDD Adoption",
+      "score": 100,
+      "reason": "Comprehensive BDD practices with playwright-bdd, 1030 Given-When-Then steps, and full E2E coverage"
+    }
+  ],
+  "topGaps": [
+    {
+      "area": "Automated Dependency Analysis",
+      "score": 0,
+      "reason": "No dependency analysis tool configured to enforce architectural constraints and detect circular dependencies"
+    },
+    {
+      "area": "Contract Testing",
+      "score": 40,
+      "reason": "OpenAPI spec exists but no consumer-driven contract testing or validation in CI"
+    },
+    {
+      "area": "Pre-commit Hooks",
+      "score": 68,
+      "reason": "Formatting and linting configured but only run in CI, not as pre-commit hooks for faster feedback"
+    },
+    {
+      "area": "DDD Tactical Patterns",
+      "score": 48,
+      "reason": "Entities exist but no explicit aggregates, limited value objects, and no domain events"
+    },
+    {
+      "area": "ADR Practice",
+      "score": 40,
+      "reason": "Only 2 ADRs documented, missing key architectural decisions and no ADR template"
+    }
+  ],
+  "methodology": {
+    "scanDuration": "45s",
+    "agentsUsed": [
+      "ci",
+      "tests",
+      "arch",
+      "domain",
+      "docs"
+    ],
+    "filesAnalyzed": "~1400",
+    "confidenceLevel": "high"
+  }
+}

@@ -1,0 +1,435 @@
+{
+  "version": "1.0",
+  "generated": "2026-02-17T22:20:52Z",
+  "repository": {
+    "path": "/repo",
+    "name": "prima-control_tower",
+    "techStack": [
+      "python"
+    ],
+    "monorepo": false
+  },
+  "dimensions": {
+    "feedback": {
+      "score": 91,
+      "maxScore": 100,
+      "subscores": {
+        "ciPipelineSpeed": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "deploymentFrequency": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "feedbackLoopInvestment": {
+          "score": 16,
+          "max": 25,
+          "confidence": "high"
+        },
+        "pipelineCompleteness": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "CI Pipeline",
+          "type": "strength",
+          "description": "GitHub Actions with comprehensive caching and parallelization",
+          "evidence": [
+            "5 workflow files (.github/workflows/)",
+            "Docker layer caching via cache-from/cache-to: type=gha",
+            "Dependency caching with hash-based cache keys",
+            "Concurrency groups with cancel-in-progress",
+            "Path-based triggers to avoid unnecessary runs"
+          ]
+        },
+        {
+          "area": "Deployment Frequency",
+          "type": "strength",
+          "description": "High commit velocity with automated CD",
+          "evidence": [
+            "1213 commits in 6 months (202 commits/month)",
+            "28 deploy-related commits (~4.7/month)",
+            "Automated CD pipelines for backend and frontend",
+            "Deploys on every push to main branch",
+            "Kubernetes rollout automation"
+          ]
+        },
+        {
+          "area": "Pipeline Completeness",
+          "type": "strength",
+          "description": "Comprehensive pipeline with security scanning",
+          "evidence": [
+            "7 stages: format, lint, test, e2e, security, build, deploy",
+            "Semgrep SAST + Trivy vulnerability/secrets scanning",
+            "Separate compliance workflow",
+            "Pytest unit tests + Playwright E2E tests"
+          ]
+        },
+        {
+          "area": "Automated Formatting",
+          "type": "strength",
+          "description": "Ruff for Python, ESLint for JavaScript",
+          "evidence": [
+            "ruff configured in pyproject.toml",
+            "ESLint with Next.js core-web-vitals",
+            "Format checks run in CI before tests"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Pre-commit Hooks",
+          "currentState": "No pre-commit hooks configured; formatting/linting only runs in CI",
+          "hypothesis": "If we add pre-commit hooks, then developers will catch formatting and linting issues before committing because hooks provide immediate local feedback",
+          "recommendation": "Add pre-commit hooks using Husky (for JavaScript) or pre-commit framework (for Python) to run ruff format/lint and ESLint before commits",
+          "impact": "medium",
+          "foeMethod": "M146",
+          "foeInsights": {
+            "understanding": "Pre-commit hooks document expected code quality standards at commit time",
+            "feedback": "Immediate local feedback (seconds) vs waiting for CI (minutes)",
+            "confidence": "Developers gain confidence their commits will pass CI checks"
+          }
+        }
+      ]
+    },
+    "understanding": {
+      "score": 45,
+      "maxScore": 100,
+      "subscores": {
+        "architectureClarity": {
+          "score": 20,
+          "max": 25,
+          "confidence": "high"
+        },
+        "dependencyDirection": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "modularity": {
+          "score": 20,
+          "max": 25,
+          "confidence": "high"
+        },
+        "documentationQuality": {
+          "score": 34,
+          "max": 100,
+          "confidence": "high",
+          "normalized": 8.5
+        }
+      },
+      "findings": [
+        {
+          "area": "Layered Architecture",
+          "type": "strength",
+          "description": "Clear separation of concerns with API → CRUD → DB layers",
+          "evidence": [
+            "Consistent folder structure (api/, crud/, schemas/, db/)",
+            "No reverse dependencies detected",
+            "Clean dependency flow verified",
+            "DB layer properly isolated"
+          ]
+        },
+        {
+          "area": "Dependency Direction",
+          "type": "strength",
+          "description": "Excellent dependency flow with no violations",
+          "evidence": [
+            "API → CRUD → DB flow maintained",
+            "Schemas are pure data models",
+            "Core utilities don't import from higher layers",
+            "No circular dependencies detected"
+          ]
+        },
+        {
+          "area": "Modular Organization",
+          "type": "strength",
+          "description": "Well-organized feature modules with consistent structure",
+          "evidence": [
+            "9 clear modules in control_tower/app/src/app/",
+            "Feature-based subdirectories (user, workspace, prompt, etc.)",
+            "3 internal packages with separate pyproject.toml",
+            "Microservices architecture with 5 services"
+          ]
+        },
+        {
+          "area": "README Quality",
+          "type": "strength",
+          "description": "Comprehensive README with clear structure",
+          "evidence": [
+            "153-line README with setup instructions",
+            "Component READMEs for major modules",
+            "BDD feature files document API behavior",
+            "Updated within last 6 months"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Architecture Decision Records",
+          "currentState": "No ADR practice exists",
+          "hypothesis": "If we adopt ADRs, then future developers will understand why key decisions were made because architectural context will be preserved",
+          "recommendation": "Create docs/adr/ directory and adopt MADR template for documenting decisions",
+          "impact": "high",
+          "foeMethod": "M147",
+          "foeInsights": {
+            "understanding": "ADRs capture the 'why' behind architectural choices, enabling better understanding",
+            "feedback": "Documented decisions reduce back-and-forth questions about architecture",
+            "confidence": "Teams can confidently build on past decisions when context is preserved"
+          }
+        },
+        {
+          "area": "AGENTS.md",
+          "currentState": "No agentic coding guidance",
+          "hypothesis": "If we add AGENTS.md, then AI coding assistants will produce better results because they'll have codebase context",
+          "recommendation": "Add AGENTS.md with codebase conventions, architecture patterns, and development guidelines",
+          "impact": "medium",
+          "foeMethod": "M159",
+          "foeInsights": {
+            "understanding": "AGENTS.md captures codebase conventions and context for AI understanding",
+            "feedback": "AI assistants provide faster feedback when they understand the codebase",
+            "confidence": "Governed AI agents with context produce more predictable outputs"
+          }
+        },
+        {
+          "area": "API Documentation",
+          "currentState": "FastAPI auto-docs only, no committed OpenAPI spec",
+          "hypothesis": "If we commit OpenAPI spec to repo, then API consumers can generate clients and understand contracts because machine-readable API definitions are available",
+          "recommendation": "Export and commit openapi.yaml from FastAPI /openapi.json endpoint",
+          "impact": "medium",
+          "foeMethod": "M147",
+          "foeInsights": {
+            "understanding": "OpenAPI specs provide machine-readable API understanding",
+            "feedback": "API changes are visible in code review",
+            "confidence": "Versioned API contracts enable confident integration"
+          }
+        },
+        {
+          "area": "Operational Documentation",
+          "currentState": "No runbooks or troubleshooting guides",
+          "hypothesis": "If we create runbooks, then incident response will be faster because common issues and solutions are documented",
+          "recommendation": "Create docs/runbooks/ with incident response procedures and troubleshooting guides",
+          "impact": "medium",
+          "foeMethod": "M147",
+          "foeInsights": {
+            "understanding": "Runbooks capture operational knowledge",
+            "feedback": "Documented procedures enable faster incident response",
+            "confidence": "Teams can confidently handle incidents with documented procedures"
+          }
+        },
+        {
+          "area": "Dependency Analysis Tooling",
+          "currentState": "No automated dependency analysis tool configured",
+          "hypothesis": "If we add import-linter or pydeps, then circular dependencies will be caught in CI because violations fail the build",
+          "recommendation": "Configure import-linter to enforce layer boundaries and detect circular dependencies",
+          "impact": "low",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Explicit dependency rules make architecture constraints visible",
+            "feedback": "Immediate feedback on boundary violations during development",
+            "confidence": "Enforced rules prevent gradual degradation of architecture"
+          }
+        }
+      ]
+    },
+    "confidence": {
+      "score": 65,
+      "maxScore": 100,
+      "subscores": {
+        "testCoverage": {
+          "score": 10,
+          "max": 25,
+          "confidence": "high"
+        },
+        "testQuality": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "contractTesting": {
+          "score": 10,
+          "max": 25,
+          "confidence": "high"
+        },
+        "circularDependencies": {
+          "score": 20,
+          "max": 25,
+          "confidence": "medium"
+        }
+      },
+      "findings": [
+        {
+          "area": "Test:Code Ratio",
+          "type": "strength",
+          "description": "Excellent ratio of test files to source files",
+          "evidence": [
+            "Test:source ratio of 0.769 (30 test files for 39 source files)",
+            "No skipped tests detected",
+            "Comprehensive test suite with pytest-cov, pytest-xdist"
+          ]
+        },
+        {
+          "area": "BDD Acceptance Tests",
+          "type": "strength",
+          "description": "Gherkin feature files for end-to-end testing",
+          "evidence": [
+            "4 Gherkin feature files with 108 Given-When-Then statements",
+            "playwright-bdd framework configured",
+            "Feature files cover workspaces, nodes, prompts, knowledgebases"
+          ]
+        },
+        {
+          "area": "Test Infrastructure",
+          "type": "strength",
+          "description": "Modern test tooling with coverage tracking",
+          "evidence": [
+            "pytest with coverage tracking",
+            "Parallel execution with pytest-xdist",
+            "Comprehensive configuration in pyproject.toml"
+          ]
+        },
+        {
+          "area": "No Circular Dependencies",
+          "type": "strength",
+          "description": "Clean dependency graph",
+          "evidence": [
+            "No circular dependencies detected via heuristic analysis",
+            "Clean absolute imports using 'from app.' pattern",
+            "No deep relative imports (../../..)"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Branch Coverage",
+          "currentState": "Only 13.2% branch coverage despite 57.7% line coverage",
+          "hypothesis": "If we increase branch coverage testing, then we'll catch more edge cases and error conditions because untested branches often contain error handling and conditional logic",
+          "recommendation": "Focus on testing conditional branches, error paths, and edge cases",
+          "impact": "high",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Branch coverage reveals which decision paths are untested",
+            "feedback": "Low branch coverage means many code paths lack validation",
+            "confidence": "Testing all branches provides confidence in error handling"
+          }
+        },
+        {
+          "area": "Line Coverage Threshold",
+          "currentState": "57.7% line coverage with 1030 uncovered statements",
+          "hypothesis": "If we increase line coverage to 70%+, then we'll have better confidence in code changes because more code paths are validated by tests",
+          "recommendation": "Incrementally add tests for uncovered code, prioritizing critical business logic",
+          "impact": "medium",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Writing tests forces understanding of code behavior",
+            "feedback": "Higher coverage means faster detection of regressions",
+            "confidence": "More tested code provides confidence for refactoring"
+          }
+        },
+        {
+          "area": "Consumer Contract Testing",
+          "currentState": "Prisma schema exists but no consumer-driven contracts for API",
+          "hypothesis": "If we add consumer-driven contract testing, then we'll catch API breaking changes before deployment because contracts encode consumer expectations",
+          "recommendation": "Implement Pact or similar for consumer-driven contract testing between services",
+          "impact": "medium",
+          "foeMethod": "M145",
+          "foeInsights": {
+            "understanding": "Contracts document service boundaries and expectations explicitly",
+            "feedback": "Breaking changes detected at test time, not in production",
+            "confidence": "Consumer contracts provide assurance that changes won't break integrations"
+          }
+        }
+      ]
+    }
+  },
+  "triangleDiagnosis": {
+    "cycleHealth": "practicing",
+    "weakestDimension": "understanding",
+    "weakestScore": 45,
+    "pattern": "Feedback without full Understanding",
+    "intervention": "Add ADRs and operational documentation to match CI/CD maturity. Strong feedback loops exist but architectural context is underdocumented.",
+    "belowMinimum": [
+      {
+        "dimension": "understanding",
+        "score": 45,
+        "minimum": 35,
+        "status": "above_minimum",
+        "note": "Above minimum but significantly weaker than other dimensions"
+      }
+    ]
+  },
+  "overallScore": 67,
+  "maturityLevel": "practicing",
+  "topStrengths": [
+    {
+      "area": "Feedback Loops",
+      "score": 91,
+      "reason": "Excellent CI/CD with caching, parallelization, security scanning, and high deployment frequency (202 commits/month)"
+    },
+    {
+      "area": "Dependency Direction",
+      "score": 100,
+      "reason": "Perfect layered architecture with clean API → CRUD → DB flow and no reverse dependencies"
+    },
+    {
+      "area": "Deployment Automation",
+      "score": 100,
+      "reason": "Automated CD pipelines for backend and frontend with Kubernetes rollout automation"
+    },
+    {
+      "area": "Test Quality",
+      "score": 100,
+      "reason": "Excellent test:code ratio (0.769), BDD acceptance tests, and zero skipped tests"
+    },
+    {
+      "area": "Pipeline Completeness",
+      "score": 100,
+      "reason": "Comprehensive pipeline with format, lint, test, E2E, security scanning (Semgrep + Trivy), and deployment"
+    }
+  ],
+  "topGaps": [
+    {
+      "area": "Architecture Decision Records",
+      "score": 0,
+      "reason": "No ADR practice exists to document architectural decisions and context"
+    },
+    {
+      "area": "Branch Coverage",
+      "score": 13,
+      "reason": "Only 13.2% branch coverage despite 57.7% line coverage - many conditional paths untested"
+    },
+    {
+      "area": "Domain Modeling",
+      "score": 20,
+      "reason": "Traditional CRUD architecture without DDD patterns (no aggregates, value objects, or domain events)"
+    },
+    {
+      "area": "Operational Documentation",
+      "score": 24,
+      "reason": "No runbooks, troubleshooting guides, or AGENTS.md for agentic coding"
+    },
+    {
+      "area": "Pre-commit Hooks",
+      "score": 64,
+      "reason": "No local pre-commit hooks - formatting/linting only runs in CI, delaying feedback"
+    }
+  ],
+  "methodology": {
+    "scanDuration": "45s",
+    "agentsUsed": [
+      "ci",
+      "tests",
+      "arch",
+      "domain",
+      "docs"
+    ],
+    "filesAnalyzed": 2368,
+    "confidenceLevel": "high"
+  }
+}

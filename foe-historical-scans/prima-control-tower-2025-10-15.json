@@ -1,0 +1,460 @@
+{
+  "version": "1.0",
+  "generated": "2026-02-18T00:31:35Z",
+  "repository": {
+    "path": "/repo",
+    "name": "prima-control_tower",
+    "techStack": [
+      "python",
+      "fastapi",
+      "prisma"
+    ],
+    "monorepo": true,
+    "packages": [
+      "global/libraries/litellm"
+    ]
+  },
+  "dimensions": {
+    "feedback": {
+      "score": 100,
+      "maxScore": 100,
+      "subscores": {
+        "ciPipelineSpeed": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "deploymentFrequency": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "feedbackLoopInvestment": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "pipelineCompleteness": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "CI Pipeline",
+          "type": "strength",
+          "description": "Dual CI platforms (GitHub Actions + CircleCI) with 42+ parallel test jobs",
+          "evidence": [
+            ".github/workflows/",
+            ".circleci/config.yml",
+            "42+ CircleCI jobs",
+            "GitHub Actions cache enabled"
+          ]
+        },
+        {
+          "area": "Deployment Automation",
+          "type": "strength",
+          "description": "Automated deployments to Docker Hub and GHCR with multiple release channels",
+          "evidence": [
+            "ghcr_deploy.yml",
+            "30+ releases in 6 months",
+            "dev/nightly/stable channels"
+          ]
+        },
+        {
+          "area": "Pre-commit Hooks",
+          "type": "strength",
+          "description": "Comprehensive pre-commit hooks with type checking, formatting, and linting",
+          "evidence": [
+            ".pre-commit-config.yaml",
+            "pyright",
+            "black",
+            "isort",
+            "flake8",
+            "circular import detection"
+          ]
+        },
+        {
+          "area": "Security Integration",
+          "type": "strength",
+          "description": "Security scanning integrated into CI pipeline",
+          "evidence": [
+            "Semgrep for SAST",
+            "Trivy for vulnerabilities and secrets",
+            "integrated in CI"
+          ]
+        }
+      ],
+      "gaps": []
+    },
+    "understanding": {
+      "score": 61,
+      "maxScore": 100,
+      "subscores": {
+        "architectureClarity": {
+          "score": 15,
+          "max": 25,
+          "confidence": "high"
+        },
+        "dependencyDirection": {
+          "score": 15,
+          "max": 25,
+          "confidence": "high"
+        },
+        "circularDependencies": {
+          "score": 15,
+          "max": 25,
+          "confidence": "medium"
+        },
+        "modularity": {
+          "score": 18,
+          "max": 25,
+          "confidence": "high"
+        },
+        "dddTacticalPatterns": {
+          "score": 8,
+          "max": 25,
+          "confidence": "high"
+        },
+        "boundedContexts": {
+          "score": 12,
+          "max": 25,
+          "confidence": "medium"
+        },
+        "ubiquitousLanguage": {
+          "score": 20,
+          "max": 25,
+          "confidence": "high"
+        },
+        "domainDocumentation": {
+          "score": 10,
+          "max": 25,
+          "confidence": "high"
+        },
+        "adrPractice": {
+          "score": 10,
+          "max": 25,
+          "confidence": "high"
+        },
+        "readmeQuality": {
+          "score": 20,
+          "max": 25,
+          "confidence": "high"
+        },
+        "apiDocumentation": {
+          "score": 22,
+          "max": 25,
+          "confidence": "high"
+        },
+        "operationalDocs": {
+          "score": 18,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "Feature-Based Architecture",
+          "type": "strength",
+          "description": "Clear feature-based organization with 62 LLM provider integrations",
+          "evidence": [
+            "llms/",
+            "proxy/",
+            "integrations/",
+            "62 provider modules",
+            "consistent structure"
+          ]
+        },
+        {
+          "area": "Ubiquitous Language",
+          "type": "strength",
+          "description": "Strong domain vocabulary with consistent naming",
+          "evidence": [
+            "UsageIngestionService",
+            "UsageSpanNormalizer",
+            "PrimaModel",
+            "GuardrailRule",
+            "minimal generic terms"
+          ]
+        },
+        {
+          "area": "Documentation Quality",
+          "type": "strength",
+          "description": "Comprehensive README and API documentation",
+          "evidence": [
+            "245-line README",
+            "FastAPI auto-generated OpenAPI",
+            "111 docstrings",
+            "AGENTS.md guidelines"
+          ]
+        },
+        {
+          "area": "Large Files",
+          "type": "gap",
+          "description": "Multiple files exceed 5,000 lines indicating low cohesion",
+          "evidence": [
+            "proxy_server.py: 8,294 lines",
+            "utils.py: 7,136 lines",
+            "router.py: 6,611 lines"
+          ]
+        },
+        {
+          "area": "Circular Dependencies",
+          "type": "gap",
+          "description": "Types layer imports from proxy layer creating circular dependency",
+          "evidence": [
+            "litellm/types/proxy imports from litellm/proxy/_types",
+            "4 occurrences"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Architecture Decision Records",
+          "currentState": "Only 1 ADR documented, no template",
+          "hypothesis": "If we document more architectural decisions with a standard template, then future developers will understand why key technical choices were made because decision context is preserved",
+          "recommendation": "Add ADR template (MADR format) and document 5-10 key past decisions",
+          "impact": "medium",
+          "foeMethod": "M147",
+          "foeInsights": {
+            "understanding": "ADRs capture the 'why' behind technical decisions, making implicit knowledge explicit",
+            "feedback": "Documented decisions reduce back-and-forth questions about past choices",
+            "confidence": "Teams can confidently build on documented architectural foundations"
+          }
+        },
+        {
+          "area": "Large Files / God Objects",
+          "currentState": "Multiple files exceed 5,000 lines (proxy_server.py: 8,294, utils.py: 7,136, router.py: 6,611)",
+          "hypothesis": "If we decompose large files into focused modules, then code will be easier to understand because each module has a single responsibility",
+          "recommendation": "Refactor large files using Extract Class and Extract Module patterns",
+          "impact": "high",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Smaller, focused modules are easier to understand and modify",
+            "feedback": "Smaller modules enable faster test feedback cycles",
+            "confidence": "Well-bounded modules can be changed with confidence"
+          }
+        },
+        {
+          "area": "Circular Dependencies",
+          "currentState": "litellm/types/proxy imports from litellm/proxy/_types (4 occurrences)",
+          "hypothesis": "If we extract shared types to a common types module, then circular dependencies will be eliminated because both proxy and types can import from the shared module",
+          "recommendation": "Extract shared proxy types to litellm/types/proxy_shared.py",
+          "impact": "medium",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Clear dependency direction makes the system easier to reason about",
+            "feedback": "Import errors provide immediate feedback on dependency violations",
+            "confidence": "Acyclic dependencies enable independent module changes"
+          }
+        },
+        {
+          "area": "Bounded Context Boundaries",
+          "currentState": "Feature folders organized by technical layers; shared database schema couples contexts",
+          "hypothesis": "If we define explicit context boundaries with contracts, then teams can work independently because integration points are clear",
+          "recommendation": "Document context boundaries and define integration contracts between usage, llm, workspace, and team contexts",
+          "impact": "medium",
+          "foeMethod": "M147",
+          "foeInsights": {
+            "understanding": "Explicit boundaries make system structure visible",
+            "feedback": "Contract violations surface early in development",
+            "confidence": "Decoupled contexts reduce change risk"
+          }
+        }
+      ]
+    },
+    "confidence": {
+      "score": 55,
+      "maxScore": 100,
+      "subscores": {
+        "testCoverage": {
+          "score": 20,
+          "max": 25,
+          "confidence": "medium"
+        },
+        "bddAdoption": {
+          "score": 10,
+          "max": 25,
+          "confidence": "high"
+        },
+        "testCodeRatio": {
+          "score": 15,
+          "max": 25,
+          "confidence": "high"
+        },
+        "contractTesting": {
+          "score": 10,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "Test:Code Ratio",
+          "type": "strength",
+          "description": "Excellent ratio of 0.777 with 570 test files for 733 source files",
+          "evidence": [
+            "570 test files",
+            "733 source files",
+            "10,946 assertions",
+            "55 test directories"
+          ]
+        },
+        {
+          "area": "CI Test Integration",
+          "type": "strength",
+          "description": "Comprehensive CI with parallel test execution and coverage collection",
+          "evidence": [
+            "42+ CircleCI test jobs",
+            "pytest-xdist",
+            "codecov integration",
+            "coverage combined from 15+ suites"
+          ]
+        },
+        {
+          "area": "Skipped Tests",
+          "type": "gap",
+          "description": "39.3% of tests are skipped (224 out of 570 test files)",
+          "evidence": [
+            "224 skipped tests",
+            "39.3% skip rate",
+            "13 TODO/FIXME in tests"
+          ]
+        },
+        {
+          "area": "Contract Testing",
+          "type": "gap",
+          "description": "OpenAPI spec exists but no consumer-driven contract testing",
+          "evidence": [
+            "OpenAPI at litellm/proxy/openapi.json",
+            "No Pact or similar",
+            "No contract validation in CI"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Skipped Tests",
+          "currentState": "39.3% of tests are skipped (224 out of 570 test files)",
+          "hypothesis": "If we reduce skipped tests by fixing environment dependencies or making tests more robust, then we'll have higher confidence in test coverage because more tests will run consistently",
+          "recommendation": "Audit skipped tests to determine if they can be enabled or removed. Consider using pytest markers for environment-specific tests.",
+          "impact": "high",
+          "foeMethod": "M155",
+          "foeInsights": {
+            "understanding": "Skipped tests represent untested code paths and unclear system boundaries",
+            "feedback": "Tests that don't run provide no feedback on code quality",
+            "confidence": "High skip rate undermines confidence in the test suite"
+          }
+        },
+        {
+          "area": "Contract Testing",
+          "currentState": "OpenAPI spec exists but no consumer-driven contract testing",
+          "hypothesis": "If we add consumer-driven contract testing with Pact, then we'll catch API breaking changes before deployment because contracts encode consumer expectations",
+          "recommendation": "Implement Pact for consumer-driven contract testing between litellm proxy and its consumers",
+          "impact": "medium",
+          "foeMethod": "M145",
+          "foeInsights": {
+            "understanding": "Contracts document service boundaries and expectations explicitly",
+            "feedback": "Breaking changes detected at test time, not in production",
+            "confidence": "Consumer contracts provide assurance that changes won't break integrations"
+          }
+        },
+        {
+          "area": "BDD Formalization",
+          "currentState": "Informal BDD patterns (given/when/then) without formal framework",
+          "hypothesis": "If we adopt Behave or pytest-bdd with Gherkin feature files, then tests become executable specifications because behavior is documented in human-readable form",
+          "recommendation": "Consider formalizing BDD practices with pytest-bdd or Behave for acceptance tests",
+          "impact": "low",
+          "foeMethod": "M127",
+          "foeInsights": {
+            "understanding": "BDD tests serve as readable specifications of system behavior",
+            "feedback": "Failing scenarios clearly indicate which behavior broke",
+            "confidence": "Executable specifications provide confidence that requirements are met"
+          }
+        }
+      ]
+    }
+  },
+  "triangleDiagnosis": {
+    "cycleHealth": "practicing",
+    "weakestDimension": "confidence",
+    "weakestScore": 55,
+    "pattern": "Strong Feedback with moderate Understanding and Confidence",
+    "intervention": "Address skipped tests and add contract testing to match excellent CI/CD infrastructure. Refactor large files to improve architectural clarity.",
+    "belowMinimum": []
+  },
+  "overallScore": 73,
+  "maturityLevel": "practicing",
+  "topStrengths": [
+    {
+      "area": "CI/CD Excellence",
+      "score": 100,
+      "reason": "Dual CI platforms with 42+ parallel jobs, comprehensive security scanning, and automated deployments. Perfect feedback loop implementation."
+    },
+    {
+      "area": "Pre-commit Hooks",
+      "score": 100,
+      "reason": "Comprehensive pre-commit configuration with type checking, formatting, linting, and circular import detection provides fastest feedback."
+    },
+    {
+      "area": "Test Organization",
+      "score": 85,
+      "reason": "Excellent test:code ratio (0.777) with 570 test files, 10,946 assertions, and well-organized test structure across 55 directories."
+    },
+    {
+      "area": "Documentation Quality",
+      "score": 80,
+      "reason": "Comprehensive README (245 lines), auto-generated API docs, AGENTS.md guidelines, and extensive LiteLLM documentation (403 files)."
+    },
+    {
+      "area": "Ubiquitous Language",
+      "score": 80,
+      "reason": "Strong, consistent domain vocabulary with minimal generic naming across usage telemetry, LLM providers, and workspace concepts."
+    }
+  ],
+  "topGaps": [
+    {
+      "area": "Skipped Tests",
+      "score": 39,
+      "reason": "39.3% of tests are skipped (224 tests), significantly undermining confidence in test coverage and reducing effective feedback."
+    },
+    {
+      "area": "Large Files / God Objects",
+      "score": 40,
+      "reason": "Multiple files exceed 5,000 lines (proxy_server.py: 8,294 lines) indicating low cohesion and high cognitive load."
+    },
+    {
+      "area": "Contract Testing",
+      "score": 40,
+      "reason": "OpenAPI spec exists but no consumer-driven contract testing to prevent breaking changes in API integrations."
+    },
+    {
+      "area": "Circular Dependencies",
+      "score": 60,
+      "reason": "4 circular dependencies between types and proxy layers create coupling and make the system harder to reason about."
+    },
+    {
+      "area": "ADR Practice",
+      "score": 40,
+      "reason": "Only 1 ADR documented; need more architectural decisions captured to establish consistent practice."
+    },
+    {
+      "area": "DDD Tactical Patterns",
+      "score": 32,
+      "reason": "Transaction script pattern with DTOs; no aggregates or rich domain models to encapsulate business rules."
+    }
+  ],
+  "methodology": {
+    "scanDuration": "~180s",
+    "agentsUsed": [
+      "ci",
+      "tests",
+      "arch",
+      "domain",
+      "docs"
+    ],
+    "filesAnalyzed": 1477,
+    "confidenceLevel": "high"
+  }
+}

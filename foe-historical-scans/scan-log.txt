@@ -1,0 +1,313 @@
+[2026-02-17 16:33:48] Starting FOE Historical Scanner
+[2026-02-17 16:33:48] Repository: /Users/aaron.west/Documents/Projects/prima-control_tower
+[2026-02-17 16:33:48] Output: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans
+[2026-02-17 16:33:48] Mode: DRY RUN
+[2026-02-17 16:33:48] Loading credentials from .env
+[2026-02-17 16:33:48] Pre-flight checks passed ✓
+[2026-02-17 16:33:48] Current branch: 360-allow-empty-provider-credentials
+[2026-02-17 16:33:48] Current commit: 6f1ecc74eca3531a46698a3b44704ef29f3192fe
+[2026-02-17 16:33:49] ERROR: Working directory has uncommitted changes
+[2026-02-17 16:33:49] Please commit or stash your changes before running historical scans
+[2026-02-17 16:34:06] Starting FOE Historical Scanner
+[2026-02-17 16:34:06] Repository: /Users/aaron.west/Documents/Projects/prima-control_tower
+[2026-02-17 16:34:06] Output: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans
+[2026-02-17 16:34:06] Mode: DRY RUN
+[2026-02-17 16:34:06] Loading credentials from .env
+[2026-02-17 16:34:06] Pre-flight checks passed ✓
+[2026-02-17 16:34:06] Current branch: 360-allow-empty-provider-credentials
+[2026-02-17 16:34:06] Current commit: 6f1ecc74eca3531a46698a3b44704ef29f3192fe
+[2026-02-17 16:34:06] ERROR: Working directory has uncommitted changes to tracked files
+[2026-02-17 16:34:06] Attempting to stash changes automatically...
+[2026-02-17 16:34:07] ✓ Changes stashed successfully
+[2026-02-17 16:34:07] Warning: 32 untracked files present (will be ignored during scans)
+[2026-02-17 16:34:07] Starting scans for 9 months...
+[2026-02-17 16:34:07] ─────────────────────────────────────────────────────────────────────────
+[2026-02-17 16:34:07] 
+[2026-02-17 16:34:07] [1/9] Processing 2025-06-15...
+[2026-02-17 16:34:08]   Commit: ee2e11e (2025-06-15 09:11:41 -0400)
+[2026-02-17 16:34:08]   Message: refactor: Change 'type' field to 'types' array in Node model
+[2026-02-17 16:34:08]   [DRY RUN] Would scan and save to: prima-control-tower-2025-06-15.json
+[2026-02-17 16:34:08] 
+[2026-02-17 16:34:08] [2/9] Processing 2025-07-15...
+[2026-02-17 16:34:08]   Commit: fde5c89 (2025-07-15 15:19:22 -0500)
+[2026-02-17 16:34:08]   Message: Missed something
+[2026-02-17 16:34:08]   [DRY RUN] Would scan and save to: prima-control-tower-2025-07-15.json
+[2026-02-17 16:34:08] 
+[2026-02-17 16:34:08] [3/9] Processing 2025-08-15...
+[2026-02-17 16:34:08]   Commit: 59725c8 (2025-08-15 12:38:29 -0400)
+[2026-02-17 16:34:08]   Message: feat: add feature files for admin and user management, inclu
+[2026-02-17 16:34:08]   [DRY RUN] Would scan and save to: prima-control-tower-2025-08-15.json
+[2026-02-17 16:34:08] 
+[2026-02-17 16:34:08] [4/9] Processing 2025-09-15...
+[2026-02-17 16:34:08]   Commit: 6f264d4 (2025-09-16 01:12:02 +0000)
+[2026-02-17 16:34:08]   Message: Add comprehensive .github/copilot-instructions.md with valid
+[2026-02-17 16:34:08]   [DRY RUN] Would scan and save to: prima-control-tower-2025-09-15.json
+[2026-02-17 16:34:08] 
+[2026-02-17 16:34:08] [5/9] Processing 2025-10-15...
+[2026-02-17 16:34:08]   Commit: 3efa009 (2025-10-15 15:04:38 -0400)
+[2026-02-17 16:34:08]   Message: Merge pull request #129 from esimplicityinc/110-task-change-
+[2026-02-17 16:34:08]   [DRY RUN] Would scan and save to: prima-control-tower-2025-10-15.json
+[2026-02-17 16:34:08] 
+[2026-02-17 16:34:08] [6/9] Processing 2025-11-15...
+[2026-02-17 16:34:09]   Commit: 8491b0d (2025-11-14 17:59:27 -0500)
+[2026-02-17 16:34:09]   Message: add missing step definition
+[2026-02-17 16:34:09]   [DRY RUN] Would scan and save to: prima-control-tower-2025-11-15.json
+[2026-02-17 16:34:09] 
+[2026-02-17 16:34:09] [7/9] Processing 2025-12-15...
+[2026-02-17 16:34:09]   Commit: 42df93f (2025-12-15 22:03:16 -0500)
+[2026-02-17 16:34:09]   Message: Merge pull request #278 from esimplicityinc/277-bug
+[2026-02-17 16:34:09]   [DRY RUN] Would scan and save to: prima-control-tower-2025-12-15.json
+[2026-02-17 16:34:09] 
+[2026-02-17 16:34:09] [8/9] Processing 2026-01-15...
+[2026-02-17 16:34:09]   Commit: 3246744 (2026-01-07 11:03:54 -0500)
+[2026-02-17 16:34:09]   Message: Merge pull request #357 from esimplicityinc/building-release
+[2026-02-17 16:34:09]   [DRY RUN] Would scan and save to: prima-control-tower-2026-01-15.json
+[2026-02-17 16:34:09] 
+[2026-02-17 16:34:09] [9/9] Processing 2026-02-15...
+[2026-02-17 16:34:09]   Commit: 3246744 (2026-01-07 11:03:54 -0500)
+[2026-02-17 16:34:09]   Message: Merge pull request #357 from esimplicityinc/building-release
+[2026-02-17 16:34:09]   [DRY RUN] Would scan and save to: prima-control-tower-2026-02-15.json
+[2026-02-17 16:34:09] 
+[2026-02-17 16:34:09] ─────────────────────────────────────────────────────────────────────────
+[2026-02-17 16:34:09] Generating summary report...
+[2026-02-17 16:34:09] ✓ Summary report generated: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/scan-summary.md
+[2026-02-17 16:34:09] 
+[2026-02-17 16:34:09] ═══════════════════════════════════════════════════════════════════════════
+[2026-02-17 16:34:09] FOE Historical Scan Complete
+[2026-02-17 16:34:09] ═══════════════════════════════════════════════════════════════════════════
+[2026-02-17 16:34:09] 
+[2026-02-17 16:34:09] Results:
+[2026-02-17 16:34:09]   ✓ Completed: 9
+[2026-02-17 16:34:09] 
+[2026-02-17 16:34:09] Output:
+[2026-02-17 16:34:09]   Reports: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/
+[2026-02-17 16:34:09]   Summary: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/scan-summary.md
+[2026-02-17 16:34:09]   Log: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/scan-log.txt
+[2026-02-17 16:34:09] 
+[2026-02-17 16:34:09] This was a DRY RUN. No scans were performed.
+[2026-02-17 16:34:09] Run without --dry-run to execute actual scans.
+[2026-02-17 16:34:09] 
+[2026-02-17 16:34:09] Success! 🎉
+[2026-02-17 16:34:09] Restoring git state...
+[2026-02-17 16:34:09] Git state restored
+[2026-02-17 16:34:21] Starting FOE Historical Scanner
+[2026-02-17 16:34:21] Repository: /Users/aaron.west/Documents/Projects/prima-control_tower
+[2026-02-17 16:34:21] Output: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans
+[2026-02-17 16:34:21] Mode: LIVE SCAN
+[2026-02-17 16:34:21] Loading credentials from .env
+[2026-02-17 16:34:21] Pre-flight checks passed ✓
+[2026-02-17 16:34:21] Current branch: 360-allow-empty-provider-credentials
+[2026-02-17 16:34:21] Current commit: 6f1ecc74eca3531a46698a3b44704ef29f3192fe
+[2026-02-17 16:34:21] Warning: 32 untracked files present (will be ignored during scans)
+[2026-02-17 16:34:21] Starting scans for 9 months...
+[2026-02-17 16:34:21] ─────────────────────────────────────────────────────────────────────────
+[2026-02-17 16:34:21] 
+[2026-02-17 16:34:21] [1/9] Processing 2025-06-15...
+[2026-02-17 16:34:21]   Commit: ee2e11e (2025-06-15 09:11:41 -0400)
+[2026-02-17 16:34:21]   Message: refactor: Change 'type' field to 'types' array in Node model
+[2026-02-17 16:34:21]   Checking out commit...
+[2026-02-17 16:34:22]   Running FOE scanner (this may take 5-15 minutes)...
+[2026-02-17 16:55:24] ERROR: Invalid JSON output
+Using AWS Bedrock provider
+{"type":"step_start","timestamp":1771364067501,"sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","part":{"id":"prt_c6d86a8ac001PINUbZv2tmEEal","sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","messageID":"msg_c6d869faf00132MdoTSX74zr6w","type":"step-start"}}
+{"type":"text","timestamp":1771364067922,"sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","part":{"id":"prt_c6d86a8ad001OWEMBEBJrLkLRX","sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","messageID":"msg_c6d869faf00132MdoTSX74zr6w","type":"text","text":"I'll scan the repository at /repo and provide a complete FOE assessment as JSON. Let me start by detecting the repository characteristics.","time":{"start":1771364067920,"end":1771364067920}}}
+{"type":"tool_use","timestamp":1771364069173,"sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","part":{"id":"prt_c6d86aa51001G0H8du2a19qEMJ","sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","messageID":"msg_c6d869faf00132MdoTSX74zr6w","type":"tool","callID":"tooluse_HpFyxnMdJCUQ087dBK5uTL","tool":"bash","state":{"status":"completed","input":{"command":"pwd && ls -la /repo 2>/dev/null | head -20","description":"Check current directory and list /repo contents"},"output":"/app\ntotal 2592\ndrwxr-xr-x 53 root root   1696 Jan  8 19:28 .\ndrwxr-xr-x  1 root root   4096 Feb 17 21:34 ..\n-rw-r--r--  1 root root   6148 Oct 23 16:14 .DS_Store\n-rw-r--r--  1 root root  98304 Dec  8 16:39 .coverage\n-rw-r--r--  1 root root   3921 Dec 30 23:53 .env\n-rw-r--r--  1 root root   1285 Feb 17 21:34 .env.example\ndrwxr-xr-x 17 root root    544 Feb 17 21:34 .git\n-rw-r--r--  1 root root  14037 Feb 17 21:34 .gitignore\n-rw-r--r--  1 root root    125 Feb 17 21:34 .gitmodules\ndrwxr-xr-x  6 root root    192 Sep  4 19:44 .pytest_cache\ndrwxr-xr-x  5 root root    160 Jan  6 18:04 .ruff_cache\ndrwxr-xr-x  8 root root    256 Jan  8 17:16 .venv\ndrwxr-xr-x  5 root root    160 Nov 18 16:40 .vscode\n-rw-r--r--  1 root root   6083 Feb 17 21:34 README.md\n-rw-r--r--  1 root root  84689 Jan  8 19:28 commits_agg.png\n-rw-r--r--  1 root root  85587 Jan  8 19:28 commits_agg_per_hour.png\n-rw-r--r--  1 root root  97996 Jan  8 19:28 commits_author_split.png\n-rw-r--r--  1 root root  57260 Jan  8 19:13 commits_author_split_per_hour.png\n-rw-r--r--  1 root root 608205 Jan  8 17:46 commits_churn.csv\n","title":"Check current directory and list /repo contents","metadata":{"output":"/app\ntotal 2592\ndrwxr-xr-x 53 root root   1696 Jan  8 19:28 .\ndrwxr-xr-x  1 root root   4096 Feb 17 21:34 ..\n-rw-r--r--  1 root root   6148 Oct 23 16:14 .DS_Store\n-rw-r--r--  1 root root  98304 Dec  8 16:39 .coverage\n-rw-r--r--  1 root root   3921 Dec 30 23:53 .env\n-rw-r--r--  1 root root   1285 Feb 17 21:34 .env.example\ndrwxr-xr-x 17 root root    544 Feb 17 21:34 .git\n-rw-r--r--  1 root root  14037 Feb 17 21:34 .gitignore\n-rw-r--r--  1 root root    125 Feb 17 21:34 .gitmodules\ndrwxr-xr-x  6 root root    192 Sep  4 19:44 .pytest_cache\ndrwxr-xr-x  5 root root    160 Jan  6 18:04 .ruff_cache\ndrwxr-xr-x  8 root root    256 Jan  8 17:16 .venv\ndrwxr-xr-x  5 root root    160 Nov 18 16:40 .vscode\n-rw-r--r--  1 root root   6083 Feb 17 21:34 README.md\n-rw-r--r--  1 root root  84689 Jan  8 19:28 commits_agg.png\n-rw-r--r--  1 root root  85587 Jan  8 19:28 commits_agg_per_hour.png\n-rw-r--r--  1 root root  97996 Jan  8 19:28 commits_author_split.png\n-rw-r--r--  1 root root  57260 Jan  8 19:13 commits_author_split_per_hour.png\n-rw-r--r--  1 root root 608205 Jan  8 17:46 commits_churn.csv\n","exit":0,"description":"Check current directory and list /repo contents","truncated":false},"time":{"start":1771364068565,"end":1771364069171}}}}
+{"type":"tool_use","timestamp":1771364069436,"sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","part":{"id":"prt_c6d86acd8001A82b7eGUWSxV3v","sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","messageID":"msg_c6d869faf00132MdoTSX74zr6w","type":"tool","callID":"tooluse_jNel8KyMfq5Eh2DQO4WF98","tool":"bash","state":{"status":"completed","input":{"command":"cd /repo && ls package.json pyproject.toml go.mod Cargo.toml pom.xml build.gradle Gemfile 2>/dev/null","description":"Detect language/framework indicators","workdir":"/repo"},"output":"","title":"Detect language/framework indicators","metadata":{"output":"","exit":2,"description":"Detect language/framework indicators","truncated":false},"time":{"start":1771364069426,"end":1771364069435}}}}
+{"type":"tool_use","timestamp":1771364070161,"sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","part":{"id":"prt_c6d86b038001N2Q135K88yM83f","sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","messageID":"msg_c6d869faf00132MdoTSX74zr6w","type":"tool","callID":"tooluse_APEBtqTepjza0qSu6JmazA","tool":"bash","state":{"status":"completed","input":{"command":"cd /repo && ls pnpm-workspace.yaml lerna.json nx.json turbo.json 2>/dev/null","description":"Check for monorepo indicators","workdir":"/repo"},"output":"","title":"Check for monorepo indicators","metadata":{"output":"","exit":2,"description":"Check for monorepo indicators","truncated":false},"time":{"start":1771364070149,"end":1771364070160}}}}
+{"type":"tool_use","timestamp":1771364071222,"sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","part":{"id":"prt_c6d86b30e001k4YWU8G17i04lM","sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","messageID":"msg_c6d869faf00132MdoTSX74zr6w","type":"tool","callID":"tooluse_WEaS2Lq01kmQqc9lK0JFxp","tool":"bash","state":{"status":"completed","input":{"command":"cd /repo && git config --get remote.origin.url 2>/dev/null | sed 's/.*\\///' | sed 's/\\.git$//' || basename $(pwd)","description":"Extract repository name","workdir":"/repo"},"output":"prima-control_tower\n","title":"Extract repository name","metadata":{"output":"prima-control_tower\n","exit":0,"description":"Extract repository name","truncated":false},"time":{"start":1771364071194,"end":1771364071221}}}}
+{"type":"step_finish","timestamp":1771364071223,"sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","part":{"id":"prt_c6d86b736001rCwEHXkrflcgb7","sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","messageID":"msg_c6d869faf00132MdoTSX74zr6w","type":"step-finish","reason":"tool-calls","cost":0.050106,"tokens":{"input":2,"output":445,"reasoning":0,"cache":{"read":0,"write":11580}}}}
+{"type":"step_start","timestamp":1771364073345,"sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","part":{"id":"prt_c6d86bf7f001eXT1MYkhMZE2nQ","sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","messageID":"msg_c6d86b73b001ayVdWwvzFIKG6t","type":"step-start"}}
+{"type":"tool_use","timestamp":1771364075131,"sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","part":{"id":"prt_c6d86bf810013lDHDnfW1HY31n","sessionID":"ses_392796072ffe2kkPw5Veq1KUHv","messageID":"msg_c6d86b73b001ayVdWwvzFIKG6t","type":"tool","callID":"tooluse_J0Sydfd9AaHLn8rB9LAK6K","tool":"bash","state":{"status":"completed","input":{"command":"cd /repo && find . -maxdepth 3 -name \"package.json\" -o -name \"pyproject.toml\" -o -name \"requirements.txt\" -o -name \"go.mod\" -o -name \"Cargo.toml\" 2>/dev/null | head -10","description":"Find language config files","workdir":"/repo"},"output":"./metrics/pyproject.toml\n./control_tower/app/requirements.txt\n./control_tower/app/pyproject.toml\n./control_tower/stack_tests/package.json\n./control_tower/db/pyproject.toml\n./frontend/app/package.json\n./llm_proxy/app/requirements.txt\n","title":"Find language config files","metadata":{"output":"./metrics/pyproject.toml\n./control_tower/app/requirements.txt\n./control_tower/app/pyproject.toml\n./control_tower/stack_tests/package.json\n./control_tower/db/pyproject.toml\n./frontend/app/package.json\n./llm_proxy/app/requirements.txt\n","exit":0,"description":"Find language config files","truncated":false},"time":{"start":1771364074346,"end":1771364075131}}}}
+[2026-02-17 16:55:24] Restoring git state...
+[2026-02-17 16:55:26] Git state restored
+[2026-02-17 17:01:56] Starting FOE Historical Scanner
+[2026-02-17 17:01:56] Repository: /Users/aaron.west/Documents/Projects/prima-control_tower
+[2026-02-17 17:01:56] Output: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans
+[2026-02-17 17:01:56] Mode: LIVE SCAN
+[2026-02-17 17:01:56] Loading credentials from .env
+[2026-02-17 17:01:56] Pre-flight checks passed ✓
+[2026-02-17 17:01:56] Current branch: 360-allow-empty-provider-credentials
+[2026-02-17 17:01:56] Current commit: 6f1ecc74eca3531a46698a3b44704ef29f3192fe
+[2026-02-17 17:01:57] Warning: 32 untracked files present (will be ignored during scans)
+[2026-02-17 17:01:57] Starting scans for 1 months...
+[2026-02-17 17:01:57] ─────────────────────────────────────────────────────────────────────────
+[2026-02-17 17:01:57] 
+[2026-02-17 17:01:57] [1/1] Processing 2025-06-15...
+[2026-02-17 17:01:57]   Commit: ee2e11e (2025-06-15 09:11:41 -0400)
+[2026-02-17 17:01:57]   Message: refactor: Change 'type' field to 'types' array in Node model
+[2026-02-17 17:01:57]   Checking out commit...
+[2026-02-17 17:01:58]   Running FOE scanner (this may take 5-15 minutes)...
+[2026-02-17 17:23:59] ERROR: Could not extract FOE report JSON from output
+[2026-02-17 17:23:59] Saving raw output for inspection...
+[2026-02-17 17:23:59] 
+[2026-02-17 17:23:59] ─────────────────────────────────────────────────────────────────────────
+[2026-02-17 17:23:59] Generating summary report...
+[2026-02-17 17:24:00] ✓ Summary report generated: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/scan-summary.md
+[2026-02-17 17:24:00] 
+[2026-02-17 17:24:00] ═══════════════════════════════════════════════════════════════════════════
+[2026-02-17 17:24:00] FOE Historical Scan Complete
+[2026-02-17 17:24:00] ═══════════════════════════════════════════════════════════════════════════
+[2026-02-17 17:24:00] 
+[2026-02-17 17:24:00] Results:
+[2026-02-17 17:24:00]   ✓ Completed: 0
+[2026-02-17 17:24:00]   ✗ Failed: 1
+[2026-02-17 17:24:00] 
+[2026-02-17 17:24:00] Output:
+[2026-02-17 17:24:00]   Reports: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/
+[2026-02-17 17:24:00]   Summary: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/scan-summary.md
+[2026-02-17 17:24:00]   Log: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/scan-log.txt
+[2026-02-17 17:24:00] 
+[2026-02-17 17:24:00] ERROR: Some scans failed. Check /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/scan-log.txt for details.
+[2026-02-17 17:24:00] Restoring git state...
+[2026-02-17 17:24:03] Git state restored
+[2026-02-17 17:25:37] Starting FOE Historical Scanner
+[2026-02-17 17:25:37] Repository: /Users/aaron.west/Documents/Projects/prima-control_tower
+[2026-02-17 17:25:37] Output: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans
+[2026-02-17 17:25:37] Mode: LIVE SCAN
+[2026-02-17 17:25:37] Loading credentials from .env
+[2026-02-17 17:25:37] Pre-flight checks passed ✓
+[2026-02-17 17:25:37] Current branch: 360-allow-empty-provider-credentials
+[2026-02-17 17:25:37] Current commit: 6f1ecc74eca3531a46698a3b44704ef29f3192fe
+[2026-02-17 17:25:38] Warning: 32 untracked files present (will be ignored during scans)
+[2026-02-17 17:25:38] Starting scans for 9 months...
+[2026-02-17 17:25:38] ─────────────────────────────────────────────────────────────────────────
+[2026-02-17 17:25:38] 
+[2026-02-17 17:25:38] [1/9] Processing 2025-06-15...
+[2026-02-17 17:25:38] Already completed (17KiB), skipping...
+[2026-02-17 17:25:38] 
+[2026-02-17 17:25:38] [2/9] Processing 2025-07-15...
+[2026-02-17 17:25:40]   Commit: fde5c89 (2025-07-15 15:19:22 -0500)
+[2026-02-17 17:25:40]   Message: Missed something
+[2026-02-17 17:25:40]   Checking out commit...
+[2026-02-17 17:25:42]   Running FOE scanner (this may take 5-15 minutes)...
+[2026-02-17 17:46:34] ✓ Scan completed in 1252s
+[2026-02-17 17:46:34]   Score: 60 | Maturity: practicing
+[2026-02-17 17:46:35]   Output: prima-control-tower-2025-07-15.json (17KiB)
+[2026-02-17 17:46:35]   Waiting 10 seconds before next scan...
+[2026-02-17 17:46:45] 
+[2026-02-17 17:46:45] [3/9] Processing 2025-08-15...
+[2026-02-17 17:47:00]   Commit: 59725c8 (2025-08-15 12:38:29 -0400)
+[2026-02-17 17:47:00]   Message: feat: add feature files for admin and user management, inclu
+[2026-02-17 17:47:00]   Checking out commit...
+[2026-02-17 17:48:41]   Running FOE scanner (this may take 5-15 minutes)...
+[2026-02-17 18:05:34] ✓ Scan completed in 1012s
+[2026-02-17 18:05:34]   Score: 68 | Maturity: practicing
+[2026-02-17 18:05:34]   Output: prima-control-tower-2025-08-15.json (17KiB)
+[2026-02-17 18:05:34]   Waiting 10 seconds before next scan...
+[2026-02-17 18:05:44] 
+[2026-02-17 18:05:44] [4/9] Processing 2025-09-15...
+[2026-02-17 18:05:45]   Commit: 6f264d4 (2025-09-16 01:12:02 +0000)
+[2026-02-17 18:05:45]   Message: Add comprehensive .github/copilot-instructions.md with valid
+[2026-02-17 18:05:45]   Checking out commit...
+[2026-02-17 18:05:46]   Running FOE scanner (this may take 5-15 minutes)...
+[2026-02-17 19:14:04] ✓ Scan completed in 4098s
+[2026-02-17 19:14:04]   Score: 65 | Maturity: practicing
+[2026-02-17 19:14:04]   Output: prima-control-tower-2025-09-15.json (16KiB)
+[2026-02-17 19:14:04]   Waiting 10 seconds before next scan...
+[2026-02-17 19:14:14] 
+[2026-02-17 19:14:14] [5/9] Processing 2025-10-15...
+[2026-02-17 19:14:15]   Commit: 3efa009 (2025-10-15 15:04:38 -0400)
+[2026-02-17 19:14:15]   Message: Merge pull request #129 from esimplicityinc/110-task-change-
+[2026-02-17 19:14:15]   Checking out commit...
+[2026-02-17 19:14:18]   Running FOE scanner (this may take 5-15 minutes)...
+[2026-02-17 19:32:23] ✓ Scan completed in 1084s
+[2026-02-17 19:32:23]   Score: 73 | Maturity: practicing
+[2026-02-17 19:32:23]   Output: prima-control-tower-2025-10-15.json (17KiB)
+[2026-02-17 19:32:23]   Waiting 10 seconds before next scan...
+[2026-02-17 19:32:33] 
+[2026-02-17 19:32:33] [6/9] Processing 2025-11-15...
+[2026-02-17 19:32:33]   Commit: 8491b0d (2025-11-14 17:59:27 -0500)
+[2026-02-17 19:32:33]   Message: add missing step definition
+[2026-02-17 19:32:33]   Checking out commit...
+[2026-02-17 19:32:34]   Running FOE scanner (this may take 5-15 minutes)...
+[2026-02-17 19:49:11] ✓ Scan completed in 997s
+[2026-02-17 19:49:11]   Score: 70 | Maturity: practicing
+[2026-02-17 19:49:11]   Output: prima-control-tower-2025-11-15.json (18KiB)
+[2026-02-17 19:49:11]   Waiting 10 seconds before next scan...
+[2026-02-17 19:49:21] 
+[2026-02-17 19:49:21] [7/9] Processing 2025-12-15...
+[2026-02-17 19:49:21]   Commit: 42df93f (2025-12-15 22:03:16 -0500)
+[2026-02-17 19:49:21]   Message: Merge pull request #278 from esimplicityinc/277-bug
+[2026-02-17 19:49:21]   Checking out commit...
+[2026-02-17 19:49:22]   Running FOE scanner (this may take 5-15 minutes)...
+[2026-02-17 20:11:48] ✓ Scan completed in 1346s
+[2026-02-17 20:11:48]   Score: 78 | Maturity: practicing
+[2026-02-17 20:11:48]   Output: prima-control-tower-2025-12-15.json (18KiB)
+[2026-02-17 20:11:48]   Waiting 10 seconds before next scan...
+[2026-02-17 20:11:58] 
+[2026-02-17 20:11:58] [8/9] Processing 2026-01-15...
+[2026-02-17 20:11:58]   Commit: 3246744 (2026-01-07 11:03:54 -0500)
+[2026-02-17 20:11:58]   Message: Merge pull request #357 from esimplicityinc/building-release
+[2026-02-17 20:11:58]   Checking out commit...
+[2026-02-17 20:12:00]   Running FOE scanner (this may take 5-15 minutes)...
+[2026-02-17 20:52:03] ERROR: Could not extract FOE report JSON from output
+[2026-02-17 20:52:03] Saving raw output for inspection...
+[2026-02-17 20:52:03] 
+[2026-02-17 20:52:03] [9/9] Processing 2026-02-15...
+[2026-02-17 20:52:03]   Commit: 3246744 (2026-01-07 11:03:54 -0500)
+[2026-02-17 20:52:03]   Message: Merge pull request #357 from esimplicityinc/building-release
+[2026-02-17 20:52:03]   Checking out commit...
+[2026-02-17 20:52:03]   Running FOE scanner (this may take 5-15 minutes)...
+[2026-02-18 19:22:55] Restoring git state...
+[2026-02-18 19:22:58] Git state restored
+[2026-02-18 19:22:58] ERROR: Docker scan failed
+[2026-02-18 19:22:58] 
+[2026-02-18 19:22:58] ─────────────────────────────────────────────────────────────────────────
+[2026-02-18 19:22:58] Generating summary report...
+[2026-02-18 19:23:02] ✓ Summary report generated: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/scan-summary.md
+[2026-02-18 19:23:02] 
+[2026-02-18 19:23:02] ═══════════════════════════════════════════════════════════════════════════
+[2026-02-18 19:23:02] FOE Historical Scan Complete
+[2026-02-18 19:23:02] ═══════════════════════════════════════════════════════════════════════════
+[2026-02-18 19:23:02] 
+[2026-02-18 19:23:02] Results:
+[2026-02-18 19:23:02]   ✓ Completed: 6
+[2026-02-18 19:23:02]   ⊘ Skipped: 1
+[2026-02-18 19:23:02]   ✗ Failed: 2
+[2026-02-18 19:23:02] 
+[2026-02-18 19:23:02] Output:
+[2026-02-18 19:23:02]   Reports: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/
+[2026-02-18 19:23:02]   Summary: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/scan-summary.md
+[2026-02-18 19:23:02]   Log: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/scan-log.txt
+[2026-02-18 19:23:02] 
+[2026-02-18 19:23:02] ERROR: Some scans failed. Check /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans/scan-log.txt for details.
+[2026-02-18 19:23:02] Restoring git state...
+[2026-02-18 19:23:02] Git state restored
+[2026-02-18 20:00:23] Starting FOE Historical Scanner
+[2026-02-18 20:00:23] Repository: /Users/aaron.west/Documents/Projects/prima-control_tower
+[2026-02-18 20:00:23] Output: /Users/aaron.west/Documents/Projects/katalyst-domain-mapper/foe-historical-scans
+[2026-02-18 20:00:23] Mode: LIVE SCAN
+[2026-02-18 20:00:23] Loading credentials from .env
+[2026-02-18 20:00:23] Pre-flight checks passed ✓
+[2026-02-18 20:00:23] Current branch: 360-allow-empty-provider-credentials
+[2026-02-18 20:00:23] Current commit: 6f1ecc74eca3531a46698a3b44704ef29f3192fe
+[2026-02-18 20:00:24] Warning: 32 untracked files present (will be ignored during scans)
+[2026-02-18 20:00:24] Starting scans for 9 months...
+[2026-02-18 20:00:24] ─────────────────────────────────────────────────────────────────────────
+[2026-02-18 20:00:24] 
+[2026-02-18 20:00:24] [1/9] Processing 2025-06-15...
+[2026-02-18 20:00:24] Already completed (17KiB), skipping...
+[2026-02-18 20:00:24] 
+[2026-02-18 20:00:24] [2/9] Processing 2025-07-15...
+[2026-02-18 20:00:24] Already completed (17KiB), skipping...
+[2026-02-18 20:00:24] 
+[2026-02-18 20:00:24] [3/9] Processing 2025-08-15...
+[2026-02-18 20:00:24] Already completed (17KiB), skipping...
+[2026-02-18 20:00:24] 
+[2026-02-18 20:00:24] [4/9] Processing 2025-09-15...
+[2026-02-18 20:00:24] Already completed (16KiB), skipping...
+[2026-02-18 20:00:24] 
+[2026-02-18 20:00:24] [5/9] Processing 2025-10-15...
+[2026-02-18 20:00:24] Already completed (17KiB), skipping...
+[2026-02-18 20:00:24] 
+[2026-02-18 20:00:24] [6/9] Processing 2025-11-15...
+[2026-02-18 20:00:24] Already completed (18KiB), skipping...
+[2026-02-18 20:00:24] 
+[2026-02-18 20:00:24] [7/9] Processing 2025-12-15...
+[2026-02-18 20:00:24] Already completed (18KiB), skipping...
+[2026-02-18 20:00:24] 
+[2026-02-18 20:00:24] [8/9] Processing 2026-01-15...
+[2026-02-18 20:00:24]   Commit: 3246744 (2026-01-07 11:03:54 -0500)
+[2026-02-18 20:00:24]   Message: Merge pull request #357 from esimplicityinc/building-release
+[2026-02-18 20:00:24]   Checking out commit...
+[2026-02-18 20:00:25]   Running FOE scanner (this may take 5-15 minutes)...

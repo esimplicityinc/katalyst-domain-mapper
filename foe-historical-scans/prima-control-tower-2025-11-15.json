@@ -1,0 +1,454 @@
+{
+  "version": "1.0",
+  "generated": "2026-02-18T00:48:17Z",
+  "repository": {
+    "path": "/repo",
+    "name": "prima-control_tower",
+    "techStack": [
+      "python",
+      "node",
+      "typescript"
+    ],
+    "monorepo": true,
+    "packages": [
+      "metrics",
+      "control_tower/app",
+      "control_tower/db",
+      "frontend/app",
+      "global/libraries/litellm"
+    ]
+  },
+  "dimensions": {
+    "feedback": {
+      "score": 77,
+      "maxScore": 100,
+      "subscores": {
+        "ciPipelineSpeed": {
+          "score": 20,
+          "max": 25,
+          "confidence": "high"
+        },
+        "deploymentFrequency": {
+          "score": 15,
+          "max": 25,
+          "confidence": "medium"
+        },
+        "feedbackLoopInvestment": {
+          "score": 17,
+          "max": 25,
+          "confidence": "high"
+        },
+        "pipelineCompleteness": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        }
+      },
+      "findings": [
+        {
+          "area": "CI Pipeline",
+          "type": "strength",
+          "description": "GitHub Actions with Docker layer caching and parallel job execution",
+          "evidence": [
+            ".github/workflows/backend-ci.yml",
+            "Three parallel jobs: understandability, functionality, compliance",
+            "Docker cache type=gha"
+          ]
+        },
+        {
+          "area": "Security Scanning",
+          "type": "strength",
+          "description": "Comprehensive security scanning with Semgrep SAST and Trivy (filesystem, secrets, image)",
+          "evidence": [
+            "Semgrep for control_tower/app",
+            "Trivy filesystem scan",
+            "Trivy secrets scan",
+            "Trivy Docker image scan"
+          ]
+        },
+        {
+          "area": "Code Quality Automation",
+          "type": "strength",
+          "description": "Automated formatting and linting with Ruff (Python) and Biome (JavaScript)",
+          "evidence": [
+            "Ruff format and check in CI",
+            "Biome configured for frontend",
+            "mypy type checking"
+          ]
+        },
+        {
+          "area": "Testing",
+          "type": "strength",
+          "description": "Multi-layer testing with pytest unit tests and Playwright E2E tests",
+          "evidence": [
+            "pytest with coverage",
+            "Playwright BDD tests",
+            "47 Gherkin feature files"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Pre-commit Hooks",
+          "currentState": "No pre-commit hooks configured; developers must manually run formatters/linters",
+          "hypothesis": "If we add pre-commit hooks (Husky or pre-commit framework), then we'll catch formatting/linting issues before commit because hooks provide immediate local feedback",
+          "recommendation": "Add pre-commit hooks using Husky (for Node.js) or pre-commit framework (for Python) to automatically run formatters and linters",
+          "impact": "medium",
+          "foeMethod": "M146",
+          "foeInsights": {
+            "understanding": "Pre-commit hooks document expected code quality standards at the earliest possible moment",
+            "feedback": "Immediate local feedback (< 5 seconds) vs waiting for CI (2-5 minutes)",
+            "confidence": "Developers gain confidence that their commits will pass CI checks"
+          }
+        },
+        {
+          "area": "Deployment Automation",
+          "currentState": "No automated deployment stage in CI; unclear how/when code reaches production",
+          "hypothesis": "If we add automated CD pipeline, then we'll increase deployment frequency and reduce lead time because manual deployment friction will be eliminated",
+          "recommendation": "Add CD pipeline with automated deployments to staging/production environments",
+          "impact": "high",
+          "foeMethod": "M111",
+          "foeInsights": {
+            "understanding": "Automated deployments document the deployment process as executable code",
+            "feedback": "Faster path from commit to production feedback (hours vs days)",
+            "confidence": "Repeatable deployments reduce 'works on my machine' uncertainty"
+          }
+        },
+        {
+          "area": "Frontend CI Coverage",
+          "currentState": "Frontend code (frontend/app) has no CI workflow; only backend is tested/scanned",
+          "hypothesis": "If we add frontend CI workflow, then we'll catch frontend issues earlier because automated checks will run on every commit",
+          "recommendation": "Create .github/workflows/frontend-ci.yml with lint, format, test, and build stages for frontend/app",
+          "impact": "high",
+          "foeMethod": "M112",
+          "foeInsights": {
+            "understanding": "Frontend CI documents frontend quality standards and build process",
+            "feedback": "Automated feedback on frontend changes (currently manual/missing)",
+            "confidence": "Frontend changes can be merged with confidence they meet quality standards"
+          }
+        }
+      ]
+    },
+    "understanding": {
+      "score": 56,
+      "maxScore": 100,
+      "subscores": {
+        "architectureClarity": {
+          "score": 18,
+          "max": 25,
+          "confidence": "high"
+        },
+        "dependencyDirection": {
+          "score": 15,
+          "max": 25,
+          "confidence": "high"
+        },
+        "modularity": {
+          "score": 18,
+          "max": 25,
+          "confidence": "high"
+        },
+        "documentationQuality": {
+          "score": 63,
+          "max": 100,
+          "confidence": "high",
+          "note": "Normalized from docs dimension"
+        }
+      },
+      "findings": [
+        {
+          "area": "Layered Architecture",
+          "type": "strength",
+          "description": "Clear separation of API, CRUD, Core, and Adapters layers with consistent naming",
+          "evidence": [
+            "control_tower/app structure",
+            "API→CRUD→DB flow",
+            "Adapters for external integrations"
+          ]
+        },
+        {
+          "area": "ADR Practice",
+          "type": "strength",
+          "description": "Architecture Decision Records document key decisions with diagrams",
+          "evidence": [
+            "docs/adr/adr-001-tower-usage.md",
+            "docs/adr/adr-002-load-balancer.md"
+          ]
+        },
+        {
+          "area": "Comprehensive README",
+          "type": "strength",
+          "description": "277-line README with detailed setup, configuration, and project structure",
+          "evidence": [
+            "README.md",
+            "Makefile documentation",
+            ".github/copilot-instructions.md"
+          ]
+        },
+        {
+          "area": "Usage Domain Modeling",
+          "type": "strength",
+          "description": "Usage subdomain shows sophisticated domain modeling with repository protocols and value objects",
+          "evidence": [
+            "UsageEventRepository",
+            "UsageRollupRepository",
+            "Frozen Pydantic models"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Core Layer Dependencies",
+          "currentState": "Core security modules import from CRUD layer (UserCRUD, KnowledgebaseCRUD)",
+          "hypothesis": "If we invert dependencies using ports/interfaces, then core becomes independent because CRUD implements core-defined interfaces",
+          "recommendation": "Apply Dependency Inversion Principle: define repository interfaces in core, implement in CRUD",
+          "impact": "medium",
+          "foeMethod": "M150",
+          "foeInsights": {
+            "understanding": "Clear dependency direction makes layer responsibilities explicit",
+            "feedback": "Inverted dependencies enable testing core logic without database",
+            "confidence": "Independent core can be changed without affecting persistence"
+          }
+        },
+        {
+          "area": "Aggregate Boundaries",
+          "currentState": "All entities accessible via CRUD operations with no aggregate boundaries",
+          "hypothesis": "If we identify and enforce aggregate boundaries, then data consistency will improve because related entities will be modified through a single root",
+          "recommendation": "Identify core aggregates (e.g., Workspace aggregate containing teams, users, resources) and enforce access through aggregate roots",
+          "impact": "high",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Aggregate boundaries make invariants and consistency rules explicit",
+            "feedback": "Violations of aggregate boundaries surface as compilation or runtime errors",
+            "confidence": "Clear boundaries reduce uncertainty about where business rules belong"
+          }
+        },
+        {
+          "area": "Context Boundaries",
+          "currentState": "Functional areas organized by folders but coupled through shared Prisma schema",
+          "hypothesis": "If we establish explicit bounded contexts with clear boundaries, then teams can work independently because contexts have well-defined interfaces",
+          "recommendation": "Define bounded contexts (e.g., Identity, LLM Management, Usage Analytics) with explicit APIs and separate schemas where appropriate",
+          "impact": "high",
+          "foeMethod": "M136",
+          "foeInsights": {
+            "understanding": "Bounded contexts reduce cognitive load by limiting scope of understanding needed",
+            "feedback": "Context boundaries make integration points explicit and testable",
+            "confidence": "Clear boundaries reduce risk of unintended coupling"
+          }
+        },
+        {
+          "area": "Contributing Guidelines",
+          "currentState": "No CONTRIBUTING.md file",
+          "hypothesis": "If we add CONTRIBUTING.md, then external contributors and new team members will submit better PRs because contribution expectations are clear",
+          "recommendation": "Create CONTRIBUTING.md with PR guidelines, code style, testing requirements, and commit conventions",
+          "impact": "medium",
+          "foeMethod": "M147",
+          "foeInsights": {
+            "understanding": "Contributing guides distribute knowledge about project conventions",
+            "feedback": "Clear guidelines reduce back-and-forth in PR reviews",
+            "confidence": "Documented standards enable confident contributions"
+          }
+        }
+      ]
+    },
+    "confidence": {
+      "score": 78,
+      "maxScore": 100,
+      "subscores": {
+        "testQuality": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high"
+        },
+        "testCoverage": {
+          "score": 20,
+          "max": 25,
+          "confidence": "medium"
+        },
+        "contractTesting": {
+          "score": 10,
+          "max": 25,
+          "confidence": "high"
+        },
+        "circularDependencies": {
+          "score": 15,
+          "max": 25,
+          "confidence": "medium"
+        },
+        "bddAdoption": {
+          "score": 25,
+          "max": 25,
+          "confidence": "high",
+          "note": "Bonus from test quality"
+        }
+      },
+      "findings": [
+        {
+          "area": "BDD Adoption",
+          "type": "strength",
+          "description": "47 Gherkin feature files with playwright-bdd framework providing executable specifications",
+          "evidence": [
+            "37 backend feature files",
+            "10 frontend feature files",
+            "Given-When-Then syntax",
+            "Cucumber reports"
+          ]
+        },
+        {
+          "area": "Test:Code Ratio",
+          "type": "strength",
+          "description": "Excellent test-to-source ratio of 0.624 (583 test files for 935 source files)",
+          "evidence": [
+            "Only 3 skipped tests",
+            "284 assertions",
+            "Core project ratio: 0.328"
+          ]
+        },
+        {
+          "area": "CI Integration",
+          "type": "strength",
+          "description": "Unit tests, E2E tests, and coverage all run in CI pipeline",
+          "evidence": [
+            "pytest with coverage",
+            "Playwright E2E tests",
+            "Automated test execution"
+          ]
+        },
+        {
+          "area": "Multi-Layer Testing",
+          "type": "strength",
+          "description": "Multiple test layers provide confidence at different levels of abstraction",
+          "evidence": [
+            "Unit tests (pytest/vitest)",
+            "Integration tests",
+            "E2E tests (Playwright)"
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "area": "Contract Testing",
+          "currentState": "FastAPI generates OpenAPI spec but no consumer contract testing",
+          "hypothesis": "If we add consumer-driven contract testing with Pact, then we'll catch API breaking changes before deployment because contracts encode consumer expectations explicitly",
+          "recommendation": "Implement Pact for consumer-driven contract testing between frontend and backend services",
+          "impact": "medium",
+          "foeMethod": "M145",
+          "foeInsights": {
+            "understanding": "Contracts document service boundaries and expectations explicitly",
+            "feedback": "Breaking changes detected at test time rather than in production",
+            "confidence": "Consumer contracts provide assurance that API changes won't break dependent services"
+          }
+        },
+        {
+          "area": "Coverage Visibility",
+          "currentState": "Coverage infrastructure exists but reports not readily available",
+          "hypothesis": "If we generate and publish coverage reports in CI, then teams can identify untested code paths because coverage metrics become visible",
+          "recommendation": "Generate HTML coverage reports in CI and publish as artifacts; add coverage badges to README",
+          "impact": "low",
+          "foeMethod": null,
+          "foeInsights": {
+            "understanding": "Coverage metrics help identify gaps in test suite",
+            "feedback": "Coverage reports provide immediate feedback on test completeness",
+            "confidence": "Visible coverage metrics increase confidence in code quality"
+          }
+        },
+        {
+          "area": "Dependency Analysis Tooling",
+          "currentState": "No automated dependency analysis in CI",
+          "hypothesis": "If we add dependency-cruiser or similar tooling, then dependency violations will be caught automatically because CI enforces rules",
+          "recommendation": "Add dependency-cruiser with rules enforcing layer boundaries",
+          "impact": "low",
+          "foeMethod": "M151",
+          "foeInsights": {
+            "understanding": "Automated checks make implicit rules explicit and visible",
+            "feedback": "Immediate feedback on dependency violations during development",
+            "confidence": "Enforced rules prevent architecture erosion over time"
+          }
+        }
+      ]
+    }
+  },
+  "triangleDiagnosis": {
+    "cycleHealth": "practicing",
+    "weakestDimension": "understanding",
+    "weakestScore": 56,
+    "pattern": "Balanced Growth with Understanding Gap",
+    "intervention": "Strengthen architectural documentation and domain boundaries to match strong feedback and confidence practices",
+    "belowMinimum": [],
+    "analysis": "All dimensions above minimum thresholds (Understanding: 56>35, Feedback: 77>40, Confidence: 78>30). Strong feedback loops and testing practices, but architectural clarity and domain modeling need improvement to fully support the system's complexity."
+  },
+  "overallScore": 70,
+  "maturityLevel": "practicing",
+  "topStrengths": [
+    {
+      "area": "BDD and Test Quality",
+      "score": 78,
+      "reason": "47 Gherkin feature files with playwright-bdd, excellent test:code ratio (0.624), and comprehensive multi-layer testing"
+    },
+    {
+      "area": "CI Pipeline Completeness",
+      "score": 77,
+      "reason": "Comprehensive CI with security scanning (Semgrep, Trivy), parallel execution, Docker caching, and automated quality checks"
+    },
+    {
+      "area": "Security Scanning",
+      "score": 100,
+      "reason": "Multiple security layers: SAST (Semgrep), filesystem scanning (Trivy), secrets detection, and Docker image scanning"
+    },
+    {
+      "area": "Code Quality Automation",
+      "score": 85,
+      "reason": "Automated formatting (Ruff, Biome), linting, and type checking (mypy, TypeScript) integrated into CI"
+    },
+    {
+      "area": "Documentation Quality",
+      "score": 63,
+      "reason": "Comprehensive README (277 lines), ADRs with diagrams, FastAPI auto-docs, and specialized guides (SSO, Makefile)"
+    }
+  ],
+  "topGaps": [
+    {
+      "area": "Deployment Automation",
+      "score": 15,
+      "reason": "No automated CD pipeline; deployment frequency ~3/month with no release tags or automated deployment stage"
+    },
+    {
+      "area": "Frontend CI Coverage",
+      "score": 0,
+      "reason": "Frontend code has no CI workflow despite having test/lint/format tooling configured"
+    },
+    {
+      "area": "Domain Modeling",
+      "score": 38,
+      "reason": "Anemic domain model with CRUD pattern; no aggregate boundaries, limited DDD tactical patterns, shared schema coupling"
+    },
+    {
+      "area": "Contract Testing",
+      "score": 10,
+      "reason": "OpenAPI spec exists but no consumer-driven contract testing or explicit contract validation"
+    },
+    {
+      "area": "Pre-commit Hooks",
+      "score": 0,
+      "reason": "No pre-commit hooks configured; developers must manually run formatters/linters before commit"
+    },
+    {
+      "area": "Dependency Direction",
+      "score": 15,
+      "reason": "Core layer imports from CRUD layer violating layered architecture principles"
+    }
+  ],
+  "methodology": {
+    "scanDuration": "45s",
+    "agentsUsed": [
+      "ci",
+      "tests",
+      "arch",
+      "domain",
+      "docs"
+    ],
+    "filesAnalyzed": 1518,
+    "confidenceLevel": "high",
+    "notes": "Monorepo with 5 packages analyzed. Backend CI comprehensive, frontend CI missing. Strong testing culture with BDD adoption."
+  }
+}

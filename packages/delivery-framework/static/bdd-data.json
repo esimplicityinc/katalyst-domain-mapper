@@ -1,6 +1,86 @@
 {
   "tests": [
     {
+      "changeId": "CHANGE-040",
+      "roadId": null,
+      "title": "Pre-commit Quality Hooks with Husky",
+      "date": "2026-02-17",
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "status": "na"
+    },
+    {
+      "changeId": "CHANGE-039",
+      "roadId": null,
+      "title": "AWS Bedrock Scanner Support as Alternative LLM Provider",
+      "date": "2026-02-17",
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "status": "na"
+    },
+    {
+      "changeId": "CHANGE-038",
+      "roadId": null,
+      "title": "Domain Events Collapsible Context Groups",
+      "date": "2026-02-17",
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "status": "pass"
+    },
+    {
+      "changeId": "CHANGE-036",
+      "roadId": "ROAD-041",
+      "title": "Taxonomy CRUD API with Port/Adapter Pattern",
+      "date": "2026-02-17",
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "status": "pass"
+    },
+    {
+      "changeId": "CHANGE-035",
+      "roadId": "ROAD-040",
+      "title": "Lifecycle Navigation UI with 7-Stage Architecture",
+      "date": "2026-02-17",
+      "total": 33,
+      "passed": 28,
+      "failed": 5,
+      "status": "pass"
+    },
+    {
+      "changeId": "CHANGE-034",
+      "roadId": "ROAD-031",
+      "title": "FOE Assessment Agent Chat with SSE Streaming",
+      "date": "2026-02-17",
+      "total": 24,
+      "passed": 24,
+      "failed": 0,
+      "status": "pass"
+    },
+    {
+      "changeId": "CHANGE-033",
+      "roadId": "ROAD-030",
+      "title": "FOE Project Browser with Search, Sort, and Persistent Selection",
+      "date": "2026-02-17",
+      "total": 24,
+      "passed": 24,
+      "failed": 0,
+      "status": "pass"
+    },
+    {
+      "changeId": "CHANGE-032",
+      "roadId": "ROAD-029",
+      "title": "Model Selection Persistence Across Page Refresh",
+      "date": "2026-02-17",
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "status": "na"
+    },
+    {
       "changeId": "CHANGE-030",
       "roadId": "ROAD-040",
       "title": "Lifecycle Navigation & Brand Color System — Phase 1",
@@ -21,6 +101,16 @@
       "status": "pending"
     },
     {
+      "changeId": "CHANGE-037",
+      "roadId": "ROAD-028",
+      "title": "DDD Terminology Tooltips Across Domain Mapper Views",
+      "date": "2026-02-13",
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "status": "na"
+    },
+    {
       "changeId": "CHANGE-007",
       "roadId": "ROAD-007",
       "title": "BDD Agent Skills — Complete",
@@ -29,6 +119,16 @@
       "passed": 0,
       "failed": 0,
       "status": "na"
+    },
+    {
+      "changeId": "CHANGE-031",
+      "roadId": "ROAD-027",
+      "title": "Hexagonal Architecture Extraction for Domain Modeling",
+      "date": "2026-02-12",
+      "total": 47,
+      "passed": 47,
+      "failed": 0,
+      "status": "pass"
     },
     {
       "changeId": "CHANGE-027",
@@ -71,5 +171,5 @@
       "status": "pass"
     }
   ],
-  "generatedAt": "2026-02-17T18:42:19.855Z"
+  "generatedAt": "2026-02-19T17:12:54.274Z"
 }
