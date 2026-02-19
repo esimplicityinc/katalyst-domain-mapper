@@ -64,3 +64,19 @@ User stories define requirements from the perspective of personas interacting wi
 | [US-053](US-053) | Define Actions and Tools for Capabilities | PER-002 | CAP-013 | planned |
 | [US-054](US-054) | GitOps Workflow for Taxonomy Management | PER-005 | CAP-013 | planned |
 | [US-055](US-055) | Create Manual FOE Assessment | PER-001 | CAP-015, CAP-001, CAP-002 | draft |
+| [US-056](US-056) | Browse FOE Projects in Multi-Project List | PER-001 | CAP-014, CAP-001 | complete |
+| [US-057](US-057) | Persist FOE Project Selection Across Refresh | PER-001 | CAP-014 | complete |
+| [US-058](US-058) | Navigate FOE Project Report Sections via Sub-Tabs | PER-001 | CAP-014, CAP-001 | complete |
+| [US-059](US-059) | Chat with AI Coach About FOE Assessment Results | PER-001 | CAP-014, CAP-008 | complete |
+| [US-060](US-060) | Navigate Documentation by Delivery Lifecycle Stages | PER-006 | CAP-010 | complete |
+| [US-061](US-061) | View System Taxonomy in Strategy Section | PER-002 | CAP-013 | complete |
+| [US-062](US-062) | Access FOE Scanner from Strategy Lifecycle Stage | PER-001 | CAP-001, CAP-014 | complete |
+| [US-063](US-063) | Refactor Domain Modeling API to Hexagonal Architecture | PER-002 | CAP-009 | complete |
+| [US-064](US-064) | Manage Taxonomy Nodes via CRUD API | PER-002 | CAP-013 | complete |
+| [US-065](US-065) | View DDD Terminology Tooltips in Domain Mapper | PER-006 | CAP-010 | complete |
+| [US-066](US-066) | Persist Domain Model Selection Across Page Refresh | PER-001 | CAP-009, CAP-010 | complete |
+| [US-067](US-067) | View Collapsible Context Groups in Event Flow | PER-007 | CAP-010 | complete |
+| [US-068](US-068) | Configure Pre-commit Quality Hooks | PER-003 | CAP-002 | complete |
+| [US-069](US-069) | Scan Repositories with AWS Bedrock Models | PER-002 | CAP-004 | complete |
+| [US-070](US-070) | View FOE Projects Card on Strategy Landing Page | PER-001 | CAP-014, CAP-001 | complete |
+| [US-071](US-071) | Fix Triangle Tab Rendering for Rich belowMinimum Format | PER-001 | CAP-001 | complete |

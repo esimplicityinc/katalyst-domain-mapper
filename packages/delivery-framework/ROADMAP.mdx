@@ -5,8 +5,8 @@ description: Consolidated roadmap for the governance pipeline, DDD tooling, and 
 
 # Katalyst Delivery Framework — Roadmap
 
-> **Last Updated**: 2026-02-13
-> **Total Items**: 38 | **In Progress**: 0 | **Proposed**: 23 | **Complete**: 15
+> **Last Updated**: 2026-02-19
+> **Total Items**: 43 | **In Progress**: 0 | **Proposed**: 18 | **Complete**: 20 | **NFR Validating**: 0
 
 Turn this monorepo into a **self-governing delivery framework**. Import governance infrastructure, build Zod-validated schemas, create parsers and CLI tooling, add API endpoints, enhance the scanner, and visualize governance health — all while the framework governs its own development.
 
@@ -576,60 +576,67 @@ Add contextual info tooltips (ℹ️ icon) next to DDD terminology throughout th
 **Priority**: High
 **Phase**: 3 — API, Scanner, Visualization & Domain Tooling
 **Created**: 2026-02-12
+**Completed**: 2026-02-17
 
 When a DDD domain model is selected (e.g., Waters) and the page is refreshed, the previously selected model is lost and the UI auto-selects the first model in the API response list (e.g., OPR) instead. Root cause: `DomainMapperPage.tsx` line 48 always selects `list[0]` on mount with no persistence of the user's selection.
 
-- 🎯 Persist selected model ID to `localStorage` (or URL search params) when a model is selected
-- 🎯 On page load, read persisted model ID and re-select that model instead of defaulting to `list[0]`
-- 🎯 Handle edge case: persisted model ID no longer exists (deleted) — fall back to `list[0]`
-- 🎯 Clear persisted selection when model is explicitly deleted
-- 🎯 Consider using URL route param (`/mapper/:modelId/chat`) for deep-linkable model selection
+- ✅ Persist selected model ID to `localStorage` (or URL search params) when a model is selected
+- ✅ On page load, read persisted model ID and re-select that model instead of defaulting to `list[0]`
+- ✅ Handle edge case: persisted model ID no longer exists (deleted) — fall back to `list[0]`
+- ✅ Clear persisted selection when model is explicitly deleted
+- ✅ Consider using URL route param (`/mapper/:modelId/chat`) for deep-linkable model selection
 
 **NFR**: NFR-UX — User state should survive page refresh
 **Requires**: [ROAD-009](#road-009-governance--ddd-web-visualization-) (already complete)
 **Enables**: None (UX bug fix)
+**Capabilities**: [CAP-022](#cap-022-user-state-persistence)
+**User Stories**: [US-066](#us-066-persist-domain-model-selection-across-page-refresh)
 
 ---
 
-### [ROAD-030] FOE Project Browser & Persistent Report Selection 🎯
-**Status**: Proposed
+### [ROAD-030] FOE Project Browser & Persistent Report Selection ✅
+**Status**: Complete
 **Priority**: High
 **Phase**: 3 — API, Scanner, Visualization & Domain Tooling
 **Created**: 2026-02-12
+**Completed**: 2026-02-17
 
 Redesign the FOE Reports page to follow the same project-oriented pattern as the Domain Mapper. Currently, `ReportsPage.tsx` is a one-shot upload/view — load a report, see it, reset to load another. There's no concept of persistent projects, no ability to browse previously scanned repositories, and no sub-navigation between report sections. This item transforms the Reports experience into a multi-project browser mirroring the `DomainMapperPage` pattern.
 
-- 🎯 Create `FOEProjectListPage` component — lists all scanned projects from the API (name, last scan date, maturity level, overall score) similar to `DomainModelList`
-- 🎯 Add project selection state with persistence — selected project ID stored in `localStorage` or URL param (`/reports/:projectId`) to survive page refresh
-- 🎯 Create project detail layout with sub-navigation tabs: Overview, Dimensions, Triangle, Strengths, Gaps (mirroring the mapper's Chat/Contexts/Aggregates/Events/Workflows/Glossary tabs)
-- 🎯 Add "Switch Project" button in header (like mapper's "Switch Model" button)
-- 🎯 Retain upload and scan-directory as entry points — uploaded/scanned reports auto-create a project entry
-- 🎯 Support multiple scans per project with scan history timeline (view latest or compare)
-- 🎯 Add project creation flow: name a project, then scan or upload its first report
-- 🎯 Handle deleted/missing projects gracefully — fall back to project list
-- 🎯 Responsive design + dark mode parity with existing mapper UI
+- ✅ Create `FOEProjectListPage` component — lists all scanned projects from the API (name, last scan date, maturity level, overall score) similar to `DomainModelList`
+- ✅ Add project selection state with persistence — selected project ID stored in `localStorage` or URL param (`/reports/:projectId`) to survive page refresh
+- ✅ Create project detail layout with sub-navigation tabs: Overview, Dimensions, Triangle, Strengths, Gaps (mirroring the mapper's Chat/Contexts/Aggregates/Events/Workflows/Glossary tabs)
+- ✅ Add "Switch Project" button in header (like mapper's "Switch Model" button)
+- ✅ Retain upload and scan-directory as entry points — uploaded/scanned reports auto-create a project entry
+- ✅ Support multiple scans per project with scan history timeline (view latest or compare)
+- ✅ Add project creation flow: name a project, then scan or upload its first report
+- ✅ Handle deleted/missing projects gracefully — fall back to project list
+- ✅ Responsive design + dark mode parity with existing mapper UI
 
 **Requires**: [ROAD-005](#road-005-api-governance-domain-) (API endpoints for report persistence)
 **Enables**: [ROAD-031](#road-031-foe-assessment-agent-chat-interface-) (chat needs project context)
+**Capabilities**: [CAP-016](#cap-016-foe-project-management), [CAP-022](#cap-022-user-state-persistence)
+**User Stories**: [US-056](#us-056), [US-057](#us-057), [US-058](#us-058)
 
 ---
 
-### [ROAD-031] FOE Assessment Agent Chat Interface 🎯
-**Status**: Proposed
+### [ROAD-031] FOE Assessment Agent Chat Interface ✅
+**Status**: Complete
 **Priority**: High
 **Phase**: 3 — API, Scanner, Visualization & Domain Tooling
 **Created**: 2026-02-12
+**Completed**: 2026-02-17
 
 Add an AI agent chat tab to the FOE Reports view, mirroring the `DDDChat` component from the Domain Mapper. Users can have a conversation with an FOE coaching agent that has full context of their scan report — asking about specific findings, getting prioritized improvement recommendations, deep-diving into dimension scores, and receiving actionable next steps. Uses the same OpenCode SSE streaming infrastructure as DDDChat.
 
-- 🎯 Create `FOEChat` component — modeled after `DDDChat.tsx` with SSE streaming, markdown rendering, question cards, and the same send/receive UX
-- 🎯 Build FOE context preamble — inject active report data (scores, dimensions, findings, gaps, triangle diagnosis) into the first message so the agent has full context
-- 🎯 Create or configure `foe-assessment-coach` OpenCode agent — system prompt tuned for FOE coaching: explain scores, suggest improvements, reference Field Guide methods, prioritize interventions
-- 🎯 Add "Chat" tab to FOE project sub-navigation (alongside Overview, Dimensions, Triangle, etc.)
-- 🎯 Starter suggestions: "Why is my Feedback score low?", "What should I improve first?", "Explain the cognitive triangle diagnosis", "How can I improve test confidence?"
-- 🎯 Support follow-up conversations that reference specific findings/gaps from the report
-- 🎯 Reuse OpenCode client infrastructure (`opencode-client.ts`, `subscribeToEvents`, `sendPromptAsync`)
-- 🎯 Handle not-connected state (OpenCode server down) with retry, matching DDDChat pattern
+- ✅ Create `FOEChat` component — modeled after `DDDChat.tsx` with SSE streaming, markdown rendering, question cards, and the same send/receive UX
+- ✅ Build FOE context preamble — inject active report data (scores, dimensions, findings, gaps, triangle diagnosis) into the first message so the agent has full context
+- ✅ Create or configure `foe-assessment-coach` OpenCode agent — system prompt tuned for FOE coaching: explain scores, suggest improvements, reference Field Guide methods, prioritize interventions
+- ✅ Add "Chat" tab to FOE project sub-navigation (alongside Overview, Dimensions, Triangle, etc.)
+- ✅ Starter suggestions: "Why is my Feedback score low?", "What should I improve first?", "Explain the cognitive triangle diagnosis", "How can I improve test confidence?"
+- ✅ Support follow-up conversations that reference specific findings/gaps from the report
+- ✅ Reuse OpenCode client infrastructure (`opencode-client.ts`, `subscribeToEvents`, `sendPromptAsync`)
+- ✅ Handle not-connected state (OpenCode server down) with retry, matching DDDChat pattern
 - 🎯 Dark mode support and responsive design
 
 **Requires**: [ROAD-030](#road-030-foe-project-browser--persistent-report-selection-) (needs project context), [ROAD-015](#road-015-sse-streaming-for-real-time-agent-responses-) (SSE infrastructure)

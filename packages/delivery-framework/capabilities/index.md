@@ -25,3 +25,10 @@ Capabilities represent the core functional areas the system provides. Each capab
 | [CAP-013](CAP-013) | System Taxonomy Management | Business | planned |
 | [CAP-014](CAP-014) | FOE Report Trend Analysis & History | Business | planned |
 | [CAP-015](CAP-015) | Manual FOE Assessment Creation | Business | planned |
+| [CAP-016](CAP-016) | FOE Project Management | Business | stable |
+| [CAP-017](CAP-017) | AI Assessment Coaching | Business | stable |
+| [CAP-018](CAP-018) | Lifecycle Navigation System | Technical | stable |
+| [CAP-019](CAP-019) | Taxonomy CRUD API | Business | stable |
+| [CAP-020](CAP-020) | Hexagonal Architecture Foundation | Technical | stable |
+| [CAP-021](CAP-021) | DDD Onboarding Tooltips | Business | stable |
+| [CAP-022](CAP-022) | User State Persistence | Technical | stable |

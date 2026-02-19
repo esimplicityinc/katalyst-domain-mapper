@@ -1,7 +1,7 @@
 ---
 title: Architecture Decision Records (ADRs)
 description: All architectural decisions for the project
-last_updated: 2026-01-31
+last_updated: 2026-02-19
 ---
 
 # Architecture Decision Records
@@ -51,6 +51,13 @@ created: YYYY-MM-DD
 | [ADR-008](./ADR-008.md) | 8-State Governance Workflow | Architecture | Accepted |
 | [ADR-009](./ADR-009.md) | Markdown Frontmatter as Governance Artifact Format | Architecture | Accepted |
 | [ADR-010](./ADR-010.md) | Progressive Replacement Strategy for Legacy Scripts | Architecture | Accepted |
+| [ADR-011](./ADR-011.md) | SQLite as Embedded Database for API | Infrastructure | Accepted |
+| [ADR-012](./ADR-012.md) | React + Vite for Web UI | Infrastructure | Accepted |
+| [ADR-013](./ADR-013.md) | Lifecycle-Oriented Information Architecture | Architecture | Accepted |
+| [ADR-014](./ADR-014.md) | Hexagonal Architecture for All Bounded Contexts | Architecture | Accepted |
+| [ADR-015](./ADR-015.md) | Server-Sent Events for Real-Time Agent Communication | Architecture | Accepted |
+| [ADR-016](./ADR-016.md) | Multi-Adapter Persistence for Taxonomy | Architecture | Accepted |
+| [ADR-017](./ADR-017.md) | Sequential Numbering for Retroactive Governance Artifacts | Process | Accepted |
 
 ## Governance
 

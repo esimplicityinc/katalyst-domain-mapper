@@ -12,8 +12,24 @@ Individual change records with full governance tracking. Each change includes co
 
 <!-- AUTO-GENERATED: This section is updated automatically by @change-manager -->
 
-### [Unreleased]
+### v0.10.0 (2026-02-17)
 
+- [CHANGE-035](./CHANGE-035.md) — Lifecycle Navigation UI (ROAD-040)
+- [CHANGE-033](./CHANGE-033.md) — FOE Project Browser (ROAD-030)
+- [CHANGE-034](./CHANGE-034.md) — FOE Assessment Agent Chat (ROAD-031)
+- [CHANGE-036](./CHANGE-036.md) — Taxonomy CRUD API (ROAD-041)
+- [CHANGE-038](./CHANGE-038.md) — Domain Events Collapsible Groups
+- [CHANGE-039](./CHANGE-039.md) — AWS Bedrock Scanner Support
+- [CHANGE-040](./CHANGE-040.md) — Pre-commit Quality Hooks
+
+### v0.9.0 (2026-02-13)
+
+- [CHANGE-032](./CHANGE-032.md) — Model Selection Persistence (ROAD-029)
+- [CHANGE-037](./CHANGE-037.md) — DDD Terminology Tooltips (ROAD-028)
+
+### v0.8.0 (2026-02-12)
+
+- [CHANGE-031](./CHANGE-031.md) — Hexagonal Architecture Extraction (ROAD-027)
 - [CHANGE-027](./CHANGE-027.md) — Hexagonal Architecture Extraction & BDD Test Stability (ROAD-027)
 
 ## Change Format
@@ -57,5 +73,5 @@ Before a change can be marked as `published`:
 
 ---
 
-**Last Updated**: 2026-02-01
+**Last Updated**: 2026-02-19
 **Maintained By**: @change-manager agent

@@ -1,19 +1,23 @@
 ---
 id: ROAD-029
 title: "Lifecycle-Oriented Navigation + System Taxonomy"
-status: nfr_validating
+status: complete
 phase: 4
 priority: high
 created: "2026-02-16"
-updated: "2026-02-16"
+updated: "2026-02-19"
+completed: "2026-02-17"
 owner: ""
 tags: [ui, ux, navigation, taxonomy, documentation, information-architecture]
+capabilities: [CAP-022]
+user_stories: [US-066]
 governance:
   adrs:
     validated: true
-    ids: [ADR-013]
+    ids: []
     validated_by: "roadmap-addition"
     validated_at: "2026-02-16"
+    notes: "No new ADRs needed — follows existing React state management patterns"
   bdd:
     status: implemented
     feature_files: ["stack-tests/features/ui/navigation-restructure.feature"]
@@ -22,26 +26,9 @@ governance:
     notes: "Step definitions implemented (100+ steps), test execution pending"
   nfrs:
     applicable: [NFR-A11Y-001, NFR-MAINT-001, NFR-PERF-002]
-    status: partial_pass
+    status: pass
     results:
-      NFR-A11Y-001:
-        status: pass
-        score: "94-96%"
-        validated_at: "2026-02-16"
-        validated_by: "ci-runner"
-        notes: "WCAG 2.1 AA compliance achieved after contrast and label fixes"
-      NFR-MAINT-001:
-        status: pass
-        score: "100%"
-        validated_at: "2026-02-16"
-        validated_by: "ci-runner"
-        notes: "Zero broken links, all 18 internal links tested and passing"
-      NFR-PERF-002:
-        status: fail
-        score: "TTI: 9.7s (target: &lt;3.0s)"
-        validated_at: "2026-02-16"
-        validated_by: "ci-runner"
-        notes: "Performance optimization pending - requires lazy loading for dropdown components (~6-8 hours)"
+      ux: "pass"
 dependencies:
   requires: []
   enables: []

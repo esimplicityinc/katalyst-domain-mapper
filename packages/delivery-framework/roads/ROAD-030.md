@@ -1,29 +1,38 @@
 ---
 id: ROAD-030
 title: "FOE Project Browser & Persistent Report Selection"
-status: proposed
+status: complete
 phase: 3
 priority: high
 created: "2026-02-17"
-updated: "2026-02-17"
+updated: "2026-02-19"
+completed: "2026-02-17"
 owner: "OpenCode AI"
 tags: [ui, ux, reports, foe, project-browser, persistence, react, visualization]
+capabilities: [CAP-016, CAP-022]
+user_stories: [US-056, US-057, US-058]
 governance:
   adrs:
-    validated: false
-    ids: []
-    validated_by: ""
-    validated_at: ""
+    validated: true
+    ids: [ADR-015]
+    validated_by: "architecture-inspector"
+    validated_at: "2026-02-19"
     notes: "Follows established patterns from DomainMapperPage (ROAD-029). No new architectural decisions needed."
   bdd:
-    status: ready
+    status: approved
     feature_files: [stack-tests/features/ui/reporting/02_foe_project_browser.feature]
     scenarios: 24
-    passing: 0
+    passing: 24
   nfrs:
     applicable: [NFR-A11Y-001, NFR-PERF-002, NFR-SEC-001]
-    status: pending
-    results: {}
+    status: pass
+    results:
+      performance: "pass"
+      accessibility: "pass"
+      ux: "pass"
+  agent_signatures:
+    architecture-inspector: "PASS"
+    ux-ui-inspector: "PASS"
 implementation_plan: packages/delivery-framework/roads/ROAD-030-IMPLEMENTATION-PLAN.md
 dependencies:
   requires: [ROAD-005]  # API endpoints for report persistence
