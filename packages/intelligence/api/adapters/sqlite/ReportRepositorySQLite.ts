@@ -43,7 +43,7 @@ export class ReportRepositorySQLite implements ReportRepository {
       .run();
 
     // Insert dimensions + subscores
-    for (const [key, dim] of Object.entries(report.dimensions)) {
+    for (const [_key, dim] of Object.entries(report.dimensions)) {
       const dimId = crypto.randomUUID();
       this.db
         .insert(schema.dimensions)

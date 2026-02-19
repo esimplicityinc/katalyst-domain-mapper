@@ -1,4 +1,3 @@
-import type { FOEReport } from "@foe/schemas/scan";
 import type { ReportRepository } from "../../ports/ReportRepository.js";
 import { ReportNotFoundError } from "../../domain/report/ReportErrors.js";
 
@@ -41,7 +40,7 @@ export class CompareReports {
     const compareGapAreas = new Set(compare.gaps.map((g) => g.area));
 
     const baseStrengthAreas = new Set(base.strengths.map((s) => s.area));
-    const compareStrengthAreas = new Set(compare.strengths.map((s) => s.area));
+    const _compareStrengthAreas = new Set(compare.strengths.map((s) => s.area));
 
     return {
       baseReport: {

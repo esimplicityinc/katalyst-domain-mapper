@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from "bun:test";
 import { LandscapeLinter } from "../LandscapeLinter.js";
-import { emptyContext, validContext, makePersona, makeUserStory, makeCapability, makeBoundedContext, makeDomainEvent } from "./fixtures.js";
+import { emptyContext, validContext, makePersona, makeUserStory, makeBoundedContext, makeDomainEvent } from "./fixtures.js";
 
 const linter = new LandscapeLinter();
 

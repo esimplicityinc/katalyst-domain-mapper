@@ -45,12 +45,13 @@ export function startScanLoop(deps: {
         if (result.success && result.report) {
           try {
             // Log scanner output for debugging
+            const report = result.report as Record<string, unknown>;
             logger.debug("Scanner output structure", {
               jobId: job.id,
-              reportKeys: Object.keys(result.report as any),
-              hasVersion: "version" in (result.report as any),
-              hasRepository: "repository" in (result.report as any),
-              repositoryType: typeof (result.report as any).repository,
+              reportKeys: Object.keys(report),
+              hasVersion: "version" in report,
+              hasRepository: "repository" in report,
+              repositoryType: typeof report.repository,
               reportPreview: JSON.stringify(result.report).slice(0, 500),
             });
             

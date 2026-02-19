@@ -17,7 +17,9 @@ import {
   ChevronRight,
   Network,
   Shield,
-  FolderKanban
+  FolderKanban,
+  Building2,
+  Users
 } from "lucide-react";
 import { ApiKeyPrompt } from "./ApiKeyPrompt";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -37,6 +39,18 @@ const NAV_ITEMS = [
         label: "Business Domain",
         icon: Network,
         description: "Model domains & contexts"
+      },
+      {
+        to: "/design/architecture",
+        label: "Architecture",
+        icon: Building2,
+        description: "Taxonomy system hierarchy"
+      },
+      {
+        to: "/design/personas",
+        label: "Personas & Stories",
+        icon: Users,
+        description: "Personas, user stories & coverage"
       }
     ]
   },

@@ -9,7 +9,6 @@ import type {
   ResolvedContext,
   ResolvedConsumer,
   InferredSystem,
-  ContextType,
 } from "../types/landscape.js";
 
 export interface ContextLookup {

@@ -11,6 +11,9 @@ import { createRepositoryRoutes } from "./routes/v1/repositories.js";
 import { createConfigRoutes } from "./routes/v1/config.js";
 import { createDomainModelRoutes } from "./routes/v1/domain-models.js";
 import { createGovernanceRoutes } from "./routes/v1/governance.js";
+import { createGovernanceCapabilityRoutes } from "./routes/v1/governance-capabilities.js";
+import { createGovernancePersonaRoutes } from "./routes/v1/governance-personas.js";
+import { createGovernanceUserStoryRoutes } from "./routes/v1/governance-user-stories.js";
 import { createTaxonomyRoutes } from "./routes/v1/taxonomy.js";
 import { createLandscapeRoutes } from "./routes/v1/landscape.js";
 import { createLintRoutes } from "./routes/v1/lint.js";
@@ -142,6 +145,9 @@ export function createServer(container: Container) {
             validateTransition: container.validateTransition,
           }),
         )
+        .use(createGovernanceCapabilityRoutes({ governanceRepo: container.governanceRepo }))
+        .use(createGovernancePersonaRoutes({ governanceRepo: container.governanceRepo }))
+        .use(createGovernanceUserStoryRoutes({ governanceRepo: container.governanceRepo }))
         .use(
           createTaxonomyRoutes({
             ingestTaxonomySnapshot: container.ingestTaxonomySnapshot,

@@ -69,7 +69,7 @@ export function createGovernanceRoutes(deps: {
       // GET /snapshot/:id — Specific snapshot
       .get(
         "/snapshot/:id",
-        async ({ params, set }) => {
+        async ({ params, set: _set }) => {
           const snapshot = await deps.queryGovernanceState.getById(params.id);
           if (!snapshot) {
             throw new GovernanceNotFoundError(params.id);

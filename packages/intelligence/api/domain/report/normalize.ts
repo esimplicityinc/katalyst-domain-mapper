@@ -284,7 +284,7 @@ export function normalizeReport(data: unknown): FOEReport {
       zodErrors: zodResult.error.issues,
       dataPreview,
       dataKeys: data && typeof data === "object" ? Object.keys(data) : [],
-      repositoryType: data && typeof data === "object" && "repository" in data ? typeof (data as any).repository : "missing",
+      repositoryType: data && typeof data === "object" && "repository" in data ? typeof (data as Record<string, unknown>).repository : "missing",
     },
   );
 }

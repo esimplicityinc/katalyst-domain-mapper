@@ -352,6 +352,11 @@ export const governanceCapabilities = sqliteTable("governance_capabilities", {
   roadCount: integer("road_count").notNull().default(0),
   storyCount: integer("story_count").notNull().default(0),
   taxonomyNode: text("taxonomy_node"), // optional FK to taxonomy node name
+  capabilityId: text("capability_id"), // The raw CAP-XXX id (stripped from composite PK)
+  description: text("description"),
+  category: text("category"), // Security | Observability | Communication | Business | Technical
+  parentCapability: text("parent_capability"), // CAP-XXX of parent
+  dependsOn: text("depends_on", { mode: "json" }).$type<string[]>().default([]),
 });
 
 export const governanceRoadItems = sqliteTable("governance_road_items", {
@@ -376,6 +381,47 @@ export const governanceContexts = sqliteTable("governance_contexts", {
   title: text("title").notNull(),
   aggregateCount: integer("aggregate_count").notNull().default(0),
   eventCount: integer("event_count").notNull().default(0),
+});
+
+export const governancePersonas = sqliteTable("governance_personas", {
+  id: text("id").primaryKey(), // composite: snapshotId:PER-XXX
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => governanceSnapshots.id, { onDelete: "cascade" }),
+  personaId: text("persona_id").notNull(), // e.g. PER-001
+  name: text("name").notNull(),
+  type: text("type").notNull(), // human | bot | system | external_api
+  status: text("status").notNull().default("draft"),
+  archetype: text("archetype").notNull().default("consumer"), // creator | operator | administrator | consumer | integrator
+  description: text("description"),
+  goals: text("goals", { mode: "json" }).$type<string[]>().default([]),
+  painPoints: text("pain_points", { mode: "json" }).$type<string[]>().default([]),
+  behaviors: text("behaviors", { mode: "json" }).$type<string[]>().default([]),
+  typicalCapabilities: text("typical_capabilities", { mode: "json" }).$type<string[]>().default([]),
+  technicalProfile: text("technical_profile", { mode: "json" }).$type<{
+    skillLevel?: string;
+    integrationType?: string;
+    frequency?: string;
+  } | null>(),
+  relatedStories: text("related_stories", { mode: "json" }).$type<string[]>().default([]),
+  relatedPersonas: text("related_personas", { mode: "json" }).$type<string[]>().default([]),
+  storyCount: integer("story_count").notNull().default(0),
+  capabilityCount: integer("capability_count").notNull().default(0),
+});
+
+export const governanceUserStories = sqliteTable("governance_user_stories", {
+  id: text("id").primaryKey(), // composite: snapshotId:US-XXX
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => governanceSnapshots.id, { onDelete: "cascade" }),
+  storyId: text("story_id").notNull(), // e.g. US-001
+  title: text("title").notNull(),
+  persona: text("persona").notNull(), // PER-XXX reference
+  status: text("status").notNull().default("draft"), // draft | approved | implementing | complete | deprecated
+  capabilities: text("capabilities", { mode: "json" }).$type<string[]>().default([]), // CAP-XXX[]
+  useCases: text("use_cases", { mode: "json" }).$type<string[]>().default([]), // UC-XXX[]
+  acceptanceCriteria: text("acceptance_criteria", { mode: "json" }).$type<string[]>().default([]),
+  taxonomyNode: text("taxonomy_node"),
 });
 
 // ── Taxonomy Snapshots ─────────────────────────────────────────────────────

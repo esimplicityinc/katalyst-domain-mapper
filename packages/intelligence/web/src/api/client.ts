@@ -19,6 +19,7 @@ import type {
   TrendPoint,
 } from "../types/governance";
 import type { Project, ProjectDetail } from "../types/project";
+import type { ManagedCapability, ManagedPersona, ManagedUserStory } from "../types/taxonomy-management";
 import { normalizeRepoUrl } from "../utils/url";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
@@ -433,6 +434,116 @@ export const api = {
   /** Get cross-reference integrity report */
   getGovernanceIntegrity(): Promise<IntegrityReport> {
     return request("/api/v1/governance/integrity");
+  },
+
+  // ── Governance Capabilities CRUD ─────────────────────────────────────────
+
+  /** List all capabilities */
+  listCapabilities(): Promise<ManagedCapability[]> {
+    return request("/api/v1/governance/capabilities");
+  },
+
+  /** Get a capability by ID */
+  getCapability(id: string): Promise<ManagedCapability> {
+    return request(`/api/v1/governance/capabilities/${id}`);
+  },
+
+  /** Create a capability */
+  createCapability(data: Omit<ManagedCapability, "roadCount" | "storyCount">): Promise<ManagedCapability> {
+    return request("/api/v1/governance/capabilities", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  /** Update a capability */
+  updateCapability(id: string, data: Partial<Omit<ManagedCapability, "id" | "roadCount" | "storyCount">>): Promise<ManagedCapability> {
+    return request(`/api/v1/governance/capabilities/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  /** Delete a capability */
+  deleteCapability(id: string): Promise<{ message: string; id: string }> {
+    return request(`/api/v1/governance/capabilities/${id}`, { method: "DELETE" });
+  },
+
+  // ── Governance Personas CRUD ──────────────────────────────────────────────
+
+  /** List all personas */
+  listPersonas(): Promise<ManagedPersona[]> {
+    return request("/api/v1/governance/personas");
+  },
+
+  /** Get a persona by ID */
+  getPersona(id: string): Promise<ManagedPersona> {
+    return request(`/api/v1/governance/personas/${id}`);
+  },
+
+  /** Create a persona */
+  createPersona(data: Omit<ManagedPersona, "storyCount" | "capabilityCount">): Promise<ManagedPersona> {
+    return request("/api/v1/governance/personas", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  /** Update a persona */
+  updatePersona(id: string, data: Partial<Omit<ManagedPersona, "id" | "storyCount" | "capabilityCount">>): Promise<ManagedPersona> {
+    return request(`/api/v1/governance/personas/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  /** Delete a persona */
+  deletePersona(id: string): Promise<{ message: string; id: string }> {
+    return request(`/api/v1/governance/personas/${id}`, { method: "DELETE" });
+  },
+
+  // ── Governance User Stories CRUD ──────────────────────────────────────────
+
+  /** List all user stories with optional filters */
+  listUserStories(params?: { persona?: string; status?: string }): Promise<ManagedUserStory[]> {
+    const query = new URLSearchParams();
+    if (params?.persona) query.set("persona", params.persona);
+    if (params?.status) query.set("status", params.status);
+    const qs = query.toString();
+    return request(`/api/v1/governance/user-stories${qs ? `?${qs}` : ""}`);
+  },
+
+  /** Get a user story by ID */
+  getUserStory(id: string): Promise<ManagedUserStory> {
+    return request(`/api/v1/governance/user-stories/${id}`);
+  },
+
+  /** Create a user story */
+  createUserStory(data: ManagedUserStory): Promise<ManagedUserStory> {
+    return request("/api/v1/governance/user-stories", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  /** Update a user story */
+  updateUserStory(id: string, data: Partial<Omit<ManagedUserStory, "id">>): Promise<ManagedUserStory> {
+    return request(`/api/v1/governance/user-stories/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  /** Delete a user story */
+  deleteUserStory(id: string): Promise<{ message: string; id: string }> {
+    return request(`/api/v1/governance/user-stories/${id}`, { method: "DELETE" });
+  },
+
+  // ── Taxonomy ──────────────────────────────────────────────────────────────
+
+  /** Get the latest taxonomy snapshot */
+  getTaxonomyLatest(): Promise<{ id: string; project: string; version: string; nodeCount: number; environmentCount: number; createdAt: string }> {
+    return request("/api/v1/taxonomy/latest");
   },
 
   // ── Projects ───────────────────────────────────────────────────────────────
