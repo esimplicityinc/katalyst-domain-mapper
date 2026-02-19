@@ -25,12 +25,7 @@ import {
 } from "lucide-react";
 import { clsx } from "clsx";
 import report from "@/data/report.json";
-import type {
-  FOEReport,
-  Finding,
-  Recommendation,
-  Severity,
-} from "@/data/types";
+import type { FOEReport, Recommendation, Severity } from "@/data/types";
 
 const typedReport = report as FOEReport;
 
@@ -417,7 +412,7 @@ function Pagination({
 
 // Tab button component
 function TabButton({
-  id,
+  id: _id,
   label,
   icon: Icon,
   isActive,
@@ -870,7 +865,7 @@ function MethodologyTab() {
 export default function InteractiveScorecardPage() {
   // Filter states
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
-  const [dimensionFilter, setDimensionFilter] =
+  const [_dimensionFilter, setDimensionFilter] =
     useState<DimensionFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");

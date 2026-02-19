@@ -12,7 +12,6 @@ import {
   Tag,
   FileText,
   AlertCircle,
-  Zap,
   Target,
   BarChart3,
   Shield,
@@ -25,7 +24,6 @@ import type {
   FOEReport,
   DimensionScore,
   Finding,
-  Recommendation,
   Strength,
 } from "@/data/types";
 

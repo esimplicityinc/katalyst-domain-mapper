@@ -10,11 +10,6 @@ import {
   Radar,
   ResponsiveContainer,
   Tooltip,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Cell,
 } from "recharts";
 import {
   ArrowLeft,

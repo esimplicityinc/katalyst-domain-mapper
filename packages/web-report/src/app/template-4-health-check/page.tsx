@@ -22,12 +22,7 @@ import {
 } from "lucide-react";
 import { clsx } from "clsx";
 import report from "@/data/report.json";
-import type {
-  FOEReport,
-  DimensionScore,
-  Finding,
-  Recommendation,
-} from "@/data/types";
+import type { FOEReport, Finding, Recommendation } from "@/data/types";
 
 const typedReport = report as FOEReport;
 
@@ -308,7 +303,7 @@ function PatientCard() {
 
 // Diagnosis Section
 function DiagnosisSection() {
-  const status = getOverallStatus(typedReport.overallScore);
+  const _status = getOverallStatus(typedReport.overallScore);
 
   return (
     <div className="bg-white border-l-4 border-l-blue-500 rounded-lg shadow-md overflow-hidden">
@@ -607,7 +602,7 @@ function PrescriptionSection() {
 
 function PrescriptionCard({
   rx,
-  dosage,
+  dosage: _dosage,
 }: {
   rx: Recommendation;
   dosage: string;

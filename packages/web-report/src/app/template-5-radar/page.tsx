@@ -474,7 +474,7 @@ export default function Template5RadarPage() {
             </h3>
             <div className="grid md:grid-cols-3 gap-6">
               {(Object.keys(dimensions) as DimensionKey[]).map((key) => {
-                const dim = dimensions[key];
+                const _dim = dimensions[key];
                 const colors = dimensionColors[key];
                 const subscoreData = getSubscoreData(key);
 

@@ -33,23 +33,6 @@ function getGradeColor(grade: string): string {
   }
 }
 
-function getGradeBorderColor(grade: string): string {
-  switch (grade) {
-    case "A":
-      return "border-emerald-500";
-    case "B":
-      return "border-blue-500";
-    case "C":
-      return "border-yellow-500";
-    case "D":
-      return "border-orange-500";
-    case "F":
-      return "border-red-600";
-    default:
-      return "border-gray-500";
-  }
-}
-
 function getGradeTextColor(grade: string): string {
   switch (grade) {
     case "A":
@@ -115,12 +98,6 @@ function TeacherComment({
     improvement: "bg-amber-50 border-l-4 border-amber-400 text-amber-900",
     praise: "bg-emerald-50 border-l-4 border-emerald-400 text-emerald-900",
     warning: "bg-red-50 border-l-4 border-red-400 text-red-900",
-  };
-
-  const icons = {
-    improvement: "pencil",
-    praise: "star",
-    warning: "alert",
   };
 
   return (

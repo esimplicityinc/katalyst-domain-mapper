@@ -408,7 +408,7 @@ export default function Template6TimelinePage() {
 
         {/* Station Details */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          {stations.map((station, idx) => {
+          {stations.map((station) => {
             const isActive = station.name === maturityLevel;
             const isPast = overallScore > station.maxScore;
 

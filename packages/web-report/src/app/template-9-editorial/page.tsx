@@ -489,7 +489,7 @@ export default function Template9EditorialPage() {
               </h3>
 
               <div className="grid md:grid-cols-2 gap-4">
-                {recommendations.map((rec, idx) => (
+                {recommendations.map((rec) => (
                   <article
                     key={rec.id}
                     className="border border-stone-300 p-4 hover:bg-stone-50 transition-colors"
