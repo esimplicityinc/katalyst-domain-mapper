@@ -63,6 +63,9 @@ export interface GovernanceRepository {
   /** Get the most recently ingested snapshot */
   getLatestSnapshot(): Promise<StoredSnapshot | null>;
 
+  /** Get the most recently ingested snapshot for a specific project */
+  getLatestSnapshotByProject(project: string): Promise<StoredSnapshot | null>;
+
   /** Get a snapshot by its ID */
   getSnapshotById(id: string): Promise<StoredSnapshot | null>;
 

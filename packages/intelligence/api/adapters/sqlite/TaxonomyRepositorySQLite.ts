@@ -7,6 +7,8 @@ import type {
   TaxonomyEnvironmentSummary,
   TaxonomyHierarchy,
   TaxonomyHierarchyNode,
+  CapabilityNode,
+  CapabilityTree,
 } from "../../ports/TaxonomyRepository.js";
 import type { DrizzleDB } from "../../db/client.js";
 import type { ValidatedTaxonomyData } from "../../domain/taxonomy/validateTaxonomyData.js";
@@ -105,6 +107,8 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
           description: cap.description,
           categories: cap.categories,
           dependsOn: cap.dependsOn,
+          parentCapability: cap.parentCapability ?? null,
+          tag: cap.tag ?? null,
         })
         .run();
     }
@@ -191,6 +195,19 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
     return this.toStoredSnapshot(row);
   }
 
+  async getLatestSnapshotByProject(project: string): Promise<StoredTaxonomySnapshot | null> {
+    const row = this.db
+      .select()
+      .from(schema.taxonomySnapshots)
+      .where(eq(schema.taxonomySnapshots.project, project))
+      .orderBy(desc(schema.taxonomySnapshots.createdAt))
+      .limit(1)
+      .get();
+
+    if (!row) return null;
+    return this.toStoredSnapshot(row);
+  }
+
   async getSnapshotById(id: string): Promise<StoredTaxonomySnapshot | null> {
     const row = this.db
       .select()
@@ -255,11 +272,14 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
   async getHierarchy(): Promise<TaxonomyHierarchy> {
     const latest = await this.getLatestSnapshot();
     if (!latest) return { systems: [] };
+    return this.getHierarchyBySnapshotId(latest.id);
+  }
 
+  async getHierarchyBySnapshotId(snapshotId: string): Promise<TaxonomyHierarchy> {
     const rows = this.db
       .select()
       .from(schema.taxonomyNodes)
-      .where(eq(schema.taxonomyNodes.snapshotId, latest.id))
+      .where(eq(schema.taxonomyNodes.snapshotId, snapshotId))
       .all();
 
     // Build parent-to-children map
@@ -351,6 +371,94 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
     }
 
     return Array.from(capNames);
+  }
+
+  async getCapabilityTree(): Promise<CapabilityTree> {
+    const latest = await this.getLatestSnapshot();
+    if (!latest) return { roots: [], byName: new Map() };
+    return this.getCapabilityTreeBySnapshotId(latest.id);
+  }
+
+  async getCapabilityTreeBySnapshotId(snapshotId: string): Promise<CapabilityTree> {
+    // Load all capabilities for this snapshot
+    const rows = this.db
+      .select()
+      .from(schema.taxonomyCapabilities)
+      .where(eq(schema.taxonomyCapabilities.snapshotId, snapshotId))
+      .all();
+
+    // Load all capability relationships for this snapshot to resolve node mappings
+    const relRows = this.db
+      .select()
+      .from(schema.taxonomyCapabilityRels)
+      .where(eq(schema.taxonomyCapabilityRels.snapshotId, snapshotId))
+      .all();
+
+    // Build a map: capability name → list of taxonomy nodes
+    const capToNodes = new Map<string, string[]>();
+    for (const rel of relRows) {
+      for (const cap of (rel.capabilities ?? [])) {
+        const existing = capToNodes.get(cap) ?? [];
+        if (!existing.includes(rel.node)) existing.push(rel.node);
+        capToNodes.set(cap, existing);
+      }
+    }
+
+    // First pass: build flat map of CapabilityNode (children empty, no derivedStatus yet)
+    const byName = new Map<string, CapabilityNode>();
+    for (const row of rows) {
+      const node: CapabilityNode = {
+        name: row.name,
+        description: row.description,
+        tag: row.tag ?? null,
+        declaredStatus: "stable", // taxonomy capabilities don't have explicit status — default stable
+        derivedStatus: "stable",  // will be re-derived after tree assembly
+        taxonomyNodes: capToNodes.get(row.name) ?? [],
+        dependsOn: (row.dependsOn as string[]) ?? [],
+        categories: (row.categories as string[]) ?? [],
+        children: [],
+      };
+      byName.set(row.name, node);
+    }
+
+    // Second pass: link children to parents
+    const roots: CapabilityNode[] = [];
+    for (const row of rows) {
+      const node = byName.get(row.name)!;
+      const parentName = row.parentCapability ?? null;
+      if (parentName && byName.has(parentName)) {
+        byName.get(parentName)!.children.push(node);
+      } else {
+        // No parent or parent not found → treat as root
+        roots.push(node);
+      }
+    }
+
+    // Third pass: derive status bottom-up (worst-child-wins)
+    // planned < stable < deprecated
+    const deriveStatus = (node: CapabilityNode): CapabilityNode["derivedStatus"] => {
+      if (node.children.length === 0) {
+        node.derivedStatus = node.declaredStatus;
+        return node.derivedStatus;
+      }
+      // Recurse children first
+      const childStatuses = node.children.map((c) => deriveStatus(c));
+      // Worst-child-wins: deprecated > planned > stable
+      if (childStatuses.includes("deprecated")) {
+        node.derivedStatus = "deprecated";
+      } else if (childStatuses.includes("planned")) {
+        node.derivedStatus = "planned";
+      } else {
+        node.derivedStatus = "stable";
+      }
+      return node.derivedStatus;
+    };
+
+    for (const root of roots) {
+      deriveStatus(root);
+    }
+
+    return { roots, byName };
   }
 
   // ── Private helpers ──────────────────────────────────────────────────────

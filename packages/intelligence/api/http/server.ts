@@ -12,6 +12,8 @@ import { createConfigRoutes } from "./routes/v1/config.js";
 import { createDomainModelRoutes } from "./routes/v1/domain-models.js";
 import { createGovernanceRoutes } from "./routes/v1/governance.js";
 import { createTaxonomyRoutes } from "./routes/v1/taxonomy.js";
+import { createLandscapeRoutes } from "./routes/v1/landscape.js";
+import { createLintRoutes } from "./routes/v1/lint.js";
 import type { Container } from "../bootstrap/container.js";
 import * as path from "node:path";
 import * as fs from "node:fs";
@@ -145,6 +147,20 @@ export function createServer(container: Container) {
             ingestTaxonomySnapshot: container.ingestTaxonomySnapshot,
             queryTaxonomyState: container.queryTaxonomyState,
             taxonomyRepo: container.taxonomyRepo,
+          }),
+        )
+        .use(
+          createLandscapeRoutes({
+            queryTaxonomyState: container.queryTaxonomyState,
+            queryGovernanceState: container.queryGovernanceState,
+            getDomainModel: container.getDomainModel,
+            governanceRepo: container.governanceRepo,
+            taxonomyRepo: container.taxonomyRepo,
+          }),
+        )
+        .use(
+          createLintRoutes({
+            lintLandscape: container.lintLandscape,
           }),
         ),
     )

@@ -19,6 +19,10 @@ export interface StoredBoundedContext {
   teamOwnership: string | null;
   status: string;
   subdomainType: string | null;
+  /** "internal" | "external-system" | "human-process" | "unknown" */
+  contextType: string | null;
+  /** FQTN or node name linking this context to the taxonomy */
+  taxonomyNode: string | null;
   relationships: unknown[];
   createdAt: string;
   updatedAt: string;
@@ -55,6 +59,8 @@ export interface StoredDomainEvent {
   triggers: string[];
   sideEffects: string[];
   sourceFile: string | null;
+  sourceCapabilityId: string | null;
+  targetCapabilityIds: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -94,6 +100,7 @@ export interface StoredWorkflow {
   slug: string;
   title: string;
   description: string | null;
+  contextIds: string[];
   states: unknown[];
   transitions: unknown[];
   createdAt: string;
@@ -125,6 +132,8 @@ export interface CreateBoundedContextInput {
   teamOwnership?: string;
   status?: string;
   subdomainType?: string;
+  contextType?: string;
+  taxonomyNode?: string;
   relationships?: unknown[];
 }
 
@@ -137,6 +146,8 @@ export interface UpdateBoundedContextInput {
   teamOwnership?: string;
   status?: string;
   subdomainType?: string;
+  contextType?: string;
+  taxonomyNode?: string;
   relationships?: unknown[];
 }
 
@@ -178,6 +189,8 @@ export interface CreateDomainEventInput {
   triggers?: string[];
   sideEffects?: string[];
   sourceFile?: string;
+  sourceCapabilityId?: string;
+  targetCapabilityIds?: string[];
 }
 
 export interface UpdateDomainEventInput {
@@ -189,6 +202,8 @@ export interface UpdateDomainEventInput {
   triggers?: string[];
   sideEffects?: string[];
   sourceFile?: string;
+  sourceCapabilityId?: string;
+  targetCapabilityIds?: string[];
 }
 
 export interface CreateValueObjectInput {
@@ -226,6 +241,7 @@ export interface CreateWorkflowInput {
   slug: string;
   title: string;
   description?: string;
+  contextIds?: string[];
   states?: unknown[];
   transitions?: unknown[];
 }

@@ -142,6 +142,8 @@ export class DomainModelRepositorySQLite implements DomainModelRepository {
       teamOwnership: input.teamOwnership ?? null,
       status: input.status ?? "draft",
       subdomainType: input.subdomainType ?? null,
+      contextType: input.contextType ?? "internal",
+      taxonomyNode: input.taxonomyNode ?? null,
       relationships: input.relationships ?? [],
       createdAt: now,
       updatedAt: now,
@@ -166,6 +168,8 @@ export class DomainModelRepositorySQLite implements DomainModelRepository {
         teamOwnership: input.teamOwnership ?? null,
         status: input.status ?? "draft",
         subdomainType: input.subdomainType ?? null,
+        contextType: input.contextType ?? "internal",
+        taxonomyNode: input.taxonomyNode ?? null,
         relationships: input.relationships ?? [],
         updatedAt: now,
       })
@@ -261,6 +265,8 @@ export class DomainModelRepositorySQLite implements DomainModelRepository {
       triggers: input.triggers ?? [],
       sideEffects: input.sideEffects ?? [],
       sourceFile: input.sourceFile ?? null,
+      sourceCapabilityId: input.sourceCapabilityId ?? null,
+      targetCapabilityIds: input.targetCapabilityIds ?? [],
       createdAt: now,
       updatedAt: now,
     };
@@ -284,6 +290,8 @@ export class DomainModelRepositorySQLite implements DomainModelRepository {
         triggers: input.triggers ?? [],
         sideEffects: input.sideEffects ?? [],
         sourceFile: input.sourceFile ?? null,
+        sourceCapabilityId: input.sourceCapabilityId ?? null,
+        targetCapabilityIds: input.targetCapabilityIds ?? [],
         updatedAt: now,
       })
       .where(eq(schema.domainEvents.id, eventId))
@@ -405,6 +413,7 @@ export class DomainModelRepositorySQLite implements DomainModelRepository {
       slug: input.slug,
       title: input.title,
       description: input.description ?? null,
+      contextIds: input.contextIds ?? [],
       states: input.states ?? [],
       transitions: input.transitions ?? [],
       createdAt: now,

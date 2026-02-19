@@ -37,6 +37,7 @@ import { ManageBoundedContexts } from "../usecases/domain-model/ManageBoundedCon
 import { ManageArtifacts } from "../usecases/domain-model/ManageArtifacts.js";
 import { ManageGlossary } from "../usecases/domain-model/ManageGlossary.js";
 import { ManageWorkflows } from "../usecases/domain-model/ManageWorkflows.js";
+import { LintLandscape } from "../usecases/lint/LintLandscape.js";
 
 export interface Container {
   config: AppConfig;
@@ -69,6 +70,7 @@ export interface Container {
   manageArtifacts: ManageArtifacts;
   manageGlossary: ManageGlossary;
   manageWorkflows: ManageWorkflows;
+  lintLandscape: LintLandscape;
   healthCheck: () => boolean;
   shutdown: () => void;
   getAnthropicApiKey: () => string | undefined;
@@ -175,6 +177,7 @@ export function createContainer(config: AppConfig): Container {
   const manageArtifacts = new ManageArtifacts(domainModelRepo);
   const manageGlossary = new ManageGlossary(domainModelRepo);
   const manageWorkflows = new ManageWorkflows(domainModelRepo);
+  const lintLandscape = new LintLandscape(domainModelRepo, governanceRepo as never, taxonomyRepo as never);
 
   // Health check
   const healthCheck = (): boolean => {
@@ -223,6 +226,7 @@ export function createContainer(config: AppConfig): Container {
     manageArtifacts,
     manageGlossary,
     manageWorkflows,
+    lintLandscape,
     healthCheck,
     shutdown,
     getAnthropicApiKey,

@@ -1,4 +1,4 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import type {
   GovernanceRepository,
   StoredSnapshot,
@@ -118,6 +118,19 @@ export class GovernanceRepositorySQLite implements GovernanceRepository {
     const row = this.db
       .select()
       .from(schema.governanceSnapshots)
+      .orderBy(desc(schema.governanceSnapshots.createdAt))
+      .limit(1)
+      .get();
+
+    if (!row) return null;
+    return this.toStoredSnapshot(row);
+  }
+
+  async getLatestSnapshotByProject(project: string): Promise<StoredSnapshot | null> {
+    const row = this.db
+      .select()
+      .from(schema.governanceSnapshots)
+      .where(eq(schema.governanceSnapshots.project, project))
       .orderBy(desc(schema.governanceSnapshots.createdAt))
       .limit(1)
       .get();

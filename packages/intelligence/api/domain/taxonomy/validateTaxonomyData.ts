@@ -32,7 +32,12 @@ export interface ValidatedTaxonomyCapability {
   name: string;
   description: string;
   categories: string[];
+  // Peer capability dependencies (capability-to-capability, not hierarchy)
   dependsOn: string[];
+  // Hierarchy: slug of the parent capability (null = root / system-level capability)
+  parentCapability: string | null;
+  // Optional display tag for traceability, e.g. "CAP-005" — replaces governance CAP-XXX IDs
+  tag: string | null;
 }
 
 export interface ValidatedTaxonomyCapabilityRel {
@@ -217,6 +222,9 @@ export function validateTaxonomyData(data: unknown): ValidatedTaxonomyData {
       dependsOn: Array.isArray(item.dependsOnCapabilities ?? item.depends_on_capabilities)
         ? (item.dependsOnCapabilities ?? item.depends_on_capabilities) as string[]
         : [],
+      parentCapability:
+        (item.parentCapability ?? item.parent_capability) as string | null ?? null,
+      tag: (item.tag as string) ?? null,
     }),
   );
 
