@@ -13,7 +13,7 @@ WORKDIR /app
 
 # Install minimal runtime dependencies + download OpenCode CLI
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      curl ca-certificates git bash \
+      curl ca-certificates git bash jq \
   && ARCH=$(uname -m) \
   && OPENCODE_ARCH=$([ "$ARCH" = "aarch64" ] && echo "arm64" || echo "x64") \
   && curl -fsSL "https://github.com/anomalyco/opencode/releases/latest/download/opencode-linux-${OPENCODE_ARCH}.tar.gz" \

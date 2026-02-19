@@ -41,8 +41,10 @@ fi
 cd /app
 
 # shellcheck disable=SC2086
+# Run OpenCode - for now, output the full NDJSON log
+# TODO: Parse and extract final JSON report when agent is updated
 opencode run \
   --agent foe-scanner-container \
   --format json \
   $MODEL_FLAG \
-  "Scan this repository and output complete FOE assessment as JSON. Target path: $REPO_PATH"
+  "Scan this repository and output complete FOE assessment as JSON. Target path: $REPO_PATH" 2>&1
