@@ -17,6 +17,9 @@ import { TestingPage } from "./pages/lifecycle/TestingPage";
 import { AutomationPage } from "./pages/lifecycle/AutomationPage";
 import { HistoryPage } from "./pages/lifecycle/HistoryPage";
 
+// Design tools under /design */}
+import { BusinessLandscapePage } from "./pages/BusinessLandscapePage";
+
 function App() {
   return (
     <BrowserRouter>
@@ -36,6 +39,7 @@ function App() {
 
           {/* Design tools under /design */}
           <Route path="design/business-domain/*" element={<DomainMapperPage />} />
+          <Route path="design/business-landscape/:domainModelId" element={<BusinessLandscapePage />} />
 
           {/* Strategy tools under /strategy */}
           <Route path="strategy/foe-projects/*" element={<FOEProjectsPage />} />

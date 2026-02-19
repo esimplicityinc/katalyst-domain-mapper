@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 interface ViewBox {
   x: number;
@@ -12,7 +12,6 @@ interface PanZoomHandlers {
   onMouseMove: (e: React.MouseEvent<SVGSVGElement>) => void;
   onMouseUp: () => void;
   onMouseLeave: () => void;
-  onWheel: (e: React.WheelEvent<SVGSVGElement>) => void;
   onTouchStart: (e: React.TouchEvent<SVGSVGElement>) => void;
   onTouchMove: (e: React.TouchEvent<SVGSVGElement>) => void;
   onTouchEnd: () => void;
@@ -21,6 +20,7 @@ interface PanZoomHandlers {
 interface UseSvgPanZoomResult {
   viewBox: ViewBox;
   handlers: PanZoomHandlers;
+  svgRef: React.RefObject<SVGSVGElement>;
   resetView: () => void;
   scale: number;
 }
@@ -39,21 +39,32 @@ const ZOOM_SENSITIVITY = 0.001;
 /**
  * Hook providing pan (drag) and zoom (scroll wheel) for an SVG element
  * by manipulating the viewBox.
+ *
+ * The wheel handler is attached imperatively with { passive: false } to
+ * allow preventDefault() and avoid the "Unable to preventDefault inside
+ * passive event listener" console errors.
  */
 export function useSvgPanZoom(): UseSvgPanZoomResult {
   const [viewBox, setViewBox] = useState<ViewBox>({ ...INITIAL_VIEWBOX });
   const isPanning = useRef(false);
   const lastPoint = useRef({ x: 0, y: 0 });
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  // Store viewBox in a ref so the imperative wheel handler always has
+  // the latest value without needing to re-attach.
+  const viewBoxRef = useRef(viewBox);
+  viewBoxRef.current = viewBox;
 
   // Current scale: ratio of initial width to current width
   const scale = INITIAL_VIEWBOX.width / viewBox.width;
+  const scaleRef = useRef(scale);
+  scaleRef.current = scale;
 
   const resetView = useCallback(() => {
     setViewBox({ ...INITIAL_VIEWBOX });
   }, []);
 
   const handleMouseDown = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
-    // Only pan on left-click on the background (not on nodes)
     if (e.button !== 0) return;
     isPanning.current = true;
     lastPoint.current = { x: e.clientX, y: e.clientY };
@@ -68,48 +79,51 @@ export function useSvgPanZoom(): UseSvgPanZoomResult {
 
       setViewBox((prev) => ({
         ...prev,
-        // Invert direction: dragging right moves viewBox left
-        x: prev.x - dx / scale,
-        y: prev.y - dy / scale,
+        x: prev.x - dx / scaleRef.current,
+        y: prev.y - dy / scaleRef.current,
       }));
     },
-    [scale],
+    [],
   );
 
   const handleMouseUp = useCallback(() => {
     isPanning.current = false;
   }, []);
 
-  const handleWheel = useCallback(
-    (e: React.WheelEvent<SVGSVGElement>) => {
+  // Imperative wheel handler attached with { passive: false }
+  useEffect(() => {
+    const svgEl = svgRef.current;
+    if (!svgEl) return;
+
+    const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
 
+      const vb = viewBoxRef.current;
       const zoomFactor = 1 + e.deltaY * ZOOM_SENSITIVITY;
-      const newWidth = viewBox.width * zoomFactor;
-      const newHeight = viewBox.height * zoomFactor;
+      const newWidth = vb.width * zoomFactor;
+      const newHeight = vb.height * zoomFactor;
 
-      // Clamp zoom level
       const newScale = INITIAL_VIEWBOX.width / newWidth;
       if (newScale < MIN_SCALE || newScale > MAX_SCALE) return;
 
-      // Zoom toward cursor position
-      const svgEl = e.currentTarget;
       const rect = svgEl.getBoundingClientRect();
       const cursorXRatio = (e.clientX - rect.left) / rect.width;
       const cursorYRatio = (e.clientY - rect.top) / rect.height;
 
-      const dw = newWidth - viewBox.width;
-      const dh = newHeight - viewBox.height;
+      const dw = newWidth - vb.width;
+      const dh = newHeight - vb.height;
 
       setViewBox({
-        x: viewBox.x - dw * cursorXRatio,
-        y: viewBox.y - dh * cursorYRatio,
+        x: vb.x - dw * cursorXRatio,
+        y: vb.y - dh * cursorYRatio,
         width: newWidth,
         height: newHeight,
       });
-    },
-    [viewBox],
-  );
+    };
+
+    svgEl.addEventListener("wheel", handleWheel, { passive: false });
+    return () => svgEl.removeEventListener("wheel", handleWheel);
+  }, []);
 
   // Touch support
   const handleTouchStart = useCallback((e: React.TouchEvent<SVGSVGElement>) => {
@@ -134,11 +148,11 @@ export function useSvgPanZoom(): UseSvgPanZoomResult {
 
       setViewBox((prev) => ({
         ...prev,
-        x: prev.x - dx / scale,
-        y: prev.y - dy / scale,
+        x: prev.x - dx / scaleRef.current,
+        y: prev.y - dy / scaleRef.current,
       }));
     },
-    [scale],
+    [],
   );
 
   const handleTouchEnd = useCallback(() => {
@@ -152,11 +166,11 @@ export function useSvgPanZoom(): UseSvgPanZoomResult {
       onMouseMove: handleMouseMove,
       onMouseUp: handleMouseUp,
       onMouseLeave: handleMouseUp,
-      onWheel: handleWheel,
       onTouchStart: handleTouchStart,
       onTouchMove: handleTouchMove,
       onTouchEnd: handleTouchEnd,
     },
+    svgRef,
     resetView,
     scale,
   };

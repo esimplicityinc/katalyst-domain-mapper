@@ -125,13 +125,16 @@ export interface GlossaryTerm {
 // ── Workflow / State Machine types ──────────────────────────────────────────
 
 export interface WorkflowState {
+  /** State identifier — may be absent from API; derived from name at runtime */
   id: string;
   name: string;
   description?: string;
-  x: number;
-  y: number;
-  isTerminal: boolean;
-  isError: boolean;
+  x?: number;
+  y?: number;
+  /** Derived from type === "terminal" when missing */
+  isTerminal?: boolean;
+  /** True for error/failure states */
+  isError?: boolean;
   timestampField?: string;
 }
 

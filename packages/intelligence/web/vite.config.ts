@@ -6,6 +6,9 @@ import path from 'node:path'
  * The @opencode-ai/sdk index.js does `export * from "./server.js"` which imports
  * `node:child_process`. We only use the client-side exports. This plugin intercepts
  * the server.js import and returns an empty stub so the browser build succeeds.
+ * 
+ * Similarly, elkjs tries to import 'web-worker' which doesn't exist in Vite.
+ * We stub it out since we're using the bundled version.
  */
 function stubOpencodeServer(): Plugin {
   return {
@@ -16,6 +19,9 @@ function stubOpencodeServer(): Plugin {
       if (source === 'node:child_process') {
         return '\0virtual:node-child-process'
       }
+      if (source === 'web-worker') {
+        return '\0virtual:web-worker-stub'
+      }
       if (importer && importer.includes('@opencode-ai') && source.endsWith('server.js')) {
         return '\0virtual:opencode-server-stub'
       }
@@ -24,6 +30,9 @@ function stubOpencodeServer(): Plugin {
     load(id) {
       if (id === '\0virtual:node-child-process') {
         return 'export const spawn = () => { throw new Error("not available in browser"); };'
+      }
+      if (id === '\0virtual:web-worker-stub') {
+        return 'export default class Worker {}';
       }
       if (id === '\0virtual:opencode-server-stub') {
         return 'export function createOpencodeServer() { throw new Error("Server not available in browser"); }'
@@ -64,6 +73,25 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'dist',
       sourcemap: true,
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        plugins: [
+          {
+            name: 'stub-web-worker',
+            setup(build) {
+              build.onResolve({ filter: /^web-worker$/ }, () => ({
+                path: 'web-worker',
+                namespace: 'web-worker-stub',
+              }))
+              build.onLoad({ filter: /.*/, namespace: 'web-worker-stub' }, () => ({
+                contents: 'module.exports = class Worker {};',
+                loader: 'js',
+              }))
+            },
+          },
+        ],
+      },
     },
   }
 })
