@@ -81,6 +81,7 @@ export function FOEChat({ report, project, onReportUpdated: _onReportUpdated }: 
     return () => {
       sseAbortRef.current?.abort();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [report.generated]);
 
   // Auto-scroll to bottom

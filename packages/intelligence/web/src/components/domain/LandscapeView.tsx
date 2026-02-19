@@ -225,8 +225,8 @@ export function LandscapeView({ model }: Props) {
         const data: LandscapeGraph = await res.json();
         if (cancelled) return;
         setGraph(data);
-      } catch (err: any) {
-        if (!cancelled) setError(err.message || "Failed to load landscape");
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load landscape");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -246,9 +246,9 @@ export function LandscapeView({ model }: Props) {
       const elapsed = performance.now() - t0;
       setPositions(pos);
       setLayoutMs(Math.round(elapsed));
-    } catch (err: any) {
+    } catch (err) {
       console.error("[LandscapeView] Layout failed:", err);
-      setError(`Layout failed: ${err.message}`);
+      setError(`Layout failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setLayoutLoading(false);
     }
@@ -461,7 +461,7 @@ export function LandscapeView({ model }: Props) {
         onTogglePersona={(personaId) => {
           setCollapsedPersonas((prev) => {
             const next = new Set(prev);
-            next.has(personaId) ? next.delete(personaId) : next.add(personaId);
+            if (next.has(personaId)) { next.delete(personaId); } else { next.add(personaId); }
             return next;
           });
         }}

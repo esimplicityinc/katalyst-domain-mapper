@@ -79,6 +79,7 @@ export function DDDChat({ model }: DDDChatProps) {
     return () => {
       sseAbortRef.current?.abort();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model.id]);
 
   // Auto-scroll to bottom

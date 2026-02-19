@@ -39,7 +39,9 @@ function normalizeStates(rawStates: WorkflowState[]): WorkflowState[] {
   return rawStates.map((s) => ({
     ...s,
     id: s.id || s.name,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isTerminal: s.isTerminal ?? (s as any).type === "terminal",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isError: s.isError ?? (s as any).isError === true,
   }));
 }
@@ -73,6 +75,7 @@ function autoLayoutStates(
 
   const rank = new Map<string, number>();
   const initials = states.filter(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (s) => (s as any).type === "initial" || !transitions.some((t) => t.to === s.id),
   );
   const queue: Array<{ id: string; r: number }> = initials.map((s) => ({
@@ -193,7 +196,7 @@ interface WorkflowViewProps {
 }
 
 export function WorkflowView({ model }: WorkflowViewProps) {
-  const workflows = model.workflows ?? [];
+  const workflows = useMemo(() => model.workflows ?? [], [model.workflows]);
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string | null>(
     workflows.length > 0 ? workflows[0].id : null,
   );

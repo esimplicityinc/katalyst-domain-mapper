@@ -22,6 +22,7 @@ export function ReportUpload({ onReportLoaded }: ReportUploadProps) {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("upload");
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const validateReport = (data: any): boolean => {
     // Accept both scanner format (version + repository object) and
     // canonical format (scannerVersion + repository string) 

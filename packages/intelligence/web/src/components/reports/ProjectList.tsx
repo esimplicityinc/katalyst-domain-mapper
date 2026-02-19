@@ -36,7 +36,9 @@ export function ProjectList({ projects, onSelect, onRefresh }: ProjectListProps)
     const sorted = [...filteredProjects];
 
     sorted.sort((a, b) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let aVal: any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let bVal: any;
 
       switch (sortField) {

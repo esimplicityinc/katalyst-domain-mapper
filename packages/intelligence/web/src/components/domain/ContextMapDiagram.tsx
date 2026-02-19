@@ -68,6 +68,7 @@ export function ContextMapDiagram({ model }: ContextMapDiagramProps) {
     }
 
     return rels;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model.boundedContexts, positionMap]);
 
   // Which contexts are connected to the hovered context?

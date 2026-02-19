@@ -34,7 +34,7 @@ export function BusinessLandscapePage() {
   const togglePersona = useCallback((personaId: string) => {
     setCollapsedPersonas((prev) => {
       const next = new Set(prev);
-      next.has(personaId) ? next.delete(personaId) : next.add(personaId);
+      if (next.has(personaId)) { next.delete(personaId); } else { next.add(personaId); }
       return next;
     });
   }, []);
@@ -58,8 +58,8 @@ export function BusinessLandscapePage() {
         const pos = await layoutEngine.current.layout(landscapeGraph);
         if (cancelled) return;
         setPositions(pos);
-      } catch (err: any) {
-        if (!cancelled) setError(err.message || "Failed to load landscape");
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load landscape");
       } finally {
         if (!cancelled) setLoading(false);
       }

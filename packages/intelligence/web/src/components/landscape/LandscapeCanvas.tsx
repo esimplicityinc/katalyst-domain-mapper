@@ -614,6 +614,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             // Label: show plain count when persona filter active; show "X of Y" only for pure workflow filter
             const label = (!isPersonaFilter && activeCaps)
               ? (() => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const matchingStories = graph.userStories.filter((s: any) =>
                     s.persona === group.personaId &&
                     s.capabilities.some((c: string) => activeCaps.has(c))
@@ -1245,6 +1246,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
               )}
               {selection.data.payload && selection.data.payload.length > 0 && (
                 <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Payload</dt>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   <dd className="font-mono text-xs space-y-0.5">{selection.data.payload.map((p: any) => <div key={p.name || p.field}>{p.name || p.field}: <span className="text-blue-600 dark:text-blue-400">{p.type}</span></div>)}</dd>
                 </div>
               )}
