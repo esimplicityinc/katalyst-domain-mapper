@@ -94,42 +94,49 @@ test-coverage:
 [group('bdd')]
 [working-directory: 'stack-tests']
 bdd-test:
+    just dev-ready
     npx bddgen && npx playwright test
 
 # Run API-only BDD tests
 [group('bdd')]
 [working-directory: 'stack-tests']
 bdd-api:
+    just dev-ready
     npx bddgen && npx playwright test --grep "@api"
 
 # Run UI-only BDD tests
 [group('bdd')]
 [working-directory: 'stack-tests']
 bdd-ui:
+    just dev-ready
     npx bddgen && npx playwright test --grep "@ui"
 
 # Run hybrid/E2E BDD tests
 [group('bdd')]
 [working-directory: 'stack-tests']
 bdd-hybrid:
+    just dev-ready
     npx bddgen && npx playwright test --grep "@hybrid"
 
 # Run BDD tests by tag
 [group('bdd')]
 [working-directory: 'stack-tests']
 bdd-tag tag:
+    just dev-ready
     npx bddgen && npx playwright test --grep "@{{ tag }}"
 
 # Run BDD tests for a specific ROAD item
 [group('bdd')]
 [working-directory: 'stack-tests']
 bdd-roadmap road_id:
+    just dev-ready
     npx bddgen && npx playwright test --grep "@{{ road_id }}"
 
 # Run UI tests with visible browser
 [group('bdd')]
 [working-directory: 'stack-tests']
 bdd-headed:
+    just dev-ready
     npx bddgen && npx playwright test --grep "@ui" --headed
 
 # Open BDD HTML report
@@ -248,7 +255,61 @@ validate-docs:
 validate-changes:
     node scripts/validate-changes.js
 
-# ─── Docker ───────────────────────────────────────────────────
+# ─── Docker / Dev Environment ─────────────────────────────────
+
+# Show status of docker compose services and local dev servers
+[group('docker')]
+dev-status:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    API_PORT="${API_PORT:-3001}"
+    FRONTEND_PORT="${FRONTEND_PORT:-3002}"
+    echo "=== Docker Compose ==="
+    docker compose ps 2>/dev/null || echo "(docker compose not available)"
+    echo ""
+    echo "=== Local Dev Servers ==="
+    if curl -sf "http://localhost:${API_PORT}/api/v1/health" >/dev/null 2>&1; then
+      echo "  API (port ${API_PORT}):      ✅ up"
+    else
+      echo "  API (port ${API_PORT}):      ❌ not reachable"
+    fi
+    if curl -sf "http://localhost:${FRONTEND_PORT}/api/v1/health" >/dev/null 2>&1; then
+      echo "  Frontend (port ${FRONTEND_PORT}): ✅ up (proxy working)"
+    else
+      echo "  Frontend (port ${FRONTEND_PORT}): ❌ not reachable"
+    fi
+
+# Ensure dev servers are reachable; exit non-zero with instructions if not
+[group('docker')]
+dev-ready:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    API_PORT="${API_PORT:-3001}"
+    FRONTEND_PORT="${FRONTEND_PORT:-3002}"
+    HEALTH_URL="http://localhost:${FRONTEND_PORT}/api/v1/health"
+    MAX_WAIT=5
+    echo "Checking dev environment (${HEALTH_URL})..."
+    for i in $(seq 1 $MAX_WAIT); do
+      if curl -sf "$HEALTH_URL" >/dev/null 2>&1; then
+        echo "  ✅ Dev environment is up"
+        exit 0
+      fi
+      echo "  Waiting... (${i}/${MAX_WAIT})"
+      sleep 1
+    done
+    echo ""
+    echo "  ❌ Dev environment not reachable at ${HEALTH_URL}"
+    echo ""
+    echo "  Start it with one of:"
+    echo "    just dev-docker   — Docker Compose dev mode (hot reload)"
+    echo "    just dev          — Local Bun + Vite dev servers"
+    echo ""
+    exit 1
+
+# Start with docker-compose dev mode (hot reload)
+[group('docker')]
+dev-docker:
+    docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
 # Start with docker-compose dev mode
 [group('docker')]
