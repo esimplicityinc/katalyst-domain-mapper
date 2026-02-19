@@ -510,7 +510,10 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
         {/* 4b ── animated persona dots riding event chains ──────────── */}
         {!animationPaused &&
           positions.personaFlowDots
-            .filter((dot) => !activeWorkflowIds || activeWorkflowIds.has(dot.workflowId))
+            .filter((dot) =>
+              (!activeWorkflowIds || activeWorkflowIds.has(dot.workflowId)) &&
+              (!activePersonaId || dot.personaId === activePersonaId)
+            )
             .map((dot: PersonaWorkflowDot) => {
             const chain = positions.workflowEventChains.get(dot.workflowId);
             if (!chain) return null;
@@ -592,28 +595,38 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
           const elements: React.ReactNode[] = [];
 
           // ── Render ALL collapsed group boxes from animation (includes fade-outs) ──
+          const isPersonaFilter = !!activePersonaId;
+
           for (const group of animatedLayout.collapsedGroups) {
             const pi = group.personaIndex;
             const personaColor = PERSONA_COLORS[pi % PERSONA_COLORS.length] || "#999";
             const groupOpacity = animatedLayout.collapsedGroupOpacity.get(group.personaId) ?? 1;
 
-            // Filter: hide group if no capabilities match active workflows
-            if (activeCaps && !group.uniqueCapabilities.some((c: string) => activeCaps.has(c))) continue;
+            // Only apply activeCaps filter when there's a pure workflow filter (no persona selection)
+            if (!isPersonaFilter && activeCaps && !group.uniqueCapabilities.some((c: string) => activeCaps.has(c))) continue;
             // Skip fully transparent elements
             if (groupOpacity <= 0.01) continue;
 
-            const visibleCount = activeCaps
-              ? group.uniqueCapabilities.filter((c: string) => activeCaps.has(c)).length
-              : group.storyCount;
-            const label = activeCaps
-              ? `${visibleCount} of ${group.storyCount} ${group.storyCount === 1 ? "story" : "stories"}`
+            // Dim non-selected personas when a persona filter is active
+            const isSelectedPersona = group.personaId === activePersonaId;
+            const groupDim = isPersonaFilter && !isSelectedPersona ? 0.25 : 1;
+
+            // Label: show plain count when persona filter active; show "X of Y" only for pure workflow filter
+            const label = (!isPersonaFilter && activeCaps)
+              ? (() => {
+                  const matchingStories = graph.userStories.filter((s: any) =>
+                    s.persona === group.personaId &&
+                    s.capabilities.some((c: string) => activeCaps.has(c))
+                  ).length;
+                  return `${matchingStories} of ${group.storyCount} ${group.storyCount === 1 ? "story" : "stories"}`;
+                })()
               : `${group.storyCount} ${group.storyCount === 1 ? "story" : "stories"}`;
 
             elements.push(
               <g
                 key={`collapsed-${group.personaId}`}
                 onClick={(e) => { e.stopPropagation(); onTogglePersona(group.personaId); }}
-                style={{ cursor: "pointer", opacity: groupOpacity }}
+                style={{ cursor: "pointer", opacity: groupOpacity * groupDim }}
               >
                 <rect
                   x={group.x} y={group.y}
@@ -666,18 +679,19 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             const personaColor = PERSONA_COLORS[pi % PERSONA_COLORS.length] || "#999";
             const boxOpacity = animatedLayout.storyBoxOpacity.get(box.id) ?? 1;
 
-            // Hide story boxes that have no capability overlap with active workflows
-            if (activeCaps && !box.capabilities.some((c: string) => activeCaps.has(c))) continue;
+            // Hide story boxes that have no capability overlap with active workflows (pure workflow filter only)
+            if (!isPersonaFilter && activeCaps && !box.capabilities.some((c: string) => activeCaps.has(c))) continue;
             // Skip fully transparent
             if (boxOpacity <= 0.01) continue;
 
             const isImplementing = box.status === "implementing";
             const isActiveStory = activeStoryId === box.id;
+            const boxDim = isPersonaFilter && box.personaId !== activePersonaId ? 0.25 : 1;
 
             elements.push(
               <g key={box.id}
                 onClick={(e) => { e.stopPropagation(); onSelectStory?.(box.id); }}
-                style={{ cursor: "pointer", opacity: boxOpacity }}
+                style={{ cursor: "pointer", opacity: boxOpacity * boxDim }}
               >
                 <rect
                   x={box.x} y={box.y}
@@ -735,6 +749,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
 
           // ── Render ALL collapsed lines from animation (includes fade-outs) ──
           for (const line of animatedLayout.collapsedLines) {
+            if (activePersonaId && line.personaId !== activePersonaId) continue;
             if (activeCaps && !activeCaps.has(line.capabilityId)) continue;
             const key = `collapsed-${line.personaId}-${line.capabilityId}`;
             const lineOpacity = animatedLayout.collapsedLineOpacity.get(key) ?? 1;
@@ -755,6 +770,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
 
           // ── Render ALL expanded lines from animation (includes fade-outs) ──
           for (const line of animatedLayout.storyLines) {
+            if (activePersonaId && line.personaId !== activePersonaId) continue;
             const isImplementing = line.userStoryStatus === "implementing";
             if (activeCaps && !activeCaps.has(line.capabilityId)) continue;
             const key = `${line.userStoryId}-${line.capabilityId}`;
@@ -1031,8 +1047,9 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
 
           const color = PERSONA_COLORS[pi % PERSONA_COLORS.length];
           const isActiveFilter = activePersonaId === persona.id;
+          const badgeDim = activePersonaId && !isActiveFilter ? 0.3 : 1;
           return (
-            <g key={persona.id}>
+            <g key={persona.id} style={{ opacity: badgeDim }}>
               {/* Persona name + tag anchored to the LEFT of the badge */}
               <g onClick={() => { onSelectPersona?.(persona.id); setSelection({ kind: "persona", data: persona }); }} style={{ cursor: "pointer" }}>
                 <text
