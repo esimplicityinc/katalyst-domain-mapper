@@ -163,6 +163,8 @@ export const boundedContexts = sqliteTable("bounded_contexts", {
   teamOwnership: text("team_ownership"),
   status: text("status").notNull().default("draft"),
   subdomainType: text("subdomain_type"), // 'core' | 'supporting' | 'generic' | null
+  contextType: text("context_type").notNull().default("internal"), // 'internal' | 'external-system' | 'human-process' | 'unknown'
+  taxonomyNode: text("taxonomy_node"), // Optional FK to taxonomy node name
   relationships: text("relationships", { mode: "json" })
     .$type<unknown[]>()
     .default([]),
@@ -242,6 +244,10 @@ export const domainEvents = sqliteTable("domain_events", {
     .$type<string[]>()
     .default([]),
   sourceFile: text("source_file"),
+  sourceCapabilityId: text("source_capability_id"),
+  targetCapabilityIds: text("target_capability_ids", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });
@@ -276,6 +282,9 @@ export const domainWorkflows = sqliteTable("domain_workflows", {
   slug: text("slug").notNull(),
   title: text("title").notNull(),
   description: text("description"),
+  contextIds: text("context_ids", { mode: "json" })
+    .$type<string[]>()
+    .default([]), // Bounded context IDs this workflow spans
   states: text("states", { mode: "json" }).$type<unknown[]>().default([]),
   transitions: text("transitions", { mode: "json" })
     .$type<unknown[]>()
@@ -445,6 +454,10 @@ export const taxonomyCapabilities = sqliteTable("taxonomy_capabilities", {
   dependsOn: text("depends_on", { mode: "json" })
     .$type<string[]>()
     .default([]),
+  // Hierarchy: slug of the parent capability (null = root capability at system level)
+  parentCapability: text("parent_capability"),
+  // Optional display tag retained for traceability (e.g. "CAP-005")
+  tag: text("tag"),
 });
 
 export const taxonomyCapabilityRels = sqliteTable("taxonomy_capability_rels", {
