@@ -125,6 +125,7 @@ export const TaxonomyPluginSummarySchema = z.object({
   actions: z.number().int().nonnegative().default(0),
   stages: z.number().int().nonnegative().default(0),
   tools: z.number().int().nonnegative().default(0),
+  layerHealths: z.number().int().nonnegative().default(0),
 });
 
 export type TaxonomyPluginSummary = z.infer<typeof TaxonomyPluginSummarySchema>;

@@ -551,3 +551,95 @@ export const taxonomyTools = sqliteTable("taxonomy_tools", {
   description: text("description").notNull(),
   actions: text("actions", { mode: "json" }).$type<string[]>().default([]),
 });
+
+// ── Taxonomy Layer Healths ─────────────────────────────────────────────────────
+// Captures the health state of a single taxonomy layer node at a point in time
+// (scoped to a taxonomy snapshot). Each record tracks three categories:
+//   - understandability: code formatting, linting, documentation coverage
+//   - functionality:     unit/integration test results, code coverage
+//   - compliance:        security vulnerabilities, license issues, dependency audit
+//
+// Each category stores:
+//   - score (0-100)        normalised measure of health
+//   - status (pass|warn|fail) quick assessment
+//   - metrics (JSON)       raw evidence
+//   - nfrIds (JSON)        NFR IDs whose thresholds are measured against
+//   - adrIds (JSON)        ADR IDs whose decisions are enforced
+//
+// Traceability: ADR = the decision, NFR = the threshold, LayerHealth = the measurement.
+
+export const taxonomyLayerHealths = sqliteTable("taxonomy_layer_healths", {
+  id: text("id").primaryKey(), // composite: snapshotId:layerNode
+
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+
+  /** Taxonomy node name — must reference a node with nodeType: "layer" */
+  layerNode: text("layer_node").notNull(),
+
+  // ── Understandability ────────────────────────────────────────────────────────
+  understandabilityScore: real("understandability_score").notNull(),
+  understandabilityStatus: text("understandability_status").notNull(), // pass | warn | fail
+  understandabilityMetrics: text("understandability_metrics", { mode: "json" })
+    .$type<{
+      lintErrorCount: number;
+      lintWarningCount: number;
+      formattingViolationCount: number;
+      documentationCoveragePercent: number | null;
+    }>()
+    .notNull(),
+  understandabilityNfrIds: text("understandability_nfr_ids", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+  understandabilityAdrIds: text("understandability_adr_ids", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+
+  // ── Functionality ─────────────────────────────────────────────────────────────
+  functionalityScore: real("functionality_score").notNull(),
+  functionalityStatus: text("functionality_status").notNull(), // pass | warn | fail
+  functionalityMetrics: text("functionality_metrics", { mode: "json" })
+    .$type<{
+      unitTestsPassed: number;
+      unitTestsFailed: number;
+      unitTestsSkipped: number;
+      integrationTestsPassed: number;
+      integrationTestsFailed: number;
+      integrationTestsSkipped: number;
+      codeCoveragePercent: number | null;
+    }>()
+    .notNull(),
+  functionalityNfrIds: text("functionality_nfr_ids", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+  functionalityAdrIds: text("functionality_adr_ids", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+
+  // ── Compliance ────────────────────────────────────────────────────────────────
+  complianceScore: real("compliance_score").notNull(),
+  complianceStatus: text("compliance_status").notNull(), // pass | warn | fail
+  complianceMetrics: text("compliance_metrics", { mode: "json" })
+    .$type<{
+      vulnerabilityCritical: number;
+      vulnerabilityHigh: number;
+      vulnerabilityMedium: number;
+      vulnerabilityLow: number;
+      licenseIssueCount: number;
+      dependencyAuditIssueCount: number;
+    }>()
+    .notNull(),
+  complianceNfrIds: text("compliance_nfr_ids", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+  complianceAdrIds: text("compliance_adr_ids", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+
+  // ── Overall ───────────────────────────────────────────────────────────────────
+  /** Weighted composite of all three category scores */
+  overallScore: real("overall_score").notNull(),
+  /** Determined by the worst-performing category status */
+  overallStatus: text("overall_status").notNull(), // pass | warn | fail
+});

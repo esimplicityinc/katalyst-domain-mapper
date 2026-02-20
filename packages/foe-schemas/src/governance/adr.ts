@@ -12,6 +12,8 @@ export const AdrCategorySchema = z.enum([
   "infrastructure",
   "security",
   "performance",
+  "maintainability",
+  "testing",
 ]);
 
 export const AdrSchema = z.object({
