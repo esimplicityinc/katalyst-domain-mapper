@@ -9,6 +9,8 @@ import {
 import './custom-steps.js';
 import './navigation-restructure-steps.js';
 import './foe-project-browser-steps.js';
+import './landscape-steps.js';
+import './taxonomy-management-steps.js';
 
 registerApiSteps(test);
 registerUiSteps(test);

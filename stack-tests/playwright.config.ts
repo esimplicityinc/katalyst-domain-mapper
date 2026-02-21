@@ -50,6 +50,7 @@ export default defineConfig({
     cucumberReporter('html', { outputFile: 'cucumber-report/index.html' }),
     cucumberReporter('json', { outputFile: 'cucumber-report/report.json' }),
   ],
+  workers: 1,
   projects: [
     {
       ...apiBdd,
