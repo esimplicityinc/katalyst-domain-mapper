@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 
 interface ViewBox {
   x: number;
@@ -25,12 +25,8 @@ interface UseSvgPanZoomResult {
   scale: number;
 }
 
-const INITIAL_VIEWBOX: ViewBox = {
-  x: -50,
-  y: -50,
-  width: 900,
-  height: 700,
-};
+const DEFAULT_WIDTH = 900;
+const DEFAULT_HEIGHT = 700;
 
 const MIN_SCALE = 0.3;
 const MAX_SCALE = 3.0;
@@ -43,9 +39,33 @@ const ZOOM_SENSITIVITY = 0.001;
  * The wheel handler is attached imperatively with { passive: false } to
  * allow preventDefault() and avoid the "Unable to preventDefault inside
  * passive event listener" console errors.
+ *
+ * @param initialWidth  - Optional canvas width (defaults to 900). Pass the
+ *                        dynamic width returned by useAutoLayout so the initial
+ *                        view fits the layout exactly.
+ * @param initialHeight - Optional canvas height (defaults to 700).
  */
-export function useSvgPanZoom(): UseSvgPanZoomResult {
-  const [viewBox, setViewBox] = useState<ViewBox>({ ...INITIAL_VIEWBOX });
+export function useSvgPanZoom(
+  initialWidth: number = DEFAULT_WIDTH,
+  initialHeight: number = DEFAULT_HEIGHT,
+): UseSvgPanZoomResult {
+  const initialViewBox: ViewBox = useMemo(
+    () => ({
+      x: -50,
+      y: -50,
+      width: initialWidth + 100,
+      height: initialHeight + 100,
+    }),
+    [initialWidth, initialHeight],
+  );
+
+  const [viewBox, setViewBox] = useState<ViewBox>({ ...initialViewBox });
+
+  // Reset viewBox when the canvas dimensions change (e.g. layout engine switch,
+  // data reload, or first real layout after async computation).
+  useEffect(() => {
+    setViewBox({ ...initialViewBox });
+  }, [initialViewBox]);
   const isPanning = useRef(false);
   const lastPoint = useRef({ x: 0, y: 0 });
   const svgRef = useRef<SVGSVGElement>(null);
@@ -55,14 +75,18 @@ export function useSvgPanZoom(): UseSvgPanZoomResult {
   const viewBoxRef = useRef(viewBox);
   viewBoxRef.current = viewBox;
 
+  // Keep the initial viewBox width in a ref so the wheel handler can read
+  // it without being listed as a dependency (it never changes after mount).
+  const initialWidthRef = useRef(initialViewBox.width);
+
   // Current scale: ratio of initial width to current width
-  const scale = INITIAL_VIEWBOX.width / viewBox.width;
+  const scale = initialViewBox.width / viewBox.width;
   const scaleRef = useRef(scale);
   scaleRef.current = scale;
 
   const resetView = useCallback(() => {
-    setViewBox({ ...INITIAL_VIEWBOX });
-  }, []);
+    setViewBox({ ...initialViewBox });
+  }, [initialViewBox]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
     if (e.button !== 0) return;
@@ -103,7 +127,7 @@ export function useSvgPanZoom(): UseSvgPanZoomResult {
       const newWidth = vb.width * zoomFactor;
       const newHeight = vb.height * zoomFactor;
 
-      const newScale = INITIAL_VIEWBOX.width / newWidth;
+      const newScale = initialWidthRef.current / newWidth;
       if (newScale < MIN_SCALE || newScale > MAX_SCALE) return;
 
       const rect = svgEl.getBoundingClientRect();

@@ -163,6 +163,127 @@ export function curvedPath(x1: number, y1: number, x2: number, y2: number, curva
   return `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
 }
 
+/**
+ * Routed path: a quadratic Bezier that exits horizontally (rightward) from the
+ * story box and enters vertically (downward) into the capability. The control
+ * point is placed at (capX + offset, storyY) so the curve makes a smooth
+ * rounded-corner right-angle turn.
+ *
+ * The output format is M x1,y1 Q cx,cy x2,y2 — compatible with the
+ * collapse/expand animation path morphing in useCollapseAnimation.ts.
+ */
+export function routedPath(
+  x1: number, y1: number, // story box right edge
+  x2: number, y2: number, // capability position (below)
+  bendFactor = 0.0,       // per-line offset to fan overlapping routes
+): string {
+  // Control point: at the "corner" where horizontal meets vertical,
+  // with a slight inward offset so lines fan apart visually.
+  const cx = x2 + bendFactor;
+  const cy = y1 - bendFactor;
+  return `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
+}
+
+/* ── barycenter ordering for subsystem layout ──────────────────────── */
+
+/**
+ * Compute the barycenter order of subsystems based on persona connectivity.
+ * User-facing subsystems (those with capabilities connected to personas) are
+ * sorted by the average persona index of their connected personas.
+ * Non-user-facing subsystems are placed after them.
+ *
+ * Returns { userFacing: TaxonomySystemNode[], nonUserFacing: TaxonomySystemNode[] }
+ * where each array is sorted optimally.
+ */
+export function computeBarycenterOrder(
+  systems: TaxonomySystemNode[],
+  graph: LandscapeGraph,
+  allFqtns: Set<string>,
+): { userFacing: TaxonomySystemNode[]; nonUserFacing: TaxonomySystemNode[] } {
+  // Build map: capabilityId → persona indices that connect to it
+  const capToPersonaIndices = new Map<string, number[]>();
+  const personaIndex = new Map<string, number>();
+  graph.personas.forEach((p, i) => personaIndex.set(p.id, i));
+
+  // Gather capabilities connected to stories (via persona)
+  const storiesByPersona = new Map<string, typeof graph.userStories>();
+  for (const story of graph.userStories) {
+    if (!storiesByPersona.has(story.persona)) storiesByPersona.set(story.persona, []);
+    storiesByPersona.get(story.persona)!.push(story);
+  }
+
+  for (const persona of graph.personas) {
+    const pIdx = personaIndex.get(persona.id) ?? 0;
+    const stories = storiesByPersona.get(persona.id) || [];
+    for (const story of stories) {
+      for (const capId of story.capabilities) {
+        if (!capToPersonaIndices.has(capId)) capToPersonaIndices.set(capId, []);
+        capToPersonaIndices.get(capId)!.push(pIdx);
+      }
+    }
+  }
+
+  // Build map: capabilityId → resolved FQTN (the system it lives in)
+  const capFqtn = new Map<string, string>();
+  for (const cap of graph.capabilities) {
+    const taxNode = (cap.taxonomyNodes && cap.taxonomyNodes.length > 0)
+      ? cap.taxonomyNodes[0]
+      : cap.taxonomyNode;
+    if (!taxNode) continue;
+    // Find deepest matching FQTN
+    if (allFqtns.has(taxNode)) {
+      capFqtn.set(cap.id, taxNode);
+    } else {
+      const parts = taxNode.split(".");
+      for (let i = parts.length - 1; i >= 1; i--) {
+        const candidate = parts.slice(0, i).join(".");
+        if (allFqtns.has(candidate)) { capFqtn.set(cap.id, candidate); break; }
+      }
+    }
+  }
+
+  // For each subsystem, compute average persona index
+  const systemBarycenter = new Map<string, number>();
+  const systemIsUserFacing = new Set<string>();
+
+  // Walk each subsystem to collect all FQTNs it owns (including children)
+  function collectFqtns(sys: TaxonomySystemNode): string[] {
+    const fqtns = [sys.fqtn];
+    for (const child of sys.children || []) {
+      fqtns.push(...collectFqtns(child));
+    }
+    return fqtns;
+  }
+
+  for (const sys of systems) {
+    const sysFqtns = new Set(collectFqtns(sys));
+    const allPersonaIndices: number[] = [];
+
+    for (const [capId, fqtn] of capFqtn) {
+      if (sysFqtns.has(fqtn)) {
+        const indices = capToPersonaIndices.get(capId) || [];
+        allPersonaIndices.push(...indices);
+      }
+    }
+
+    if (allPersonaIndices.length > 0) {
+      systemIsUserFacing.add(sys.fqtn);
+      const avg = allPersonaIndices.reduce((a, b) => a + b, 0) / allPersonaIndices.length;
+      systemBarycenter.set(sys.fqtn, avg);
+    }
+  }
+
+  // Split and sort
+  const userFacing = systems
+    .filter(s => systemIsUserFacing.has(s.fqtn))
+    .sort((a, b) => (systemBarycenter.get(a.fqtn) ?? 0) - (systemBarycenter.get(b.fqtn) ?? 0));
+
+  const nonUserFacing = systems
+    .filter(s => !systemIsUserFacing.has(s.fqtn));
+
+  return { userFacing, nonUserFacing };
+}
+
 /* ── positions assembly ─────────────────────────────────────────────── */
 
 /**
@@ -450,23 +571,17 @@ function computePersonaStoryData(
         height: STORY_BOX_H,
       });
 
-      // Create a curved line from story box right edge to each capability
-      // Use both persona index and capability index to separate overlapping lines.
-      // Lines going to distant caps get more curvature (wider arc) while
-      // nearby caps get gentler curves.
+      // Create a curved line from story box right edge to each capability.
+      // Uses routedPath to create a smooth right-angle bend (horizontal→vertical)
+      // that works well with the top-down layout where personas are above systems.
       for (let ci = 0; ci < story.capabilities.length; ci++) {
         const capId = story.capabilities[ci];
         const cPos = capabilityPositions.get(capId);
         if (!cPos) continue;
 
         const storyBoxPos = { x: boxRightX, y: boxCenterY };
-        // Spread curvature by persona + story + capability indices
-        // Keep it subtle so lines don't arc wildly
-        const baseAngle = (pIdx * 0.02) + (si * 0.015) + (ci * 0.03);
-        // Lines going further right get slightly less curvature to prevent wild arcs
-        const dist = Math.abs(cPos.x - boxRightX);
-        const distFactor = Math.min(1, 400 / Math.max(dist, 100));
-        const curvature = (0.08 + baseAngle) * distFactor;
+        // Per-line bend offset to fan overlapping routes apart
+        const bendFactor = (pIdx * 3) + (si * 2) + (ci * 4);
 
         lines.push({
           personaId: persona.id,
@@ -477,7 +592,7 @@ function computePersonaStoryData(
           capabilityId: capId,
           storyBoxPos,
           path: {
-            d: curvedPath(boxRightX, boxCenterY, cPos.x, cPos.y, curvature),
+            d: routedPath(boxRightX, boxCenterY, cPos.x, cPos.y, bendFactor),
             points: [storyBoxPos, cPos],
           },
         });
@@ -576,10 +691,7 @@ function computeCollapsedPersonaData(
       if (!cPos) continue;
 
       const storyBoxPos = { x: boxRightX, y: boxCenterY };
-      const baseAngle = (pIdx * 0.02) + (ci * 0.025);
-      const dist = Math.abs(cPos.x - boxRightX);
-      const distFactor = Math.min(1, 400 / Math.max(dist, 100));
-      const curvature = (0.08 + baseAngle) * distFactor;
+      const bendFactor = (pIdx * 3) + (ci * 4);
 
       lines.push({
         personaId: persona.id,
@@ -590,7 +702,7 @@ function computeCollapsedPersonaData(
         capabilityId: capId,
         storyBoxPos,
         path: {
-          d: curvedPath(boxRightX, boxCenterY, cPos.x, cPos.y, curvature),
+          d: routedPath(boxRightX, boxCenterY, cPos.x, cPos.y, bendFactor),
           points: [storyBoxPos, cPos],
         },
       });
