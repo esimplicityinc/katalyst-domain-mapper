@@ -211,6 +211,17 @@ export const api = {
     return request(`/api/v1/domain-models/${id}`, { method: "DELETE" });
   },
 
+  /** Update a domain model */
+  updateDomainModel(
+    id: string,
+    data: { name?: string; description?: string },
+  ): Promise<{ message: string }> {
+    return request(`/api/v1/domain-models/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
   // ── Bounded Contexts ───────────────────────────────────────────────────────
 
   /** Add a bounded context */
@@ -290,6 +301,39 @@ export const api = {
     });
   },
 
+  /** Update an aggregate */
+  updateAggregate(
+    modelId: string,
+    aggregateId: string,
+    data: {
+      slug: string;
+      title: string;
+      rootEntity: string;
+      entities?: string[];
+      valueObjects?: string[];
+      events?: string[];
+      commands?: string[];
+      invariants?: Aggregate["invariants"];
+      sourceFile?: string;
+      status?: string;
+    },
+  ): Promise<void> {
+    return request(`/api/v1/domain-models/${modelId}/aggregates/${aggregateId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  /** Delete an aggregate */
+  deleteAggregate(
+    modelId: string,
+    aggregateId: string,
+  ): Promise<void> {
+    return request(`/api/v1/domain-models/${modelId}/aggregates/${aggregateId}`, {
+      method: "DELETE",
+    });
+  },
+
   // ── Domain Events ──────────────────────────────────────────────────────────
 
   /** Add a domain event */
@@ -314,6 +358,39 @@ export const api = {
     });
   },
 
+  /** Update a domain event */
+  updateDomainEvent(
+    modelId: string,
+    eventId: string,
+    data: {
+      slug: string;
+      title: string;
+      description?: string;
+      payload?: DomainEvent["payload"];
+      consumedBy?: string[];
+      triggers?: string[];
+      sideEffects?: string[];
+      sourceFile?: string;
+      sourceCapabilityId?: string;
+      targetCapabilityIds?: string[];
+    },
+  ): Promise<void> {
+    return request(`/api/v1/domain-models/${modelId}/events/${eventId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  /** Delete a domain event */
+  deleteDomainEvent(
+    modelId: string,
+    eventId: string,
+  ): Promise<void> {
+    return request(`/api/v1/domain-models/${modelId}/events/${eventId}`, {
+      method: "DELETE",
+    });
+  },
+
   // ── Value Objects ──────────────────────────────────────────────────────────
 
   /** Add a value object */
@@ -333,6 +410,36 @@ export const api = {
     return request(`/api/v1/domain-models/${modelId}/value-objects`, {
       method: "POST",
       body: JSON.stringify(data),
+    });
+  },
+
+  /** Update a value object */
+  updateValueObject(
+    modelId: string,
+    valueObjectId: string,
+    data: {
+      slug: string;
+      title: string;
+      description?: string;
+      properties?: ValueObject["properties"];
+      validationRules?: string[];
+      immutable?: boolean;
+      sourceFile?: string;
+    },
+  ): Promise<void> {
+    return request(`/api/v1/domain-models/${modelId}/value-objects/${valueObjectId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  /** Delete a value object */
+  deleteValueObject(
+    modelId: string,
+    valueObjectId: string,
+  ): Promise<void> {
+    return request(`/api/v1/domain-models/${modelId}/value-objects/${valueObjectId}`, {
+      method: "DELETE",
     });
   },
 
@@ -360,6 +467,36 @@ export const api = {
   /** List glossary terms */
   listGlossaryTerms(modelId: string): Promise<GlossaryTerm[]> {
     return request(`/api/v1/domain-models/${modelId}/glossary`);
+  },
+
+  /** Delete a glossary term */
+  deleteGlossaryTerm(
+    modelId: string,
+    termId: string,
+  ): Promise<void> {
+    return request(`/api/v1/domain-models/${modelId}/glossary/${termId}`, {
+      method: "DELETE",
+    });
+  },
+
+  /** Update a glossary term */
+  updateGlossaryTerm(
+    modelId: string,
+    termId: string,
+    data: {
+      contextId?: string;
+      term: string;
+      definition: string;
+      aliases?: string[];
+      examples?: string[];
+      relatedTerms?: string[];
+      source?: string;
+    },
+  ): Promise<{ message: string }> {
+    return request(`/api/v1/domain-models/${modelId}/glossary/${termId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
   },
 
   // ── Workflows ───────────────────────────────────────────────────────────────
@@ -394,6 +531,28 @@ export const api = {
     return request(
       `/api/v1/domain-models/${modelId}/workflows/${workflowId}`,
       { method: "DELETE" },
+    );
+  },
+
+  /** Update a workflow */
+  updateWorkflow(
+    modelId: string,
+    workflowId: string,
+    data: {
+      slug: string;
+      title: string;
+      description?: string;
+      contextIds?: string[];
+      states?: WorkflowState[];
+      transitions?: WorkflowTransition[];
+    },
+  ): Promise<{ message: string }> {
+    return request(
+      `/api/v1/domain-models/${modelId}/workflows/${workflowId}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(data),
+      },
     );
   },
 
