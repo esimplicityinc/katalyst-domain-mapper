@@ -32,3 +32,7 @@ Capabilities represent the core functional areas the system provides. Each capab
 | [CAP-020](CAP-020) | Hexagonal Architecture Foundation | Technical | stable |
 | [CAP-021](CAP-021) | DDD Onboarding Tooltips | Business | stable |
 | [CAP-022](CAP-022) | User State Persistence | Technical | stable |
+| [CAP-023](CAP-023) | Business Landscape Visualization | Business | stable |
+| [CAP-024](CAP-024) | Landscape Domain Linter | Technical | stable |
+| [CAP-025](CAP-025) | Taxonomy & Persona Management UI | Business | stable |
+| [CAP-026](CAP-026) | Developer Environment Tooling | Technical | stable |

@@ -80,3 +80,11 @@ User stories define requirements from the perspective of personas interacting wi
 | [US-069](US-069) | Scan Repositories with AWS Bedrock Models | PER-002 | CAP-004 | complete |
 | [US-070](US-070) | View FOE Projects Card on Strategy Landing Page | PER-001 | CAP-014, CAP-001 | complete |
 | [US-071](US-071) | Fix Triangle Tab Rendering for Rich belowMinimum Format | PER-001 | CAP-001 | complete |
+| [US-072](US-072) | View Business Landscape Graph | PER-001 | CAP-023, CAP-009 | complete |
+| [US-073](US-073) | Switch Between Layout Engines | PER-001 | CAP-023 | complete |
+| [US-074](US-074) | Filter Landscape by Persona | PER-001 | CAP-023 | complete |
+| [US-075](US-075) | Lint Domain Model Landscape for Coverage Gaps | PER-001 | CAP-024, CAP-023 | complete |
+| [US-076](US-076) | Manage Capabilities via UI | PER-001 | CAP-025, CAP-019 | complete |
+| [US-077](US-077) | Manage Personas and User Stories via UI | PER-001 | CAP-025 | complete |
+| [US-078](US-078) | Use AI Chat for Taxonomy and Persona Discovery | PER-001 | CAP-025, CAP-017 | complete |
+| [US-079](US-079) | Start Full Dev Environment in One Command | PER-003 | CAP-026 | complete |

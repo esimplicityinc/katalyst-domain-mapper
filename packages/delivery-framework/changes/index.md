@@ -12,6 +12,13 @@ Individual change records with full governance tracking. Each change includes co
 
 <!-- AUTO-GENERATED: This section is updated automatically by @change-manager -->
 
+### v0.11.0 (2026-02-19)
+
+- [CHANGE-041](./CHANGE-041.md) — Business Landscape Visualization with Multi-Engine Layout (ROAD-044)
+- [CHANGE-042](./CHANGE-042.md) — FOE Historical Scan Data Pipeline (ROAD-045)
+- [CHANGE-043](./CHANGE-043.md) — Taxonomy & Persona Management UI with AI Discovery Agents (ROAD-046)
+- [CHANGE-044](./CHANGE-044.md) — Developer Environment Recipes and Quality Gate Hardening (ROAD-047)
+
 ### v0.10.0 (2026-02-17)
 
 - [CHANGE-035](./CHANGE-035.md) — Lifecycle Navigation UI (ROAD-040)
@@ -73,5 +80,5 @@ Before a change can be marked as `published`:
 
 ---
 
-**Last Updated**: 2026-02-19
+**Last Updated**: 2026-02-19 (v0.11.0)
 **Maintained By**: @change-manager agent

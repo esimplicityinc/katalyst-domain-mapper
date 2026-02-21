@@ -58,6 +58,8 @@ created: YYYY-MM-DD
 | [ADR-015](./ADR-015.md) | Server-Sent Events for Real-Time Agent Communication | Architecture | Accepted |
 | [ADR-016](./ADR-016.md) | Multi-Adapter Persistence for Taxonomy | Architecture | Accepted |
 | [ADR-017](./ADR-017.md) | Sequential Numbering for Retroactive Governance Artifacts | Process | Accepted |
+| [ADR-018](./ADR-018.md) | Multi-Engine Layout Strategy for Business Landscape Visualization | Architecture | Accepted |
+| [ADR-019](./ADR-019.md) | AI Agent-Assisted Governance Discovery with Auto-Persistence | Architecture | Accepted |
 
 ## Governance
 

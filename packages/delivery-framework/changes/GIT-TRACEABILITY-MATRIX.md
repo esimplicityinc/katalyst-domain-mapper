@@ -8,14 +8,43 @@ last_updated: "2026-02-19"
 # Git Commit Traceability Matrix
 
 > **Period**: 2026-02-10 to 2026-02-19
-> **Total Commits**: 50 (excluding stash/index commits)
-> **Files Changed**: 200+ | **Insertions**: 31,545 | **Deletions**: 21,280
-
-This matrix maps every git commit to its corresponding governance artifacts (ROAD items, user stories, capabilities, ADRs, and CHANGE entries). Created retroactively per ADR-017.
+> **Total Commits**: 73 (excluding stash/index commits)
+> **Files Changed**: 400+ | **Insertions**: 46,000+ | **Deletions**: 21,500+
 
 ---
 
-## Commit-to-Artifact Mapping
+## Feb 19 — Business Landscape & Taxonomy Management (23 commits)
+
+| Commit | Date | Type | Message | ROAD | US | CAP | ADR | CHANGE |
+|--------|------|------|---------|------|----|-----|-----|--------|
+| `bfe39f2` | 02-19 | docs | docs(governance): retroactive documentation for Feb 10-19 work (ADR-017) | — | US-056..071 | CAP-016..022 | ADR-014..017 | CHANGE-031..040 |
+| `735d5d2` | 02-19 | feat | feat(schemas): add capability linkage fields to events and bounded contexts | ROAD-044 | US-072 | CAP-023 | ADR-018 | CHANGE-041 |
+| `a682ade` | 02-19 | feat | feat(db): add landscape, event-capability link, and capability hierarchy migrations | ROAD-044 | US-072 | CAP-023 | ADR-018 | CHANGE-041 |
+| `ca8dc18` | 02-19 | feat | feat(api): add landscape endpoint, lint domain, and capability-aware ports | ROAD-044 | US-072,US-075 | CAP-023,CAP-024 | ADR-018,ADR-003 | CHANGE-041 |
+| `1e34826` | 02-19 | chore | chore: extend landscape API types and add historical scan runner | ROAD-044,ROAD-045 | US-072 | CAP-023 | — | CHANGE-041,CHANGE-042 |
+| `f81ed39` | 02-19 | refactor | refactor(api): improve landscape route with better capability and workflow resolution | ROAD-044 | US-072 | CAP-023 | ADR-018 | CHANGE-041 |
+| `79bc33d` | 02-19 | chore | chore: update scanner Dockerfile and add seed scripts | ROAD-044 | — | CAP-023 | — | CHANGE-041 |
+| `fb13b4d` | 02-19 | feat | feat(seeds): add 3-level capability hierarchy with parentCapability and tag fields | ROAD-044 | US-072 | CAP-023 | — | CHANGE-041 |
+| `7556b22` | 02-19 | feat | feat(web): add elkjs dependency, improve SVG pan/zoom, extend domain types | ROAD-044 | US-073 | CAP-023 | ADR-018 | CHANGE-041 |
+| `50e82d9` | 02-19 | feat | feat(web): enhance workflow view and wire BusinessLandscapePage | ROAD-044 | US-072 | CAP-023 | — | CHANGE-041 |
+| `0164a90` | 02-19 | feat | feat(web): add Business Landscape visualization with collapsible personas | ROAD-044 | US-072,US-073,US-074 | CAP-023 | ADR-018 | CHANGE-041 |
+| `380a001` | 02-19 | fix | fix(landscape): persona filter now dims non-selected elements instead of hiding them | ROAD-044 | US-074 | CAP-023 | — | CHANGE-041 |
+| `d96e9b6` | 02-19 | feat | feat(landscape): highlight persona's story-to-capability lines in persona color | ROAD-044 | US-074 | CAP-023 | — | CHANGE-041 |
+| `7c6a726` | 02-19 | docs | Add FOE Historical Scan Summary and update BDD and roadmap data | ROAD-045 | — | CAP-001,CAP-004 | — | CHANGE-042 |
+| `9d9da2b` | 02-19 | fix | fix(lint): resolve all ESLint errors and warnings blocking push | ROAD-047 | US-079 | CAP-026,CAP-002 | — | CHANGE-044 |
+| `07dc052` | 02-19 | fix | fix(lint): resolve unused variable warnings in web-report templates | ROAD-047 | US-079 | CAP-026 | — | CHANGE-044 |
+| `3614e3d` | 02-19 | fix | fix(bdd): add missing step definitions for mobile tab scroll scenario | ROAD-047 | US-079 | CAP-026 | — | CHANGE-044 |
+| `8d7f870` | 02-19 | chore | chore(hooks): skip BDD smoke tests in pre-push hook when dev server not running | ROAD-047 | US-079 | CAP-026 | — | CHANGE-044 |
+| `dda447f` | 02-19 | fix | fix(lint): add MutationObserver, ResizeObserver, IntersectionObserver to ESLint globals | ROAD-047 | US-079 | CAP-026 | — | CHANGE-044 |
+| `675071f` | 02-19 | feat | feat(dev): add dev-status and dev-ready recipes; gate BDD on environment health | ROAD-047 | US-079 | CAP-026 | — | CHANGE-044 |
+| `55f09df` | 02-19 | feat | feat(dev): add 'dev' and 'dev-intelligence-*' recipes for starting the active dev servers | ROAD-047 | US-079 | CAP-026 | — | CHANGE-044 |
+| `3c17425` | 02-19 | feat | feat(taxonomy): add Architecture and Personas & Stories management UI | ROAD-046 | US-076,US-077,US-078 | CAP-025,CAP-019 | ADR-019,ADR-003 | CHANGE-043 |
+
+This matrix maps every git commit to its corresponding governance artifacts (ROAD items, user stories, capabilities, ADRs, and CHANGE entries). Created retroactively per ADR-017. Extended on 2026-02-19 to cover all Feb 19 commits.
+
+---
+
+## Feb 10–17 — Foundation, Visualization & Project Management (50 commits)
 
 | Commit | Date | Type | Message | ROAD | US | CAP | ADR | CHANGE |
 |--------|------|------|---------|------|----|-----|-----|--------|
@@ -100,14 +129,18 @@ This matrix maps every git commit to its corresponding governance artifacts (ROA
 | ROAD-039 | 2 | complete |
 | ROAD-040 | 6 | complete |
 | ROAD-041 | 2 | complete |
+| ROAD-044 | 12 | complete |
+| ROAD-045 | 1 | complete |
+| ROAD-046 | 1 | complete |
+| ROAD-047 | 7 | complete |
 
 ### By Capability
 
 | Capability | Commits | Description |
 |------------|---------|-------------|
-| CAP-001 | 3 | FOE Report Generation |
-| CAP-002 | 3 | Governance Validation |
-| CAP-004 | 2 | Repository Scanning |
+| CAP-001 | 4 | FOE Report Generation |
+| CAP-002 | 4 | Governance Validation |
+| CAP-004 | 3 | Repository Scanning |
 | CAP-009 | 1 | DDD Domain Modeling API |
 | CAP-010 | 12 | Interactive Domain Visualization |
 | CAP-011 | 2 | Subdomain Classification |
@@ -116,23 +149,27 @@ This matrix maps every git commit to its corresponding governance artifacts (ROA
 | CAP-016 | 6 | FOE Project Management |
 | CAP-017 | 1 | AI Assessment Coaching |
 | CAP-018 | 7 | Lifecycle Navigation System |
-| CAP-019 | 2 | Taxonomy CRUD API |
+| CAP-019 | 3 | Taxonomy CRUD API |
 | CAP-020 | 3 | Hexagonal Architecture Foundation |
 | CAP-021 | 2 | DDD Onboarding Tooltips |
 | CAP-022 | 2 | User State Persistence |
+| CAP-023 | 12 | Business Landscape Visualization |
+| CAP-024 | 1 | Landscape Domain Linter |
+| CAP-025 | 1 | Taxonomy & Persona Management UI |
+| CAP-026 | 7 | Developer Environment Tooling |
 
 ### By Commit Type
 
 | Type | Count | Percentage |
 |------|-------|-----------|
-| feat | 22 | 39% |
-| fix | 10 | 18% |
-| docs | 9 | 16% |
-| test | 5 | 9% |
-| chore | 5 | 9% |
-| refactor | 3 | 5% |
-| style | 1 | 2% |
-| build | 1 | 2% |
+| feat | 32 | 44% |
+| fix | 14 | 19% |
+| docs | 10 | 14% |
+| chore | 7 | 10% |
+| test | 5 | 7% |
+| refactor | 4 | 5% |
+| style | 1 | 1% |
+| build | 1 | 1% |
 
 ### By CHANGE Entry
 
@@ -148,6 +185,10 @@ This matrix maps every git commit to its corresponding governance artifacts (ROA
 | CHANGE-038 | 4 | 0.10.0 | Changed |
 | CHANGE-039 | 2 | 0.10.0 | Added |
 | CHANGE-040 | 4 | 0.10.0 | Added |
+| CHANGE-041 | 12 | 0.11.0 | Added |
+| CHANGE-042 | 1 | 0.11.0 | Added |
+| CHANGE-043 | 1 | 0.11.0 | Added |
+| CHANGE-044 | 7 | 0.11.0 | Added, Fixed |
 
 ---
 
