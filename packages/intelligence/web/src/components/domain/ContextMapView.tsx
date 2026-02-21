@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Eye,
   List,
+  Pencil,
 } from "lucide-react";
 import { api } from "../../api/client";
 import type { DomainModelFull, BoundedContext } from "../../types/domain";
@@ -29,6 +30,18 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
   const [creating, setCreating] = useState(false);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
+
+  // Edit state
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [editSlug, setEditSlug] = useState("");
+  const [editTitle, setEditTitle] = useState("");
+  const [editResponsibility, setEditResponsibility] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editSourceDir, setEditSourceDir] = useState("");
+  const [editTeamOwner, setEditTeamOwner] = useState("");
+  const [editSubdomainType, setEditSubdomainType] = useState("");
 
   // Form state
   const [slug, setSlug] = useState("");
@@ -59,6 +72,54 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
     setShowForm(false);
   };
 
+  const startEditing = (ctx: BoundedContext) => {
+    setEditingId(ctx.id);
+    setEditSlug(ctx.slug);
+    setEditTitle(ctx.title);
+    setEditResponsibility(ctx.responsibility);
+    setEditDescription(ctx.description ?? "");
+    setEditSourceDir(ctx.sourceDirectory ?? "");
+    setEditTeamOwner(ctx.teamOwnership ?? "");
+    setEditSubdomainType(ctx.subdomainType ?? "");
+    setShowForm(false);
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditSlug("");
+    setEditTitle("");
+    setEditResponsibility("");
+    setEditDescription("");
+    setEditSourceDir("");
+    setEditTeamOwner("");
+    setEditSubdomainType("");
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingId || !editSlug.trim() || !editTitle.trim() || !editResponsibility.trim()) return;
+
+    setSaving(true);
+    try {
+      await api.updateBoundedContext(model.id, editingId, {
+        title: editTitle.trim(),
+        responsibility: editResponsibility.trim(),
+        description: editDescription.trim() || undefined,
+        sourceDirectory: editSourceDir.trim() || undefined,
+        teamOwnership: editTeamOwner.trim() || undefined,
+        subdomainType: editSubdomainType
+          ? (editSubdomainType as "core" | "supporting" | "generic")
+          : null,
+      });
+      cancelEditing();
+      onModelUpdated();
+    } catch (err) {
+      console.error("Failed to update context:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!slug.trim() || !title.trim() || !responsibility.trim()) return;
@@ -86,10 +147,10 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
   };
 
   const handleDelete = async (ctxId: string) => {
-    if (!confirm("Delete this bounded context?")) return;
     setDeleting(ctxId);
     try {
       await api.deleteBoundedContext(model.id, ctxId);
+      setConfirmingDelete(null);
       onModelUpdated();
     } catch (err) {
       console.error("Failed to delete context:", err);
@@ -259,7 +320,7 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
       )}
 
       {/* Diagram view */}
-      {viewMode === "diagram" && <ContextMapDiagram model={model} />}
+      {viewMode === "diagram" && <ContextMapDiagram model={model} onModelUpdated={onModelUpdated} />}
 
       {/* List view */}
       {viewMode === "list" && (
@@ -283,6 +344,8 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
               {model.boundedContexts.map((ctx) => {
                 const counts = artifactCounts(ctx);
                 const isExpanded = expanded.has(ctx.id);
+                const isEditing = editingId === ctx.id;
+                const isConfirmingDelete = confirmingDelete === ctx.id;
 
                 return (
                   <div
@@ -331,21 +394,143 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
                         {counts.vos > 0 && <span>{counts.vos} vo</span>}
                       </div>
 
-                      <button
-                        onClick={() => handleDelete(ctx.id)}
-                        disabled={deleting === ctx.id}
-                        className="p-1 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-                      >
-                        {deleting === ctx.id ? (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-3.5 h-3.5" />
-                        )}
-                      </button>
+                      {/* Action buttons */}
+                      {isConfirmingDelete ? (
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <span className="text-red-600 dark:text-red-400 font-medium whitespace-nowrap">
+                            Confirm delete?
+                          </span>
+                          <button
+                            onClick={() => handleDelete(ctx.id)}
+                            disabled={deleting === ctx.id}
+                            className="px-2 py-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-medium rounded transition-colors"
+                          >
+                            {deleting === ctx.id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              "Yes"
+                            )}
+                          </button>
+                          <button
+                            onClick={() => setConfirmingDelete(null)}
+                            className="px-2 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                          >
+                            No
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-0.5">
+                          <button
+                            onClick={() => startEditing(ctx)}
+                            className="p-1 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                            title={`Edit ${ctx.title}`}
+                            aria-label={`Edit ${ctx.title}`}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => setConfirmingDelete(ctx.id)}
+                            className="p-1 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                            title={`Delete ${ctx.title}`}
+                            aria-label={`Delete ${ctx.title}`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
                     </div>
 
+                    {/* Edit form (slide-in below header) */}
+                    {isEditing && (
+                      <div className="border-t border-purple-200 dark:border-purple-700/50 bg-purple-50 dark:bg-purple-900/10 px-4 py-4">
+                        <form onSubmit={handleUpdate}>
+                          <h4 className="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-3">
+                            Edit Bounded Context
+                          </h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input
+                              type="text"
+                              placeholder="Slug (e.g., order-management)"
+                              value={editSlug}
+                              onChange={(e) => setEditSlug(e.target.value)}
+                              className="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              disabled
+                              title="Slug cannot be changed"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Title (e.g., Order Management)"
+                              value={editTitle}
+                              onChange={(e) => setEditTitle(e.target.value)}
+                              className="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              required
+                            />
+                            <input
+                              type="text"
+                              placeholder="Responsibility"
+                              value={editResponsibility}
+                              onChange={(e) => setEditResponsibility(e.target.value)}
+                              className="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:col-span-2"
+                              required
+                            />
+                            <input
+                              type="text"
+                              placeholder="Description (optional)"
+                              value={editDescription}
+                              onChange={(e) => setEditDescription(e.target.value)}
+                              className="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Source directory (optional)"
+                              value={editSourceDir}
+                              onChange={(e) => setEditSourceDir(e.target.value)}
+                              className="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Team owner (optional)"
+                              value={editTeamOwner}
+                              onChange={(e) => setEditTeamOwner(e.target.value)}
+                              className="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            />
+                            <div className="flex items-center gap-1.5">
+                              <select
+                                value={editSubdomainType}
+                                onChange={(e) => setEditSubdomainType(e.target.value)}
+                                className="flex-1 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              >
+                                <option value="">Subdomain type (optional)</option>
+                                <option value="core">Core</option>
+                                <option value="supporting">Supporting</option>
+                                <option value="generic">Generic</option>
+                              </select>
+                              <DDDTooltip termKey="core-subdomain" position="bottom" />
+                            </div>
+                          </div>
+                          <div className="flex gap-2 mt-4">
+                            <button
+                              type="submit"
+                              disabled={saving}
+                              className="flex items-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white text-sm font-medium rounded-md transition-colors"
+                            >
+                              {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                              Save
+                            </button>
+                            <button
+                              type="button"
+                              onClick={cancelEditing}
+                              className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    )}
+
                     {/* Expanded details */}
-                    {isExpanded && (
+                    {isExpanded && !isEditing && (
                       <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-3 bg-gray-50 dark:bg-gray-800/50 space-y-2">
                         {ctx.description && (
                           <p className="text-sm text-gray-700 dark:text-gray-300">

@@ -6,12 +6,20 @@ import {
   CircleDot,
   XCircle,
   CheckCircle2,
+  Plus,
+  Pencil,
+  Trash2,
+  X,
+  Loader2,
+  Check,
 } from "lucide-react";
 import type {
   DomainModelFull,
   WorkflowState,
   WorkflowTransition,
+  DomainWorkflow,
 } from "../../types/domain";
+import { api } from "../../api/client";
 import { DDDTooltip } from "./DDDTooltip";
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -189,19 +197,54 @@ function stateColorDark(state: WorkflowState): {
   };
 }
 
+// ── Form state types ─────────────────────────────────────────────────────────
+
+interface FormState {
+  name: string;
+  description: string;
+  isTerminal: boolean;
+  isError: boolean;
+}
+
+interface FormTransition {
+  from: string;
+  to: string;
+  label: string;
+  isAsync: boolean;
+}
+
 // ── Main Component ──────────────────────────────────────────────────────────
 
 interface WorkflowViewProps {
   model: DomainModelFull;
+  onModelUpdated: () => void;
 }
 
-export function WorkflowView({ model }: WorkflowViewProps) {
+export function WorkflowView({ model, onModelUpdated }: WorkflowViewProps) {
   const workflows = useMemo(() => model.workflows ?? [], [model.workflows]);
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string | null>(
     workflows.length > 0 ? workflows[0].id : null,
   );
   const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [selectedState, setSelectedState] = useState<string | null>(null);
+
+  // Panel state
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [panelMode, setPanelMode] = useState<"create" | "edit">("create");
+  const [editingWorkflow, setEditingWorkflow] = useState<DomainWorkflow | null>(null);
+
+  // Form fields
+  const [formSlug, setFormSlug] = useState("");
+  const [formTitle, setFormTitle] = useState("");
+  const [formDescription, setFormDescription] = useState("");
+  const [formContextIds, setFormContextIds] = useState<string[]>([]);
+  const [formStates, setFormStates] = useState<FormState[]>([]);
+  const [formTransitions, setFormTransitions] = useState<FormTransition[]>([]);
+
+  // Saving / delete state
+  const [saving, setSaving] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const activeWorkflow = useMemo(
     () => workflows.find((w) => w.id === selectedWorkflowId) ?? null,
@@ -281,22 +324,242 @@ export function WorkflowView({ model }: WorkflowViewProps) {
     [],
   );
 
+  // ── Panel helpers ──────────────────────────────────────────────────────────
+
+  const resetForm = () => {
+    setFormSlug("");
+    setFormTitle("");
+    setFormDescription("");
+    setFormContextIds([]);
+    setFormStates([]);
+    setFormTransitions([]);
+    setConfirmingDelete(false);
+    setDeleting(false);
+    setEditingWorkflow(null);
+  };
+
+  const openCreatePanel = () => {
+    resetForm();
+    setPanelMode("create");
+    setPanelOpen(true);
+  };
+
+  const openEditPanel = (wf: DomainWorkflow) => {
+    resetForm();
+    setPanelMode("edit");
+    setEditingWorkflow(wf);
+    setFormSlug(wf.slug);
+    setFormTitle(wf.title);
+    setFormDescription(wf.description ?? "");
+    setFormContextIds([]);
+    setFormStates(
+      wf.states.map((s) => ({
+        name: s.name,
+        description: s.description ?? "",
+        isTerminal: s.isTerminal ?? false,
+        isError: s.isError ?? false,
+      })),
+    );
+    setFormTransitions(
+      wf.transitions.map((t) => ({
+        from: t.from,
+        to: t.to,
+        label: t.label,
+        isAsync: t.isAsync,
+      })),
+    );
+    setPanelOpen(true);
+  };
+
+  const closePanel = () => {
+    setPanelOpen(false);
+    resetForm();
+  };
+
+  // ── State list helpers ─────────────────────────────────────────────────────
+
+  const addFormState = () => {
+    setFormStates((prev) => [
+      ...prev,
+      { name: "", description: "", isTerminal: false, isError: false },
+    ]);
+  };
+
+  const updateFormState = (index: number, patch: Partial<FormState>) => {
+    setFormStates((prev) =>
+      prev.map((s, i) => (i === index ? { ...s, ...patch } : s)),
+    );
+  };
+
+  const removeFormState = (index: number) => {
+    setFormStates((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // ── Transition list helpers ────────────────────────────────────────────────
+
+  const addFormTransition = () => {
+    setFormTransitions((prev) => [
+      ...prev,
+      { from: "", to: "", label: "", isAsync: false },
+    ]);
+  };
+
+  const updateFormTransition = (index: number, patch: Partial<FormTransition>) => {
+    setFormTransitions((prev) =>
+      prev.map((t, i) => (i === index ? { ...t, ...patch } : t)),
+    );
+  };
+
+  const removeFormTransition = (index: number) => {
+    setFormTransitions((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // ── Context ID toggle ─────────────────────────────────────────────────────
+
+  const toggleContextId = (ctxId: string) => {
+    setFormContextIds((prev) =>
+      prev.includes(ctxId)
+        ? prev.filter((id) => id !== ctxId)
+        : [...prev, ctxId],
+    );
+  };
+
+  // ── Save handler ──────────────────────────────────────────────────────────
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formSlug.trim() || !formTitle.trim()) return;
+
+    const statesPayload: WorkflowState[] = formStates
+      .filter((s) => s.name.trim())
+      .map((s) => ({
+        id: s.name.trim(),
+        name: s.name.trim(),
+        description: s.description.trim() || undefined,
+        isTerminal: s.isTerminal,
+        isError: s.isError,
+      }));
+
+    const transitionsPayload: WorkflowTransition[] = formTransitions
+      .filter((t) => t.from.trim() && t.to.trim() && t.label.trim())
+      .map((t) => ({
+        from: t.from.trim(),
+        to: t.to.trim(),
+        label: t.label.trim(),
+        isAsync: t.isAsync,
+      }));
+
+    setSaving(true);
+    try {
+      if (panelMode === "create") {
+        await api.createWorkflow(model.id, {
+          slug: formSlug.trim(),
+          title: formTitle.trim(),
+          description: formDescription.trim() || undefined,
+          states: statesPayload,
+          transitions: transitionsPayload,
+        });
+      } else if (editingWorkflow) {
+        await api.updateWorkflow(model.id, editingWorkflow.id, {
+          slug: formSlug.trim(),
+          title: formTitle.trim(),
+          description: formDescription.trim() || undefined,
+          contextIds: formContextIds.length > 0 ? formContextIds : undefined,
+          states: statesPayload,
+          transitions: transitionsPayload,
+        });
+      }
+      closePanel();
+      onModelUpdated();
+    } catch (err) {
+      console.error("Failed to save workflow:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // ── Delete handler ────────────────────────────────────────────────────────
+
+  const handleDelete = async () => {
+    if (!editingWorkflow) return;
+    setDeleting(true);
+    try {
+      await api.deleteWorkflow(model.id, editingWorkflow.id);
+      closePanel();
+      setSelectedWorkflowId(
+        workflows.find((w) => w.id !== editingWorkflow.id)?.id ?? null,
+      );
+      onModelUpdated();
+    } catch (err) {
+      console.error("Failed to delete workflow:", err);
+      setDeleting(false);
+      setConfirmingDelete(false);
+    }
+  };
+
+  // State name options for transition from/to selects
+  const formStateNames = formStates
+    .map((s) => s.name.trim())
+    .filter(Boolean);
+
+  // ── Empty state ───────────────────────────────────────────────────────────
+
   if (workflows.length === 0) {
     return (
       <div className="p-6" data-testid="workflow-view">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-1.5">
-          Workflows <DDDTooltip termKey="workflow" position="right" />
-        </h2>
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+            Workflows <DDDTooltip termKey="workflow" position="right" />
+          </h2>
+          <button
+            onClick={openCreatePanel}
+            className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add Workflow
+          </button>
+        </div>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8">
           Application lifecycle state machines
         </p>
         <div className="text-center py-16">
           <GitBranch className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            No workflows defined yet. Use the chat to discover them or add them
-            via the API.
+            No workflows yet. Use the form above or the Chat to add them.
           </p>
         </div>
+
+        {/* Slide-in panel (for create from empty state) */}
+        {panelOpen && (
+          <WorkflowPanel
+            panelMode={panelMode}
+            formSlug={formSlug}
+            setFormSlug={setFormSlug}
+            formTitle={formTitle}
+            setFormTitle={setFormTitle}
+            formDescription={formDescription}
+            setFormDescription={setFormDescription}
+            formContextIds={formContextIds}
+            toggleContextId={toggleContextId}
+            formStates={formStates}
+            addFormState={addFormState}
+            updateFormState={updateFormState}
+            removeFormState={removeFormState}
+            formTransitions={formTransitions}
+            formStateNames={formStateNames}
+            addFormTransition={addFormTransition}
+            updateFormTransition={updateFormTransition}
+            removeFormTransition={removeFormTransition}
+            boundedContexts={model.boundedContexts}
+            saving={saving}
+            confirmingDelete={confirmingDelete}
+            setConfirmingDelete={setConfirmingDelete}
+            deleting={deleting}
+            onSave={handleSave}
+            onDelete={handleDelete}
+            onClose={closePanel}
+          />
+        )}
       </div>
     );
   }
@@ -315,24 +578,46 @@ export function WorkflowView({ model }: WorkflowViewProps) {
           </p>
         </div>
 
-        {/* Workflow selector */}
-        {workflows.length > 1 && (
-          <select
-            value={selectedWorkflowId ?? ""}
-            onChange={(e) => {
-              setSelectedWorkflowId(e.target.value);
-              setSelectedState(null);
-              setHoveredState(null);
-            }}
-            className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+        <div className="flex items-center gap-2">
+          {/* Workflow selector */}
+          {workflows.length > 1 && (
+            <select
+              value={selectedWorkflowId ?? ""}
+              onChange={(e) => {
+                setSelectedWorkflowId(e.target.value);
+                setSelectedState(null);
+                setHoveredState(null);
+              }}
+              className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+            >
+              {workflows.map((wf) => (
+                <option key={wf.id} value={wf.id}>
+                  {wf.title}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {/* Edit button */}
+          {activeWorkflow && (
+            <button
+              onClick={() => openEditPanel(activeWorkflow)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              Edit
+            </button>
+          )}
+
+          {/* Add Workflow button */}
+          <button
+            onClick={openCreatePanel}
+            className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
           >
-            {workflows.map((wf) => (
-              <option key={wf.id} value={wf.id}>
-                {wf.title}
-              </option>
-            ))}
-          </select>
-        )}
+            <Plus className="w-4 h-4" />
+            Add Workflow
+          </button>
+        </div>
       </div>
 
       {/* Active workflow info */}
@@ -610,7 +895,442 @@ export function WorkflowView({ model }: WorkflowViewProps) {
           </div>
         </div>
       )}
+
+      {/* Slide-in panel */}
+      {panelOpen && (
+        <WorkflowPanel
+          panelMode={panelMode}
+          formSlug={formSlug}
+          setFormSlug={setFormSlug}
+          formTitle={formTitle}
+          setFormTitle={setFormTitle}
+          formDescription={formDescription}
+          setFormDescription={setFormDescription}
+          formContextIds={formContextIds}
+          toggleContextId={toggleContextId}
+          formStates={formStates}
+          addFormState={addFormState}
+          updateFormState={updateFormState}
+          removeFormState={removeFormState}
+          formTransitions={formTransitions}
+          formStateNames={formStateNames}
+          addFormTransition={addFormTransition}
+          updateFormTransition={updateFormTransition}
+          removeFormTransition={removeFormTransition}
+          boundedContexts={model.boundedContexts}
+          saving={saving}
+          confirmingDelete={confirmingDelete}
+          setConfirmingDelete={setConfirmingDelete}
+          deleting={deleting}
+          onSave={handleSave}
+          onDelete={handleDelete}
+          onClose={closePanel}
+        />
+      )}
     </div>
+  );
+}
+
+// ── Slide-in Panel ──────────────────────────────────────────────────────────
+
+interface WorkflowPanelProps {
+  panelMode: "create" | "edit";
+  formSlug: string;
+  setFormSlug: (v: string) => void;
+  formTitle: string;
+  setFormTitle: (v: string) => void;
+  formDescription: string;
+  setFormDescription: (v: string) => void;
+  formContextIds: string[];
+  toggleContextId: (id: string) => void;
+  formStates: FormState[];
+  addFormState: () => void;
+  updateFormState: (index: number, patch: Partial<FormState>) => void;
+  removeFormState: (index: number) => void;
+  formTransitions: FormTransition[];
+  formStateNames: string[];
+  addFormTransition: () => void;
+  updateFormTransition: (index: number, patch: Partial<FormTransition>) => void;
+  removeFormTransition: (index: number) => void;
+  boundedContexts: DomainModelFull["boundedContexts"];
+  saving: boolean;
+  confirmingDelete: boolean;
+  setConfirmingDelete: (v: boolean) => void;
+  deleting: boolean;
+  onSave: (e: React.FormEvent) => void;
+  onDelete: () => void;
+  onClose: () => void;
+}
+
+function WorkflowPanel({
+  panelMode,
+  formSlug,
+  setFormSlug,
+  formTitle,
+  setFormTitle,
+  formDescription,
+  setFormDescription,
+  formContextIds,
+  toggleContextId,
+  formStates,
+  addFormState,
+  updateFormState,
+  removeFormState,
+  formTransitions,
+  formStateNames,
+  addFormTransition,
+  updateFormTransition,
+  removeFormTransition,
+  boundedContexts,
+  saving,
+  confirmingDelete,
+  setConfirmingDelete,
+  deleting,
+  onSave,
+  onDelete,
+  onClose,
+}: WorkflowPanelProps) {
+  const inputClass =
+    "w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent";
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/20 z-20"
+        onClick={onClose}
+      />
+
+      {/* Panel */}
+      <div className="fixed inset-y-0 right-0 w-[420px] z-30 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-2xl flex flex-col animate-slide-in-right">
+        {/* Panel header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {panelMode === "create" ? "New Workflow" : "Edit Workflow"}
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Panel body (scrollable) */}
+        <form
+          onSubmit={onSave}
+          className="flex-1 overflow-y-auto px-5 py-4 space-y-5"
+        >
+          {/* Slug */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+              Slug <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={formSlug}
+              onChange={(e) => setFormSlug(e.target.value)}
+              placeholder="e.g., order-lifecycle"
+              className={inputClass}
+              required
+            />
+          </div>
+
+          {/* Title */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+              Title <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={formTitle}
+              onChange={(e) => setFormTitle(e.target.value)}
+              placeholder="e.g., Order Lifecycle"
+              className={inputClass}
+              required
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+              Description
+            </label>
+            <textarea
+              value={formDescription}
+              onChange={(e) => setFormDescription(e.target.value)}
+              placeholder="Brief description of this workflow"
+              rows={2}
+              className={inputClass}
+            />
+          </div>
+
+          {/* Context IDs (chip list) */}
+          {boundedContexts.length > 0 && (
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
+                Bounded Contexts
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {boundedContexts.map((ctx) => {
+                  const selected = formContextIds.includes(ctx.id);
+                  return (
+                    <button
+                      key={ctx.id}
+                      type="button"
+                      onClick={() => toggleContextId(ctx.id)}
+                      className={`px-2.5 py-1 text-xs font-medium rounded-full border transition-colors ${
+                        selected
+                          ? "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700"
+                          : "bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-600"
+                      }`}
+                    >
+                      {ctx.title}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── States ────────────────────────────────────────────────────── */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+              States
+            </label>
+            <div className="space-y-2">
+              {formStates.map((st, idx) => (
+                <div
+                  key={idx}
+                  className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-md p-3 space-y-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono text-gray-400 dark:text-gray-500 w-5 shrink-0">
+                      {idx + 1}.
+                    </span>
+                    <input
+                      type="text"
+                      value={st.name}
+                      onChange={(e) =>
+                        updateFormState(idx, { name: e.target.value })
+                      }
+                      placeholder="State name"
+                      className="flex-1 px-2.5 py-1.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeFormState(idx)}
+                      className="p-1 text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                      title="Remove state"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    value={st.description}
+                    onChange={(e) =>
+                      updateFormState(idx, { description: e.target.value })
+                    }
+                    placeholder="Description (optional)"
+                    className="w-full px-2.5 py-1.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={st.isTerminal}
+                        onChange={(e) =>
+                          updateFormState(idx, { isTerminal: e.target.checked })
+                        }
+                        className="rounded border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-purple-500"
+                      />
+                      Terminal
+                    </label>
+                    <label className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={st.isError}
+                        onChange={(e) =>
+                          updateFormState(idx, { isError: e.target.checked })
+                        }
+                        className="rounded border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-purple-500"
+                      />
+                      Error
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={addFormState}
+              className="mt-2 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 border border-dashed border-purple-300 dark:border-purple-700 rounded-md transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add State
+            </button>
+          </div>
+
+          {/* ── Transitions ───────────────────────────────────────────────── */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+              Transitions
+            </label>
+            <div className="space-y-2">
+              {formTransitions.map((tr, idx) => (
+                <div
+                  key={idx}
+                  className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-md p-3 space-y-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={tr.from}
+                      onChange={(e) =>
+                        updateFormTransition(idx, { from: e.target.value })
+                      }
+                      className="flex-1 px-2.5 py-1.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      required
+                    >
+                      <option value="">From…</option>
+                      {formStateNames.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                    <ArrowRight className="w-4 h-4 text-gray-400 shrink-0" />
+                    <select
+                      value={tr.to}
+                      onChange={(e) =>
+                        updateFormTransition(idx, { to: e.target.value })
+                      }
+                      className="flex-1 px-2.5 py-1.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      required
+                    >
+                      <option value="">To…</option>
+                      {formStateNames.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => removeFormTransition(idx)}
+                      className="p-1 text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                      title="Remove transition"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={tr.label}
+                      onChange={(e) =>
+                        updateFormTransition(idx, { label: e.target.value })
+                      }
+                      placeholder="Transition label"
+                      className="flex-1 px-2.5 py-1.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      required
+                    />
+                    <label className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 cursor-pointer shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={tr.isAsync}
+                        onChange={(e) =>
+                          updateFormTransition(idx, { isAsync: e.target.checked })
+                        }
+                        className="rounded border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-purple-500"
+                      />
+                      Async
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={addFormTransition}
+              className="mt-2 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 border border-dashed border-purple-300 dark:border-purple-700 rounded-md transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add Transition
+            </button>
+          </div>
+
+          {/* ── Actions ───────────────────────────────────────────────────── */}
+          <div className="pt-2 space-y-3">
+            {/* Save / Cancel */}
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                disabled={saving || !formSlug.trim() || !formTitle.trim()}
+                className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white text-sm font-medium rounded-md transition-colors"
+              >
+                {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={saving}
+                className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+
+            {/* Delete (edit mode only) */}
+            {panelMode === "edit" && (
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
+                {confirmingDelete ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-red-600 dark:text-red-400 font-medium">
+                      Delete this workflow?
+                    </span>
+                    <button
+                      type="button"
+                      onClick={onDelete}
+                      disabled={deleting}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white text-xs font-medium rounded-md transition-colors"
+                    >
+                      {deleting ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <Check className="w-3 h-3" />
+                      )}
+                      Confirm
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingDelete(false)}
+                      disabled={deleting}
+                      className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingDelete(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Delete Workflow
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </form>
+      </div>
+    </>
   );
 }
 

@@ -10,6 +10,7 @@ import { ContextDetailPanel } from "./ContextDetailPanel";
 
 interface ContextMapDiagramProps {
   model: DomainModelFull;
+  onModelUpdated?: () => void;
 }
 
 /**
@@ -18,9 +19,9 @@ interface ContextMapDiagramProps {
  * Renders bounded contexts as positioned nodes with relationship paths,
  * supports pan/zoom, hover highlighting, and click-to-expand detail panels.
  */
-export function ContextMapDiagram({ model }: ContextMapDiagramProps) {
-  const positions = useAutoLayout(model.boundedContexts);
-  const { viewBox, handlers, svgRef, resetView } = useSvgPanZoom();
+export function ContextMapDiagram({ model, onModelUpdated }: ContextMapDiagramProps) {
+  const { positions, canvasWidth, canvasHeight } = useAutoLayout(model.boundedContexts);
+  const { viewBox, handlers, svgRef, resetView } = useSvgPanZoom(canvasWidth, canvasHeight);
   const [selectedContextId, setSelectedContextId] = useState<string | null>(
     null,
   );
@@ -256,6 +257,7 @@ export function ContextMapDiagram({ model }: ContextMapDiagramProps) {
           context={selectedContext}
           model={model}
           onClose={() => setSelectedContextId(null)}
+          onModelUpdated={onModelUpdated ?? (() => {})}
         />
       )}
     </div>
