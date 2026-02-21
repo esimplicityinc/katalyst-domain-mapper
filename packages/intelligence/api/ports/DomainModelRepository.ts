@@ -237,6 +237,16 @@ export interface CreateGlossaryTermInput {
   source?: string;
 }
 
+export interface UpdateGlossaryTermInput {
+  contextId?: string;
+  term: string;
+  definition: string;
+  aliases?: string[];
+  examples?: string[];
+  relatedTerms?: string[];
+  source?: string;
+}
+
 export interface CreateWorkflowInput {
   slug: string;
   title: string;
@@ -246,11 +256,26 @@ export interface CreateWorkflowInput {
   transitions?: unknown[];
 }
 
+export interface UpdateWorkflowInput {
+  slug: string;
+  title: string;
+  description?: string;
+  contextIds?: string[];
+  states?: unknown[];
+  transitions?: unknown[];
+}
+
+export interface UpdateDomainModelInput {
+  name?: string;
+  description?: string;
+}
+
 // ── Port Interface ──────────────────────────────────────────────────────────
 
 export interface DomainModelRepository {
   // Domain Models
   create(input: CreateDomainModelInput): Promise<StoredDomainModel>;
+  update(id: string, input: UpdateDomainModelInput): Promise<void>;
   list(): Promise<StoredDomainModel[]>;
   getById(id: string): Promise<DomainModelWithArtifacts | null>;
   delete(id: string): Promise<boolean>;
@@ -302,6 +327,10 @@ export interface DomainModelRepository {
     modelId: string,
     input: CreateGlossaryTermInput,
   ): Promise<StoredGlossaryTerm>;
+  updateGlossaryTerm(
+    termId: string,
+    input: UpdateGlossaryTermInput,
+  ): Promise<void>;
   listGlossaryTerms(modelId: string): Promise<StoredGlossaryTerm[]>;
   deleteGlossaryTerm(termId: string): Promise<void>;
 
@@ -310,6 +339,7 @@ export interface DomainModelRepository {
     modelId: string,
     input: CreateWorkflowInput,
   ): Promise<StoredWorkflow>;
+  updateWorkflow(wfId: string, input: UpdateWorkflowInput): Promise<void>;
   listWorkflows(modelId: string): Promise<StoredWorkflow[]>;
   deleteWorkflow(wfId: string): Promise<void>;
 }

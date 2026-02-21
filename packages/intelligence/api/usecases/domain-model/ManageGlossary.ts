@@ -2,6 +2,7 @@ import type {
   DomainModelRepository,
   StoredGlossaryTerm,
   CreateGlossaryTermInput,
+  UpdateGlossaryTermInput,
 } from "../../ports/DomainModelRepository.js";
 import { DomainModelNotFoundError } from "../../domain/domain-model/DomainModelErrors.js";
 
@@ -21,6 +22,14 @@ export class ManageGlossary {
       input,
     );
     return { id: term.id, term: term.term };
+  }
+
+  async update(
+    termId: string,
+    input: UpdateGlossaryTermInput,
+  ): Promise<{ message: string }> {
+    await this.repo.updateGlossaryTerm(termId, input);
+    return { message: "Updated" };
   }
 
   async list(modelId: string): Promise<StoredGlossaryTerm[]> {

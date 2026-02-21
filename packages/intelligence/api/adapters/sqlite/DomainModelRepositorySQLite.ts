@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import type {
   DomainModelRepository,
   StoredDomainModel,
@@ -10,6 +10,7 @@ import type {
   StoredWorkflow,
   DomainModelWithArtifacts,
   CreateDomainModelInput,
+  UpdateDomainModelInput,
   CreateBoundedContextInput,
   UpdateBoundedContextInput,
   CreateAggregateInput,
@@ -19,7 +20,9 @@ import type {
   CreateValueObjectInput,
   UpdateValueObjectInput,
   CreateGlossaryTermInput,
+  UpdateGlossaryTermInput,
   CreateWorkflowInput,
+  UpdateWorkflowInput,
 } from "../../ports/DomainModelRepository.js";
 import type { DrizzleDB } from "../../db/client.js";
 import * as schema from "../../db/schema.js";
@@ -45,8 +48,20 @@ export class DomainModelRepositorySQLite implements DomainModelRepository {
     return { id, name: input.name, description: input.description ?? null, createdAt: now, updatedAt: now };
   }
 
+  async update(id: string, input: UpdateDomainModelInput): Promise<void> {
+    const now = new Date().toISOString();
+    const updates: Record<string, unknown> = { updatedAt: now };
+    if (input.name !== undefined) updates.name = input.name;
+    if (input.description !== undefined) updates.description = input.description;
+    this.db
+      .update(schema.domainModels)
+      .set(updates)
+      .where(eq(schema.domainModels.id, id))
+      .run();
+  }
+
   async list(): Promise<StoredDomainModel[]> {
-    return this.db.select().from(schema.domainModels).all();
+    return this.db.select().from(schema.domainModels).orderBy(desc(schema.domainModels.createdAt)).all();
   }
 
   async getById(id: string): Promise<DomainModelWithArtifacts | null> {
@@ -384,6 +399,27 @@ export class DomainModelRepositorySQLite implements DomainModelRepository {
     return values as StoredGlossaryTerm;
   }
 
+  async updateGlossaryTerm(
+    termId: string,
+    input: UpdateGlossaryTermInput,
+  ): Promise<void> {
+    const now = new Date().toISOString();
+    this.db
+      .update(schema.glossaryTerms)
+      .set({
+        contextId: input.contextId ?? null,
+        term: input.term,
+        definition: input.definition,
+        aliases: input.aliases ?? [],
+        examples: input.examples ?? [],
+        relatedTerms: input.relatedTerms ?? [],
+        source: input.source ?? null,
+        updatedAt: now,
+      })
+      .where(eq(schema.glossaryTerms.id, termId))
+      .run();
+  }
+
   async listGlossaryTerms(modelId: string): Promise<StoredGlossaryTerm[]> {
     return this.db
       .select()
@@ -421,6 +457,26 @@ export class DomainModelRepositorySQLite implements DomainModelRepository {
     };
     this.db.insert(schema.domainWorkflows).values(values).run();
     return values as StoredWorkflow;
+  }
+
+  async updateWorkflow(
+    wfId: string,
+    input: UpdateWorkflowInput,
+  ): Promise<void> {
+    const now = new Date().toISOString();
+    this.db
+      .update(schema.domainWorkflows)
+      .set({
+        slug: input.slug,
+        title: input.title,
+        description: input.description ?? null,
+        contextIds: input.contextIds ?? [],
+        states: input.states ?? [],
+        transitions: input.transitions ?? [],
+        updatedAt: now,
+      })
+      .where(eq(schema.domainWorkflows.id, wfId))
+      .run();
   }
 
   async listWorkflows(modelId: string): Promise<StoredWorkflow[]> {

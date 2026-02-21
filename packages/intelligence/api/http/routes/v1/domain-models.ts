@@ -1,5 +1,6 @@
 import Elysia, { t } from "elysia";
 import type { CreateDomainModel } from "../../../usecases/domain-model/CreateDomainModel.js";
+import type { UpdateDomainModel } from "../../../usecases/domain-model/UpdateDomainModel.js";
 import type { GetDomainModel } from "../../../usecases/domain-model/GetDomainModel.js";
 import type { ListDomainModels } from "../../../usecases/domain-model/ListDomainModels.js";
 import type { DeleteDomainModel } from "../../../usecases/domain-model/DeleteDomainModel.js";
@@ -10,6 +11,7 @@ import type { ManageWorkflows } from "../../../usecases/domain-model/ManageWorkf
 
 export function createDomainModelRoutes(deps: {
   createDomainModel: CreateDomainModel;
+  updateDomainModel: UpdateDomainModel;
   getDomainModel: GetDomainModel;
   listDomainModels: ListDomainModels;
   deleteDomainModel: DeleteDomainModel;
@@ -69,6 +71,21 @@ export function createDomainModelRoutes(deps: {
         {
           params: t.Object({ id: t.String() }),
           detail: { summary: "Delete a domain model", tags: ["Domain Models"] },
+        },
+      )
+
+      .put(
+        "/:id",
+        async ({ params, body }) => {
+          return deps.updateDomainModel.execute(params.id, body);
+        },
+        {
+          params: t.Object({ id: t.String() }),
+          body: t.Object({
+            name: t.Optional(t.String()),
+            description: t.Optional(t.String()),
+          }),
+          detail: { summary: "Update a domain model", tags: ["Domain Models"] },
         },
       )
 
@@ -377,6 +394,29 @@ export function createDomainModelRoutes(deps: {
         },
       )
 
+      .put(
+        "/:id/glossary/:termId",
+        async ({ params, body }) => {
+          return deps.manageGlossary.update(params.termId, body);
+        },
+        {
+          params: t.Object({ id: t.String(), termId: t.String() }),
+          body: t.Object({
+            contextId: t.Optional(t.String()),
+            term: t.String(),
+            definition: t.String(),
+            aliases: t.Optional(t.Array(t.String())),
+            examples: t.Optional(t.Array(t.String())),
+            relatedTerms: t.Optional(t.Array(t.String())),
+            source: t.Optional(t.String()),
+          }),
+          detail: {
+            summary: "Update glossary term",
+            tags: ["Domain Models"],
+          },
+        },
+      )
+
       .delete(
         "/:id/glossary/:termId",
         async ({ params }) => {
@@ -420,6 +460,28 @@ export function createDomainModelRoutes(deps: {
         {
           params: t.Object({ id: t.String() }),
           detail: { summary: "List workflows", tags: ["Domain Models"] },
+        },
+      )
+
+      .put(
+        "/:id/workflows/:wfId",
+        async ({ params, body }) => {
+          return deps.manageWorkflows.update(params.wfId, body);
+        },
+        {
+          params: t.Object({ id: t.String(), wfId: t.String() }),
+          body: t.Object({
+            slug: t.String(),
+            title: t.String(),
+            description: t.Optional(t.String()),
+            contextIds: t.Optional(t.Array(t.String())),
+            states: t.Optional(t.Array(t.Any())),
+            transitions: t.Optional(t.Array(t.Any())),
+          }),
+          detail: {
+            summary: "Update workflow",
+            tags: ["Domain Models"],
+          },
         },
       )
 

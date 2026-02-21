@@ -30,6 +30,7 @@ import { QueryTaxonomyState } from "../usecases/taxonomy/QueryTaxonomyState.js";
 import type { DomainModelRepository } from "../ports/DomainModelRepository.js";
 import { DomainModelRepositorySQLite } from "../adapters/sqlite/DomainModelRepositorySQLite.js";
 import { CreateDomainModel } from "../usecases/domain-model/CreateDomainModel.js";
+import { UpdateDomainModel } from "../usecases/domain-model/UpdateDomainModel.js";
 import { GetDomainModel } from "../usecases/domain-model/GetDomainModel.js";
 import { ListDomainModels } from "../usecases/domain-model/ListDomainModels.js";
 import { DeleteDomainModel } from "../usecases/domain-model/DeleteDomainModel.js";
@@ -63,6 +64,7 @@ export interface Container {
   queryTaxonomyState: QueryTaxonomyState;
   domainModelRepo: DomainModelRepository;
   createDomainModel: CreateDomainModel;
+  updateDomainModel: UpdateDomainModel;
   getDomainModel: GetDomainModel;
   listDomainModels: ListDomainModels;
   deleteDomainModel: DeleteDomainModel;
@@ -170,6 +172,7 @@ export function createContainer(config: AppConfig): Container {
   // Domain Model repository + use cases
   const domainModelRepo = new DomainModelRepositorySQLite(db);
   const createDomainModel = new CreateDomainModel(domainModelRepo);
+  const updateDomainModel = new UpdateDomainModel(domainModelRepo);
   const getDomainModel = new GetDomainModel(domainModelRepo);
   const listDomainModels = new ListDomainModels(domainModelRepo);
   const deleteDomainModel = new DeleteDomainModel(domainModelRepo);
@@ -219,6 +222,7 @@ export function createContainer(config: AppConfig): Container {
     queryTaxonomyState,
     domainModelRepo,
     createDomainModel,
+    updateDomainModel,
     getDomainModel,
     listDomainModels,
     deleteDomainModel,

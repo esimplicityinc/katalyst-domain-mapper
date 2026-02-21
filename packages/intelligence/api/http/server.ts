@@ -126,6 +126,7 @@ export function createServer(container: Container) {
         .use(
           createDomainModelRoutes({
             createDomainModel: container.createDomainModel,
+            updateDomainModel: container.updateDomainModel,
             getDomainModel: container.getDomainModel,
             listDomainModels: container.listDomainModels,
             deleteDomainModel: container.deleteDomainModel,

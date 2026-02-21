@@ -2,6 +2,7 @@ import type {
   DomainModelRepository,
   StoredWorkflow,
   CreateWorkflowInput,
+  UpdateWorkflowInput,
 } from "../../ports/DomainModelRepository.js";
 import { DomainModelNotFoundError } from "../../domain/domain-model/DomainModelErrors.js";
 
@@ -18,6 +19,14 @@ export class ManageWorkflows {
     }
     const wf: StoredWorkflow = await this.repo.addWorkflow(modelId, input);
     return { id: wf.id, slug: wf.slug, title: wf.title };
+  }
+
+  async update(
+    wfId: string,
+    input: UpdateWorkflowInput,
+  ): Promise<{ message: string }> {
+    await this.repo.updateWorkflow(wfId, input);
+    return { message: "Updated" };
   }
 
   async list(modelId: string): Promise<StoredWorkflow[]> {
