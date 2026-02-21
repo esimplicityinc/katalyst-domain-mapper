@@ -37,7 +37,7 @@ import type {
   Position,
 } from "../../types/landscape.js";
 import { useSvgPanZoom } from "../domain/svg/useSvgPanZoom.js";
-import { curvedPath, COLLAPSED_GROUP_H, COLLAPSED_PERSONA_GAP } from "../../utils/layout/layout-helpers.js";
+import { routedPath, COLLAPSED_GROUP_H, COLLAPSED_PERSONA_GAP } from "../../utils/layout/layout-helpers.js";
 import { useCollapseAnimation } from "./useCollapseAnimation.js";
 import type { DynamicLayoutSnapshot } from "./useCollapseAnimation.js";
 
@@ -140,7 +140,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
   const [hoveredEvent, setHoveredEvent] = useState<string | null>(null);
   const [animationPaused, setAnimationPaused] = useState(false);
 
-  const { viewBox, handlers, svgRef } = useSvgPanZoom();
+  const { viewBox, handlers, svgRef } = useSvgPanZoom(positions.canvasWidth, positions.canvasHeight);
   const vb = `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`;
 
   // ── Dynamic layout based on which personas are collapsed ───────
@@ -209,10 +209,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
           const cPos = positions.capabilityPositions.get(capId);
           if (!cPos) continue;
 
-          const baseAngle = (pi * 0.02) + (ci * 0.025);
-          const dist = Math.abs(cPos.x - boxRightX);
-          const distFactor = Math.min(1, 400 / Math.max(dist, 100));
-          const curvature = (0.08 + baseAngle) * distFactor;
+          const bendFactor = (pi * 3) + (ci * 4);
 
           collapsedLines.push({
             personaId: persona.id,
@@ -223,7 +220,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             capabilityId: capId,
             storyBoxPos: { x: boxRightX, y: boxCenterY },
             path: {
-              d: curvedPath(boxRightX, boxCenterY, cPos.x, cPos.y, curvature),
+              d: routedPath(boxRightX, boxCenterY, cPos.x, cPos.y, bendFactor),
               points: [{ x: boxRightX, y: boxCenterY }, cPos],
             },
           });
@@ -260,10 +257,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             const cPos = positions.capabilityPositions.get(capId);
             if (!cPos) continue;
 
-            const baseAngle = (pi * 0.02) + (si * 0.015) + (ci * 0.03);
-            const dist = Math.abs(cPos.x - boxRightX);
-            const distFactor = Math.min(1, 400 / Math.max(dist, 100));
-            const curvature = (0.08 + baseAngle) * distFactor;
+            const bendFactor = (pi * 3) + (si * 2) + (ci * 4);
 
             storyLines.push({
               personaId: persona.id,
@@ -274,7 +268,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
               capabilityId: capId,
               storyBoxPos: { x: boxRightX, y: boxCenterY },
               path: {
-                d: curvedPath(boxRightX, boxCenterY, cPos.x, cPos.y, curvature),
+                d: routedPath(boxRightX, boxCenterY, cPos.x, cPos.y, bendFactor),
                 points: [{ x: boxRightX, y: boxCenterY }, cPos],
               },
             });

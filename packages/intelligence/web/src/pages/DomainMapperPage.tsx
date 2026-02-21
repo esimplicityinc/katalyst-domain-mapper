@@ -5,11 +5,14 @@ import {
   Layers,
   Box,
   Zap,
+  Diamond,
   BookOpen,
   Loader2,
   Plus,
   GitBranch,
   Map,
+  Pencil,
+  X,
 } from "lucide-react";
 import { api } from "../api/client";
 import { DomainModelList } from "../components/domain/DomainModelList";
@@ -18,6 +21,7 @@ import { ContextMapView } from "../components/domain/ContextMapView";
 import { AggregateTreeView } from "../components/domain/AggregateTreeView";
 import { EventFlowView } from "../components/domain/EventFlowView";
 import { GlossaryView } from "../components/domain/GlossaryView";
+import { ValueObjectView } from "../components/domain/ValueObjectView";
 import { WorkflowView } from "../components/domain/WorkflowView";
 import { LandscapeView } from "../components/domain/LandscapeView";
 import type { DomainModel, DomainModelFull } from "../types/domain";
@@ -28,6 +32,7 @@ const SUB_NAV = [
   { to: "/design/business-domain/contexts", label: "Context Map", icon: Layers },
   { to: "/design/business-domain/aggregates", label: "Aggregates", icon: Box },
   { to: "/design/business-domain/events", label: "Events", icon: Zap },
+  { to: "/design/business-domain/value-objects", label: "Value Objects", icon: Diamond },
   { to: "/design/business-domain/workflows", label: "Workflows", icon: GitBranch },
   { to: "/design/business-domain/glossary", label: "Glossary", icon: BookOpen },
   { to: "/design/business-domain/landscape", label: "Landscape", icon: Map },
@@ -40,6 +45,10 @@ export function DomainMapperPage() {
   const [activeModel, setActiveModel] = useState<DomainModelFull | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModelList, setShowModelList] = useState(false);
+  const [editingModel, setEditingModel] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [savingModel, setSavingModel] = useState(false);
   const initialLoadDone = useRef(false);
 
   useEffect(() => {
@@ -94,9 +103,52 @@ export function DomainMapperPage() {
     }
   };
 
+  const handleModelUpdated = (id: string, data: { name: string; description: string | null }) => {
+    setModels((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, ...data } : m)),
+    );
+    if (activeModel?.id === id) {
+      setActiveModel((prev) => (prev ? { ...prev, ...data } : prev));
+    }
+  };
+
   const refreshModel = async () => {
     if (activeModel) {
       await selectModel(activeModel.id);
+    }
+  };
+
+  const startEditingModel = () => {
+    if (!activeModel) return;
+    setEditName(activeModel.name);
+    setEditDescription(activeModel.description ?? "");
+    setEditingModel(true);
+  };
+
+  const cancelEditingModel = () => {
+    setEditingModel(false);
+    setEditName("");
+    setEditDescription("");
+  };
+
+  const saveModelEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeModel || !editName.trim()) return;
+    setSavingModel(true);
+    try {
+      await api.updateDomainModel(activeModel.id, {
+        name: editName.trim(),
+        description: editDescription.trim() || undefined,
+      });
+      handleModelUpdated(activeModel.id, {
+        name: editName.trim(),
+        description: editDescription.trim() || null,
+      });
+      setEditingModel(false);
+    } catch (err) {
+      console.error("Failed to update domain model:", err);
+    } finally {
+      setSavingModel(false);
     }
   };
 
@@ -121,6 +173,7 @@ export function DomainMapperPage() {
         onSelect={selectModel}
         onCreated={handleModelCreated}
         onDeleted={handleModelDeleted}
+        onUpdated={handleModelUpdated}
       />
     );
   }
@@ -129,32 +182,78 @@ export function DomainMapperPage() {
     <div className="flex flex-col h-full">
       {/* Top bar with model info + sub-navigation */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="px-4 sm:px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        {editingModel ? (
+          /* ── Inline edit form for active model ── */
+          <form onSubmit={saveModelEdit} className="px-4 sm:px-6 py-3 flex items-center gap-3">
+            <input
+              type="text"
+              placeholder="Model name"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="flex-1 max-w-xs px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              autoFocus
+            />
+            <input
+              type="text"
+              placeholder="Description (optional)"
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
+              className="flex-1 max-w-sm px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+            <button
+              type="submit"
+              disabled={!editName.trim() || savingModel}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 rounded-md transition-colors"
+            >
+              {savingModel ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={cancelEditingModel}
+              disabled={savingModel}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors"
+            >
+              <X className="w-3.5 h-3.5" />
+              Cancel
+            </button>
+          </form>
+        ) : (
+          <div className="px-4 sm:px-6 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowModelList(true)}
+                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              >
+                Models
+              </button>
+              <span className="text-gray-300 dark:text-gray-600">/</span>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {activeModel.name}
+              </h2>
+              {activeModel.description && (
+                <span className="text-sm text-gray-500 dark:text-gray-400 hidden sm:inline">
+                  — {activeModel.description}
+                </span>
+              )}
+              <button
+                onClick={startEditingModel}
+                className="p-1 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                title={`Edit ${activeModel.name}`}
+                aria-label={`Edit ${activeModel.name}`}
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </button>
+            </div>
             <button
               onClick={() => setShowModelList(true)}
-              className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors"
             >
-              Models
+              <Plus className="w-3.5 h-3.5" />
+              Switch Model
             </button>
-            <span className="text-gray-300 dark:text-gray-600">/</span>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {activeModel.name}
-            </h2>
-            {activeModel.description && (
-              <span className="text-sm text-gray-500 dark:text-gray-400 hidden sm:inline">
-                — {activeModel.description}
-              </span>
-            )}
           </div>
-          <button
-            onClick={() => setShowModelList(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Switch Model
-          </button>
-        </div>
+        )}
 
         {/* Sub-navigation tabs */}
         <div className="px-4 sm:px-6 flex gap-1 overflow-x-auto">
@@ -216,15 +315,34 @@ export function DomainMapperPage() {
           />
           <Route
             path="aggregates"
-            element={<AggregateTreeView model={activeModel} />}
+            element={
+              <AggregateTreeView
+                model={activeModel}
+                onModelUpdated={refreshModel}
+              />
+            }
           />
           <Route
             path="events"
-            element={<EventFlowView model={activeModel} />}
+            element={
+              <EventFlowView
+                model={activeModel}
+                onModelUpdated={refreshModel}
+              />
+            }
+          />
+          <Route
+            path="value-objects"
+            element={
+              <ValueObjectView
+                model={activeModel}
+                onModelUpdated={refreshModel}
+              />
+            }
           />
           <Route
             path="workflows"
-            element={<WorkflowView model={activeModel} />}
+            element={<WorkflowView model={activeModel} onModelUpdated={refreshModel} />}
           />
           <Route
             path="glossary"
