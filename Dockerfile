@@ -16,9 +16,19 @@ FROM oven/bun:1 AS web-builder
 WORKDIR /build
 
 COPY package.json bun.lock ./
+COPY packages/chat ./packages/chat
+COPY packages/foe-schemas ./packages/foe-schemas
+COPY packages/feature-flags ./packages/feature-flags
+COPY packages/intelligence/package.json ./packages/intelligence/package.json
 COPY packages/intelligence/web ./packages/intelligence/web
 
-RUN cd packages/intelligence/web && bun install
+# Install deps at all required levels:
+# - root: resolves workspace package.json/bun.lock
+# - intelligence: symlinks workspace packages (@katalyst/chat, @foe/*)
+# - intelligence/web: installs web-specific deps (vite, elkjs, recharts, etc.)
+RUN bun install --ignore-scripts \
+ && bun install --ignore-scripts --cwd packages/intelligence \
+ && bun install --ignore-scripts --cwd packages/intelligence/web
 
 WORKDIR /build/packages/intelligence/web
 
@@ -28,7 +38,7 @@ ARG VITE_OPENCODE_URL=/opencode
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_OPENCODE_URL=$VITE_OPENCODE_URL
 
-RUN bunx vite build
+RUN /build/packages/intelligence/web/node_modules/.bin/vite build
 
 # ── Stage 2: Build schemas + API (intelligence package) ──────────────────────
 FROM oven/bun:1 AS api-builder
@@ -36,6 +46,8 @@ WORKDIR /build
 
 COPY package.json bun.lock ./
 COPY packages/foe-schemas ./packages/foe-schemas
+COPY packages/chat ./packages/chat
+COPY packages/feature-flags ./packages/feature-flags
 COPY packages/intelligence/package.json ./packages/intelligence/package.json
 COPY packages/intelligence/tsconfig.json ./packages/intelligence/tsconfig.json
 COPY packages/intelligence/api ./packages/intelligence/api
@@ -63,10 +75,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && docker --version \
   && opencode --version
 
-# Copy API workspace (schemas + intelligence + node_modules)
+# Copy API workspace (schemas + intelligence + chat + node_modules)
 COPY --from=api-builder /build/package.json /build/bun.lock ./
 COPY --from=api-builder /build/node_modules ./node_modules
 COPY --from=api-builder /build/packages/foe-schemas ./packages/foe-schemas
+COPY --from=api-builder /build/packages/chat ./packages/chat
+COPY --from=api-builder /build/packages/feature-flags ./packages/feature-flags
 COPY --from=api-builder /build/packages/intelligence/package.json ./packages/intelligence/package.json
 COPY --from=api-builder /build/packages/intelligence/tsconfig.json ./packages/intelligence/tsconfig.json
 COPY --from=api-builder /build/packages/intelligence/api ./packages/intelligence/api
