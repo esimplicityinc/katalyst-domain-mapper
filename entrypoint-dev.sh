@@ -9,10 +9,15 @@ cd /app/packages/intelligence
 bun run db:migrate || echo "WARN: Migration skipped (may already be applied)"
 cd /app
 
+# ── Install web dependencies (needed because node_modules is a named volume) ─
+echo "Installing web dependencies..."
+cd /app/packages/intelligence/web
+bun install --frozen-lockfile 2>/dev/null || bun install
+echo "Web dependencies installed."
+
 # ── Start Vite dev server in background ──────────────────────────────────────
 FRONTEND_PORT="${FRONTEND_PORT:-3002}"
 echo "Starting Vite dev server on :${FRONTEND_PORT}..."
-cd /app/packages/intelligence/web
 bunx vite --host 0.0.0.0 --port "${FRONTEND_PORT}" &
 VITE_PID=$!
 echo "Vite started (PID: $VITE_PID)"

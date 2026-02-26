@@ -1,16 +1,8 @@
--- Migration 0009: Taxonomy management — personas, user stories, expanded capabilities
--- Adds dedicated tables for governance personas and user stories (previously only
--- accessible via raw_index JSON blob), and expands governance_capabilities with
--- the full capability schema fields.
-
--- ── Expand governance_capabilities ──────────────────────────────────────────
-ALTER TABLE governance_capabilities ADD COLUMN capability_id TEXT;
-ALTER TABLE governance_capabilities ADD COLUMN description TEXT;
-ALTER TABLE governance_capabilities ADD COLUMN category TEXT;
-ALTER TABLE governance_capabilities ADD COLUMN parent_capability TEXT;
-ALTER TABLE governance_capabilities ADD COLUMN depends_on TEXT;
-
--- ── New table: governance_personas ──────────────────────────────────────────
+ALTER TABLE governance_capabilities ADD COLUMN capability_id TEXT;--> statement-breakpoint
+ALTER TABLE governance_capabilities ADD COLUMN description TEXT;--> statement-breakpoint
+ALTER TABLE governance_capabilities ADD COLUMN category TEXT;--> statement-breakpoint
+ALTER TABLE governance_capabilities ADD COLUMN parent_capability TEXT;--> statement-breakpoint
+ALTER TABLE governance_capabilities ADD COLUMN depends_on TEXT;--> statement-breakpoint
 CREATE TABLE governance_personas (
   id TEXT PRIMARY KEY,
   snapshot_id TEXT NOT NULL REFERENCES governance_snapshots(id) ON DELETE CASCADE,
@@ -29,9 +21,7 @@ CREATE TABLE governance_personas (
   related_personas TEXT NOT NULL DEFAULT '[]',
   story_count INTEGER NOT NULL DEFAULT 0,
   capability_count INTEGER NOT NULL DEFAULT 0
-);
-
--- ── New table: governance_user_stories ──────────────────────────────────────
+);--> statement-breakpoint
 CREATE TABLE governance_user_stories (
   id TEXT PRIMARY KEY,
   snapshot_id TEXT NOT NULL REFERENCES governance_snapshots(id) ON DELETE CASCADE,
