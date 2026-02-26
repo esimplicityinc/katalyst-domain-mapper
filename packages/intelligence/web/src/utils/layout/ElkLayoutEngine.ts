@@ -103,6 +103,28 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
     // Index capabilities by their resolved taxonomy node FQTN
     // Prefer taxonomyNodes[0] (from capability rels) over the legacy taxonomyNode field
     const capsByFqtn = new Map<string, typeof graph.capabilities>();
+
+    // Build a reverse lookup: short name → FQTN (for caps that use short names)
+    const shortNameToFqtn = new Map<string, string>();
+    for (const fqtn of allFqtns) {
+      const parts = fqtn.split(".");
+      // Map the last segment to the full FQTN (deepest match wins)
+      const shortName = parts[parts.length - 1];
+      // Prefer deeper (more specific) FQTNs
+      const existing = shortNameToFqtn.get(shortName);
+      if (!existing || fqtn.split(".").length > existing.split(".").length) {
+        shortNameToFqtn.set(shortName, fqtn);
+      }
+      // Also map partial suffixes (e.g. "billing-services" matches "durham-water.billing-services")
+      for (let i = 1; i < parts.length; i++) {
+        const suffix = parts.slice(i).join(".");
+        const existingSuffix = shortNameToFqtn.get(suffix);
+        if (!existingSuffix || fqtn.split(".").length > existingSuffix.split(".").length) {
+          shortNameToFqtn.set(suffix, fqtn);
+        }
+      }
+    }
+
     for (const cap of graph.capabilities) {
       const taxNode = (cap.taxonomyNodes && cap.taxonomyNodes.length > 0)
         ? cap.taxonomyNodes[0]
@@ -111,17 +133,79 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       // Find deepest matching FQTN
       let resolved: string | undefined;
       if (allFqtns.has(taxNode)) {
+        // Exact FQTN match
         resolved = taxNode;
       } else {
+        // Try trimming from right (for partial FQTNs)
         const parts = taxNode.split(".");
         for (let i = parts.length - 1; i >= 1; i--) {
           const candidate = parts.slice(0, i).join(".");
           if (allFqtns.has(candidate)) { resolved = candidate; break; }
         }
+        // Fall back to reverse lookup by short name
+        if (!resolved) {
+          resolved = shortNameToFqtn.get(taxNode);
+        }
       }
       if (!resolved) continue;
       if (!capsByFqtn.has(resolved)) capsByFqtn.set(resolved, []);
       capsByFqtn.get(resolved)!.push(cap);
+    }
+
+    // Push capabilities down to the deepest stack when they resolve to a
+    // subsystem that has only one child stack. This ensures caps render
+    // inside stacks rather than floating in the subsystem padding area.
+    const systemChildrenByFqtn = new Map<string, TaxonomySystemNode[]>();
+    const indexChildren = (nodes: TaxonomySystemNode[]) => {
+      for (const node of nodes) {
+        systemChildrenByFqtn.set(node.fqtn, node.children || []);
+        if (node.children) indexChildren(node.children);
+      }
+    };
+    indexChildren(graph.systems);
+
+    const refinedCapsByFqtn = new Map<string, typeof graph.capabilities>();
+    for (const [fqtn, caps] of capsByFqtn) {
+      const children = systemChildrenByFqtn.get(fqtn) || [];
+      if (children.length === 1) {
+        // Exactly one child stack → push all caps down into it
+        const childFqtn = children[0].fqtn;
+        if (!refinedCapsByFqtn.has(childFqtn)) refinedCapsByFqtn.set(childFqtn, []);
+        refinedCapsByFqtn.get(childFqtn)!.push(...caps);
+      } else if (children.length > 1) {
+        // Multiple child stacks → push caps into the first child that doesn't
+        // already have direct caps. This avoids leaving capabilities floating
+        // in the subsystem padding area outside any stack.
+        const firstChild = children[0].fqtn;
+        if (!refinedCapsByFqtn.has(firstChild)) refinedCapsByFqtn.set(firstChild, []);
+        refinedCapsByFqtn.get(firstChild)!.push(...caps);
+      } else {
+        // No children (leaf stack or system) → keep at current level
+        if (!refinedCapsByFqtn.has(fqtn)) refinedCapsByFqtn.set(fqtn, []);
+        refinedCapsByFqtn.get(fqtn)!.push(...caps);
+      }
+    }
+
+    // Replace capsByFqtn with the refined version
+    capsByFqtn.clear();
+    for (const [fqtn, caps] of refinedCapsByFqtn) {
+      capsByFqtn.set(fqtn, caps);
+    }
+
+    // Identify abstract/parent capabilities that have no taxonomy mapping.
+    // These are organizational groupings (e.g. "water-operations") that are
+    // parents of concrete capabilities. They should NOT appear as ELK nodes
+    // inside the system hierarchy — they are only shown in capability detail
+    // panels. Mark them so they are excluded from ELK and positioned off-canvas.
+    const mappedCapIds = new Set<string>();
+    for (const caps of capsByFqtn.values()) {
+      for (const cap of caps) mappedCapIds.add(cap.id);
+    }
+    const abstractCapIds = new Set<string>();
+    for (const cap of graph.capabilities) {
+      if (!mappedCapIds.has(cap.id)) {
+        abstractCapIds.add(cap.id);
+      }
     }
 
     // Track which capabilities were placed inside a system container
@@ -191,8 +275,10 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
     // placed to the right in convertTaxonomyPositions().
 
     // Capabilities with no resolved system at all → float as ELK orphan nodes.
+    // Skip abstract/parent capabilities — they are organizational groupings
+    // and should not appear as visible nodes in the landscape.
     for (const cap of graph.capabilities) {
-      if (!placedCaps.has(cap.id)) {
+      if (!placedCaps.has(cap.id) && !abstractCapIds.has(cap.id)) {
         children.push({
           id: `cap-${cap.id}`,
           width: CAP_SIZE,
@@ -243,7 +329,7 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       id: "root",
       layoutOptions: {
         "elk.algorithm": "layered",
-        "elk.direction": "RIGHT",
+        "elk.direction": "DOWN",
         "elk.spacing.nodeNode": "50",
         "elk.layered.spacing.nodeNodeBetweenLayers": "70",
         "elk.hierarchyHandling": "INCLUDE_CHILDREN",
@@ -256,42 +342,28 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
 
   /**
    * Convert ELK output into LandscapePositions with nested SystemBounds.
-   * 
-   * Layout: personas on the upper-left, systems below, external systems bottom-right.
-   * Story→capability lines make a smooth right-angle bend downward into the system area.
+   *
+   * Layout: personas on the LEFT in a column, system hierarchy to the RIGHT,
+   * external systems and inferred unknowns along the bottom.
+   * Story→capability lines route horizontally from the persona column into
+   * the system area.
    */
   private convertTaxonomyPositions(elk: ElkNode, graph: LandscapeGraph): LandscapePositions {
     const nodeMap = new Map<string, { x: number; y: number; w: number; h: number }>();
     this.walkNodes(elk, 0, 0, nodeMap);
 
-    // ── Persona column constants (upper-left) ─────────────────────
+    // ── Persona column constants (left side) ──────────────────────
     const PERSONA_X = 160;        // Persona circle center X
+    const STORY_BOX_X = 200;      // Story box left edge
+    const STORY_BOX_W = 220;      // Story box width
+    const PERSONA_COL_RIGHT = STORY_BOX_X + STORY_BOX_W + 60; // Right edge of persona column
     const STORY_BOX_H = 28;
     const STORY_GAP = 6;
     const PERSONA_GAP = 20;
 
-    // ── Compute persona positions first (need the bottom edge) ────
-    const storiesByPersona = new Map<string, typeof graph.userStories>();
-    for (const story of graph.userStories) {
-      if (!storiesByPersona.has(story.persona)) storiesByPersona.set(story.persona, []);
-      storiesByPersona.get(story.persona)!.push(story);
-    }
-
-    const personaPositions = new Map<string, Position>();
-    let personaCursorY = 50;
-
-    for (let pi = 0; pi < graph.personas.length; pi++) {
-      const persona = graph.personas[pi];
-      const stories = storiesByPersona.get(persona.id) || [];
-      const groupHeight = Math.max(1, stories.length) * (STORY_BOX_H + STORY_GAP) - STORY_GAP;
-      const personaCenterY = personaCursorY + groupHeight / 2;
-      personaPositions.set(persona.id, { x: PERSONA_X, y: personaCenterY });
-      personaCursorY += groupHeight + PERSONA_GAP;
-    }
-
-    // ── System area: shift ELK output below persona column ────────
-    const SYSTEM_AREA_LEFT = 50;   // Left margin for system area
-    const SYSTEM_AREA_TOP = personaCursorY + 40; // Gap below last persona
+    // ── Place the system area to the RIGHT of the persona column ──
+    const SYSTEM_AREA_LEFT = PERSONA_COL_RIGHT;
+    const SYSTEM_AREA_TOP = 50; // Aligned with top of persona column
 
     const shiftedMap = new Map<string, { x: number; y: number; w: number; h: number }>();
     for (const [key, val] of nodeMap) {
@@ -343,7 +415,7 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       }
     }
 
-    // ── Bottom-right area: external systems + inferred unknowns ───
+    // ── Compute system area bounds ────────────────────────────────
     let maxELKRight = SYSTEM_AREA_LEFT;
     let maxELKBottom = SYSTEM_AREA_TOP;
     for (const val of shiftedMap.values()) {
@@ -351,12 +423,43 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       maxELKBottom = Math.max(maxELKBottom, val.y + val.h);
     }
 
-    const EXTERNAL_AREA_TOP = maxELKBottom + 50;
-    const EXTERNAL_AREA_LEFT = maxELKRight - 500; // Align toward the right side
+    // ── Compute persona positions, vertically centered on system area ──
+    const storiesByPersona = new Map<string, typeof graph.userStories>();
+    for (const story of graph.userStories) {
+      if (!storiesByPersona.has(story.persona)) storiesByPersona.set(story.persona, []);
+      storiesByPersona.get(story.persona)!.push(story);
+    }
+
+    // First pass: compute total persona column height
+    let totalPersonaHeight = 0;
+    for (const persona of graph.personas) {
+      const stories = storiesByPersona.get(persona.id) || [];
+      const groupHeight = Math.max(1, stories.length) * (STORY_BOX_H + STORY_GAP) - STORY_GAP;
+      totalPersonaHeight += groupHeight + PERSONA_GAP;
+    }
+    totalPersonaHeight -= PERSONA_GAP; // Remove trailing gap
+
+    // Vertically center the persona column relative to the system area
+    const systemAreaMidY = SYSTEM_AREA_TOP + (maxELKBottom - SYSTEM_AREA_TOP) / 2;
+    let personaCursorY = Math.max(SYSTEM_AREA_TOP, systemAreaMidY - totalPersonaHeight / 2);
+
+    const personaPositions = new Map<string, Position>();
+    for (let pi = 0; pi < graph.personas.length; pi++) {
+      const persona = graph.personas[pi];
+      const stories = storiesByPersona.get(persona.id) || [];
+      const groupHeight = Math.max(1, stories.length) * (STORY_BOX_H + STORY_GAP) - STORY_GAP;
+      const personaCenterY = personaCursorY + groupHeight / 2;
+      personaPositions.set(persona.id, { x: PERSONA_X, y: personaCenterY });
+      personaCursorY += groupHeight + PERSONA_GAP;
+    }
+
+    // ── Bottom area: external systems + inferred unknowns ─────────
+    const overallBottom = Math.max(maxELKBottom, personaCursorY);
+    const EXTERNAL_AREA_TOP = overallBottom + 50;
     const EXTERNAL_COL_W = 240;
     const EXTERNAL_COL_GAP = 30;
     const CAP_ROW_GAP = 10;
-    let extCursorX = Math.max(EXTERNAL_AREA_LEFT, SYSTEM_AREA_LEFT);
+    let extCursorX = SYSTEM_AREA_LEFT; // Align with system area
     const extCursorY = EXTERNAL_AREA_TOP;
 
     // Index caps by external FQTN
@@ -376,7 +479,7 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       capsByExternalFqtn.get(resolved)!.push(cap);
     }
 
-    // Place external systems horizontally along the bottom-right
+    // Place external systems horizontally along the bottom
     for (const sys of externalTopLevelSystems) {
       const caps = capsByExternalFqtn.get(sys.fqtn) || [];
       const headerH = 55;
@@ -433,14 +536,13 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
 
     // ── Canvas dimensions ─────────────────────────────────────────
     const canvasWidth = Math.max(
-      (elk.width ?? 0) + SYSTEM_AREA_LEFT + 100,
+      maxELKRight + 100,
       extCursorX + 60,
       1000,
     );
     const canvasHeight = Math.max(
-      maxELKBottom + 100,
+      overallBottom + 100,
       extCursorY + 200,
-      personaCursorY + 100,
     );
 
     return assemblePositions(
