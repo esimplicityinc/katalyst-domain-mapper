@@ -39,11 +39,15 @@ import { ManageArtifacts } from "../usecases/domain-model/ManageArtifacts.js";
 import { ManageGlossary } from "../usecases/domain-model/ManageGlossary.js";
 import { ManageWorkflows } from "../usecases/domain-model/ManageWorkflows.js";
 import { LintLandscape } from "../usecases/lint/LintLandscape.js";
+import type { FeatureFlags } from "../ports/FeatureFlags.js";
+import { OpenFeatureAdapter } from "../adapters/openfeature/OpenFeatureAdapter.js";
+import { initServerFlags } from "@foe/feature-flags/server";
 
 export interface Container {
   config: AppConfig;
   logger: Logger;
   db: DrizzleDB;
+  featureFlags: FeatureFlags;
   reportRepo: ReportRepository;
   scanJobRepo: ScanJobRepository;
   scanRunner: ScanRunner;
@@ -85,7 +89,7 @@ export interface Container {
   setLlmApiKey: (key: string) => void;
 }
 
-export function createContainer(config: AppConfig): Container {
+export async function createContainer(config: AppConfig): Promise<Container> {
   const logger = new StructuredLogger({}, config.logLevel);
 
   // Database
@@ -182,6 +186,10 @@ export function createContainer(config: AppConfig): Container {
   const manageWorkflows = new ManageWorkflows(domainModelRepo);
   const lintLandscape = new LintLandscape(domainModelRepo, governanceRepo as never, taxonomyRepo as never);
 
+  // Feature flags — initialize OpenFeature and create adapter
+  const openFeatureClient = await initServerFlags();
+  const featureFlags: FeatureFlags = new OpenFeatureAdapter(openFeatureClient);
+
   // Health check
   const healthCheck = (): boolean => {
     try {
@@ -202,6 +210,7 @@ export function createContainer(config: AppConfig): Container {
     config,
     logger,
     db,
+    featureFlags,
     reportRepo,
     scanJobRepo,
     scanRunner,

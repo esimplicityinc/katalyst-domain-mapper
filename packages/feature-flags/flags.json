@@ -1,0 +1,65 @@
+{
+  "flags": {
+    "scanner-enabled": {
+      "description": "Controls whether the repository scanning feature is available",
+      "disabled": false,
+      "variants": {
+        "on": true,
+        "off": false
+      },
+      "defaultVariant": "on",
+      "flagType": "boolean"
+    },
+    "domain-model-v2": {
+      "description": "Enables the new domain model editor experience",
+      "disabled": false,
+      "variants": {
+        "on": true,
+        "off": false
+      },
+      "defaultVariant": "off",
+      "flagType": "boolean"
+    },
+    "landscape-lint-strict": {
+      "description": "Enables strict mode for landscape linting (warning-level findings become errors)",
+      "disabled": false,
+      "variants": {
+        "on": true,
+        "off": false
+      },
+      "defaultVariant": "off",
+      "flagType": "boolean"
+    },
+    "ai-insights-enabled": {
+      "description": "Enables AI-powered insights in FOE scan reports",
+      "disabled": false,
+      "variants": {
+        "on": true,
+        "off": false
+      },
+      "defaultVariant": "on",
+      "flagType": "boolean"
+    },
+    "governance-v2": {
+      "description": "Enables the next-generation governance dashboard with enhanced visualizations",
+      "disabled": false,
+      "variants": {
+        "on": true,
+        "off": false
+      },
+      "defaultVariant": "off",
+      "flagType": "boolean"
+    },
+    "max-concurrent-scans": {
+      "description": "Maximum number of concurrent scan jobs allowed",
+      "disabled": false,
+      "variants": {
+        "low": 1,
+        "medium": 3,
+        "high": 5
+      },
+      "defaultVariant": "low",
+      "flagType": "number"
+    }
+  }
+}

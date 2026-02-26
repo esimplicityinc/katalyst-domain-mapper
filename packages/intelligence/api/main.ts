@@ -14,7 +14,7 @@ if (dbDir !== "." && !fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
-const container = createContainer(config);
+const container = await createContainer(config);
 const { logger } = container;
 
 // Run migrations
