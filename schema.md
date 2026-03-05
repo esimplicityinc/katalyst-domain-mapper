@@ -1,8 +1,8 @@
 # Katalyst Platform - Complete Data Model
 
-> Combined schema reference for **katalyst-domain-mapper** (governance, DDD) and **katalyst-taxonomy** (infrastructure taxonomy, plugins, agents).
+> Combined schema reference for **katalyst-domain-mapper** (taxonomy (unified DDD + governance)) and **katalyst-taxonomy** (infrastructure taxonomy, plugins, agents).
 >
-> Domain Mapper source: `packages/foe-schemas/src/governance/` and `packages/foe-schemas/src/ddd/`
+> Domain Mapper source: `packages/foe-schemas/src/taxonomy/`
 > Taxonomy source: `katalyst-taxonomy/src/katalyst_taxonomy/` and `katalyst-taxonomy/schemas/`
 
 ```mermaid
@@ -638,7 +638,7 @@ erDiagram
     TaxTeamMembership {
         string id "PK - snapshotId:team:person"
         string snapshotId "FK - taxonomy_snapshots"
-        string teamName "FK - TaxTeam.name"
+        string team "FK - TaxTeam.name"
         string personName "FK - TaxPerson.name"
         string role "role within this team"
     }
@@ -684,21 +684,21 @@ erDiagram
     %% RELATIONSHIPS - Domain Mapper: RoadItem Governance
     %% ============================================================
 
-    RoadItem ||--|| AdrGovernance : "governance.adrs"
+    RoadItem ||--|| AdrGovernance : "extensions.roadItems.governance.adrs"
     AdrGovernance ||--o{ AdrComplianceEntry : "complianceCheck[]"
-    RoadItem ||--|| BddGovernance : "governance.bdd"
+    RoadItem ||--|| BddGovernance : "extensions.roadItems.governance.bdd"
     BddGovernance ||--o{ BddApproval : "approvedBy[]"
     BddGovernance ||--o| BddTestResults : "testResults"
-    RoadItem ||--|| NfrGovernance : "governance.nfrs"
+    RoadItem ||--|| NfrGovernance : "extensions.roadItems.governance.nfrs"
     NfrGovernance ||--o{ NfrResult : "results{}"
 
     %% ============================================================
     %% RELATIONSHIPS - Domain Mapper: RoadItem Cross-References
     %% ============================================================
 
-    RoadItem }o--o{ ADR : "governance.adrs.ids[]"
-    RoadItem }o--o{ NFR : "governance.nfrs.applicable[]"
-    RoadItem }o--o{ Capability : "governance.capabilities[]"
+    RoadItem }o--o{ ADR : "extensions.roadItems.governance.adrs.ids[]"
+    RoadItem }o--o{ NFR : "extensions.roadItems.governance.nfrs.applicable[]"
+    RoadItem }o--o{ Capability : "extensions.roadItems.capabilities[]"
     RoadItem }o--o{ RoadItem : "dependsOn / blockedBy / blocks"
 
     %% ============================================================
@@ -809,7 +809,7 @@ erDiagram
     TaxTeam }o--|| TaxonomyDocument : "snapshotId (via taxonomy_snapshots)"
     TaxTeam }o--o{ TaxonomyDocument : "ownedNodes[] (soft FK)"
     TaxPerson }o--|| TaxonomyDocument : "snapshotId (via taxonomy_snapshots)"
-    TaxTeamMembership }o--|| TaxTeam : "teamName"
+    TaxTeamMembership }o--|| TaxTeam : "team"
     TaxTeamMembership }o--|| TaxPerson : "personName"
     BoundedContext }o--o| TaxTeam : "ownerTeam (soft FK to team slug)"
 
@@ -821,7 +821,7 @@ erDiagram
     DependencyNode }o--o{ TaxonomyDocument : "fqtn refs taxonomy nodes"
 
     %% ============================================================
-    %% RELATIONSHIPS - Cross-Project: Governance ↔ Taxonomy (DB)
+    %% RELATIONSHIPS - Cross-Project: Domain Mapper ↔ Taxonomy (DB)
     %% ============================================================
 
     RoadItem }o--o| TaxonomyDocument : "taxonomyNode (soft FK)"
@@ -846,7 +846,7 @@ All taxonomy tables follow the immutable-snapshot pattern: a parent `taxonomy_sn
 | `taxonomy_nodes` | id, snapshot_id, name, node_type, fqtn, description, parent_node, owners (JSON), environments (JSON), labels (JSON), depends_on (JSON) | snapshot_id → taxonomy_snapshots (cascade) | system/subsystem/stack/layer/user/org_unit |
 | `taxonomy_environments` | id, snapshot_id, name, description, parent_environment, promotion_targets (JSON), template_replacements (JSON) | snapshot_id → taxonomy_snapshots (cascade) | |
 | `taxonomy_layer_types` | id, snapshot_id, name, description, default_layer_dir | snapshot_id → taxonomy_snapshots (cascade) | |
-| `taxonomy_capabilities` | id, snapshot_id, name, description, categories (JSON), depends_on (JSON) | snapshot_id → taxonomy_snapshots (cascade) | Plugin capabilities, not governance caps |
+| `taxonomy_capabilities` | id, snapshot_id, name, description, categories (JSON), depends_on (JSON) | snapshot_id → taxonomy_snapshots (cascade) | Plugin capabilities (unified with domain mapper caps) |
 | `taxonomy_capability_rels` | id, snapshot_id, name, node, relationship_type, capabilities (JSON) | snapshot_id → taxonomy_snapshots (cascade) | supports/depends-on/implements/enables |
 | `taxonomy_actions` | id, snapshot_id, name, action_type, layer_type, tags (JSON) | snapshot_id → taxonomy_snapshots (cascade) | shell/http/workflow |
 | `taxonomy_stages` | id, snapshot_id, name, description, depends_on (JSON) | snapshot_id → taxonomy_snapshots (cascade) | CI/CD pipeline stages |
@@ -855,7 +855,9 @@ All taxonomy tables follow the immutable-snapshot pattern: a parent `taxonomy_sn
 | `taxonomy_persons` | id, snapshot_id, name, display_name, email, role, avatar_url | snapshot_id → taxonomy_snapshots (cascade) | Top-level persons, not nested inside teams |
 | `taxonomy_team_memberships` | id, snapshot_id, team_name, person_name, role | snapshot_id → taxonomy_snapshots (cascade) | Many-to-many join; role is per-membership |
 
-### Governance ↔ Taxonomy Cross-References
+### Taxonomy Cross-References (Unified)
+
+Governance artifacts are now part of the taxonomy module. Cross-references between road items, capabilities, and taxonomy nodes are handled via the unified `extensions` block within `TaxonomySnapshot`.
 
 | Table | Column Added | Type | Notes |
 |-------|-------------|------|-------|
@@ -870,7 +872,7 @@ All taxonomy tables follow the immutable-snapshot pattern: a parent `taxonomy_sn
 | DDD Models | domain_models, bounded_contexts (+ owner_team column), aggregates, value_objects, domain_events, glossary_terms | domain_models (cascade) |
 | Chat | chat_sessions, chat_messages | domain_models (cascade) |
 | Scan Jobs | scan_jobs | scans (nullable) |
-| Governance | governance_snapshots, governance_capabilities, governance_road_items, governance_contexts | governance_snapshots (cascade) |
+| Taxonomy (unified) | governance_snapshots, governance_capabilities, governance_road_items, governance_contexts | governance_snapshots (cascade) |
 | Infrastructure | repositories | — |
 
 ---
@@ -929,26 +931,23 @@ All taxonomy resources follow Kubernetes-style document format: `apiVersion + ki
 
 | File | Defines |
 |------|---------|
-| `packages/foe-schemas/src/governance/common.ts` | ID patterns, Priority, Phase enums |
-| `packages/foe-schemas/src/governance/road-item.ts` | RoadItem, AdrGovernance, BddGovernance, NfrGovernance, state machine |
-| `packages/foe-schemas/src/governance/adr.ts` | ADR, AdrStatus, AdrCategory |
-| `packages/foe-schemas/src/governance/nfr.ts` | NFR, NfrCategory |
-| `packages/foe-schemas/src/governance/capability.ts` | Capability |
-| `packages/foe-schemas/src/governance/user-story.ts` | UserStory |
-| `packages/foe-schemas/src/governance/persona.ts` | Persona, TechnicalProfile |
-| `packages/foe-schemas/src/governance/use-case.ts` | UseCase |
-| `packages/foe-schemas/src/governance/change-entry.ts` | ChangeEntry, ComplianceCheck, NfrCheck, AgentSignature |
-| `packages/foe-schemas/src/governance/governance-index.ts` | GovernanceIndex, reverse indices, stats |
-| `packages/foe-schemas/src/governance/ddd/bounded-context.ts` | BoundedContext (governance) |
-| `packages/foe-schemas/src/governance/ddd/aggregate.ts` | Aggregate (governance) |
-| `packages/foe-schemas/src/governance/ddd/value-object.ts` | ValueObject (governance) |
-| `packages/foe-schemas/src/governance/ddd/domain-event.ts` | DomainEvent (governance) |
-| `packages/foe-schemas/src/ddd/bounded-context.ts` | BoundedContext (API) + ContextRelationship |
-| `packages/foe-schemas/src/ddd/aggregate.ts` | Aggregate (API) |
-| `packages/foe-schemas/src/ddd/value-object.ts` | ValueObject (API) |
-| `packages/foe-schemas/src/ddd/domain-event.ts` | DomainEvent (API) |
-| `packages/foe-schemas/src/ddd/domain-model.ts` | DomainModel (API container) |
-| `packages/foe-schemas/src/ddd/glossary.ts` | GlossaryTerm (API) |
+| `packages/foe-schemas/src/taxonomy/common.ts` | Shared patterns (ID validators, Priority, GovernancePhase, SlugPattern) |
+| `packages/foe-schemas/src/taxonomy/taxonomy-node.ts` | TaxonomyNodeSchema (19 node types), infrastructure schemas |
+| `packages/foe-schemas/src/taxonomy/taxonomy-snapshot.ts` | TaxonomySnapshotSchema with extensions, indices, stats |
+| `packages/foe-schemas/src/taxonomy/layer-health.ts` | LayerHealthSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/bounded-context.ts` | BoundedContextExtSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/aggregate.ts` | AggregateExtSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/value-object.ts` | ValueObjectExtSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/domain-event.ts` | DomainEventExtSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/glossary-term.ts` | GlossaryTermExtSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/capability.ts` | CapabilityExtSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/persona.ts` | PersonaExtSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/user-story.ts` | UserStoryExtSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/use-case.ts` | UseCaseExtSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/road-item.ts` | RoadItemExtSchema + state machine |
+| `packages/foe-schemas/src/taxonomy/extensions/adr.ts` | AdrExtSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/nfr.ts` | NfrExtSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/change-entry.ts` | ChangeEntryExtSchema |
 
 ## Taxonomy - Schema Source Files
 
@@ -1017,7 +1016,7 @@ graph TD
 | `bdd.status` | `draft/active/approved` | `draft/approved` | `draft/written/approved/passing` |
 | `nfr.status` (on NFR) | `active/deprecated` | -- | `active/pending/deprecated` |
 | `nfr.status` (on RoadItem) | `pending/validating/pass/fail` | same | adds `deferred`, uses past tense |
-| DDD identity | slug (governance) / UUID (API) | -- | slug in frontmatter |
+| DDD identity | UUID primary key + kebab-case name | -- | slug in frontmatter |
 | DDD relationships | `upstreamContexts[]` (gov) / `relationships[]` (API) | -- | `upstream_contexts` |
 | `quality_gates` | absent from schema | absent | present in practice |
 | `agent_signatures` | absent from schema | absent | present in practice |
