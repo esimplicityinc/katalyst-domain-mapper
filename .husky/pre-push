@@ -14,12 +14,11 @@ echo "🔍 Running full check suite..."
 just check || exit 1
 
 # Run BDD smoke tests (API only for speed)
-# dev-ready will fail fast with instructions if the dev server is not up.
+# bdd-api calls dev-ready which detects local dev or prod Docker container
 echo "🧪 Running BDD smoke tests..."
 just bdd-api || {
     echo ""
     echo "❌ BDD tests failed. Fix issues before pushing."
-    echo "   If the dev server was not running, start it with: just dev-docker"
     exit 1
 }
 
