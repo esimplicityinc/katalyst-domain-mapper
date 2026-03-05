@@ -1,6 +1,6 @@
 {
   "name": "@foe/schemas",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -21,12 +21,8 @@
       "types": "./dist/graph/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./ddd": {
-      "types": "./dist/ddd/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "./governance": {
-      "types": "./dist/governance/index.d.ts",
+    "./taxonomy": {
+      "types": "./dist/taxonomy/index.d.ts",
       "default": "./dist/index.js"
     }
   },
