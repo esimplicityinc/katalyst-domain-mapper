@@ -24,6 +24,10 @@ export class ReportRepositorySQLite implements ReportRepository {
       .where(eq(schema.repositories.id, repoId))
       .run();
 
+    // Delete existing scan if present (idempotent re-ingestion).
+    // All child rows (dimensions, subscores, findings, etc.) cascade-delete.
+    this.db.delete(schema.scans).where(eq(schema.scans.id, report.id)).run();
+
     // Insert scan
     this.db
       .insert(schema.scans)
