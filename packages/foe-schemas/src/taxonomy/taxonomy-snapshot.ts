@@ -1,167 +1,63 @@
 import { z } from "zod";
+import {
+  TaxonomyNodeSchema,
+  TaxonomyEnvironmentSchema,
+  TaxonomyLayerTypeSchema,
+  TaxonomyCapabilitySchema,
+  TaxonomyCapabilityRelSchema,
+  TaxonomyActionSchema,
+  TaxonomyStageSchema,
+  TaxonomyToolSchema,
+  TaxonomyPersonSchema,
+  TaxonomyTeamSchema,
+} from "./taxonomy-node.js";
+import { LayerHealthSchema } from "./layer-health.js";
+import {
+  CapabilityIdPattern,
+  PersonaIdPattern,
+  UserStoryIdPattern,
+  UseCaseIdPattern,
+  RoadItemIdPattern,
+  AdrIdPattern,
+  NfrIdPattern,
+  ChangeIdPattern,
+} from "./common.js";
 
-// ── Taxonomy Node Name Pattern ─────────────────────────────────────────────
-// Kubernetes-style kebab-case names (max 63 chars)
-export const TaxonomyNodeNamePattern = z
-  .string()
-  .regex(/^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$/);
+// Extension schemas for typed node data
+import { BoundedContextExtSchema } from "./extensions/bounded-context.js";
+import { AggregateExtSchema } from "./extensions/aggregate.js";
+import { ValueObjectExtSchema } from "./extensions/value-object.js";
+import { DomainEventExtSchema } from "./extensions/domain-event.js";
+import { GlossaryTermExtSchema } from "./extensions/glossary-term.js";
+import { CapabilityExtSchema } from "./extensions/capability.js";
+import { PersonaExtSchema } from "./extensions/persona.js";
+import { UserStoryExtSchema } from "./extensions/user-story.js";
+import { UseCaseExtSchema } from "./extensions/use-case.js";
+import { RoadItemExtSchema } from "./extensions/road-item.js";
+import { AdrExtSchema } from "./extensions/adr.js";
+import { NfrExtSchema } from "./extensions/nfr.js";
+import { ChangeEntryExtSchema } from "./extensions/change-entry.js";
 
-// ── Taxonomy Node Type ─────────────────────────────────────────────────────
-export const TaxonomyNodeTypeSchema = z.enum([
-  "system",
-  "subsystem",
-  "stack",
-  "layer",
-  "user",
-  "org_unit",
-]);
-
-export type TaxonomyNodeType = z.infer<typeof TaxonomyNodeTypeSchema>;
-
-// ── Capability Relationship Type ───────────────────────────────────────────
-export const CapabilityRelationshipTypeSchema = z.enum([
-  "supports",
-  "depends-on",
-  "implements",
-  "enables",
-]);
-
-export type CapabilityRelationshipType = z.infer<
-  typeof CapabilityRelationshipTypeSchema
->;
-
-// ── Team Topology Type ─────────────────────────────────────────────────────
-export const TeamTopologyTypeSchema = z.enum([
-  "stream-aligned",
-  "platform",
-  "enabling",
-  "complicated-subsystem",
-]);
-
-export type TeamTopologyType = z.infer<typeof TeamTopologyTypeSchema>;
-
-// ── Action Type ────────────────────────────────────────────────────────────
-export const ActionTypeSchema = z.enum(["shell", "http", "workflow"]);
-export type ActionType = z.infer<typeof ActionTypeSchema>;
-
-// ── Taxonomy Node Schema ───────────────────────────────────────────────────
-export const TaxonomyNodeSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  nodeType: TaxonomyNodeTypeSchema,
-  fqtn: z.string(),
-  description: z.string().nullable().default(null),
-  parentNode: z.string().nullable().default(null),
-  owners: z.array(z.string()).default([]),
-  environments: z.array(z.string()).default([]),
-  labels: z.record(z.string()).default({}),
-  dependsOn: z.array(z.string()).default([]),
+// ── Node Extension Map Schema ──────────────────────────────────────────────
+// Maps node UUIDs to their typed extension data. Each extension is optional;
+// only nodes with domain/governance-specific data have entries here.
+export const NodeExtensionsSchema = z.object({
+  boundedContexts: z.record(BoundedContextExtSchema).default({}),
+  aggregates: z.record(AggregateExtSchema).default({}),
+  valueObjects: z.record(ValueObjectExtSchema).default({}),
+  domainEvents: z.record(DomainEventExtSchema).default({}),
+  glossaryTerms: z.record(GlossaryTermExtSchema).default({}),
+  capabilities: z.record(CapabilityExtSchema).default({}),
+  personas: z.record(PersonaExtSchema).default({}),
+  userStories: z.record(UserStoryExtSchema).default({}),
+  useCases: z.record(UseCaseExtSchema).default({}),
+  roadItems: z.record(RoadItemExtSchema).default({}),
+  adrs: z.record(AdrExtSchema).default({}),
+  nfrs: z.record(NfrExtSchema).default({}),
+  changeEntries: z.record(ChangeEntryExtSchema).default({}),
 });
 
-export type TaxonomyNode = z.infer<typeof TaxonomyNodeSchema>;
-
-// ── Taxonomy Environment Schema ────────────────────────────────────────────
-export const TaxonomyEnvironmentSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  description: z.string().nullable().default(null),
-  parentEnvironment: z.string().nullable().default(null),
-  promotionTargets: z.array(z.string()).default([]),
-  templateReplacements: z.record(z.string()).default({}),
-});
-
-export type TaxonomyEnvironment = z.infer<typeof TaxonomyEnvironmentSchema>;
-
-// ── Taxonomy Layer Type Schema ─────────────────────────────────────────────
-export const TaxonomyLayerTypeSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  description: z.string().nullable().default(null),
-  defaultLayerDir: z.string().nullable().default(null),
-});
-
-export type TaxonomyLayerType = z.infer<typeof TaxonomyLayerTypeSchema>;
-
-// ── Taxonomy Capability Schema ─────────────────────────────────────────────
-export const TaxonomyCapabilitySchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  description: z.string(),
-  categories: z.array(z.string()).default([]),
-  dependsOnCapabilities: z.array(z.string()).default([]),
-});
-
-export type TaxonomyCapability = z.infer<typeof TaxonomyCapabilitySchema>;
-
-// ── Taxonomy Capability Relationship Schema ────────────────────────────────
-export const TaxonomyCapabilityRelSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  node: z.string(),
-  relationshipType: CapabilityRelationshipTypeSchema,
-  capabilities: z.array(z.string()).min(1),
-});
-
-export type TaxonomyCapabilityRel = z.infer<typeof TaxonomyCapabilityRelSchema>;
-
-// ── Taxonomy Action Schema ─────────────────────────────────────────────────
-export const TaxonomyActionSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  actionType: ActionTypeSchema,
-  layerType: z.string().nullable().default(null),
-  tags: z.array(z.string()).default([]),
-});
-
-export type TaxonomyAction = z.infer<typeof TaxonomyActionSchema>;
-
-// ── Taxonomy Stage Schema ──────────────────────────────────────────────────
-export const TaxonomyStageSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  description: z.string().nullable().default(null),
-  dependsOn: z.array(z.string()).default([]),
-});
-
-export type TaxonomyStage = z.infer<typeof TaxonomyStageSchema>;
-
-// ── Taxonomy Tool Schema ───────────────────────────────────────────────────
-export const TaxonomyToolSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  description: z.string(),
-  actions: z.array(z.string()).default([]),
-});
-
-export type TaxonomyTool = z.infer<typeof TaxonomyToolSchema>;
-
-// ── Taxonomy Person Schema ─────────────────────────────────────────────────
-export const TaxonomyPersonSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  displayName: z.string(),
-  email: z.string().nullable().default(null),
-  role: z.string().nullable().default(null),
-  avatarUrl: z.string().nullable().default(null),
-});
-
-export type TaxonomyPerson = z.infer<typeof TaxonomyPersonSchema>;
-
-// ── Taxonomy Team Membership Schema ────────────────────────────────────────
-// Represents a person's role within a specific team (many-to-many join).
-export const TaxonomyTeamMembershipSchema = z.object({
-  personName: TaxonomyNodeNamePattern,
-  role: z.string(),
-});
-
-export type TaxonomyTeamMembership = z.infer<
-  typeof TaxonomyTeamMembershipSchema
->;
-
-// ── Taxonomy Team Schema ───────────────────────────────────────────────────
-export const TaxonomyTeamSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  displayName: z.string(),
-  teamType: TeamTopologyTypeSchema,
-  description: z.string().nullable().default(null),
-  focusArea: z.string().nullable().default(null),
-  communicationChannels: z.array(z.string()).default([]),
-  ownedNodes: z.array(z.string()).default([]),
-  members: z.array(TaxonomyTeamMembershipSchema).default([]),
-});
-
-export type TaxonomyTeam = z.infer<typeof TaxonomyTeamSchema>;
+export type NodeExtensions = z.infer<typeof NodeExtensionsSchema>;
 
 // ── Plugin Summary Schema ──────────────────────────────────────────────────
 export const TaxonomyPluginSummarySchema = z.object({
@@ -178,16 +74,169 @@ export const TaxonomyPluginSummarySchema = z.object({
 
 export type TaxonomyPluginSummary = z.infer<typeof TaxonomyPluginSummarySchema>;
 
+// ── Reverse Indices ────────────────────────────────────────────────────────
+// Fast lookup structures migrated from the former GovernanceIndexSchema.
+export const ReverseIndicesSchema = z.object({
+  byCapability: z
+    .record(
+      z.object({
+        personas: z.array(PersonaIdPattern),
+        stories: z.array(UserStoryIdPattern),
+        roads: z.array(RoadItemIdPattern),
+      }),
+    )
+    .default({}),
+  byPersona: z
+    .record(
+      z.object({
+        stories: z.array(UserStoryIdPattern),
+        capabilities: z.array(CapabilityIdPattern),
+      }),
+    )
+    .default({}),
+  byRoad: z
+    .record(
+      z.object({
+        adrs: z.array(AdrIdPattern),
+        changes: z.array(ChangeIdPattern),
+        capabilities: z.array(CapabilityIdPattern),
+        nfrs: z.array(NfrIdPattern),
+      }),
+    )
+    .default({}),
+  byContext: z
+    .record(
+      z.object({
+        aggregates: z.array(z.string()),
+        events: z.array(z.string()),
+        valueObjects: z.array(z.string()),
+        roads: z.array(RoadItemIdPattern),
+      }),
+    )
+    .default({}),
+  byAggregate: z
+    .record(
+      z.object({
+        context: z.string(),
+        valueObjects: z.array(z.string()),
+        events: z.array(z.string()),
+      }),
+    )
+    .default({}),
+});
+
+export type ReverseIndices = z.infer<typeof ReverseIndicesSchema>;
+
+// ── Taxonomy Statistics ────────────────────────────────────────────────────
+export const TaxonomyStatsSchema = z.object({
+  totalNodes: z.number().int().nonnegative().default(0),
+  totalEnvironments: z.number().int().nonnegative().default(0),
+  totalCapabilities: z.number().int().default(0),
+  totalPersonas: z.number().int().default(0),
+  totalStories: z.number().int().default(0),
+  totalUseCases: z.number().int().default(0),
+  totalRoadItems: z.number().int().default(0),
+  totalAdrs: z.number().int().default(0),
+  totalNfrs: z.number().int().default(0),
+  totalChanges: z.number().int().default(0),
+  totalContexts: z.number().int().default(0),
+  totalAggregates: z.number().int().default(0),
+  totalValueObjects: z.number().int().default(0),
+  totalDomainEvents: z.number().int().default(0),
+  totalGlossaryTerms: z.number().int().default(0),
+  roadsByStatus: z.record(z.number().int()).default({}),
+  roadsByPhase: z.record(z.number().int()).default({}),
+  referentialIntegrity: z
+    .object({
+      valid: z.boolean(),
+      errors: z.array(z.string()),
+    })
+    .default({ valid: true, errors: [] }),
+});
+
+export type TaxonomyStats = z.infer<typeof TaxonomyStatsSchema>;
+
 // ── Taxonomy Snapshot Schema ───────────────────────────────────────────────
+// The single source of truth for the entire project taxonomy. Replaces the
+// former GovernanceIndexSchema and DomainModelSchema with a unified structure
+// where every entity is a TaxonomyNode with a typed extension.
 export const TaxonomySnapshotSchema = z.object({
   id: z.string().uuid(),
   project: z.string(),
   version: z.string(),
   generated: z.string(),
-  nodeCount: z.number().int().nonnegative(),
-  environmentCount: z.number().int().nonnegative(),
-  pluginSummary: TaxonomyPluginSummarySchema,
   createdAt: z.string(),
+
+  // ── Core collections ──
+  nodes: z.record(TaxonomyNodeSchema).default({}),
+  environments: z.record(TaxonomyEnvironmentSchema).default({}),
+
+  // ── Plugin / infrastructure collections ──
+  layerTypes: z.record(TaxonomyLayerTypeSchema).default({}),
+  infraCapabilities: z.record(TaxonomyCapabilitySchema).default({}),
+  capabilityRels: z.record(TaxonomyCapabilityRelSchema).default({}),
+  actions: z.record(TaxonomyActionSchema).default({}),
+  stages: z.record(TaxonomyStageSchema).default({}),
+  tools: z.record(TaxonomyToolSchema).default({}),
+  persons: z.record(TaxonomyPersonSchema).default({}),
+  teams: z.record(TaxonomyTeamSchema).default({}),
+  layerHealths: z.record(LayerHealthSchema).default({}),
+
+  // ── Node type extensions ──
+  // Keyed by node UUID, carries domain/governance-specific data.
+  extensions: NodeExtensionsSchema.default({}),
+
+  // ── Derived data ──
+  pluginSummary: TaxonomyPluginSummarySchema.default({}),
+  reverseIndices: ReverseIndicesSchema.default({}),
+  stats: TaxonomyStatsSchema.default({}),
 });
 
 export type TaxonomySnapshot = z.infer<typeof TaxonomySnapshotSchema>;
+
+// ── Helper Functions ───────────────────────────────────────────────────────
+
+/** Get road item node names by capability ID via reverse indices. */
+export function getRoadsByCapability(
+  snapshot: TaxonomySnapshot,
+  capId: string,
+): string[] {
+  return snapshot.reverseIndices.byCapability[capId]?.roads ?? [];
+}
+
+/** Get persona node names by capability ID via reverse indices. */
+export function getPersonasByCapability(
+  snapshot: TaxonomySnapshot,
+  capId: string,
+): string[] {
+  return snapshot.reverseIndices.byCapability[capId]?.personas ?? [];
+}
+
+/** Get capability coverage (number of roads per capability). */
+export function getCapabilityCoverage(
+  snapshot: TaxonomySnapshot,
+): Record<string, number> {
+  const coverage: Record<string, number> = {};
+  for (const [capId, data] of Object.entries(
+    snapshot.reverseIndices.byCapability,
+  )) {
+    coverage[capId] = data.roads.length;
+  }
+  return coverage;
+}
+
+/** Get aggregate slugs by bounded context slug via reverse indices. */
+export function getAggregatesByContext(
+  snapshot: TaxonomySnapshot,
+  contextSlug: string,
+): string[] {
+  return snapshot.reverseIndices.byContext[contextSlug]?.aggregates ?? [];
+}
+
+/** Get domain event slugs by bounded context slug via reverse indices. */
+export function getEventsByContext(
+  snapshot: TaxonomySnapshot,
+  contextSlug: string,
+): string[] {
+  return snapshot.reverseIndices.byContext[contextSlug]?.events ?? [];
+}
