@@ -9,13 +9,15 @@
  *  2. Subdomain group boxes
  *  3. Domain-event flow arrows (workflow-aware: highlighted when filter active)
  *  4. Invisible workflow chain paths (for persona dot animation)
- *  5. Animated persona dots (only when workflow filter active)
- *  6. Persona flow lines (persona → capability)
- *  7. Capability port nodes (orange diamonds)
- *  8. Context nodes (coloured circles)
- *  9. Persona badges
- * 10. Inferred unknown systems (dashed boxes)
- * 11. Detail panel (slide-in on click)
+ *  5. Persona flow lines (persona → capability)
+ *  5b. Story box → capability connection lines
+ *  5c. Invisible story→capability paths (for dot animation)
+ *  6. Capability port nodes (orange diamonds)
+ *  7. Context overlays (transparent bounding boxes)
+ *  8. Persona badges
+ *  9. Inferred unknown systems (dashed boxes)
+ * 10. Animated dots – ALWAYS on top (workflow chain + story line dots)
+ * 11. Detail panel (HTML overlay, slide-in on click)
  */
 
 import { useState, useMemo } from "react";
@@ -501,81 +503,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
           );
         })}
 
-        {/* 4b ── animated persona dots riding event chains ──────────── */}
-        {!animationPaused &&
-          positions.personaFlowDots
-            .filter((dot) =>
-              (!activeWorkflowIds || activeWorkflowIds.has(dot.workflowId)) &&
-              (!activePersonaId || dot.personaId === activePersonaId)
-            )
-            .map((dot: PersonaWorkflowDot) => {
-            const chain = positions.workflowEventChains.get(dot.workflowId);
-            if (!chain) return null;
-
-            const color = PERSONA_COLORS[dot.personaIndex % PERSONA_COLORS.length];
-
-            // Duration scales with path length so all dots move at ~same velocity.
-            // Target: ~150 px/s, clamped 6s–20s, with ±10% random jitter.
-            let pathLen = 0;
-            if (chain.points && chain.points.length >= 2) {
-              for (let i = 1; i < chain.points.length; i++) {
-                const dx = chain.points[i].x - chain.points[i - 1].x;
-                const dy = chain.points[i].y - chain.points[i - 1].y;
-                pathLen += Math.sqrt(dx * dx + dy * dy);
-              }
-            }
-            const baseDuration = Math.max(6, Math.min(20, pathLen / 150));
-            const seed = (dot.personaIndex * 7 + dot.staggerIndex * 13 + dot.workflowId.length * 3) % 100;
-            const duration = baseDuration * (0.9 + (seed / 100) * 0.2); // ±10%
-            const staggerDelay = (dot.staggerIndex / Math.max(dot.totalOnWorkflow, 1)) * duration + (seed % 2);
-            const dotKey = `dot-${dot.personaId}-${dot.workflowId}`;
-
-            return (
-              <g key={dotKey}>
-                {/* Glowing outer ring */}
-                <circle r="10" fill={color} fillOpacity="0.15" stroke={color} strokeWidth="1" strokeOpacity="0.4">
-                  <animateMotion
-                    dur={`${duration}s`}
-                    begin={`${staggerDelay}s`}
-                    repeatCount="indefinite"
-                    fill="freeze"
-                  >
-                    <mpath href={`#wf-chain-${dot.workflowId}`} />
-                  </animateMotion>
-                </circle>
-                {/* Inner solid dot */}
-                <circle r="6" fill={color} fillOpacity="0.9" stroke="#fff" strokeWidth="1.5">
-                  <animateMotion
-                    dur={`${duration}s`}
-                    begin={`${staggerDelay}s`}
-                    repeatCount="indefinite"
-                    fill="freeze"
-                  >
-                    <mpath href={`#wf-chain-${dot.workflowId}`} />
-                  </animateMotion>
-                </circle>
-                {/* Persona initial label */}
-                <text
-                  textAnchor="middle"
-                  dy="3.5"
-                  fill="#fff"
-                  fontSize="7"
-                  fontWeight="800"
-                  style={{ pointerEvents: "none" }}
-                >
-                  {dot.personaName.split(" ").map(w => w[0]).join("").slice(0, 2)}
-                  <animateMotion
-                    dur={`${duration}s`}
-                    begin={`${staggerDelay}s`}
-                    repeatCount="indefinite"
-                    fill="freeze"
-                  >
-                    <mpath href={`#wf-chain-${dot.workflowId}`} />
-                  </animateMotion>
-                </text>
-              </g>
-            );
-          })}
+        {/* (4b dots moved to layer 10 – always on top) */}
 
         {/* 5 ── user story boxes / collapsed groups (left column) ──── */}
         {(() => {
@@ -801,8 +729,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
           return elements;
         })()}
 
-        {/* 5c ── persona dots riding story→capability lines ────────── */}
-        {/* Only render when a persona or story filter is active to avoid visual clutter */}
+        {/* 5c ── invisible story→capability paths (for dot animation in layer 10) */}
         {!animationPaused && (activePersonaId || activeStoryId) && (() => {
           const hasWorkflowFilter = activeWorkflowIds !== undefined;
           const activeCaps = hasWorkflowFilter
@@ -812,35 +739,25 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             : null;
 
           const paths: React.ReactNode[] = [];
-          const dots: React.ReactNode[] = [];
 
           for (const persona of graph.personas) {
-            // Only show dots for the actively filtered persona
             if (activePersonaId && persona.id !== activePersonaId) continue;
 
-            const pi = graph.personas.indexOf(persona);
             const isCollapsed = collapsedPersonas.has(persona.id);
-            const color = PERSONA_COLORS[pi % PERSONA_COLORS.length];
-            const initials = persona.name.split(" ").map(w => w[0]).join("").slice(0, 2);
 
             let lines = isCollapsed
               ? targetLayout.collapsedLines.filter(l => l.personaId === persona.id)
               : targetLayout.storyLines.filter(l => l.personaId === persona.id);
 
-            // If a specific story is selected, only show dots for that story's lines
             if (activeStoryId) {
               lines = lines.filter(l => l.userStoryId === activeStoryId);
             }
 
-            let lineIdx = 0;
             for (const line of lines) {
               if (activeCaps && !activeCaps.has(line.capabilityId)) continue;
 
               const pathId = `story-path-${persona.id}-${line.userStoryId}-${line.capabilityId}`;
-              const duration = 4 + (lineIdx * 0.7) % 3; // 4-7s, staggered
-              const delay = (lineIdx * 1.3) % 3;
 
-              // Invisible path for animateMotion to follow
               paths.push(
                 <path
                   key={pathId}
@@ -850,34 +767,10 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
                   stroke="none"
                 />
               );
-
-              // Animated dot
-              dots.push(
-                <g key={`sdot-${pathId}`}>
-                  <circle r="7" fill={color} fillOpacity="0.12" stroke={color} strokeWidth="0.8" strokeOpacity="0.3">
-                    <animateMotion dur={`${duration}s`} begin={`${delay}s`} repeatCount="indefinite" fill="freeze">
-                      <mpath href={`#${pathId}`} />
-                    </animateMotion>
-                  </circle>
-                  <circle r="4.5" fill={color} fillOpacity="0.85" stroke="#fff" strokeWidth="1">
-                    <animateMotion dur={`${duration}s`} begin={`${delay}s`} repeatCount="indefinite" fill="freeze">
-                      <mpath href={`#${pathId}`} />
-                    </animateMotion>
-                  </circle>
-                  <text textAnchor="middle" dy="2.5" fill="#fff" fontSize="5" fontWeight="800" style={{ pointerEvents: "none" }}>
-                    {initials}
-                    <animateMotion dur={`${duration}s`} begin={`${delay}s`} repeatCount="indefinite" fill="freeze">
-                      <mpath href={`#${pathId}`} />
-                    </animateMotion>
-                  </text>
-                </g>
-              );
-
-              lineIdx++;
             }
           }
 
-          return [...paths, ...dots];
+          return paths;
         })()}
 
         {/* 6 ── capability nodes ────────────────────────────────────── */}
@@ -1128,6 +1021,148 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             </g>
           );
         })}
+
+        {/* 10 ── animated dots (always on top of everything) ─────── */}
+
+        {/* 10a ── workflow chain dots (persona dots riding event chains) */}
+        {!animationPaused &&
+          positions.personaFlowDots
+            .filter((dot) =>
+              (!activeWorkflowIds || activeWorkflowIds.has(dot.workflowId)) &&
+              (!activePersonaId || dot.personaId === activePersonaId)
+            )
+            .map((dot: PersonaWorkflowDot) => {
+            const chain = positions.workflowEventChains.get(dot.workflowId);
+            if (!chain) return null;
+
+            const color = PERSONA_COLORS[dot.personaIndex % PERSONA_COLORS.length];
+
+            // Duration scales with path length so all dots move at ~same velocity.
+            // Target: ~150 px/s, clamped 6s–20s, with ±10% random jitter.
+            let pathLen = 0;
+            if (chain.points && chain.points.length >= 2) {
+              for (let i = 1; i < chain.points.length; i++) {
+                const dx = chain.points[i].x - chain.points[i - 1].x;
+                const dy = chain.points[i].y - chain.points[i - 1].y;
+                pathLen += Math.sqrt(dx * dx + dy * dy);
+              }
+            }
+            const baseDuration = Math.max(6, Math.min(20, pathLen / 150));
+            const seed = (dot.personaIndex * 7 + dot.staggerIndex * 13 + dot.workflowId.length * 3) % 100;
+            const duration = baseDuration * (0.9 + (seed / 100) * 0.2); // ±10%
+            const staggerDelay = (dot.staggerIndex / Math.max(dot.totalOnWorkflow, 1)) * duration + (seed % 2);
+            const dotKey = `dot-${dot.personaId}-${dot.workflowId}`;
+
+            return (
+              <g key={dotKey}>
+                {/* Glowing outer ring */}
+                <circle r="10" fill={color} fillOpacity="0.15" stroke={color} strokeWidth="1" strokeOpacity="0.4">
+                  <animateMotion
+                    dur={`${duration}s`}
+                    begin={`${staggerDelay}s`}
+                    repeatCount="indefinite"
+                    fill="freeze"
+                  >
+                    <mpath href={`#wf-chain-${dot.workflowId}`} />
+                  </animateMotion>
+                </circle>
+                {/* Inner solid dot */}
+                <circle r="6" fill={color} fillOpacity="0.9" stroke="#fff" strokeWidth="1.5">
+                  <animateMotion
+                    dur={`${duration}s`}
+                    begin={`${staggerDelay}s`}
+                    repeatCount="indefinite"
+                    fill="freeze"
+                  >
+                    <mpath href={`#wf-chain-${dot.workflowId}`} />
+                  </animateMotion>
+                </circle>
+                {/* Persona initial label */}
+                <text
+                  textAnchor="middle"
+                  dy="3.5"
+                  fill="#fff"
+                  fontSize="7"
+                  fontWeight="800"
+                  style={{ pointerEvents: "none" }}
+                >
+                  {dot.personaName.split(" ").map(w => w[0]).join("").slice(0, 2)}
+                  <animateMotion
+                    dur={`${duration}s`}
+                    begin={`${staggerDelay}s`}
+                    repeatCount="indefinite"
+                    fill="freeze"
+                  >
+                    <mpath href={`#wf-chain-${dot.workflowId}`} />
+                  </animateMotion>
+                </text>
+              </g>
+            );
+          })}
+
+        {/* 10b ── story→capability dots (persona dots riding story lines) */}
+        {!animationPaused && (activePersonaId || activeStoryId) && (() => {
+          const hasWorkflowFilter = activeWorkflowIds !== undefined;
+          const activeCaps = hasWorkflowFilter
+            ? new Set(graph.workflows
+                .filter(wf => activeWorkflowIds!.has(wf.id))
+                .flatMap(wf => wf.capabilityIds || []))
+            : null;
+
+          const dots: React.ReactNode[] = [];
+
+          for (const persona of graph.personas) {
+            if (activePersonaId && persona.id !== activePersonaId) continue;
+
+            const pi = graph.personas.indexOf(persona);
+            const isCollapsed = collapsedPersonas.has(persona.id);
+            const color = PERSONA_COLORS[pi % PERSONA_COLORS.length];
+            const initials = persona.name.split(" ").map(w => w[0]).join("").slice(0, 2);
+
+            let lines = isCollapsed
+              ? targetLayout.collapsedLines.filter(l => l.personaId === persona.id)
+              : targetLayout.storyLines.filter(l => l.personaId === persona.id);
+
+            if (activeStoryId) {
+              lines = lines.filter(l => l.userStoryId === activeStoryId);
+            }
+
+            let lineIdx = 0;
+            for (const line of lines) {
+              if (activeCaps && !activeCaps.has(line.capabilityId)) continue;
+
+              const pathId = `story-path-${persona.id}-${line.userStoryId}-${line.capabilityId}`;
+              const duration = 4 + (lineIdx * 0.7) % 3; // 4-7s, staggered
+              const delay = (lineIdx * 1.3) % 3;
+
+              dots.push(
+                <g key={`sdot-${pathId}`}>
+                  <circle r="7" fill={color} fillOpacity="0.12" stroke={color} strokeWidth="0.8" strokeOpacity="0.3">
+                    <animateMotion dur={`${duration}s`} begin={`${delay}s`} repeatCount="indefinite" fill="freeze">
+                      <mpath href={`#${pathId}`} />
+                    </animateMotion>
+                  </circle>
+                  <circle r="4.5" fill={color} fillOpacity="0.85" stroke="#fff" strokeWidth="1">
+                    <animateMotion dur={`${duration}s`} begin={`${delay}s`} repeatCount="indefinite" fill="freeze">
+                      <mpath href={`#${pathId}`} />
+                    </animateMotion>
+                  </circle>
+                  <text textAnchor="middle" dy="2.5" fill="#fff" fontSize="5" fontWeight="800" style={{ pointerEvents: "none" }}>
+                    {initials}
+                    <animateMotion dur={`${duration}s`} begin={`${delay}s`} repeatCount="indefinite" fill="freeze">
+                      <mpath href={`#${pathId}`} />
+                    </animateMotion>
+                  </text>
+                </g>
+              );
+
+              lineIdx++;
+            }
+          }
+
+          return dots;
+        })()}
+
       </svg>
 
       {/* ── Legend (bottom-left) ───────────────────────────────────── */}

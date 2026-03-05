@@ -120,11 +120,18 @@ bdd-test:
     just dev-ready
     npx bddgen && npx playwright test
 
-# Run API-only BDD tests
+# Run API-only BDD tests (uses dev or prod environment, whichever is up)
 [group('bdd')]
 [working-directory: 'stack-tests']
 bdd-api:
+    #!/usr/bin/env bash
+    set -euo pipefail
     just dev-ready
+    if [ -f ../.dev-ready-url ]; then
+      export API_BASE_URL="$(cat ../.dev-ready-url)"
+      export FRONTEND_URL="$(cat ../.dev-ready-url)"
+      echo "BDD target: ${API_BASE_URL}"
+    fi
     npx bddgen && npx playwright test --grep "@api"
 
 # Run UI-only BDD tests
@@ -302,30 +309,50 @@ dev-status:
       echo "  Frontend (port ${FRONTEND_PORT}): ❌ not reachable"
     fi
 
-# Ensure dev servers are reachable; exit non-zero with instructions if not
+# Ensure dev or prod environment is reachable; exit non-zero with instructions if not.
+# Writes the base URL to .dev-ready-url so callers (pre-push, bdd recipes) can read it.
 [group('docker')]
 dev-ready:
     #!/usr/bin/env bash
     set -euo pipefail
     API_PORT="${API_PORT:-3001}"
     FRONTEND_PORT="${FRONTEND_PORT:-3002}"
-    HEALTH_URL="http://localhost:${FRONTEND_PORT}/api/v1/health"
+    DOCKER_PORT="${DOCKER_PORT:-8090}"
+    DEV_URL="http://localhost:${FRONTEND_PORT}/api/v1/health"
+    PROD_URL="http://localhost:${DOCKER_PORT}/api/v1/health"
     MAX_WAIT=5
-    echo "Checking dev environment (${HEALTH_URL})..."
+
+    # 1. Try local dev servers first (faster feedback loop)
+    echo "Checking dev environment (port ${FRONTEND_PORT})..."
     for i in $(seq 1 $MAX_WAIT); do
-      if curl -sf "$HEALTH_URL" >/dev/null 2>&1; then
-        echo "  ✅ Dev environment is up"
+      if curl -sf "$DEV_URL" >/dev/null 2>&1; then
+        echo "  ✅ Dev environment is up (port ${FRONTEND_PORT})"
+        echo "http://localhost:${FRONTEND_PORT}" > .dev-ready-url
         exit 0
       fi
       echo "  Waiting... (${i}/${MAX_WAIT})"
       sleep 1
     done
+
+    # 2. Fall back to prod Docker container
+    echo "  Dev not reachable. Checking prod Docker container (port ${DOCKER_PORT})..."
+    for i in $(seq 1 3); do
+      if curl -sf "$PROD_URL" >/dev/null 2>&1; then
+        echo "  ✅ Prod Docker container is up (port ${DOCKER_PORT})"
+        echo "http://localhost:${DOCKER_PORT}" > .dev-ready-url
+        exit 0
+      fi
+      echo "  Waiting... (${i}/3)"
+      sleep 1
+    done
+
     echo ""
-    echo "  ❌ Dev environment not reachable at ${HEALTH_URL}"
+    echo "  ❌ No environment reachable"
     echo ""
-    echo "  Start it with one of:"
-    echo "    just dev-docker   — Docker Compose dev mode (hot reload)"
-    echo "    just dev          — Local Bun + Vite dev servers"
+    echo "  Start one of:"
+    echo "    docker compose up -d  — Prod container (port ${DOCKER_PORT})"
+    echo "    just dev-docker       — Docker Compose dev mode (hot reload)"
+    echo "    just dev              — Local Bun + Vite dev servers"
     echo ""
     exit 1
 

@@ -13,9 +13,11 @@ const rootEnvPath = path.resolve(__dirname, '..', '.env');
 if (fs.existsSync(rootEnvPath)) {
   dotenv.config({ path: rootEnvPath });
 }
-// Then load local .env (overrides with full URLs: FRONTEND_URL, API_BASE_URL)
+// Then load local .env (fills in URLs not already set by process env).
+// Does NOT override process env vars so callers like `just bdd-api` can
+// target alternative environments (e.g. prod Docker on port 8090).
 if (fs.existsSync(localEnvPath)) {
-  dotenv.config({ path: localEnvPath, override: true });
+  dotenv.config({ path: localEnvPath });
 }
 
 // Build URLs from explicit FRONTEND_URL/API_BASE_URL or fall back to root .env ports

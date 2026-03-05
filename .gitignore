@@ -72,3 +72,6 @@ Thumbs.db
 # SQLite shared memory files
 *.db-shm
 *.db-wal
+
+# Dev-ready URL (written by `just dev-ready`)
+.dev-ready-url
