@@ -1,5 +1,7 @@
 # Phase 5: Scanner Agent Enhancement
 
+> **Note (v0.2.0):** As of @foe/schemas v0.2.0, the `ddd/` and `governance/` modules were consolidated into a unified `taxonomy/` module. File paths and references below (e.g. `packages/foe-scanner/`) reflect the original implementation at time of writing.
+
 **Package:** `packages/foe-scanner/.opencode/agents/`
 **Depends on:** Phase 3 (governance index must be buildable)
 **Can run in parallel with:** Phase 4 (API), Phase 6 (prima)

@@ -1,5 +1,7 @@
 # Governance Domain Mapper — Plan Overview
 
+> **Note (v0.2.0):** As of @foe/schemas v0.2.0, the `ddd/` and `governance/` modules were consolidated into a unified `taxonomy/` module. Architecture diagrams and file paths below (e.g. `governance/`) reflect the original implementation at time of writing.
+
 ## Context
 
 The **katalyst-domain-mapper** repo has a proven pipeline for turning structured markdown (with YAML frontmatter) into validated JSON indices, persisting them via an API, scanning repos with AI agents, and visualizing results in web UIs. The pipeline today handles **FOE Field Guide** artifacts (methods + observations).

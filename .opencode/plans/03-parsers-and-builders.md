@@ -1,5 +1,7 @@
 # Phase 3: Parsers, Governance Index Builder, and CLI Commands
 
+> **Note (v0.2.0):** As of @foe/schemas v0.2.0, the `ddd/` and `governance/` modules were consolidated into a unified `taxonomy/` module. Import statements below (e.g. `from '@foe/schemas/governance'`) reflect the original implementation at time of writing.
+
 **Package:** `packages/foe-field-guide-tools/src/`
 **Depends on:** Phase 1 + 2 (all Zod schemas)
 **Consumed by:** Phase 4 (API), Phase 5 (scanner), Phase 6 (prima)

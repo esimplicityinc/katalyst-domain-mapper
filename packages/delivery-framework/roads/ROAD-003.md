@@ -30,6 +30,8 @@ dependencies:
 
 # ROAD-003: DDD Artifact Schemas
 
+> **Note (v0.2.0):** As of @foe/schemas v0.2.0, the `ddd/` and `governance/` modules were consolidated into a unified `taxonomy/` module. File paths below (e.g. `src/governance/ddd/`) reflect the original implementation at time of writing.
+
 ## Summary
 
 Create Zod schemas for 4 DDD artifact types: BoundedContext, Aggregate, ValueObject, and DomainEvent. This formalizes domain model knowledge — currently embedded only in agent prompts — into validated markdown frontmatter that can be parsed, indexed, and visualized.

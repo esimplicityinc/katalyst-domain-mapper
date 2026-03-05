@@ -1,5 +1,7 @@
 # Katalyst Delivery Framework — Master Plan
 
+> **Note (v0.2.0):** As of @foe/schemas v0.2.0, the `ddd/` and `governance/` modules were consolidated into a unified `taxonomy/` module. File trees and references below (e.g. `governance/ + ddd/ modules`) reflect the original implementation at time of writing.
+
 ## Vision
 
 Turn this monorepo into a **self-governing delivery framework**. Import the generic governance infrastructure from prima-delivery-demonstrator (agents, skills, templates, Docusaurus site, governance scripts) as a new `packages/delivery-framework/` package. Use the katalyst-domain-mapper's own domain (FOE scanning, reports, field guides) as the example content. Then progressively replace the old hand-written JS governance scripts with the new Zod-validated, API-backed system — release by release.

@@ -1,5 +1,7 @@
 # Phase 2: DDD Artifact Schemas
 
+> **Note (v0.2.0):** As of @foe/schemas v0.2.0, the `ddd/` and `governance/` modules were consolidated into a unified `taxonomy/` module. File paths and import statements below (e.g. `src/governance/ddd/`) reflect the original implementation at time of writing.
+
 **Package:** `packages/foe-schemas/src/governance/ddd/`
 **Depends on:** Phase 1 (governance common types)
 **Consumed by:** Phase 3 (parsers), Phase 4 (API), Phase 5 (scanner)

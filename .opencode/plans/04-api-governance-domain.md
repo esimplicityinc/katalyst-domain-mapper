@@ -1,5 +1,7 @@
 # Phase 4: API Governance Domain
 
+> **Note (v0.2.0):** As of @foe/schemas v0.2.0, the `ddd/` and `governance/` modules were consolidated into a unified `taxonomy/` module. Import statements below (e.g. `from '@foe/schemas/governance'`) reflect the original implementation at time of writing.
+
 **Package:** `packages/foe-api/src/`
 **Depends on:** Phase 1 + 2 (schemas)
 **Can run in parallel with:** Phase 5 (scanner), Phase 6 (prima)
