@@ -219,6 +219,7 @@ ci: check bdd-api
 [group('quality')]
 typecheck:
     bunx tsc --noEmit --project packages/foe-schemas/tsconfig.json
+    bunx tsc --noEmit --project packages/vocabulary/tsconfig.json
     bunx tsc --noEmit --project packages/foe-api/tsconfig.json
     bunx tsc --noEmit --project packages/intelligence/web/tsconfig.json
     bunx tsc --noEmit --project packages/web-report/tsconfig.json

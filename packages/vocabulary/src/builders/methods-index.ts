@@ -105,7 +105,7 @@ export async function buildMethodsIndex(): Promise<MethodsIndex> {
 
   for (const method of Object.values(methods)) {
     const maturity = method.foeMaturity || method.maturity;
-    maturityCounts[maturity]++;
+    if (maturity) maturityCounts[maturity]++;
   }
 
   const fieldGuideCounts: Record<string, number> = {};

@@ -15,14 +15,25 @@ export const MethodsIndexSchema = z.object({
   /** All methods indexed by methodId */
   methods: z.record(z.string(), MethodSchema),
 
-  /** Keyword index for auto-linking */
-  keywordIndex: z.record(z.string(), z.array(z.string())),
+  /** Keyword → method IDs reverse index */
+  byKeyword: z.record(z.string(), z.array(z.string())),
 
-  /** Field guide index (guide ID → method IDs) */
-  fieldGuideIndex: z.record(z.string(), z.array(z.string())).optional(),
+  /** Field guide ID → method IDs reverse index */
+  byFieldGuide: z.record(z.string(), z.array(z.string())).default({}),
 
-  /** External framework index (framework → method IDs) */
-  frameworkIndex: z.record(z.string(), z.array(z.string())).optional(),
+  /** External framework → method IDs reverse index */
+  byFramework: z.record(z.string(), z.array(z.string())).default({}),
+
+  /** Observation ID → method IDs reverse index */
+  byObservation: z.record(z.string(), z.array(z.string())).default({}),
+
+  /** Aggregate statistics */
+  stats: z.object({
+    totalMethods: z.number().int().nonnegative(),
+    byMaturity: z.record(z.string(), z.number().int().nonnegative()),
+    byFieldGuide: z.record(z.string(), z.number().int().nonnegative()),
+    byFramework: z.record(z.string(), z.number().int().nonnegative()),
+  }),
 });
 
 export type MethodsIndex = z.infer<typeof MethodsIndexSchema>;
@@ -36,10 +47,9 @@ export function getMethodsByFieldGuide(
   index: MethodsIndex,
   fieldGuideId: string,
 ): Method[] {
-  if (!index.fieldGuideIndex) return [];
-  const methodIds = index.fieldGuideIndex[fieldGuideId] || [];
+  const methodIds = index.byFieldGuide[fieldGuideId] || [];
   return methodIds
-    .map((id) => index.methods[id])
+    .map((id: string) => index.methods[id])
     .filter((m): m is Method => m !== undefined);
 }
 
@@ -50,10 +60,9 @@ export function getMethodsByFramework(
   index: MethodsIndex,
   framework: string,
 ): Method[] {
-  if (!index.frameworkIndex) return [];
-  const methodIds = index.frameworkIndex[framework] || [];
+  const methodIds = index.byFramework[framework] || [];
   return methodIds
-    .map((id) => index.methods[id])
+    .map((id: string) => index.methods[id])
     .filter((m): m is Method => m !== undefined);
 }
 
@@ -65,8 +74,8 @@ export function searchMethodsByKeyword(
   keyword: string,
 ): Method[] {
   const normalizedKeyword = keyword.toLowerCase();
-  const methodIds = index.keywordIndex[normalizedKeyword] || [];
+  const methodIds = index.byKeyword[normalizedKeyword] || [];
   return methodIds
-    .map((id) => index.methods[id])
+    .map((id: string) => index.methods[id])
     .filter((m): m is Method => m !== undefined);
 }
