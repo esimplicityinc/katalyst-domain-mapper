@@ -16,9 +16,12 @@ The system generates actionable reports that identify strengths, gaps, and provi
 katalyst-domain-mapper/
 ├── packages/
 │   ├── foe-schemas/              # Zod validation schemas
-│   ├── foe-field-guide-tools/    # Field Guide parsers and indices
-│   ├── foe-scanner/              # Docker container with AI agents
-│   └── foe-web-ui/               # React visualization interface
+│   ├── intelligence/             # Scanner, Field Guide tools, Web UI
+│   ├── vocabulary/               # FOE Field Guide content (markdown)
+│   ├── assessment/               # Docker container with AI agents
+│   ├── delivery-framework/       # Governance, taxonomy, roadmap
+│   ├── chat/                     # Conversational AI interface
+│   └── feature-flags/            # Feature flag management
 ├── package.json                  # Bun workspace root
 └── agents.md                     # This file
 ```
@@ -30,9 +33,10 @@ katalyst-domain-mapper/
 **Key Components:**
 - `scan/` - FOE report schemas (dimensions, findings, gaps, recommendations, triangle diagnosis)
 - `field-guide/` - Method and observation schemas with maturity levels
+- `taxonomy/` - Taxonomy extensions (13 schemas: aggregate, bounded-context, capability, change-record, domain-event, glossary-term, governance-snapshot, non-functional-requirement, persona, road-item, taxonomy-snapshot, user-story, value-object)
 - `graph/` - Neo4j node/relationship types (optional knowledge graph)
 
-**Build Output:** 141KB bundled, 45 TypeScript declaration files
+**Build Output:** 174KB bundled
 
 **Why Zod?** Runtime validation + TypeScript types from a single source of truth. Ensures data integrity across the entire pipeline.
 
@@ -48,7 +52,7 @@ katalyst-domain-mapper/
   
 - **Builders** (`src/builders/`) - Create searchable indices
   - `keywords.ts` - Extract 625+ keywords from methods
-  - `methods-index.ts` - 65 methods (17 FOE + 48 external frameworks)
+  - `methods-index.ts` - 65 methods (17 FOE + 48 external frameworks) with `byKeyword`, `byFieldGuide`, `byFramework`, `byObservation` reverse indices and `stats`
   - `observations-index.ts` - 39 observations with evidence
 
 - **CLI** (`src/cli.ts`) - Command-line interface

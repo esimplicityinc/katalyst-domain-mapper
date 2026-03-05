@@ -325,7 +325,7 @@ CAP-009 --[supports]--> governance.delivery-framework.katalyst
 ```
 
 **Dependencies**:
-- `@foe/schemas/ddd` (Zod schemas for DDD artifacts)
+- `@foe/schemas/taxonomy` (Zod schemas for DDD artifacts)
 - PostgreSQL (persistence)
 - Drizzle ORM
 
