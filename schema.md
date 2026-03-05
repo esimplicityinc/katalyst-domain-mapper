@@ -214,7 +214,8 @@ erDiagram
         CommunicationPattern communicationPattern "domain-events|shared-kernel|acl|ohs|conformist|partnership|customer-supplier|separate-ways"
         string_arr upstreamContexts "slug refs (gov only)"
         string_arr downstreamContexts "slug refs (gov only)"
-        string teamOwnership "optional"
+        string teamOwnership "optional - free text"
+        string ownerTeam "optional - FK to TaxTeam slug"
         CtxStatus status "draft|stable|deprecated"
         SubdomainType subdomainType "nullable: core|supporting|generic"
         string path "gov only - auto-generated"
@@ -609,6 +610,40 @@ erDiagram
     }
 
     %% ============================================================
+    %% TAXONOMY - TEAMS & PERSONS (Team Topologies)
+    %% ============================================================
+
+    TaxTeam {
+        string id "PK - snapshotId:name"
+        string snapshotId "FK - taxonomy_snapshots"
+        string name "kebab-case slug"
+        string displayName
+        TeamTopologyType teamType "stream-aligned|platform|enabling|complicated-subsystem"
+        string description "optional"
+        string focusArea "optional"
+        string_arr communicationChannels "default empty"
+        string_arr ownedNodes "taxonomy node name refs"
+    }
+
+    TaxPerson {
+        string id "PK - snapshotId:name"
+        string snapshotId "FK - taxonomy_snapshots"
+        string name "kebab-case slug"
+        string displayName
+        string email "optional"
+        string role "optional - global role"
+        string avatarUrl "optional"
+    }
+
+    TaxTeamMembership {
+        string id "PK - snapshotId:team:person"
+        string snapshotId "FK - taxonomy_snapshots"
+        string teamName "FK - TaxTeam.name"
+        string personName "FK - TaxPerson.name"
+        string role "role within this team"
+    }
+
+    %% ============================================================
     %% TAXONOMY - DOMAIN SUPPORT
     %% ============================================================
 
@@ -768,6 +803,17 @@ erDiagram
     AgentBindings }o--o{ TaxonomyDocument : "binds agents to taxonomy nodes"
 
     %% ============================================================
+    %% RELATIONSHIPS - Taxonomy: Teams & Persons
+    %% ============================================================
+
+    TaxTeam }o--|| TaxonomyDocument : "snapshotId (via taxonomy_snapshots)"
+    TaxTeam }o--o{ TaxonomyDocument : "ownedNodes[] (soft FK)"
+    TaxPerson }o--|| TaxonomyDocument : "snapshotId (via taxonomy_snapshots)"
+    TaxTeamMembership }o--|| TaxTeam : "teamName"
+    TaxTeamMembership }o--|| TaxPerson : "personName"
+    BoundedContext }o--o| TaxTeam : "ownerTeam (soft FK to team slug)"
+
+    %% ============================================================
     %% RELATIONSHIPS - Taxonomy: Domain Support
     %% ============================================================
 
@@ -805,6 +851,9 @@ All taxonomy tables follow the immutable-snapshot pattern: a parent `taxonomy_sn
 | `taxonomy_actions` | id, snapshot_id, name, action_type, layer_type, tags (JSON) | snapshot_id → taxonomy_snapshots (cascade) | shell/http/workflow |
 | `taxonomy_stages` | id, snapshot_id, name, description, depends_on (JSON) | snapshot_id → taxonomy_snapshots (cascade) | CI/CD pipeline stages |
 | `taxonomy_tools` | id, snapshot_id, name, description, actions (JSON) | snapshot_id → taxonomy_snapshots (cascade) | |
+| `taxonomy_teams` | id, snapshot_id, name, display_name, team_type, description, focus_area, communication_channels (JSON), owned_nodes (JSON) | snapshot_id → taxonomy_snapshots (cascade) | Team Topologies types: stream-aligned, platform, enabling, complicated-subsystem |
+| `taxonomy_persons` | id, snapshot_id, name, display_name, email, role, avatar_url | snapshot_id → taxonomy_snapshots (cascade) | Top-level persons, not nested inside teams |
+| `taxonomy_team_memberships` | id, snapshot_id, team_name, person_name, role | snapshot_id → taxonomy_snapshots (cascade) | Many-to-many join; role is per-membership |
 
 ### Governance ↔ Taxonomy Cross-References
 
@@ -818,7 +867,7 @@ All taxonomy tables follow the immutable-snapshot pattern: a parent `taxonomy_sn
 | Table Group | Tables | FK Parent |
 |------------|--------|-----------|
 | FOE Scans | scans, dimensions, subscores, findings, strengths, recommendations, triangle_diagnoses, methodologies | repositories → scans (cascade chain) |
-| DDD Models | domain_models, bounded_contexts, aggregates, value_objects, domain_events, glossary_terms | domain_models (cascade) |
+| DDD Models | domain_models, bounded_contexts (+ owner_team column), aggregates, value_objects, domain_events, glossary_terms | domain_models (cascade) |
 | Chat | chat_sessions, chat_messages | domain_models (cascade) |
 | Scan Jobs | scan_jobs | scans (nullable) |
 | Governance | governance_snapshots, governance_capabilities, governance_road_items, governance_contexts | governance_snapshots (cascade) |

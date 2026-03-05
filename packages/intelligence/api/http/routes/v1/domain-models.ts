@@ -111,6 +111,7 @@ export function createDomainModelRoutes(deps: {
             responsibility: t.String(),
             sourceDirectory: t.Optional(t.String()),
             teamOwnership: t.Optional(t.String()),
+            ownerTeam: t.Optional(t.String()),
             status: t.Optional(t.String()),
             subdomainType: t.Optional(t.String()),
             contextType: t.Optional(t.String()),
@@ -135,6 +136,7 @@ export function createDomainModelRoutes(deps: {
             responsibility: t.String(),
             sourceDirectory: t.Optional(t.String()),
             teamOwnership: t.Optional(t.String()),
+            ownerTeam: t.Optional(t.String()),
             status: t.Optional(t.String()),
             subdomainType: t.Optional(
               t.Union([

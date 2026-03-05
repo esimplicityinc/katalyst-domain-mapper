@@ -17,6 +17,7 @@ export interface StoredBoundedContext {
   responsibility: string;
   sourceDirectory: string | null;
   teamOwnership: string | null;
+  ownerTeam: string | null;
   status: string;
   subdomainType: string | null;
   /** "internal" | "external-system" | "human-process" | "unknown" */
@@ -130,6 +131,7 @@ export interface CreateBoundedContextInput {
   responsibility: string;
   sourceDirectory?: string;
   teamOwnership?: string;
+  ownerTeam?: string;
   status?: string;
   subdomainType?: string;
   contextType?: string;
@@ -144,6 +146,7 @@ export interface UpdateBoundedContextInput {
   responsibility: string;
   sourceDirectory?: string;
   teamOwnership?: string;
+  ownerTeam?: string;
   status?: string;
   subdomainType?: string;
   contextType?: string;

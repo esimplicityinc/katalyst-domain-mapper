@@ -20,6 +20,8 @@ export interface TaxonomyPluginSummary {
   actions: number;
   stages: number;
   tools: number;
+  teams: number;
+  persons: number;
 }
 
 // ── Query Result Types ─────────────────────────────────────────────────────
@@ -30,12 +32,46 @@ export interface TaxonomyNodeSummary {
   fqtn: string;
   description: string | null;
   parentNode: string | null;
+  owners: string[];
 }
 
 export interface TaxonomyEnvironmentSummary {
   name: string;
   description: string | null;
   parentEnvironment: string | null;
+}
+
+// ── Team & Person Query Types ──────────────────────────────────────────────
+
+export interface TaxonomyTeamSummary {
+  name: string;
+  displayName: string;
+  teamType: string;
+  description: string | null;
+  focusArea: string | null;
+  communicationChannels: string[];
+  ownedNodes: string[];
+  memberCount: number;
+}
+
+export interface TaxonomyTeamMemberSummary {
+  personName: string;
+  displayName: string;
+  email: string | null;
+  role: string; // role within this team
+}
+
+export interface TaxonomyTeamDetail extends TaxonomyTeamSummary {
+  members: TaxonomyTeamMemberSummary[];
+}
+
+export interface TaxonomyPersonSummary {
+  name: string;
+  displayName: string;
+  email: string | null;
+  role: string | null;
+  avatarUrl: string | null;
+  teams: Array<{ teamName: string; role: string }>;
 }
 
 export interface TaxonomyHierarchyNode {
@@ -143,4 +179,13 @@ export interface TaxonomyRepository {
    * Get the full capability hierarchy tree for a specific snapshot.
    */
   getCapabilityTreeBySnapshotId(snapshotId: string): Promise<CapabilityTree>;
+
+  /** Get all teams from the latest snapshot */
+  getTeams(): Promise<TaxonomyTeamSummary[]>;
+
+  /** Get a team by name with full member details from the latest snapshot */
+  getTeamByName(name: string): Promise<TaxonomyTeamDetail | null>;
+
+  /** Get all persons from the latest snapshot with their team memberships */
+  getPersons(): Promise<TaxonomyPersonSummary[]>;
 }

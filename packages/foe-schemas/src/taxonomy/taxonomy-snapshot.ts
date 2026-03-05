@@ -30,6 +30,16 @@ export type CapabilityRelationshipType = z.infer<
   typeof CapabilityRelationshipTypeSchema
 >;
 
+// ── Team Topology Type ─────────────────────────────────────────────────────
+export const TeamTopologyTypeSchema = z.enum([
+  "stream-aligned",
+  "platform",
+  "enabling",
+  "complicated-subsystem",
+]);
+
+export type TeamTopologyType = z.infer<typeof TeamTopologyTypeSchema>;
+
 // ── Action Type ────────────────────────────────────────────────────────────
 export const ActionTypeSchema = z.enum(["shell", "http", "workflow"]);
 export type ActionType = z.infer<typeof ActionTypeSchema>;
@@ -117,6 +127,42 @@ export const TaxonomyToolSchema = z.object({
 
 export type TaxonomyTool = z.infer<typeof TaxonomyToolSchema>;
 
+// ── Taxonomy Person Schema ─────────────────────────────────────────────────
+export const TaxonomyPersonSchema = z.object({
+  name: TaxonomyNodeNamePattern,
+  displayName: z.string(),
+  email: z.string().nullable().default(null),
+  role: z.string().nullable().default(null),
+  avatarUrl: z.string().nullable().default(null),
+});
+
+export type TaxonomyPerson = z.infer<typeof TaxonomyPersonSchema>;
+
+// ── Taxonomy Team Membership Schema ────────────────────────────────────────
+// Represents a person's role within a specific team (many-to-many join).
+export const TaxonomyTeamMembershipSchema = z.object({
+  personName: TaxonomyNodeNamePattern,
+  role: z.string(),
+});
+
+export type TaxonomyTeamMembership = z.infer<
+  typeof TaxonomyTeamMembershipSchema
+>;
+
+// ── Taxonomy Team Schema ───────────────────────────────────────────────────
+export const TaxonomyTeamSchema = z.object({
+  name: TaxonomyNodeNamePattern,
+  displayName: z.string(),
+  teamType: TeamTopologyTypeSchema,
+  description: z.string().nullable().default(null),
+  focusArea: z.string().nullable().default(null),
+  communicationChannels: z.array(z.string()).default([]),
+  ownedNodes: z.array(z.string()).default([]),
+  members: z.array(TaxonomyTeamMembershipSchema).default([]),
+});
+
+export type TaxonomyTeam = z.infer<typeof TaxonomyTeamSchema>;
+
 // ── Plugin Summary Schema ──────────────────────────────────────────────────
 export const TaxonomyPluginSummarySchema = z.object({
   layerTypes: z.number().int().nonnegative().default(0),
@@ -126,6 +172,8 @@ export const TaxonomyPluginSummarySchema = z.object({
   stages: z.number().int().nonnegative().default(0),
   tools: z.number().int().nonnegative().default(0),
   layerHealths: z.number().int().nonnegative().default(0),
+  teams: z.number().int().nonnegative().default(0),
+  persons: z.number().int().nonnegative().default(0),
 });
 
 export type TaxonomyPluginSummary = z.infer<typeof TaxonomyPluginSummarySchema>;

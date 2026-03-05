@@ -106,6 +106,36 @@ function makeDb() {
       description TEXT NOT NULL,
       actions TEXT NOT NULL DEFAULT '[]'
     );
+
+    CREATE TABLE IF NOT EXISTS taxonomy_teams (
+      id TEXT PRIMARY KEY,
+      snapshot_id TEXT NOT NULL REFERENCES taxonomy_snapshots(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      display_name TEXT NOT NULL,
+      team_type TEXT NOT NULL,
+      description TEXT,
+      focus_area TEXT,
+      communication_channels TEXT NOT NULL DEFAULT '[]',
+      owned_nodes TEXT NOT NULL DEFAULT '[]'
+    );
+
+    CREATE TABLE IF NOT EXISTS taxonomy_persons (
+      id TEXT PRIMARY KEY,
+      snapshot_id TEXT NOT NULL REFERENCES taxonomy_snapshots(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      display_name TEXT NOT NULL,
+      email TEXT,
+      role TEXT,
+      avatar_url TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS taxonomy_team_memberships (
+      id TEXT PRIMARY KEY,
+      snapshot_id TEXT NOT NULL REFERENCES taxonomy_snapshots(id) ON DELETE CASCADE,
+      team_name TEXT NOT NULL,
+      person_name TEXT NOT NULL,
+      role TEXT NOT NULL
+    );
   `);
 
   return drizzle(sqlite, { schema });
@@ -129,6 +159,9 @@ function makeSnapshot(
     actions: [],
     stages: [],
     tools: [],
+    teams: [],
+    persons: [],
+    teamMemberships: [],
     rawPayload: {},
   };
 }
@@ -300,6 +333,194 @@ describe("TaxonomyRepositorySQLite", () => {
       const tree = await repo.getCapabilityTreeBySnapshotId(snap1.id);
       expect(tree.byName.has("cap-v1")).toBe(true);
       expect(tree.byName.has("cap-v2")).toBe(false);
+    });
+  });
+
+  describe("teams and persons", () => {
+    it("saveSnapshot persists teams, persons, and memberships", async () => {
+      const data: ValidatedTaxonomyData = {
+        ...makeSnapshot([]),
+        teams: [
+          {
+            name: "platform-team",
+            displayName: "Platform Team",
+            teamType: "platform",
+            description: "Builds internal platforms",
+            focusArea: "infrastructure",
+            communicationChannels: ["#platform"],
+            ownedNodes: ["infra-stack"],
+            members: [],
+          },
+          {
+            name: "stream-alpha",
+            displayName: "Stream Alpha",
+            teamType: "stream-aligned",
+            description: "Customer-facing features",
+            focusArea: "checkout",
+            communicationChannels: ["#alpha", "#alpha-dev"],
+            ownedNodes: ["checkout-stack"],
+            members: [],
+          },
+        ],
+        persons: [
+          { name: "alice", displayName: "Alice Smith", email: "alice@example.com", role: "tech-lead", avatarUrl: null },
+          { name: "bob", displayName: "Bob Jones", email: "bob@example.com", role: "engineer", avatarUrl: null },
+          { name: "carol", displayName: "Carol Wu", email: null, role: null, avatarUrl: null },
+        ],
+        teamMemberships: [
+          { teamName: "platform-team", personName: "alice", role: "tech-lead" },
+          { teamName: "platform-team", personName: "bob", role: "engineer" },
+          { teamName: "stream-alpha", personName: "bob", role: "contributor" },
+          { teamName: "stream-alpha", personName: "carol", role: "engineer" },
+        ],
+      };
+
+      await repo.saveSnapshot(data);
+      const teams = await repo.getTeams();
+
+      expect(teams).toHaveLength(2);
+
+      const platform = teams.find((t) => t.name === "platform-team")!;
+      expect(platform.displayName).toBe("Platform Team");
+      expect(platform.memberCount).toBe(2);
+
+      const alpha = teams.find((t) => t.name === "stream-alpha")!;
+      expect(alpha.displayName).toBe("Stream Alpha");
+      expect(alpha.memberCount).toBe(2);
+    });
+
+    it("getTeamByName returns team with full member details", async () => {
+      const data: ValidatedTaxonomyData = {
+        ...makeSnapshot([]),
+        teams: [
+          {
+            name: "core-team",
+            displayName: "Core Team",
+            teamType: "stream-aligned",
+            description: "Core product team",
+            focusArea: "product",
+            communicationChannels: ["#core"],
+            ownedNodes: [],
+            members: [],
+          },
+        ],
+        persons: [
+          { name: "dana", displayName: "Dana Lee", email: "dana@example.com", role: "lead", avatarUrl: null },
+          { name: "evan", displayName: "Evan Park", email: "evan@example.com", role: "engineer", avatarUrl: null },
+        ],
+        teamMemberships: [
+          { teamName: "core-team", personName: "dana", role: "tech-lead" },
+          { teamName: "core-team", personName: "evan", role: "engineer" },
+        ],
+      };
+
+      await repo.saveSnapshot(data);
+      const detail = await repo.getTeamByName("core-team");
+
+      expect(detail).not.toBeNull();
+      expect(detail!.name).toBe("core-team");
+      expect(detail!.members).toHaveLength(2);
+
+      const dana = detail!.members.find((m) => m.personName === "dana")!;
+      expect(dana.displayName).toBe("Dana Lee");
+      expect(dana.email).toBe("dana@example.com");
+      expect(dana.role).toBe("tech-lead");
+
+      const evan = detail!.members.find((m) => m.personName === "evan")!;
+      expect(evan.displayName).toBe("Evan Park");
+      expect(evan.email).toBe("evan@example.com");
+      expect(evan.role).toBe("engineer");
+    });
+
+    it("getTeamByName returns null for unknown team", async () => {
+      // Save a snapshot with no teams so there IS a latest snapshot
+      await repo.saveSnapshot(makeSnapshot([]));
+
+      const result = await repo.getTeamByName("nonexistent");
+      expect(result).toBeNull();
+    });
+
+    it("getPersons includes team membership info", async () => {
+      const data: ValidatedTaxonomyData = {
+        ...makeSnapshot([]),
+        teams: [
+          {
+            name: "team-x",
+            displayName: "Team X",
+            teamType: "platform",
+            description: null,
+            focusArea: null,
+            communicationChannels: [],
+            ownedNodes: [],
+            members: [],
+          },
+          {
+            name: "team-y",
+            displayName: "Team Y",
+            teamType: "enabling",
+            description: null,
+            focusArea: null,
+            communicationChannels: [],
+            ownedNodes: [],
+            members: [],
+          },
+        ],
+        persons: [
+          { name: "fiona", displayName: "Fiona Grant", email: "fiona@example.com", role: "architect", avatarUrl: null },
+        ],
+        teamMemberships: [
+          { teamName: "team-x", personName: "fiona", role: "lead" },
+          { teamName: "team-y", personName: "fiona", role: "advisor" },
+        ],
+      };
+
+      await repo.saveSnapshot(data);
+      const persons = await repo.getPersons();
+
+      expect(persons).toHaveLength(1);
+      const fiona = persons[0];
+      expect(fiona.name).toBe("fiona");
+      expect(fiona.displayName).toBe("Fiona Grant");
+      expect(fiona.teams).toHaveLength(2);
+
+      const teamNames = fiona.teams.map((t) => t.teamName).sort();
+      expect(teamNames).toEqual(["team-x", "team-y"]);
+
+      const teamX = fiona.teams.find((t) => t.teamName === "team-x")!;
+      expect(teamX.role).toBe("lead");
+
+      const teamY = fiona.teams.find((t) => t.teamName === "team-y")!;
+      expect(teamY.role).toBe("advisor");
+    });
+
+    it("pluginSummary includes teams and persons counts", async () => {
+      const data: ValidatedTaxonomyData = {
+        ...makeSnapshot([]),
+        teams: [
+          {
+            name: "ops-team",
+            displayName: "Ops Team",
+            teamType: "platform",
+            description: "Operations",
+            focusArea: null,
+            communicationChannels: [],
+            ownedNodes: [],
+            members: [],
+          },
+        ],
+        persons: [
+          { name: "greta", displayName: "Greta Holm", email: null, role: null, avatarUrl: null },
+          { name: "hank", displayName: "Hank Kim", email: null, role: null, avatarUrl: null },
+        ],
+        teamMemberships: [
+          { teamName: "ops-team", personName: "greta", role: "engineer" },
+          { teamName: "ops-team", personName: "hank", role: "engineer" },
+        ],
+      };
+
+      const stored = await repo.saveSnapshot(data);
+      expect(stored.pluginSummary.teams).toBe(1);
+      expect(stored.pluginSummary.persons).toBe(2);
     });
   });
 });

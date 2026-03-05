@@ -39,6 +39,7 @@ export const BoundedContextSchema = z.object({
   aggregates: z.array(z.string()).default([]),
   relationships: z.array(ContextRelationshipSchema).default([]),
   teamOwnership: z.string().optional(),
+  ownerTeam: z.string().optional(),
   status: z.enum(["draft", "stable", "deprecated"]).default("draft"),
   subdomainType: SubdomainTypeSchema.nullable().default(null),
   createdAt: z.string().datetime(),
