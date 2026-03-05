@@ -71,7 +71,7 @@ export interface TaxonomyPersonSummary {
   email: string | null;
   role: string | null;
   avatarUrl: string | null;
-  teams: Array<{ teamName: string; role: string }>;
+  teams: Array<{ team: string; role: string }>;
 }
 
 export interface TaxonomyHierarchyNode {

@@ -483,13 +483,13 @@ describe("TaxonomyRepositorySQLite", () => {
       expect(fiona.displayName).toBe("Fiona Grant");
       expect(fiona.teams).toHaveLength(2);
 
-      const teamNames = fiona.teams.map((t) => t.teamName).sort();
+      const teamNames = fiona.teams.map((t) => t.team).sort();
       expect(teamNames).toEqual(["team-x", "team-y"]);
 
-      const teamX = fiona.teams.find((t) => t.teamName === "team-x")!;
+      const teamX = fiona.teams.find((t) => t.team === "team-x")!;
       expect(teamX.role).toBe("lead");
 
-      const teamY = fiona.teams.find((t) => t.teamName === "team-y")!;
+      const teamY = fiona.teams.find((t) => t.team === "team-y")!;
       expect(teamY.role).toBe("advisor");
     });
 

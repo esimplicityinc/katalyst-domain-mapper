@@ -623,10 +623,10 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
       .all();
 
     // Group memberships by person
-    const personTeams = new Map<string, Array<{ teamName: string; role: string }>>();
+    const personTeams = new Map<string, Array<{ team: string; role: string }>>();
     for (const m of memberships) {
       const teams = personTeams.get(m.personName) ?? [];
-      teams.push({ teamName: m.teamName, role: m.role });
+      teams.push({ team: m.teamName, role: m.role });
       personTeams.set(m.personName, teams);
     }
 
