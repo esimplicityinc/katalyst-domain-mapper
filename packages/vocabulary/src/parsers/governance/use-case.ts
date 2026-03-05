@@ -1,4 +1,4 @@
-import { governance } from "@foe/schemas";
+import { taxonomy } from "@foe/schemas";
 import { readFile } from "node:fs/promises";
 import { parseFrontmatter } from "../frontmatter.js";
 import { makeGovernancePath } from "../governance-helpers.js";
@@ -12,7 +12,7 @@ import { makeGovernancePath } from "../governance-helpers.js";
  */
 export async function parseUseCaseFile(
   filePath: string,
-): Promise<governance.UseCase> {
+): Promise<taxonomy.UseCaseExt> {
   const fileContent = await readFile(filePath, "utf-8");
   const { data } = parseFrontmatter(fileContent);
 
@@ -29,7 +29,7 @@ export async function parseUseCaseFile(
   };
 
   try {
-    return governance.UseCaseSchema.parse(mapped);
+    return taxonomy.UseCaseExtSchema.parse(mapped);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(

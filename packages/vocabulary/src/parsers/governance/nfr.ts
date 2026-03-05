@@ -1,4 +1,4 @@
-import { governance } from "@foe/schemas";
+import { taxonomy } from "@foe/schemas";
 import { readFile } from "node:fs/promises";
 import { parseFrontmatter } from "../frontmatter.js";
 import {
@@ -12,7 +12,7 @@ import {
  * NFR frontmatter uses MoSCoW priority values (must/should/could) which
  * are mapped to the PrioritySchema values (high/medium/low).
  */
-export async function parseNfrFile(filePath: string): Promise<governance.Nfr> {
+export async function parseNfrFile(filePath: string): Promise<taxonomy.NfrExt> {
   const fileContent = await readFile(filePath, "utf-8");
   const { data } = parseFrontmatter(fileContent);
 
@@ -29,7 +29,7 @@ export async function parseNfrFile(filePath: string): Promise<governance.Nfr> {
   };
 
   try {
-    return governance.NfrSchema.parse(mapped);
+    return taxonomy.NfrExtSchema.parse(mapped);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(

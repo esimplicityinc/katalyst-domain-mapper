@@ -31,7 +31,7 @@ import {
   FIELD_GUIDES_ROOT,
   EXTERNAL_FRAMEWORKS_ROOT,
 } from "./config.js";
-import { governance } from "@foe/schemas";
+import { taxonomy } from "@foe/schemas";
 
 const program = new Command();
 
@@ -147,25 +147,26 @@ program
       const json = JSON.stringify(index, null, 2);
       await writeFile(GOVERNANCE_INDEX_PATH, json);
       const kb = (json.length / 1024).toFixed(1);
+      const { stats } = index;
       console.log(chalk.green("\n✓ Built governance index"));
-      console.log(`  - ${index.stats.totalCapabilities} capabilities`);
-      console.log(`  - ${index.stats.totalPersonas} personas`);
-      console.log(`  - ${index.stats.totalStories} user stories`);
-      console.log(`  - ${index.stats.totalUseCases} use cases`);
-      console.log(`  - ${index.stats.totalRoadItems} road items`);
-      console.log(`  - ${index.stats.totalAdrs} ADRs`);
-      console.log(`  - ${index.stats.totalNfrs} NFRs`);
-      console.log(`  - ${index.stats.totalChanges} change entries`);
-      if (index.stats.totalContexts > 0) {
-        console.log(`  - ${index.stats.totalContexts} bounded contexts`);
-        console.log(`  - ${index.stats.totalAggregates} aggregates`);
-        console.log(`  - ${index.stats.totalValueObjects} value objects`);
-        console.log(`  - ${index.stats.totalDomainEvents} domain events`);
+      console.log(`  - ${stats.totalCapabilities} capabilities`);
+      console.log(`  - ${stats.totalPersonas} personas`);
+      console.log(`  - ${stats.totalStories} user stories`);
+      console.log(`  - ${stats.totalUseCases} use cases`);
+      console.log(`  - ${stats.totalRoadItems} road items`);
+      console.log(`  - ${stats.totalAdrs} ADRs`);
+      console.log(`  - ${stats.totalNfrs} NFRs`);
+      console.log(`  - ${stats.totalChanges} change entries`);
+      if (stats.totalContexts > 0) {
+        console.log(`  - ${stats.totalContexts} bounded contexts`);
+        console.log(`  - ${stats.totalAggregates} aggregates`);
+        console.log(`  - ${stats.totalValueObjects} value objects`);
+        console.log(`  - ${stats.totalDomainEvents} domain events`);
       }
-      if (!index.stats.referentialIntegrity.valid) {
+      if (!stats.referentialIntegrity.valid) {
         console.log(
           chalk.yellow(
-            `  - ${index.stats.referentialIntegrity.errors.length} referential integrity warnings`,
+            `  - ${stats.referentialIntegrity.errors.length} referential integrity warnings`,
           ),
         );
       }
@@ -513,6 +514,8 @@ program
         try {
           const road = await parseRoadItemFile(file);
           const status = road.status;
+          // Extract governance ID from filename (e.g., ROAD-001.md)
+          const roadId = file.match(/ROAD-\d+/)?.[0] ?? file;
 
           // Check governance completeness against state
           const hasValidatedAdrs = road.governance.adrs.validated;
@@ -522,12 +525,12 @@ program
           // Validate state consistency with governance data
           if (status === "adr_validated" && !hasValidatedAdrs) {
             warnings.push(
-              `${road.id}: status is 'adr_validated' but adrs.validated is false`,
+              `${roadId}: status is 'adr_validated' but adrs.validated is false`,
             );
           }
           if (status === "bdd_complete" && !hasBddScenarios) {
             warnings.push(
-              `${road.id}: status is 'bdd_complete' but no BDD scenarios defined`,
+              `${roadId}: status is 'bdd_complete' but no BDD scenarios defined`,
             );
           }
           const acceptableBddStates: string[] = ["approved", "active"];
@@ -536,7 +539,7 @@ program
             !acceptableBddStates.includes(bddStatus)
           ) {
             warnings.push(
-              `${road.id}: status is 'bdd_complete' but BDD status is '${bddStatus}'`,
+              `${roadId}: status is 'bdd_complete' but BDD status is '${bddStatus}'`,
             );
           }
           if (
@@ -545,14 +548,14 @@ program
             road.governance.nfrs.status === "pending"
           ) {
             warnings.push(
-              `${road.id}: status is 'complete' but NFR validation is still pending`,
+              `${roadId}: status is 'complete' but NFR validation is still pending`,
             );
           }
 
           // Check that valid next states exist (complete has none)
-          const nextStates = governance.getNextStates(status);
+          const nextStates = taxonomy.getNextStates(status);
           console.log(
-            `  ${chalk.bold(road.id)}: ${status} → [${nextStates.join(", ") || "terminal"}]`,
+            `  ${chalk.bold(roadId)}: ${status} → [${nextStates.join(", ") || "terminal"}]`,
           );
           validCount++;
         } catch (err: unknown) {
@@ -604,8 +607,11 @@ program
       let partiallyCovered = 0;
       let uncovered = 0;
 
-      for (const [capId, cap] of Object.entries(index.capabilities)) {
-        const refs = index.byCapability[capId];
+      const capabilities = index.extensions.capabilities;
+      const byCapability = index.reverseIndices.byCapability;
+
+      for (const [capId, cap] of Object.entries(capabilities)) {
+        const refs = byCapability[capId];
         const personaCount = refs?.personas.length ?? 0;
         const storyCount = refs?.stories.length ?? 0;
         const roadCount = refs?.roads.length ?? 0;
@@ -637,7 +643,7 @@ program
         );
       }
 
-      const total = Object.keys(index.capabilities).length;
+      const total = Object.keys(capabilities).length;
       console.log("\n" + "-".repeat(90));
       console.log(chalk.bold(`\nSummary: ${total} capabilities`));
       console.log(
@@ -670,6 +676,9 @@ program
 
       const index = await buildGovernanceIndex();
 
+      const personas = index.extensions.personas;
+      const byPersona = index.reverseIndices.byPersona;
+
       console.log(chalk.bold("\n=== Persona Coverage Matrix ===\n"));
       console.log(
         chalk.dim("ID".padEnd(10)) +
@@ -681,8 +690,8 @@ program
       );
       console.log("-".repeat(86));
 
-      for (const [perId, persona] of Object.entries(index.personas)) {
-        const refs = index.byPersona[perId];
+      for (const [perId, persona] of Object.entries(personas)) {
+        const refs = byPersona[perId];
         const capCount = refs?.capabilities.length ?? 0;
         const storyCount = refs?.stories.length ?? 0;
 
@@ -695,7 +704,7 @@ program
 
         console.log(
           perId.padEnd(10) +
-            persona.name.substring(0, 28).padEnd(30) +
+            persona.title.substring(0, 28).padEnd(30) +
             persona.type.padEnd(12) +
             String(capCount).padEnd(14) +
             String(storyCount).padEnd(10) +
@@ -703,13 +712,13 @@ program
         );
       }
 
-      const total = Object.keys(index.personas).length;
-      const approved = Object.values(index.personas).filter(
+      const total = Object.keys(personas).length;
+      const approved = Object.values(personas).filter(
         (p) => p.status === "approved",
       ).length;
-      const totalStories = Object.keys(index.userStories).length;
+      const totalStories = Object.keys(index.extensions.userStories).length;
       const storiesWithPersona = new Set(
-        Object.values(index.userStories).map((s) => s.persona),
+        Object.values(index.extensions.userStories).map((s) => s.persona),
       );
 
       console.log("\n" + "-".repeat(86));

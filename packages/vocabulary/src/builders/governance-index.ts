@@ -1,5 +1,6 @@
 import { glob } from "glob";
-import { governance } from "@foe/schemas";
+import { randomUUID } from "node:crypto";
+import { taxonomy } from "@foe/schemas";
 import { parseCapabilityFile } from "../parsers/governance/capability.js";
 import { parsePersonaFile } from "../parsers/governance/persona.js";
 import { parseUserStoryFile } from "../parsers/governance/user-story.js";
@@ -55,9 +56,9 @@ async function parseAllFiles<T extends Record<string, unknown>>(
  * 3. Build reverse indices for fast lookups
  * 4. Validate referential integrity across cross-references
  * 5. Calculate statistics
- * 6. Return typed GovernanceIndex
+ * 6. Return typed TaxonomySnapshot
  */
-export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex> {
+export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot> {
   const startTime = Date.now();
   console.log("Building governance index...");
 
@@ -310,12 +311,12 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
     }
   }
 
-  // RoadItem → dependencies
+  // RoadItem → dependencies (blockedBy is on the extension; dependsOn moved to TaxonomyNode)
   for (const [id, road] of Object.entries(roadItems)) {
-    for (const depId of road.dependsOn) {
+    for (const depId of road.blockedBy) {
       if (!roadItems[depId]) {
         integrityErrors.push(
-          `Road item ${id} depends on non-existent ${depId}`,
+          `Road item ${id} is blocked by non-existent ${depId}`,
         );
       }
     }
@@ -375,29 +376,71 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
       (roadsByPhase[String(road.phase)] || 0) + 1;
   }
 
-  // ── Assemble index ─────────────────────────────────────────────
+  // ── Assemble TaxonomySnapshot ───────────────────────────────────
 
-  const index: governance.GovernanceIndex = {
+  const now = new Date().toISOString();
+
+  const snapshot: taxonomy.TaxonomySnapshot = {
+    id: randomUUID(),
+    project: "katalyst-domain-mapper",
     version: "1.0.0",
-    generated: new Date().toISOString(),
-    capabilities,
-    personas,
-    userStories,
-    useCases,
-    roadItems,
-    adrs,
-    nfrs,
-    changeEntries,
-    boundedContexts,
-    aggregates,
-    valueObjects,
-    domainEvents,
-    byCapability,
-    byPersona,
-    byRoad,
-    byContext,
-    byAggregate,
+    generated: now,
+    createdAt: now,
+
+    // Core collections (empty — the builder focuses on extensions/indices)
+    nodes: {},
+    environments: {},
+
+    // Plugin / infrastructure collections (empty for governance-only build)
+    layerTypes: {},
+    infraCapabilities: {},
+    capabilityRels: {},
+    actions: {},
+    stages: {},
+    tools: {},
+    persons: {},
+    teams: {},
+    layerHealths: {},
+
+    // Node type extensions
+    extensions: {
+      capabilities,
+      personas,
+      userStories,
+      useCases,
+      roadItems,
+      adrs,
+      nfrs,
+      changeEntries,
+      boundedContexts,
+      aggregates,
+      valueObjects,
+      domainEvents,
+      glossaryTerms: {},
+    },
+
+    // Derived data
+    pluginSummary: {
+      layerTypes: 0,
+      capabilities: 0,
+      capabilityRels: 0,
+      actions: 0,
+      stages: 0,
+      tools: 0,
+      layerHealths: 0,
+      teams: 0,
+      persons: 0,
+    },
+    reverseIndices: {
+      byCapability,
+      byPersona,
+      byRoad,
+      byContext,
+      byAggregate,
+    },
     stats: {
+      totalNodes: 0,
+      totalEnvironments: 0,
       totalCapabilities: Object.keys(capabilities).length,
       totalPersonas: Object.keys(personas).length,
       totalStories: Object.keys(userStories).length,
@@ -410,6 +453,7 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
       totalAggregates: Object.keys(aggregates).length,
       totalValueObjects: Object.keys(valueObjects).length,
       totalDomainEvents: Object.keys(domainEvents).length,
+      totalGlossaryTerms: 0,
       roadsByStatus,
       roadsByPhase,
       referentialIntegrity: {
@@ -420,7 +464,7 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
   };
 
   const duration = Date.now() - startTime;
-  console.log(`\nGovernance index built in ${duration}ms`);
+  console.log(`\nTaxonomy snapshot built in ${duration}ms`);
   console.log(
     `Artifacts: ${Object.keys(capabilities).length} capabilities, ` +
       `${Object.keys(personas).length} personas, ` +
@@ -444,5 +488,5 @@ export async function buildGovernanceIndex(): Promise<governance.GovernanceIndex
     console.log(`Referential integrity: ${integrityErrors.length} warnings`);
   }
 
-  return index;
+  return snapshot;
 }
