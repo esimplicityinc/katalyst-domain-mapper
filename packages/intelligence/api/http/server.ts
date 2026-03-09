@@ -178,6 +178,14 @@ export function createServer(container: Container) {
         ),
     )
 
+    // ── Stub auth endpoint (no-op) ───────────────────────────────────────
+    // The BDD framework (@esimplicity/stack-tests) calls POST /auth/login
+    // before every cleanup request to obtain an admin token.  This API has
+    // no authentication, so we return a dummy token that the framework
+    // caches for the worker lifetime — silencing the "cleanup auth failed"
+    // warnings without adding real auth machinery.
+    .post("/auth/login", () => ({ access_token: "no-auth" }))
+
     // ── Static file serving + SPA fallback + OpenCode proxy ────────────────
     .all("/*", async ({ request }) => {
       const url = new URL(request.url);

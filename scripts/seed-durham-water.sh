@@ -393,9 +393,146 @@ post "$API/taxonomy" '{
   ],
   "actions": [],
   "stages": [],
-  "tools": []
+  "tools": [],
+  "persons": [
+    { "name": "mark-abrams", "displayName": "Mark Abrams", "email": "mark.abrams@durhamnc.gov", "role": "Director" },
+    { "name": "tanya-richardson", "displayName": "Tanya Richardson", "email": "tanya.richardson@durhamnc.gov", "role": "Division Manager" },
+    { "name": "carlos-vega", "displayName": "Carlos Vega", "email": "carlos.vega@durhamnc.gov", "role": "Division Manager" },
+    { "name": "janet-moore", "displayName": "Janet Moore", "email": "janet.moore@durhamnc.gov", "role": "Division Manager" },
+    { "name": "derek-patel", "displayName": "Derek Patel", "email": "derek.patel@durhamnc.gov", "role": "Division Manager" },
+    { "name": "sarah-lin", "displayName": "Sarah Lin", "email": "sarah.lin@durhamnc.gov", "role": "Lead Engineer" },
+    { "name": "brian-whitfield", "displayName": "Brian Whitfield", "email": "brian.whitfield@durhamnc.gov", "role": "Dispatch Supervisor" },
+    { "name": "anita-foster", "displayName": "Anita Foster", "email": "anita.foster@durhamnc.gov", "role": "Lab Director" },
+    { "name": "kevin-osei", "displayName": "Kevin Osei", "email": "kevin.osei@durhamnc.gov", "role": "Senior Engineer" },
+    { "name": "megan-brooks", "displayName": "Megan Brooks", "email": "megan.brooks@durhamnc.gov", "role": "Customer Service Manager" },
+    { "name": "ray-tanaka", "displayName": "Ray Tanaka", "email": "ray.tanaka@durhamnc.gov", "role": "SCADA Technician" },
+    { "name": "lisa-grant", "displayName": "Lisa Grant", "email": "lisa.grant@durhamnc.gov", "role": "GIS Analyst" },
+    { "name": "james-hartwell", "displayName": "James Hartwell", "email": "james.hartwell@durhamnc.gov", "role": "IT Systems Administrator" },
+    { "name": "priya-nair", "displayName": "Priya Nair", "email": "priya.nair@durhamnc.gov", "role": "Water Quality Chemist" },
+    { "name": "tom-dupree", "displayName": "Tom Dupree", "email": "tom.dupree@durhamnc.gov", "role": "Field Crew Lead" }
+  ],
+  "teams": [
+    {
+      "name": "water-management-leadership",
+      "displayName": "Water Management Leadership",
+      "teamType": "stream-aligned",
+      "description": "Executive leadership for the Department of Water Management overseeing all divisions, budgets, and strategic planning.",
+      "focusArea": "Department-wide strategy and operations",
+      "communicationChannels": ["#dwm-leadership", "leadership@water.durhamnc.gov"],
+      "ownedNodes": ["durham-water"],
+      "members": [
+        { "person": "mark-abrams", "role": "Lead" }
+      ]
+    },
+    {
+      "name": "treatment-ops-team",
+      "displayName": "Water Treatment Operations",
+      "teamType": "stream-aligned",
+      "description": "Operates Brown and Williams water treatment plants, managing chemical dosing, filtration, and SCADA process control.",
+      "focusArea": "Water treatment and SCADA operations",
+      "communicationChannels": ["#treatment-ops"],
+      "ownedNodes": ["treatment-division", "scada-system"],
+      "members": [
+        { "person": "tanya-richardson", "role": "Lead" },
+        { "person": "ray-tanaka", "role": "Member" }
+      ]
+    },
+    {
+      "name": "distribution-team",
+      "displayName": "Distribution System Maintenance",
+      "teamType": "stream-aligned",
+      "description": "Maintains 1,400 miles of water lines, manages AMR meter reading infrastructure, and responds to water main breaks.",
+      "focusArea": "Water distribution and meter infrastructure",
+      "communicationChannels": ["#distribution-maint"],
+      "ownedNodes": ["distribution-maintenance", "amr-infrastructure"],
+      "members": [
+        { "person": "carlos-vega", "role": "Lead" },
+        { "person": "lisa-grant", "role": "Member" },
+        { "person": "tom-dupree", "role": "Member" }
+      ]
+    },
+    {
+      "name": "billing-services-team",
+      "displayName": "Customer Billing Services",
+      "teamType": "stream-aligned",
+      "description": "Manages 95,000+ customer accounts, tiered water rates, payment processing, and the self-service customer portal.",
+      "focusArea": "Billing, payments, and customer portal",
+      "communicationChannels": ["#billing-services"],
+      "ownedNodes": ["billing-services", "billing-engine", "customer-portal-stack"],
+      "members": [
+        { "person": "megan-brooks", "role": "Lead" },
+        { "person": "james-hartwell", "role": "Member" }
+      ]
+    },
+    {
+      "name": "sewer-collection-team",
+      "displayName": "Sewer Collection Maintenance",
+      "teamType": "stream-aligned",
+      "description": "Maintains sanitary sewer lines and 47 lift stations. Monitors for SSO events and manages overflow response.",
+      "focusArea": "Sewer lines and lift station operations",
+      "communicationChannels": ["#sewer-collection"],
+      "ownedNodes": ["sewer-collection-maint", "lift-station-scada"],
+      "members": [
+        { "person": "derek-patel", "role": "Lead" },
+        { "person": "tom-dupree", "role": "Contributor" }
+      ]
+    },
+    {
+      "name": "compliance-lab-team",
+      "displayName": "Compliance & Lab Services",
+      "teamType": "complicated-subsystem",
+      "description": "Water quality laboratory performing lead/copper testing, PFAS monitoring, and managing EPA/NC DEQ regulatory reporting.",
+      "focusArea": "Water quality testing and regulatory compliance",
+      "communicationChannels": ["#compliance-lab"],
+      "ownedNodes": ["compliance-lab", "lims-system"],
+      "members": [
+        { "person": "anita-foster", "role": "Lead" },
+        { "person": "priya-nair", "role": "Member" }
+      ]
+    },
+    {
+      "name": "capital-engineering-team",
+      "displayName": "Capital & Engineering Services",
+      "teamType": "stream-aligned",
+      "description": "Plans and executes capital improvement projects for water and sewer infrastructure upgrades.",
+      "focusArea": "Infrastructure capital projects",
+      "communicationChannels": ["#capital-engineering"],
+      "ownedNodes": ["capital-engineering", "project-mgmt-system"],
+      "members": [
+        { "person": "sarah-lin", "role": "Lead" },
+        { "person": "kevin-osei", "role": "Member" }
+      ]
+    },
+    {
+      "name": "field-dispatch-team",
+      "displayName": "Field Operations Dispatch",
+      "teamType": "stream-aligned",
+      "description": "24/7/365 dispatch center coordinating field crews for emergencies, water main breaks, sewer overflows, and scheduled maintenance.",
+      "focusArea": "Emergency and scheduled field dispatch",
+      "communicationChannels": ["#dispatch-center", "dispatch@water.durhamnc.gov"],
+      "ownedNodes": ["field-operations", "dispatch-system"],
+      "members": [
+        { "person": "brian-whitfield", "role": "Lead" },
+        { "person": "tom-dupree", "role": "Member" }
+      ]
+    },
+    {
+      "name": "technology-solutions-team",
+      "displayName": "Technology Solutions",
+      "teamType": "platform",
+      "description": "IT platform team supporting all divisions with systems integration, SCADA networking, and vendor management for InfoSend and CivicPlus.",
+      "focusArea": "IT infrastructure and vendor integration",
+      "communicationChannels": ["#tech-solutions"],
+      "ownedNodes": [],
+      "members": [
+        { "person": "james-hartwell", "role": "Lead" },
+        { "person": "ray-tanaka", "role": "Contributor" },
+        { "person": "lisa-grant", "role": "Member" }
+      ]
+    }
+  ]
 }' > /dev/null
-echo "  Taxonomy snapshot ingested (3 systems, 7 subsystems, 7 stacks, 13 capabilities [3-level hierarchy], 8 capabilityRels)"
+echo "  Taxonomy snapshot ingested (3 systems, 7 subsystems, 7 stacks, 13 capabilities, 8 capabilityRels, 15 persons, 9 teams)"
 echo ""
 
 # =============================================================================
@@ -411,6 +548,7 @@ CTX_BILLING_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Account management, billing cycles, tiered water rates, payment processing, disconnection/reconnection, and financial assistance programs (CAFFE).",
   "responsibility": "Manages 95,000+ customer accounts, generates monthly bills based on meter readings, processes payments, enforces collections policy, and handles adjustment requests.",
   "teamOwnership": "Customer Billing Services Division",
+  "ownerTeam": "billing-services-team",
   "status": "active",
   "subdomainType": "core",
   "contextType": "internal",
@@ -425,6 +563,7 @@ CTX_TREATMENT_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Operates Brown and Williams water treatment plants (combined 64 MGD capacity). Manages Lake Michie and Little River reservoirs, coagulation/flocculation/sedimentation processes, filtration, and chemical addition.",
   "responsibility": "Treat raw water from reservoirs to meet EPA drinking water standards. Manage chemical dosing (chloramines, orthophosphate, sodium hydroxide, fluoride). Monitor and adjust treatment processes daily.",
   "teamOwnership": "Water Supply & Treatment Division",
+  "ownerTeam": "treatment-ops-team",
   "status": "active",
   "subdomainType": "core",
   "contextType": "internal",
@@ -439,6 +578,7 @@ CTX_DISTRIBUTION_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Maintains 1,400 miles of water lines, manages water main break repairs, conducts planned flushing programs, oversees Automated Meter Reading (AMR) infrastructure, and manages water storage tanks/towers.",
   "responsibility": "Ensure continuous water delivery through the distribution system. Respond to water main breaks, manage meter reading operations, conduct preventive flushing, and maintain pressure across all zones.",
   "teamOwnership": "Water Distribution System Maintenance",
+  "ownerTeam": "distribution-team",
   "status": "active",
   "subdomainType": "core",
   "contextType": "internal",
@@ -453,6 +593,7 @@ CTX_DISPATCH_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Coordinates emergency and scheduled field crew dispatching for water main breaks, sewer overflows, meter issues, and service disconnections/reconnections. Operates 24/7/365.",
   "responsibility": "Receive service requests and emergency reports, prioritize and assign field crews, track work order status, coordinate with distribution and sewer maintenance teams.",
   "teamOwnership": "Operations Dispatch Center",
+  "ownerTeam": "field-dispatch-team",
   "status": "active",
   "subdomainType": "core",
   "contextType": "human-process",
@@ -469,6 +610,7 @@ CTX_SEWER_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Maintains sanitary sewer lines, 47 lift stations, manages sewer overflow detection and response, and conducts sewer system evaluation surveys (SSES).",
   "responsibility": "Prevent sanitary sewer overflows (SSOs), maintain lift stations, conduct inspections and cleaning, respond to sewer emergencies, and manage FOG (fats/oils/grease) prevention.",
   "teamOwnership": "Sewer Collection System Maintenance",
+  "ownerTeam": "sewer-collection-team",
   "status": "active",
   "subdomainType": "supporting",
   "contextType": "internal",
@@ -483,6 +625,7 @@ CTX_COMPLIANCE_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Operates water quality laboratory, conducts lead/copper testing (required every 3 years), monitors PFAS contaminants, manages industrial waste control program, and ensures EPA/NC DEQ regulatory compliance.",
   "responsibility": "Collect and analyze water quality samples across the distribution system, generate compliance reports, flag threshold exceedances, manage laboratory operations, and conduct industrial pretreatment inspections.",
   "teamOwnership": "Compliance Services Division",
+  "ownerTeam": "compliance-lab-team",
   "status": "active",
   "subdomainType": "supporting",
   "contextType": "internal",
@@ -497,6 +640,7 @@ CTX_CAPITAL_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Plans and manages capital improvement projects: waterline replacements (American Tobacco District, East Durham, NC-54), sewer improvements (Forest Hills, Southeast Farrington), lift station consolidation, and dam safety improvements.",
   "responsibility": "Engineer and oversee infrastructure improvement projects, manage contractor relationships, conduct project scoping and budgeting, ensure capital facilities fee collection, and coordinate with distribution/sewer teams on project handoffs.",
   "teamOwnership": "Utility Engineering Division",
+  "ownerTeam": "capital-engineering-team",
   "status": "active",
   "subdomainType": "supporting",
   "contextType": "internal",
@@ -513,6 +657,7 @@ CTX_PORTAL_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Self-service web portal (CivicPlus + InfoSend) enabling customers to pay bills, start/stop service, report problems, view water quality reports, and manage account settings.",
   "responsibility": "Provide 24/7 self-service access for customers. Route service requests to appropriate internal systems. Display billing history and usage data. Integrate with InfoSend payment gateway.",
   "teamOwnership": "Technology Solutions / Water Management",
+  "ownerTeam": "technology-solutions-team",
   "status": "active",
   "subdomainType": "generic",
   "contextType": "internal",

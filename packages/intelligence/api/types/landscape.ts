@@ -30,6 +30,7 @@ export interface ResolvedContext {
   taxonomyNode?: string; // FQTN or node name
   subdomainType?: "core" | "supporting" | "generic" | null;
   teamOwnership?: string;
+  ownerTeam?: string;
 }
 
 // ── Capabilities ────────────────────────────────────────────────────────────

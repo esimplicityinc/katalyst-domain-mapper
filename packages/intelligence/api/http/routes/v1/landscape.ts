@@ -152,6 +152,7 @@ export function createLandscapeRoutes(deps: LandscapeDeps) {
           taxonomyNode: (ctx.taxonomyNode && ctx.taxonomyNode !== "taxonomy_node") ? ctx.taxonomyNode : undefined,
           subdomainType: ctx.subdomainType as ResolvedContext["subdomainType"],
           teamOwnership: ctx.teamOwnership ?? undefined,
+          ownerTeam: ctx.ownerTeam ?? undefined,
         }));
 
         const contextLookup = buildContextLookup(contexts);

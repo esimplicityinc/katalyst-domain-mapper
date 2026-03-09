@@ -611,9 +611,125 @@ post "$API/taxonomy" '{
   ],
   "actions": [],
   "stages": [],
-  "tools": []
+  "tools": [],
+  "persons": [
+    { "name": "aaron-west", "displayName": "Aaron West", "email": "aaron.west@esimplicity.com", "role": "Technical Lead / Architect" },
+    { "name": "nadia-chen", "displayName": "Nadia Chen", "email": "nadia.chen@esimplicity.com", "role": "Engineering Manager" },
+    { "name": "marcus-johnson", "displayName": "Marcus Johnson", "email": "marcus.johnson@esimplicity.com", "role": "Senior Full-Stack Engineer" },
+    { "name": "sofia-reyes", "displayName": "Sofia Reyes", "email": "sofia.reyes@esimplicity.com", "role": "AI/ML Engineer" },
+    { "name": "david-kim", "displayName": "David Kim", "email": "david.kim@esimplicity.com", "role": "Senior Backend Engineer" },
+    { "name": "elena-volkov", "displayName": "Elena Volkov", "email": "elena.volkov@esimplicity.com", "role": "DevOps / Platform Engineer" },
+    { "name": "jordan-taylor", "displayName": "Jordan Taylor", "email": "jordan.taylor@esimplicity.com", "role": "Frontend Engineer" },
+    { "name": "aisha-patel", "displayName": "Aisha Patel", "email": "aisha.patel@esimplicity.com", "role": "QA / BDD Engineer" },
+    { "name": "chris-nguyen", "displayName": "Chris Nguyen", "email": "chris.nguyen@esimplicity.com", "role": "Security Engineer" },
+    { "name": "rachel-okafor", "displayName": "Rachel Okafor", "email": "rachel.okafor@esimplicity.com", "role": "Product Manager" },
+    { "name": "ben-larsen", "displayName": "Ben Larsen", "email": "ben.larsen@esimplicity.com", "role": "Data Engineer" },
+    { "name": "maya-gupta", "displayName": "Maya Gupta", "email": "maya.gupta@esimplicity.com", "role": "Technical Writer" },
+    { "name": "sam-wright", "displayName": "Sam Wright", "email": "sam.wright@esimplicity.com", "role": "SRE / Infrastructure Engineer" }
+  ],
+  "teams": [
+    {
+      "name": "prima-platform-engineering",
+      "displayName": "Prima Platform Engineering",
+      "teamType": "platform",
+      "description": "Platform team responsible for shared infrastructure, CI/CD pipelines, Kubernetes foundation, service mesh, and developer experience across Prima.",
+      "focusArea": "Infrastructure, CI/CD, and developer platform",
+      "communicationChannels": ["#prima-platform", "platform@esimplicity.com"],
+      "ownedNodes": ["prima", "foundation", "cicd"],
+      "members": [
+        { "person": "aaron-west", "role": "Lead" },
+        { "person": "elena-volkov", "role": "Member" },
+        { "person": "sam-wright", "role": "Member" }
+      ]
+    },
+    {
+      "name": "prima-control-tower-team",
+      "displayName": "Control Tower Team",
+      "teamType": "stream-aligned",
+      "description": "Builds and maintains the Control Tower — admin dashboard for model governance, workspace management, guardrails configuration, and audit logging.",
+      "focusArea": "Admin UI and governance backend",
+      "communicationChannels": ["#prima-control-tower"],
+      "ownedNodes": ["control_tower", "backend", "frontend"],
+      "members": [
+        { "person": "nadia-chen", "role": "Lead" },
+        { "person": "david-kim", "role": "Member" },
+        { "person": "jordan-taylor", "role": "Member" },
+        { "person": "chris-nguyen", "role": "Contributor" }
+      ]
+    },
+    {
+      "name": "prima-ai-engine-team",
+      "displayName": "AI Engine Team",
+      "teamType": "complicated-subsystem",
+      "description": "Develops the core AI orchestration engine — AIOX multi-model routing, PII detection via Presidio, LiteLLM provider abstraction, and async task worker.",
+      "focusArea": "AI orchestration, LLM routing, and PII detection",
+      "communicationChannels": ["#prima-engine"],
+      "ownedNodes": ["engine", "aiox", "presidio", "litellm", "worker"],
+      "members": [
+        { "person": "sofia-reyes", "role": "Lead" },
+        { "person": "david-kim", "role": "Member" },
+        { "person": "ben-larsen", "role": "Member" }
+      ]
+    },
+    {
+      "name": "prima-web-experience-team",
+      "displayName": "Web Experience Team",
+      "teamType": "stream-aligned",
+      "description": "Builds the user-facing web application — chat UI, agent builder, workspace collaboration, document collector, and the web API server.",
+      "focusArea": "Web frontend, API server, and document ingestion",
+      "communicationChannels": ["#prima-web"],
+      "ownedNodes": ["web", "web-frontend", "server", "collector"],
+      "members": [
+        { "person": "marcus-johnson", "role": "Lead" },
+        { "person": "jordan-taylor", "role": "Member" },
+        { "person": "aisha-patel", "role": "Contributor" }
+      ]
+    },
+    {
+      "name": "prima-data-platform-team",
+      "displayName": "Data Platform Team",
+      "teamType": "platform",
+      "description": "Manages data infrastructure — PostgreSQL, Redis, vector storage (pgvector), RAG pipelines, and data migration tooling.",
+      "focusArea": "Database, vector storage, and RAG data pipelines",
+      "communicationChannels": ["#prima-data"],
+      "ownedNodes": ["postgres", "redis", "storage"],
+      "members": [
+        { "person": "ben-larsen", "role": "Lead" },
+        { "person": "elena-volkov", "role": "Contributor" },
+        { "person": "sam-wright", "role": "Contributor" }
+      ]
+    },
+    {
+      "name": "prima-quality-enablement-team",
+      "displayName": "Quality & Enablement",
+      "teamType": "enabling",
+      "description": "Enabling team focused on test automation (BDD/TDD), documentation, developer onboarding, and quality practices across all Prima teams.",
+      "focusArea": "Testing strategy, documentation, and developer enablement",
+      "communicationChannels": ["#prima-quality"],
+      "ownedNodes": ["atlas", "docsite"],
+      "members": [
+        { "person": "aisha-patel", "role": "Lead" },
+        { "person": "maya-gupta", "role": "Member" },
+        { "person": "rachel-okafor", "role": "Contributor" }
+      ]
+    },
+    {
+      "name": "prima-product-team",
+      "displayName": "Prima Product",
+      "teamType": "stream-aligned",
+      "description": "Product management driving roadmap prioritization, stakeholder alignment, and feature definition for the Prima platform.",
+      "focusArea": "Product strategy and roadmap",
+      "communicationChannels": ["#prima-product"],
+      "ownedNodes": ["prima-delivery-hub"],
+      "members": [
+        { "person": "rachel-okafor", "role": "Lead" },
+        { "person": "nadia-chen", "role": "Contributor" },
+        { "person": "aaron-west", "role": "Advisor" }
+      ]
+    }
+  ]
 }' > /dev/null
-echo "  Taxonomy snapshot ingested (1 system, 6 subsystems, 18 stacks, 1 external system, 29 capabilities [3-level hierarchy], 7 capabilityRels)"
+echo "  Taxonomy snapshot ingested (1 system, 6 subsystems, 18 stacks, 1 external system, 29 capabilities, 7 capabilityRels, 13 persons, 7 teams)"
 echo ""
 
 # =============================================================================
@@ -629,6 +745,7 @@ CTX_IAM_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "User registration, JWT/SSO authentication, SCIM provisioning, API token management, team/workspace role-based access control, rate limiting and budget enforcement.",
   "responsibility": "Authenticate users and service principals, enforce RBAC across workspaces, manage SSO integrations, provision/deprovision via SCIM, issue and validate JWTs.",
   "teamOwnership": "Prima Platform Engineering",
+  "ownerTeam": "prima-control-tower-team",
   "status": "active",
   "subdomainType": "core",
   "contextType": "internal",
@@ -643,6 +760,7 @@ CTX_MODEL_REG_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Registration of Prima Models (abstraction over provider models), encrypted credential vault for 20+ LLM providers, workspace-level model assignment, guardrail rule management, tool provider management, and provider discovery.",
   "responsibility": "Store and manage LLM provider credentials (Fernet-encrypted at rest), define Prima Model abstractions, assign models to workspaces, manage guardrail rules, manage MCP tool providers and instances.",
   "teamOwnership": "Prima Platform Engineering",
+  "ownerTeam": "prima-control-tower-team",
   "status": "active",
   "subdomainType": "core",
   "contextType": "internal",
@@ -657,6 +775,7 @@ CTX_ORCHESTRATION_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "OpenAI-compatible chat completion gateway routing requests through guardrails to the appropriate LLM provider. Pydantic-AI agent framework, MCP tool gateway, RAG context injection, Redis Streams for SSE streaming.",
   "responsibility": "Accept chat completion requests, resolve workspace credentials from Control Tower, apply input guardrails, dispatch to LLM provider via LiteLLM, apply output guardrails, proxy MCP tool calls, inject RAG context, stream responses via SSE, report usage telemetry.",
   "teamOwnership": "Prima Platform Engineering",
+  "ownerTeam": "prima-ai-engine-team",
   "status": "active",
   "subdomainType": "core",
   "contextType": "internal",
@@ -671,6 +790,7 @@ CTX_PII_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Microsoft Presidio-based PII entity recognition and optional anonymization. Scans input/output for personally identifiable information with configurable entity types and actions.",
   "responsibility": "Detect PII entities in text, optionally redact or anonymize detected entities, report PII findings to orchestration layer for guardrail enforcement.",
   "teamOwnership": "Prima Platform Engineering",
+  "ownerTeam": "prima-ai-engine-team",
   "status": "active",
   "subdomainType": "core",
   "contextType": "internal",
@@ -685,6 +805,7 @@ CTX_LLM_PROXY_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Unified gateway for routing requests to 100+ LLM providers with load balancing, fallback, and spend tracking. Abstracts provider-specific APIs behind OpenAI-compatible interface.",
   "responsibility": "Route LLM requests to configured providers, handle provider failover and load balancing, track token usage and costs per provider, manage API key rotation.",
   "teamOwnership": "Prima Platform Engineering",
+  "ownerTeam": "prima-ai-engine-team",
   "status": "active",
   "subdomainType": "core",
   "contextType": "internal",
@@ -701,6 +822,7 @@ CTX_RAG_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Document ingestion pipeline with 9 file converters, OCR, Whisper transcription, web scraping. 7 data connectors (GitHub, GitLab, Confluence, YouTube, Obsidian, Drupal, Website). Vector storage via PostgreSQL + pgvector with 9 vector DB provider adapters.",
   "responsibility": "Process uploaded documents into vector embeddings via the collector, manage data connector imports, manage knowledge base assignments to workspaces, perform similarity search, store vectors and documents.",
   "teamOwnership": "Prima Frontend Team",
+  "ownerTeam": "prima-web-experience-team",
   "status": "active",
   "subdomainType": "supporting",
   "contextType": "internal",
@@ -715,6 +837,7 @@ CTX_WORKSPACE_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Multi-threaded AI chat within workspaces, visual agent flow builder with 9 node types, data connector UI, MCP tool integration, slash commands, prompt sidebar, citations, TTS/STT, i18n, community hub for sharing agent skills.",
   "responsibility": "Manage chat threads and message history, execute AI agent flows, integrate MCP servers for tool use, provide slash command presets, render data connector UI, host embeddable chat widgets.",
   "teamOwnership": "Prima Frontend Team",
+  "ownerTeam": "prima-web-experience-team",
   "status": "active",
   "subdomainType": "supporting",
   "contextType": "internal",
@@ -729,6 +852,7 @@ CTX_WEB_SERVER_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Express.js backend API for Prima Web — handles chat sessions, workspace management, knowledge base CRUD, document uploads, agent flow execution, embeddable chat widgets, OpenAI-compatible API endpoints.",
   "responsibility": "Serve REST API for Prima Web frontend, manage workspace sessions, proxy AI requests to engine, handle file uploads to storage, execute agent flows, manage embed sessions, serve OpenAI-compatible endpoints.",
   "teamOwnership": "Prima Frontend Team",
+  "ownerTeam": "prima-web-experience-team",
   "status": "active",
   "subdomainType": "supporting",
   "contextType": "internal",
@@ -743,6 +867,7 @@ CTX_ASYNC_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Celery workers for background task execution — AI agent tool calls, MCP tool invocations, document processing, batch operations, and scheduled jobs.",
   "responsibility": "Execute long-running AI tool calls asynchronously, process document embedding queues, run scheduled batch operations, report task status and results.",
   "teamOwnership": "Prima Platform Engineering",
+  "ownerTeam": "prima-platform-engineering",
   "status": "active",
   "subdomainType": "supporting",
   "contextType": "internal",
@@ -759,6 +884,7 @@ CTX_DELIVERY_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
   "description": "Distribution hub for 108+ AI agents, 140 skills, and 72 plugins via OpenPackage across categories: backend, security, CI/CD, frontend, and more.",
   "responsibility": "Package, version, and distribute reusable AI agent skills to Prima Web and other OpenCode-compatible clients.",
   "teamOwnership": "Prima Platform Engineering",
+  "ownerTeam": "prima-product-team",
   "status": "active",
   "subdomainType": "generic",
   "contextType": "external-system",
