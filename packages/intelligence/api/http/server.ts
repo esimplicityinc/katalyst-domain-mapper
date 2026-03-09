@@ -18,6 +18,7 @@ import { createTaxonomyRoutes } from "./routes/v1/taxonomy.js";
 import { createLandscapeRoutes } from "./routes/v1/landscape.js";
 import { createLintRoutes } from "./routes/v1/lint.js";
 import { createFlagRoutes } from "./routes/v1/flags.js";
+import { createOrchestratorRoutes } from "./routes/v1/orchestrator.js";
 import type { Container } from "../bootstrap/container.js";
 import * as path from "node:path";
 import * as fs from "node:fs";
@@ -173,6 +174,13 @@ export function createServer(container: Container) {
         )
         .use(
           createFlagRoutes({
+            featureFlags: container.featureFlags,
+          }),
+        )
+        .use(
+          createOrchestratorRoutes({
+            scanOrchestrator: container.scanOrchestrator,
+            chatOrchestrator: container.chatOrchestrator,
             featureFlags: container.featureFlags,
           }),
         ),

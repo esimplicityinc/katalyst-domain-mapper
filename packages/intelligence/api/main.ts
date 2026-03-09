@@ -41,10 +41,11 @@ try {
 // Create HTTP server
 const app = createServer(container);
 
-// Start background scan loop
+// Start background scan loop — uses scanOrchestrator (feature-flag-driven) with scanRunner as fallback
 const stopScanLoop = startScanLoop({
   scanJobRepo: container.scanJobRepo,
-  scanRunner: container.scanRunner,
+  scanOrchestrator: container.scanOrchestrator,
+  scanRunner: container.scanRunner, // deprecated fallback
   reportRepo: container.reportRepo,
   logger: logger.child({ component: "scan-loop" }),
   pollIntervalMs: config.scanPollIntervalMs,

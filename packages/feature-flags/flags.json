@@ -60,6 +60,26 @@
       },
       "defaultVariant": "low",
       "flagType": "number"
+    },
+    "scan.runtime": {
+      "description": "Agent runtime for FOE scans. 'opencode' uses the Docker container with OpenCode CLI. 'langgraph' uses LangGraph StateGraph with direct LLM API calls.",
+      "disabled": false,
+      "variants": {
+        "opencode": "opencode",
+        "langgraph": "langgraph"
+      },
+      "defaultVariant": "opencode",
+      "flagType": "string"
+    },
+    "chat.runtime": {
+      "description": "Agent runtime for interactive chat. 'opencode' proxies to the OpenCode HTTP server. 'langgraph' uses a LangGraph ReAct agent graph.",
+      "disabled": false,
+      "variants": {
+        "opencode": "opencode",
+        "langgraph": "langgraph"
+      },
+      "defaultVariant": "opencode",
+      "flagType": "string"
     }
   }
 }

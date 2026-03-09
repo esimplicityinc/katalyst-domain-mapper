@@ -1,5 +1,6 @@
 import type { ScanJobRepository } from "../ports/ScanJobRepository.js";
 import type { ScanRunner } from "../ports/ScanRunner.js";
+import type { ScanOrchestrator } from "../ports/ScanOrchestrator.js";
 import type { ReportRepository } from "../ports/ReportRepository.js";
 import type { Logger } from "../ports/Logger.js";
 import { normalizeReport } from "../domain/report/normalize.js";
@@ -7,15 +8,21 @@ import { normalizeReport } from "../domain/report/normalize.js";
 /**
  * Background loop that picks up queued scan jobs and runs them.
  * Returns a cleanup function to stop the loop.
+ *
+ * Supports both the legacy ScanRunner interface and the new ScanOrchestrator.
+ * When scanOrchestrator is provided it takes precedence over scanRunner.
  */
 export function startScanLoop(deps: {
   scanJobRepo: ScanJobRepository;
-  scanRunner: ScanRunner;
+  /** @deprecated Use scanOrchestrator instead */
+  scanRunner?: ScanRunner;
+  /** Feature-flag-driven orchestrator (OpenCode or LangGraph) */
+  scanOrchestrator?: ScanOrchestrator;
   reportRepo: ReportRepository;
   logger: Logger;
   pollIntervalMs: number;
 }): () => void {
-  const { scanJobRepo, scanRunner, reportRepo, logger, pollIntervalMs } = deps;
+  const { scanJobRepo, scanRunner, scanOrchestrator, reportRepo, logger, pollIntervalMs } = deps;
   let running = true;
   let timeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -31,6 +38,7 @@ export function startScanLoop(deps: {
         logger.info("Processing scan job", {
           jobId: job.id,
           repoPath: job.repositoryPath,
+          runtime: scanOrchestrator?.runtime ?? "legacy",
         });
 
         // Mark as running
@@ -39,8 +47,21 @@ export function startScanLoop(deps: {
           startedAt: new Date().toISOString(),
         });
 
-        // Run the scanner
-        const result = await scanRunner.run(job.repositoryPath);
+        // Run the scanner — prefer orchestrator over legacy runner
+        let result: { success: boolean; report: unknown; error?: string };
+        if (scanOrchestrator) {
+          result = await scanOrchestrator.run({
+            repositoryPath: job.repositoryPath,
+          });
+        } else if (scanRunner) {
+          result = await scanRunner.run(job.repositoryPath);
+        } else {
+          result = {
+            success: false,
+            report: null,
+            error: "No scan runner or orchestrator configured",
+          };
+        }
 
         if (result.success && result.report) {
           try {

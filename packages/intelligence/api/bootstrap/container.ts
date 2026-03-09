@@ -5,6 +5,8 @@ import type { Logger } from "../ports/Logger.js";
 import type { ReportRepository } from "../ports/ReportRepository.js";
 import type { ScanJobRepository } from "../ports/ScanJobRepository.js";
 import type { ScanRunner } from "../ports/ScanRunner.js";
+import type { ScanOrchestrator } from "../ports/ScanOrchestrator.js";
+import type { ChatOrchestrator } from "../ports/ChatOrchestrator.js";
 import type { GovernanceRepository } from "../ports/GovernanceRepository.js";
 import type { TaxonomyRepository } from "../ports/TaxonomyRepository.js";
 import { StructuredLogger } from "../observability/logging.js";
@@ -14,6 +16,10 @@ import { ScanJobRepositorySQLite } from "../adapters/sqlite/ScanJobRepositorySQL
 import { GovernanceRepositorySQLite } from "../adapters/sqlite/GovernanceRepositorySQLite.js";
 import { TaxonomyRepositorySQLite } from "../adapters/sqlite/TaxonomyRepositorySQLite.js";
 import { DockerScanRunner } from "../adapters/docker/DockerScanRunner.js";
+import {
+  createScanOrchestrator,
+  createChatOrchestrator,
+} from "./orchestratorFactory.js";
 import { IngestReport } from "../usecases/report/IngestReport.js";
 import { GetReport } from "../usecases/report/GetReport.js";
 import { ListReports } from "../usecases/report/ListReports.js";
@@ -50,7 +56,12 @@ export interface Container {
   featureFlags: FeatureFlags;
   reportRepo: ReportRepository;
   scanJobRepo: ScanJobRepository;
+  /** @deprecated Use scanOrchestrator instead. Kept for backward compatibility. */
   scanRunner: ScanRunner;
+  /** Feature-flag-driven scan orchestrator (OpenCode or LangGraph) */
+  scanOrchestrator: ScanOrchestrator;
+  /** Feature-flag-driven chat orchestrator (OpenCode or LangGraph) */
+  chatOrchestrator: ChatOrchestrator;
   governanceRepo: GovernanceRepository;
   taxonomyRepo: TaxonomyRepository;
   ingestReport: IngestReport;
@@ -140,6 +151,7 @@ export async function createContainer(config: AppConfig): Promise<Container> {
   const taxonomyRepo = new TaxonomyRepositorySQLite(db);
 
   // Scan runner — uses whichever LLM key is active
+  // @deprecated: kept for backward compatibility; prefer scanOrchestrator
   const scanRunner = new DockerScanRunner(
     config.scannerImage,
     getLlmApiKey,
@@ -190,6 +202,22 @@ export async function createContainer(config: AppConfig): Promise<Container> {
   const openFeatureClient = await initServerFlags();
   const featureFlags: FeatureFlags = new OpenFeatureAdapter(openFeatureClient);
 
+  // Orchestrators — feature-flag-driven runtime selection (OpenCode or LangGraph)
+  const opencodeUrl = `http://127.0.0.1:${process.env.OPENCODE_PORT ?? 4096}`;
+  const scanOrchestrator = await createScanOrchestrator({
+    featureFlags,
+    config,
+    logger,
+    getLlmApiKey,
+  });
+  const chatOrchestrator = await createChatOrchestrator({
+    featureFlags,
+    config,
+    logger,
+    getLlmApiKey,
+    opencodeUrl,
+  });
+
   // Health check
   const healthCheck = (): boolean => {
     try {
@@ -214,6 +242,8 @@ export async function createContainer(config: AppConfig): Promise<Container> {
     reportRepo,
     scanJobRepo,
     scanRunner,
+    scanOrchestrator,
+    chatOrchestrator,
     governanceRepo,
     taxonomyRepo,
     ingestReport,
