@@ -1,6 +1,6 @@
-import { governance } from "@foe/schemas";
+import { taxonomy } from "@foe/schemas";
 
-type RoadStatus = governance.RoadStatus;
+type RoadStatus = taxonomy.RoadStatus;
 
 export interface TransitionInput {
   roadId: string;
@@ -28,12 +28,12 @@ export class ValidateTransition {
     const target = input.targetStatus as RoadStatus;
 
     // Check if the transition is valid per the state machine
-    if (!governance.validateTransition(current, target)) {
+    if (!taxonomy.validateTransition(current, target)) {
       return {
         valid: false,
         roadId: input.roadId,
         error: `Invalid transition: ${current} → ${target}`,
-        allowedTransitions: governance.STATE_MACHINE_TRANSITIONS[current] ?? [],
+        allowedTransitions: taxonomy.STATE_MACHINE_TRANSITIONS[current] ?? [],
       };
     }
 

@@ -136,8 +136,8 @@ GET    /api/v1/domain-models/:id/glossary           — List glossary terms
 ### Simplified Code (from Zod schemas)
 
 ```typescript
-// packages/foe-schemas/src/ddd/domain-model.ts
-export const DomainModelSchema = z.object({
+// packages/foe-schemas/src/taxonomy/taxonomy-snapshot.ts
+export const TaxonomySnapshotSchema = z.object({
   id: z.string().uuid(),                                  // DomainModelId
   name: z.string(),
   description: z.string().optional(),
@@ -150,7 +150,7 @@ export const DomainModelSchema = z.object({
   updatedAt: z.string().datetime(),
 });
 
-// packages/foe-schemas/src/ddd/bounded-context.ts
+// packages/foe-schemas/src/taxonomy/extensions/bounded-context.ts
 export const BoundedContextSchema = z.object({
   id: z.string().uuid(),
   slug: z.string().regex(/^[a-z0-9-]+$/),               // Slug VO
@@ -161,7 +161,7 @@ export const BoundedContextSchema = z.object({
   // ...
 });
 
-// packages/foe-schemas/src/ddd/aggregate.ts
+// packages/foe-schemas/src/taxonomy/extensions/aggregate.ts
 export const AggregateSchema = z.object({
   id: z.string().uuid(),
   slug: z.string().regex(/^[a-z0-9-]+$/),

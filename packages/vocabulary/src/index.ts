@@ -15,8 +15,8 @@ export type {
   MethodsIndex,
 } from "@foe/schemas/field-guide";
 
-// Re-export governance types (via namespace)
-export type { governance } from "@foe/schemas";
+// Re-export taxonomy types (via namespace, formerly governance)
+export type { taxonomy } from "@foe/schemas";
 
 // Export CML adapter
 export { CMLWriter } from "./adapters/cml/index.js";

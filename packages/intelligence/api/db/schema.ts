@@ -161,6 +161,7 @@ export const boundedContexts = sqliteTable("bounded_contexts", {
   responsibility: text("responsibility").notNull(),
   sourceDirectory: text("source_directory"),
   teamOwnership: text("team_ownership"),
+  ownerTeam: text("owner_team"),
   status: text("status").notNull().default("draft"),
   subdomainType: text("subdomain_type"), // 'core' | 'supporting' | 'generic' | null
   contextType: text("context_type").notNull().default("internal"), // 'internal' | 'external-system' | 'human-process' | 'unknown'
@@ -550,6 +551,56 @@ export const taxonomyTools = sqliteTable("taxonomy_tools", {
   name: text("name").notNull(),
   description: text("description").notNull(),
   actions: text("actions", { mode: "json" }).$type<string[]>().default([]),
+});
+
+// ── Taxonomy Teams ────────────────────────────────────────────────────────────
+// A project team within a taxonomy snapshot. Carries a Team Topologies type
+// and owns zero or more taxonomy nodes.
+
+export const taxonomyTeams = sqliteTable("taxonomy_teams", {
+  id: text("id").primaryKey(), // composite: snapshotId:name
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  displayName: text("display_name").notNull(),
+  teamType: text("team_type").notNull(), // stream-aligned | platform | enabling | complicated-subsystem
+  description: text("description"),
+  focusArea: text("focus_area"),
+  communicationChannels: text("communication_channels", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+  ownedNodes: text("owned_nodes", { mode: "json" })
+    .$type<string[]>()
+    .default([]),
+});
+
+// ── Taxonomy Persons ──────────────────────────────────────────────────────────
+// A person who can be a member of one or more teams.
+
+export const taxonomyPersons = sqliteTable("taxonomy_persons", {
+  id: text("id").primaryKey(), // composite: snapshotId:name
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  displayName: text("display_name").notNull(),
+  email: text("email"),
+  role: text("role"), // default/global role (e.g. "Senior Engineer")
+  avatarUrl: text("avatar_url"),
+});
+
+// ── Taxonomy Team Memberships ─────────────────────────────────────────────────
+// Many-to-many join: a person belongs to a team with a specific role in that team.
+
+export const taxonomyTeamMemberships = sqliteTable("taxonomy_team_memberships", {
+  id: text("id").primaryKey(), // composite: snapshotId:teamName:personName
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  teamName: text("team_name").notNull(),
+  personName: text("person_name").notNull(),
+  role: text("role").notNull(), // role within this team
 });
 
 // ── Taxonomy Layer Healths ─────────────────────────────────────────────────────

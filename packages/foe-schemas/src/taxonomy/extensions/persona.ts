@@ -1,13 +1,16 @@
 import { z } from "zod";
 import {
-  PersonaIdPattern,
   CapabilityIdPattern,
   UserStoryIdPattern,
-} from "./common.js";
+  PersonaIdPattern,
+} from "../common.js";
 
-export const PersonaSchema = z.object({
-  id: PersonaIdPattern,
-  name: z.string(),
+// ── Persona Extension ──────────────────────────────────────────────────────
+// Carries governance lifecycle fields for taxonomy nodes with nodeType:
+// "persona". The base TaxonomyNode provides id, name, fqtn, parentNode,
+// labels (including governance-id e.g. "PER-001"), dependsOn, etc.
+export const PersonaExtSchema = z.object({
+  title: z.string(),
   tag: z.string().regex(/^@PER-\d+$/),
   type: z.enum(["human", "bot", "system", "external_api"]),
   status: z.enum(["draft", "approved", "deprecated"]),
@@ -18,7 +21,6 @@ export const PersonaSchema = z.object({
     "consumer",
     "integrator",
   ]),
-  description: z.string().optional(),
   goals: z.array(z.string()).default([]),
   painPoints: z.array(z.string()).default([]),
   behaviors: z.array(z.string()).default([]),
@@ -35,7 +37,6 @@ export const PersonaSchema = z.object({
   created: z.string().optional(),
   updated: z.string().optional(),
   validatedBy: z.string().optional(),
-  path: z.string(),
 });
 
-export type Persona = z.infer<typeof PersonaSchema>;
+export type PersonaExt = z.infer<typeof PersonaExtSchema>;

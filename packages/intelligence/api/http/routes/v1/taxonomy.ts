@@ -247,5 +247,55 @@ export function createTaxonomyRoutes(deps: {
           },
         },
       )
+
+      // ── Team & Person endpoints ──────────────────────────────────────────
+
+      // GET /teams — List all teams from latest snapshot
+      .get(
+        "/teams",
+        async () => {
+          return deps.taxonomyRepo.getTeams();
+        },
+        {
+          detail: {
+            summary: "List all teams from the latest taxonomy snapshot",
+            tags: ["Taxonomy"],
+          },
+        },
+      )
+
+      // GET /teams/:name — Get a team by name with full member details
+      .get(
+        "/teams/:name",
+        async ({ params, set }) => {
+          const team = await deps.taxonomyRepo.getTeamByName(params.name);
+          if (!team) {
+            set.status = 404;
+            return { error: `Team not found: ${params.name}` };
+          }
+          return team;
+        },
+        {
+          params: t.Object({ name: t.String() }),
+          detail: {
+            summary: "Get a team by name with members",
+            tags: ["Taxonomy"],
+          },
+        },
+      )
+
+      // GET /persons — List all persons from latest snapshot with team memberships
+      .get(
+        "/persons",
+        async () => {
+          return deps.taxonomyRepo.getPersons();
+        },
+        {
+          detail: {
+            summary: "List all persons from the latest taxonomy snapshot",
+            tags: ["Taxonomy"],
+          },
+        },
+      )
   );
 }

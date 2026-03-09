@@ -66,6 +66,31 @@ export interface ValidatedTaxonomyTool {
   actions: string[];
 }
 
+export interface ValidatedTaxonomyPerson {
+  name: string;
+  displayName: string;
+  email: string | null;
+  role: string | null;
+  avatarUrl: string | null;
+}
+
+export interface ValidatedTaxonomyTeamMembership {
+  teamName: string;
+  personName: string;
+  role: string;
+}
+
+export interface ValidatedTaxonomyTeam {
+  name: string;
+  displayName: string;
+  teamType: string;
+  description: string | null;
+  focusArea: string | null;
+  communicationChannels: string[];
+  ownedNodes: string[];
+  members: ValidatedTaxonomyTeamMembership[];
+}
+
 export interface ValidatedTaxonomyData {
   project: string;
   version: string;
@@ -78,6 +103,9 @@ export interface ValidatedTaxonomyData {
   actions: ValidatedTaxonomyAction[];
   stages: ValidatedTaxonomyStage[];
   tools: ValidatedTaxonomyTool[];
+  teams: ValidatedTaxonomyTeam[];
+  persons: ValidatedTaxonomyPerson[];
+  teamMemberships: ValidatedTaxonomyTeamMembership[];
   rawPayload: Record<string, unknown>;
 }
 
@@ -269,6 +297,76 @@ export function validateTaxonomyData(data: unknown): ValidatedTaxonomyData {
     }),
   );
 
+  // Parse persons (top-level array — shared across teams)
+  const VALID_TEAM_TYPES = new Set([
+    "stream-aligned",
+    "platform",
+    "enabling",
+    "complicated-subsystem",
+  ]);
+
+  const persons: ValidatedTaxonomyPerson[] = parseArrayField(
+    raw.persons,
+    (item) => ({
+      name: item.name as string,
+      displayName: (item.displayName ?? item.display_name) as string,
+      email: (item.email as string) ?? null,
+      role: (item.role as string) ?? null,
+      avatarUrl: (item.avatarUrl ?? item.avatar_url) as string ?? null,
+    }),
+  ).filter((p) => p.name && p.displayName);
+
+  const personNames = new Set(persons.map((p) => p.name));
+
+  // Parse teams (top-level array — each team has inline members[])
+  const teamMemberships: ValidatedTaxonomyTeamMembership[] = [];
+
+  const teams: ValidatedTaxonomyTeam[] = parseArrayField(
+    raw.teams,
+    (item) => {
+      const teamName = item.name as string;
+      const displayName = (item.displayName ?? item.display_name) as string;
+      const teamType = (item.teamType ?? item.team_type) as string;
+
+      if (!teamName || !displayName) throw new Error("skip");
+      if (!VALID_TEAM_TYPES.has(teamType)) throw new Error("skip");
+
+      // Parse inline members
+      const rawMembers = Array.isArray(item.members) ? item.members : [];
+      const members: ValidatedTaxonomyTeamMembership[] = [];
+      for (const m of rawMembers) {
+        if (!m || typeof m !== "object") continue;
+        const mem = m as Record<string, unknown>;
+        const personName = (mem.person ?? mem.personName ?? mem.person_name) as string;
+        const role = (mem.role as string) ?? "Member";
+        if (!personName) continue;
+
+        const membership: ValidatedTaxonomyTeamMembership = {
+          teamName,
+          personName,
+          role,
+        };
+        members.push(membership);
+        teamMemberships.push(membership);
+      }
+
+      return {
+        name: teamName,
+        displayName,
+        teamType,
+        description: (item.description as string) ?? null,
+        focusArea: (item.focusArea ?? item.focus_area) as string ?? null,
+        communicationChannels: Array.isArray(item.communicationChannels ?? item.communication_channels)
+          ? (item.communicationChannels ?? item.communication_channels) as string[]
+          : [],
+        ownedNodes: Array.isArray(item.ownedNodes ?? item.owned_nodes)
+          ? (item.ownedNodes ?? item.owned_nodes) as string[]
+          : [],
+        members,
+      };
+    },
+  );
+
   return {
     project: raw.project as string,
     version: raw.version as string,
@@ -281,6 +379,9 @@ export function validateTaxonomyData(data: unknown): ValidatedTaxonomyData {
     actions,
     stages,
     tools,
+    teams,
+    persons,
+    teamMemberships,
     rawPayload: raw as Record<string, unknown>,
   };
 }

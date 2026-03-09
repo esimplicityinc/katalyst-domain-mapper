@@ -50,7 +50,7 @@ The project has 4 bounded contexts:
 
 1. **Scanning**
    - Core: Repository analysis, dimension scoring, AI-powered assessment
-   - Location: `packages/foe-scanner/`
+   - Location: `packages/assessment/`
 
 2. **Field Guide**
    - Core: Method/observation indexing, keyword extraction, external frameworks
@@ -58,7 +58,7 @@ The project has 4 bounded contexts:
 
 3. **Reporting**
    - Core: Report visualization, trend tracking, report persistence
-   - Location: `packages/foe-api/` + `packages/foe-web-ui/`
+   - Location: `packages/intelligence/`
 
 4. **Governance**
    - Core: Road items, capabilities, personas, NFRs, change tracking

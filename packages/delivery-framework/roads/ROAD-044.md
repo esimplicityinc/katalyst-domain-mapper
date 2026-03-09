@@ -46,6 +46,8 @@ governance:
 
 # ROAD-044: Business Landscape Visualization
 
+> **Note (v0.2.0):** As of @foe/schemas v0.2.0, the `ddd/` and `governance/` modules were consolidated into a unified `taxonomy/` module. File paths and import statements below (e.g. `src/governance/domain-event.ts`, `src/governance/bounded-context.ts`) reflect the original implementation at time of writing.
+
 **Status**: ✅ Complete  
 **Priority**: High  
 **Phase**: 2 — Advanced Features  

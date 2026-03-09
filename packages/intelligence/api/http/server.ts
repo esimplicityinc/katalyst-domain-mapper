@@ -231,8 +231,11 @@ export function createServer(container: Container) {
         }
       }
 
-      // ── Guard: never serve HTML for /api paths (return 404 JSON) ────────
-      if (url.pathname.startsWith("/api")) {
+      // ── Guard: never serve HTML for /api or /auth paths (return 404 JSON) ──
+      if (
+        url.pathname.startsWith("/api") ||
+        url.pathname.startsWith("/auth")
+      ) {
         return new Response(
           JSON.stringify({ error: "Not Found", path: url.pathname }),
           { status: 404, headers: { "Content-Type": "application/json" } },

@@ -305,7 +305,7 @@ For eventual consistency guarantees in a distributed setup, consider the **Outbo
 Events documented here are also modeled as first-class entities within the `DomainModel` aggregate:
 
 ```typescript
-// packages/foe-schemas/src/ddd/domain-event.ts
+// packages/foe-schemas/src/taxonomy/extensions/domain-event.ts
 export const DomainEventSchema = z.object({
   id: z.string().uuid(),
   slug: z.string().regex(/^[a-z0-9-]+$/),       // e.g., "scan-completed"

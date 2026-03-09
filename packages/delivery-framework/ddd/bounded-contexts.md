@@ -105,9 +105,9 @@ Parse, validate, and index 65+ methods and 39+ observations from markdown files.
 
 - **Method** — A documented engineering practice identified by `M{NNN}` (e.g., `M111`). Has a maturity level (`hypothesized | observing | validated | proven`), optional field guide association, optional external framework origin, linked observation IDs, and extracted keywords. Validated by `MethodSchema`.
 - **Observation** — A documented finding from real-world projects identified by `O{NNN}` (e.g., `O157`). Has status (`in-progress | completed`), source type (`internal | external`), and linked method IDs. Validated by `ObservationSchema`.
-- **Keyword** — A term extracted from method titles and content used for auto-linking scan findings to relevant methods. 625+ keywords indexed in `keywordIndex`.
+- **Keyword** — A term extracted from method titles and content used for auto-linking scan findings to relevant methods. 625+ keywords indexed in `byKeyword`.
 - **ExternalFramework** — An external methodology (DORA, DDD, etc.) whose methods are adopted into the FOE catalog with FOE-specific maturity assessments via `ExternalMethodInfoSchema`.
-- **MethodsIndex** — The build-time artifact containing all methods, keyword index, field guide index, and framework index. Validated by `MethodsIndexSchema`.
+- **MethodsIndex** — The build-time artifact containing all methods, byKeyword, byFieldGuide, byFramework, and byObservation reverse indices. Validated by `MethodsIndexSchema`.
 
 ### Key Aggregates
 

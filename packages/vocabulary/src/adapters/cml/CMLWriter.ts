@@ -1,13 +1,29 @@
 import type {
-  DomainModel,
-  BoundedContext,
+  BoundedContextExt,
   ContextRelationship,
   SubdomainType,
   CommunicationPattern,
-} from "@foe/schemas/ddd";
+} from "@foe/schemas/taxonomy";
 
 /**
- * CMLWriter converts DomainModel to ContextMapper CML (Context Mapping Language) format.
+ * A bounded context entry for CML export.
+ * Combines the slug (from the TaxonomyNode key) with extension data.
+ */
+export interface CMLBoundedContext extends BoundedContextExt {
+  slug: string;
+}
+
+/**
+ * Input for CML generation.
+ * Replaces the former DomainModel type with the fields CMLWriter actually needs.
+ */
+export interface CMLDomainInput {
+  name: string;
+  boundedContexts: CMLBoundedContext[];
+}
+
+/**
+ * CMLWriter converts a domain model to ContextMapper CML (Context Mapping Language) format.
  *
  * This follows the Ports & Adapters pattern where:
  * - Zod schemas = Canonical domain model (single source of truth)
@@ -16,9 +32,9 @@ import type {
  */
 export class CMLWriter {
   /**
-   * Convert a DomainModel to CML format
+   * Convert a domain input to CML format
    */
-  write(model: DomainModel): string {
+  write(model: CMLDomainInput): string {
     const lines: string[] = [];
 
     // Add header comment
@@ -42,7 +58,7 @@ export class CMLWriter {
   /**
    * Generate the ContextMap block
    */
-  private generateContextMap(model: DomainModel): string {
+  private generateContextMap(model: CMLDomainInput): string {
     const lines: string[] = [];
     const contextMapName = this.toPascalCase(model.name) + "ContextMap";
 
@@ -111,7 +127,7 @@ export class CMLWriter {
   /**
    * Generate a BoundedContext block
    */
-  private generateBoundedContext(context: BoundedContext): string {
+  private generateBoundedContext(context: CMLBoundedContext): string {
     const lines: string[] = [];
     const name = this.toPascalCase(context.slug) + "Context";
 

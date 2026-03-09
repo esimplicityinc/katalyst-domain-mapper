@@ -1,4 +1,4 @@
-import { governance } from "@foe/schemas";
+import { taxonomy } from "@foe/schemas";
 import { readFile } from "node:fs/promises";
 import { parseFrontmatter } from "../frontmatter.js";
 import { makeGovernancePath } from "../governance-helpers.js";
@@ -15,7 +15,7 @@ import { makeGovernancePath } from "../governance-helpers.js";
  */
 export async function parseBoundedContextFile(
   filePath: string,
-): Promise<governance.BoundedContext> {
+): Promise<taxonomy.BoundedContextExt> {
   const fileContent = await readFile(filePath, "utf-8");
   const { data } = parseFrontmatter(fileContent);
 
@@ -36,7 +36,7 @@ export async function parseBoundedContextFile(
   };
 
   try {
-    return governance.BoundedContextSchema.parse(mapped);
+    return taxonomy.BoundedContextExtSchema.parse(mapped);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(

@@ -30,6 +30,8 @@ dependencies:
 
 # ROAD-002: Governance Zod Schemas
 
+> **Note (v0.2.0):** As of @foe/schemas v0.2.0, the `ddd/` and `governance/` modules were consolidated into a unified `taxonomy/` module. File paths below (e.g. `src/governance/`) reflect the original implementation at time of writing.
+
 ## Summary
 
 Create Zod validation schemas for all 7 governance artifact types in `@foe/schemas`. This replaces the hand-written JS validation in prima's `governance-linter.js` with type-safe, runtime-validated schemas that serve as the single source of truth across the entire pipeline.

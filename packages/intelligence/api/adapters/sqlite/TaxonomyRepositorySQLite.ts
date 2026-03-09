@@ -9,6 +9,10 @@ import type {
   TaxonomyHierarchyNode,
   CapabilityNode,
   CapabilityTree,
+  TaxonomyTeamSummary,
+  TaxonomyTeamDetail,
+  TaxonomyTeamMemberSummary,
+  TaxonomyPersonSummary,
 } from "../../ports/TaxonomyRepository.js";
 import type { DrizzleDB } from "../../db/client.js";
 import type { ValidatedTaxonomyData } from "../../domain/taxonomy/validateTaxonomyData.js";
@@ -29,6 +33,8 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
       actions: data.actions.length,
       stages: data.stages.length,
       tools: data.tools.length,
+      teams: data.teams.length,
+      persons: data.persons.length,
     };
 
     // Insert snapshot
@@ -171,6 +177,54 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
         .run();
     }
 
+    // Denormalize persons
+    for (const person of data.persons) {
+      this.db
+        .insert(schema.taxonomyPersons)
+        .values({
+          id: `${id}:${person.name}`,
+          snapshotId: id,
+          name: person.name,
+          displayName: person.displayName,
+          email: person.email,
+          role: person.role,
+          avatarUrl: person.avatarUrl,
+        })
+        .run();
+    }
+
+    // Denormalize teams
+    for (const team of data.teams) {
+      this.db
+        .insert(schema.taxonomyTeams)
+        .values({
+          id: `${id}:${team.name}`,
+          snapshotId: id,
+          name: team.name,
+          displayName: team.displayName,
+          teamType: team.teamType,
+          description: team.description,
+          focusArea: team.focusArea,
+          communicationChannels: team.communicationChannels,
+          ownedNodes: team.ownedNodes,
+        })
+        .run();
+    }
+
+    // Denormalize team memberships
+    for (const m of data.teamMemberships) {
+      this.db
+        .insert(schema.taxonomyTeamMemberships)
+        .values({
+          id: `${id}:${m.teamName}:${m.personName}`,
+          snapshotId: id,
+          teamName: m.teamName,
+          personName: m.personName,
+          role: m.role,
+        })
+        .run();
+    }
+
     return {
       id,
       project: data.project,
@@ -266,6 +320,7 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
       fqtn: r.fqtn,
       description: r.description,
       parentNode: r.parentNode,
+      owners: (r.owners as string[]) ?? [],
     }));
   }
 
@@ -338,6 +393,8 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
         actions: 0,
         stages: 0,
         tools: 0,
+        teams: 0,
+        persons: 0,
       };
     }
 
@@ -348,6 +405,8 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
       actions: this.db.select().from(schema.taxonomyActions).where(eq(schema.taxonomyActions.snapshotId, latest.id)).all().length,
       stages: this.db.select().from(schema.taxonomyStages).where(eq(schema.taxonomyStages.snapshotId, latest.id)).all().length,
       tools: this.db.select().from(schema.taxonomyTools).where(eq(schema.taxonomyTools.snapshotId, latest.id)).all().length,
+      teams: this.db.select().from(schema.taxonomyTeams).where(eq(schema.taxonomyTeams.snapshotId, latest.id)).all().length,
+      persons: this.db.select().from(schema.taxonomyPersons).where(eq(schema.taxonomyPersons.snapshotId, latest.id)).all().length,
     };
   }
 
@@ -461,6 +520,126 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
     return { roots, byName };
   }
 
+  async getTeams(): Promise<TaxonomyTeamSummary[]> {
+    const latest = await this.getLatestSnapshot();
+    if (!latest) return [];
+
+    const teams = this.db
+      .select()
+      .from(schema.taxonomyTeams)
+      .where(eq(schema.taxonomyTeams.snapshotId, latest.id))
+      .all();
+
+    const memberships = this.db
+      .select()
+      .from(schema.taxonomyTeamMemberships)
+      .where(eq(schema.taxonomyTeamMemberships.snapshotId, latest.id))
+      .all();
+
+    // Count members per team
+    const memberCounts = new Map<string, number>();
+    for (const m of memberships) {
+      memberCounts.set(m.teamName, (memberCounts.get(m.teamName) ?? 0) + 1);
+    }
+
+    return teams.map((t) => ({
+      name: t.name,
+      displayName: t.displayName,
+      teamType: t.teamType,
+      description: t.description,
+      focusArea: t.focusArea,
+      communicationChannels: (t.communicationChannels as string[]) ?? [],
+      ownedNodes: (t.ownedNodes as string[]) ?? [],
+      memberCount: memberCounts.get(t.name) ?? 0,
+    }));
+  }
+
+  async getTeamByName(name: string): Promise<TaxonomyTeamDetail | null> {
+    const latest = await this.getLatestSnapshot();
+    if (!latest) return null;
+
+    const team = this.db
+      .select()
+      .from(schema.taxonomyTeams)
+      .where(eq(schema.taxonomyTeams.snapshotId, latest.id))
+      .all()
+      .find((t) => t.name === name);
+
+    if (!team) return null;
+
+    // Get memberships for this team
+    const memberships = this.db
+      .select()
+      .from(schema.taxonomyTeamMemberships)
+      .where(eq(schema.taxonomyTeamMemberships.snapshotId, latest.id))
+      .all()
+      .filter((m) => m.teamName === name);
+
+    // Get person details
+    const persons = this.db
+      .select()
+      .from(schema.taxonomyPersons)
+      .where(eq(schema.taxonomyPersons.snapshotId, latest.id))
+      .all();
+    const personMap = new Map(persons.map((p) => [p.name, p]));
+
+    const members: TaxonomyTeamMemberSummary[] = memberships.map((m) => {
+      const person = personMap.get(m.personName);
+      return {
+        personName: m.personName,
+        displayName: person?.displayName ?? m.personName,
+        email: person?.email ?? null,
+        role: m.role,
+      };
+    });
+
+    return {
+      name: team.name,
+      displayName: team.displayName,
+      teamType: team.teamType,
+      description: team.description,
+      focusArea: team.focusArea,
+      communicationChannels: (team.communicationChannels as string[]) ?? [],
+      ownedNodes: (team.ownedNodes as string[]) ?? [],
+      memberCount: members.length,
+      members,
+    };
+  }
+
+  async getPersons(): Promise<TaxonomyPersonSummary[]> {
+    const latest = await this.getLatestSnapshot();
+    if (!latest) return [];
+
+    const persons = this.db
+      .select()
+      .from(schema.taxonomyPersons)
+      .where(eq(schema.taxonomyPersons.snapshotId, latest.id))
+      .all();
+
+    const memberships = this.db
+      .select()
+      .from(schema.taxonomyTeamMemberships)
+      .where(eq(schema.taxonomyTeamMemberships.snapshotId, latest.id))
+      .all();
+
+    // Group memberships by person
+    const personTeams = new Map<string, Array<{ team: string; role: string }>>();
+    for (const m of memberships) {
+      const teams = personTeams.get(m.personName) ?? [];
+      teams.push({ team: m.teamName, role: m.role });
+      personTeams.set(m.personName, teams);
+    }
+
+    return persons.map((p) => ({
+      name: p.name,
+      displayName: p.displayName,
+      email: p.email,
+      role: p.role,
+      avatarUrl: p.avatarUrl,
+      teams: personTeams.get(p.name) ?? [],
+    }));
+  }
+
   // ── Private helpers ──────────────────────────────────────────────────────
 
   private toStoredSnapshot(row: {
@@ -486,6 +665,8 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
         actions: this.db.select().from(schema.taxonomyActions).where(eq(schema.taxonomyActions.snapshotId, row.id)).all().length,
         stages: this.db.select().from(schema.taxonomyStages).where(eq(schema.taxonomyStages.snapshotId, row.id)).all().length,
         tools: this.db.select().from(schema.taxonomyTools).where(eq(schema.taxonomyTools.snapshotId, row.id)).all().length,
+        teams: this.db.select().from(schema.taxonomyTeams).where(eq(schema.taxonomyTeams.snapshotId, row.id)).all().length,
+        persons: this.db.select().from(schema.taxonomyPersons).where(eq(schema.taxonomyPersons.snapshotId, row.id)).all().length,
       },
       createdAt: row.createdAt,
     };

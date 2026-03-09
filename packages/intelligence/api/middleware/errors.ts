@@ -64,6 +64,16 @@ export const errorMiddleware = new Elysia({ name: "error-handler" }).onError(
     }
 
     // Unknown error
+    // Surface SQLite constraint violations as 409 Conflict for better diagnostics
+    if (
+      error instanceof Error &&
+      error.message?.includes("UNIQUE constraint failed")
+    ) {
+      console.warn("Duplicate key conflict:", error.message);
+      set.status = 409;
+      return { error: "Conflict: resource already exists", detail: error.message };
+    }
+
     console.error("Unhandled error:", error);
     set.status = 500;
     return { error: "Internal server error" };

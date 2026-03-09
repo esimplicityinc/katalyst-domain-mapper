@@ -1,14 +1,14 @@
 import { z } from "zod";
 import {
-  RoadItemIdPattern,
   AdrIdPattern,
   NfrIdPattern,
   CapabilityIdPattern,
+  RoadItemIdPattern,
   GovernancePhaseSchema,
   PrioritySchema,
-} from "./common.js";
+} from "../common.js";
 
-// 8-state governance workflow
+// ── Road Status (8-state governance workflow) ──────────────────────────────
 export const RoadStatusSchema = z.enum([
   "proposed",
   "adr_validated",
@@ -22,7 +22,7 @@ export const RoadStatusSchema = z.enum([
 
 export type RoadStatus = z.infer<typeof RoadStatusSchema>;
 
-// Valid state transitions
+// ── Valid State Transitions ────────────────────────────────────────────────
 export const STATE_MACHINE_TRANSITIONS: Record<RoadStatus, RoadStatus[]> = {
   proposed: ["adr_validated"],
   adr_validated: ["bdd_pending"],
@@ -34,7 +34,7 @@ export const STATE_MACHINE_TRANSITIONS: Record<RoadStatus, RoadStatus[]> = {
   complete: [],
 };
 
-// Governance sub-schemas
+// ── Governance Sub-Schemas ─────────────────────────────────────────────────
 export const AdrGovernanceSchema = z.object({
   validated: z.boolean().default(false),
   ids: z.array(AdrIdPattern).default([]),
@@ -95,8 +95,11 @@ export const NfrGovernanceSchema = z.object({
 
 export type NfrGovernance = z.infer<typeof NfrGovernanceSchema>;
 
-export const RoadItemSchema = z.object({
-  id: RoadItemIdPattern,
+// ── Road Item Extension ────────────────────────────────────────────────────
+// Carries governance lifecycle fields for taxonomy nodes with nodeType:
+// "road_item". The base TaxonomyNode provides id, name, fqtn, parentNode,
+// labels (including governance-id e.g. "ROAD-001"), dependsOn, etc.
+export const RoadItemExtSchema = z.object({
   title: z.string(),
   status: RoadStatusSchema,
   phase: GovernancePhaseSchema,
@@ -107,7 +110,6 @@ export const RoadItemSchema = z.object({
   completed: z.string().default(""),
   owner: z.string().default(""),
   tags: z.array(z.string()).default([]),
-  dependsOn: z.array(RoadItemIdPattern).default([]),
   blockedBy: z.array(RoadItemIdPattern).default([]),
   blocks: z.array(RoadItemIdPattern).default([]),
   governance: z.object({
@@ -116,19 +118,18 @@ export const RoadItemSchema = z.object({
     nfrs: NfrGovernanceSchema,
     capabilities: z.array(CapabilityIdPattern).default([]),
   }),
-  taxonomyNode: z.string().optional(),
-  path: z.string(),
 });
 
-export type RoadItem = z.infer<typeof RoadItemSchema>;
+export type RoadItemExt = z.infer<typeof RoadItemExtSchema>;
 
-// Helper: validate a state transition
+// ── Transition Helpers ─────────────────────────────────────────────────────
+/** Validate a state transition */
 export function validateTransition(from: RoadStatus, to: RoadStatus): boolean {
   const allowed = STATE_MACHINE_TRANSITIONS[from];
   return allowed ? allowed.includes(to) : false;
 }
 
-// Helper: get valid next states
+/** Get valid next states */
 export function getNextStates(current: RoadStatus): RoadStatus[] {
   return STATE_MACHINE_TRANSITIONS[current] ?? [];
 }
