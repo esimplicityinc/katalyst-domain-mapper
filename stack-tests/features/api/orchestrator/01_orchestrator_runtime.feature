@@ -4,24 +4,27 @@ Feature: Agent Orchestrator Runtime Switching
   I want to verify the agent orchestrator port/adapter pattern works correctly
   So that I can switch between OpenCode and LangGraph runtimes via feature flags
 
-  # ── Default Runtime (OpenCode) ─────────────────────────────────────────────
+  # ── Runtime Self-Consistency ───────────────────────────────────────────────
+  # The actual default runtime is configured in flags.json and may be either
+  # "opencode" or "langgraph". These tests verify the orchestrator status is
+  # internally consistent (runtime === flagValue) and uses a supported value.
 
   Scenario: Orchestrator status endpoint returns OK
     When I GET "/api/v1/orchestrator/status"
     Then the response status should be 200
     And the response should be a JSON object
 
-  Scenario: Default scan runtime is OpenCode
+  Scenario: Scan runtime is consistent with its feature flag value
     When I GET "/api/v1/orchestrator/status"
     Then the response status should be 200
-    And the value at "scan.runtime" should equal "opencode"
-    And the value at "scan.flagValue" should equal "opencode"
+    And I store the value at "scan.runtime" as "scanRuntime"
+    And the value at "scan.flagValue" should equal "{scanRuntime}"
 
-  Scenario: Default chat runtime is OpenCode
+  Scenario: Chat runtime is consistent with its feature flag value
     When I GET "/api/v1/orchestrator/status"
     Then the response status should be 200
-    And the value at "chat.runtime" should equal "opencode"
-    And the value at "chat.flagValue" should equal "opencode"
+    And I store the value at "chat.runtime" as "chatRuntime"
+    And the value at "chat.flagValue" should equal "{chatRuntime}"
 
   Scenario: Supported runtimes include both OpenCode and LangGraph
     When I GET "/api/v1/orchestrator/status"
