@@ -68,7 +68,7 @@
         "opencode": "opencode",
         "langgraph": "langgraph"
       },
-      "defaultVariant": "opencode",
+      "defaultVariant": "langgraph",
       "flagType": "string"
     },
     "chat.runtime": {
@@ -78,7 +78,7 @@
         "opencode": "opencode",
         "langgraph": "langgraph"
       },
-      "defaultVariant": "opencode",
+      "defaultVariant": "langgraph",
       "flagType": "string"
     }
   }

@@ -95,6 +95,9 @@ COPY .opencode ./.opencode
 COPY opencode.json ./
 COPY agents.md ./
 
+# Copy scanner agent .md files (single source of truth for LangGraph prompts)
+COPY packages/assessment/.opencode/agents/foe-scanner-*.md ./agents/scanner/
+
 # Copy entrypoint
 COPY entrypoint.sh ./
 RUN chmod +x ./entrypoint.sh
@@ -112,6 +115,7 @@ ENV LOG_LEVEL=info
 ENV NODE_ENV=production
 ENV WEB_DIST_DIR=/app/web-dist
 ENV OPENCODE_INTERNAL_URL=http://127.0.0.1:4096
+ENV SCANNER_AGENTS_DIR=/app/agents/scanner
 
 EXPOSE 8090
 

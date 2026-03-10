@@ -2,6 +2,7 @@ import type {
   ScanOrchestrator,
   ScanContext,
   ScanOrchestrationResult,
+  ScanOptions,
 } from "../../ports/ScanOrchestrator.js";
 import type { Logger } from "../../ports/Logger.js";
 import type { LlmProvider } from "../../config/env.js";
@@ -60,7 +61,7 @@ export class OpenCodeScanOrchestrator implements ScanOrchestrator {
     return null;
   }
 
-  async run(context: ScanContext): Promise<ScanOrchestrationResult> {
+  async run(context: ScanContext, _options?: ScanOptions): Promise<ScanOrchestrationResult> {
     const startTime = Date.now();
     const llm = this.getLlmApiKey();
 

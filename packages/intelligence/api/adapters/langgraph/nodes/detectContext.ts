@@ -4,15 +4,50 @@
  * This is the first node in the scan graph. It reads repository files
  * to detect tech stack, monorepo structure, and package layout.
  * It performs deterministic analysis (no LLM needed).
+ *
+ * InMemoryStore: When a store is available, the node checks for cached
+ * repo characteristics before re-analyzing. If found and fresh (< 1 hour),
+ * it skips detection and uses the cached values. After detection, it
+ * saves results to the store for future scans.
  */
 import type { ScanState } from "../graphs/scanState.js";
 import { existsSync, readdirSync, readFileSync } from "fs";
 import { join, basename } from "path";
+import {
+  getRepoStore,
+  getCachedContext,
+  saveCachedContext,
+} from "./repoStore.js";
 
 export async function detectContext(
   state: ScanState,
 ): Promise<Partial<ScanState>> {
   const repoPath = state.repositoryPath;
+
+  // ── Check store for cached context ──────────────────────────────────────
+  try {
+    const store = getRepoStore();
+    const cached = await getCachedContext(store, repoPath);
+    if (cached) {
+      // Use cached values — skip expensive filesystem analysis.
+      // Save again to bump the scan count.
+      await saveCachedContext(store, repoPath, {
+        techStack: cached.techStack,
+        monorepo: cached.monorepo,
+        packages: cached.packages,
+      }, cached.scanCount);
+
+      return {
+        techStack: cached.techStack,
+        monorepo: cached.monorepo,
+        packages: cached.packages,
+      };
+    }
+  } catch {
+    // Store failure is non-fatal — fall through to fresh detection
+  }
+
+  // ── Fresh detection ─────────────────────────────────────────────────────
   const techStack: string[] = [];
   let monorepo = false;
   const packages: string[] = [];
@@ -106,8 +141,22 @@ export async function detectContext(
     // Fall back to empty detection — specialists will still attempt analysis
   }
 
+  const detectedTechStack = techStack.length > 0 ? techStack : ["unknown"];
+
+  // ── Save to store for future scans ──────────────────────────────────────
+  try {
+    const store = getRepoStore();
+    await saveCachedContext(store, repoPath, {
+      techStack: detectedTechStack,
+      monorepo,
+      packages,
+    });
+  } catch {
+    // Store failure is non-fatal
+  }
+
   return {
-    techStack: techStack.length > 0 ? techStack : ["unknown"],
+    techStack: detectedTechStack,
     monorepo,
     packages,
   };

@@ -3,6 +3,11 @@
  *
  * Instead of proxying to OpenCode's HTTP API, this adapter builds a
  * LangGraph ReAct-style agent graph and manages sessions in-memory.
+ *
+ * MemorySaver: A shared MemorySaver instance persists conversation history
+ * across invocations within each session. Each session maps to a unique
+ * `thread_id` passed in the graph config, so the graph automatically
+ * accumulates messages without manual history management.
  */
 import type {
   ChatOrchestrator,
@@ -12,6 +17,7 @@ import type {
 import type { Logger } from "../../ports/Logger.js";
 import type { LlmProvider } from "../../config/env.js";
 import { HumanMessage } from "@langchain/core/messages";
+import { MemorySaver } from "@langchain/langgraph";
 import { buildChatGraph } from "./graphs/chatGraph.js";
 
 export interface LangGraphChatConfig {
@@ -26,16 +32,21 @@ export interface LangGraphChatConfig {
 interface ChatSession {
   id: string;
   agentName: string;
-  /** Compiled graph instance */
+  /** Compiled graph instance (with checkpointer) */
   graph: ReturnType<typeof buildChatGraph> extends Promise<infer T> ? T : ReturnType<typeof buildChatGraph>;
-  /** Accumulated messages for context */
-  messageHistory: Array<{ role: string; content: string }>;
   createdAt: Date;
 }
 
 export class LangGraphChatOrchestrator implements ChatOrchestrator {
   readonly runtime = "langgraph" as const;
   private sessions = new Map<string, ChatSession>();
+
+  /**
+   * Shared MemorySaver instance — persists conversation state across
+   * all sessions. Each session uses a unique thread_id to isolate
+   * its conversation history.
+   */
+  private readonly checkpointer = new MemorySaver();
 
   constructor(
     private config: LangGraphChatConfig,
@@ -46,13 +57,14 @@ export class LangGraphChatOrchestrator implements ChatOrchestrator {
     const sessionId = `lg_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
     const model = await this.createModel();
-    const graph = buildChatGraph(model);
+    const graph = buildChatGraph(model, [], {
+      checkpointer: this.checkpointer,
+    });
 
     const session: ChatSession = {
       id: sessionId,
       agentName: agentName ?? "default",
       graph,
-      messageHistory: [],
       createdAt: new Date(),
     };
 
@@ -62,6 +74,7 @@ export class LangGraphChatOrchestrator implements ChatOrchestrator {
       sessionId,
       agentName,
       title,
+      memoryEnabled: true,
     });
 
     return sessionId;
@@ -83,17 +96,23 @@ export class LangGraphChatOrchestrator implements ChatOrchestrator {
     }
 
     try {
-      // Add user message to history
-      session.messageHistory.push({ role: "user", content: text });
+      // With MemorySaver, we only need to send the new user message.
+      // The checkpointer automatically accumulates and replays the
+      // full conversation history for this thread_id.
+      const result = await session.graph.invoke(
+        {
+          messages: [new HumanMessage(text)],
+          agentName: options?.agent ?? session.agentName,
+          systemPrompt: this.getSystemPrompt(options?.agent ?? session.agentName),
+        },
+        {
+          configurable: {
+            thread_id: sessionId,
+          },
+        },
+      );
 
-      // Invoke the graph
-      const result = await session.graph.invoke({
-        messages: [new HumanMessage(text)],
-        agentName: options?.agent ?? session.agentName,
-        systemPrompt: this.getSystemPrompt(options?.agent ?? session.agentName),
-      });
-
-      // Extract the assistant's response
+      // Extract the assistant's response (the last message in the state)
       const lastMessage = result.messages[result.messages.length - 1];
       const responseText =
         typeof lastMessage.content === "string"
@@ -111,12 +130,6 @@ export class LangGraphChatOrchestrator implements ChatOrchestrator {
       // Emit events
       onEvent({ type: "text", data: { text: responseText } });
       onEvent({ type: "done", data: {} });
-
-      // Store in history
-      session.messageHistory.push({
-        role: "assistant",
-        content: responseText,
-      });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       this.logger.error("LangGraph chat error", {
@@ -150,6 +163,9 @@ export class LangGraphChatOrchestrator implements ChatOrchestrator {
 
   async destroySession(sessionId: string): Promise<void> {
     this.sessions.delete(sessionId);
+    // Note: MemorySaver checkpoints for this thread_id remain in memory
+    // until the process restarts. For production, consider using a
+    // persistent checkpointer (e.g. SQLite) with explicit cleanup.
     this.logger.debug("LangGraph chat session destroyed", { sessionId });
   }
 
