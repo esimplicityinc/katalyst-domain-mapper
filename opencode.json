@@ -10,22 +10,6 @@
       "http://localhost:3000"
     ]
   },
-
-  "tools": {
-    "bash": true,
-    "edit": true,
-    "glob": true,
-    "grep": true,
-    "list": true,
-    "patch": true,
-    "question": true,
-    "read": true,
-    "skill": true,
-    "todoread": true,
-    "todowrite": true,
-    "webfetch": true,
-    "write": true
-  },
   "agent": {
     "build": {
       "mode": "primary",
@@ -374,28 +358,6 @@
       "type": "local",
       "command": ["npx", "-y", "mcp-server-fetch"],
       "enabled": true
-    },
-    "g-search": {
-      "type": "local",
-      "command": ["npx", "-y", "g-search-mcp"],
-      "enabled": true
-    },
-    "playwright": {
-      "type": "local",
-      "command": ["npx", "@playwright/mcp@latest"],
-      "enabled": true
-    },
-    "context7": {
-      "type": "remote",
-      "url": "https://mcp.context7.com/mcp",
-      "enabled": true
-    }
-  },
-  "provider": {
-    "amazon-bedrock": {
-      "options": {
-        "region": "us-east-1"
-      }
     }
   },
   "permission": {
