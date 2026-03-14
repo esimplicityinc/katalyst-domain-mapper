@@ -4,6 +4,7 @@ import {
   UserStoryIdPattern,
   UserTypeIdPattern,
 } from "../common.js";
+import { ContributionSchema } from "../contribution.js";
 
 // ── User Type Extension ────────────────────────────────────────────────────
 // Carries governance lifecycle fields for taxonomy nodes with nodeType:
@@ -37,6 +38,7 @@ export const UserTypeExtSchema = z.object({
   created: z.string().optional(),
   updated: z.string().optional(),
   validatedBy: z.string().optional(),
+  contribution: ContributionSchema,
 });
 
 export type UserTypeExt = z.infer<typeof UserTypeExtSchema>;

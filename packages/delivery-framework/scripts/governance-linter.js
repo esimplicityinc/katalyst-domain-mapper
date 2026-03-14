@@ -65,6 +65,20 @@ const STATE_MACHINE_TRANSITIONS = {
   'complete': []
 };
 
+// ── Universal Contribution Lifecycle ───────────────────────────────────────
+const VALID_CONTRIBUTION_STATUSES = [
+  'draft', 'proposed', 'rejected', 'accepted', 'deprecated', 'superseded'
+];
+
+const CONTRIBUTION_TRANSITIONS = {
+  'draft':      ['proposed'],
+  'proposed':   ['accepted', 'rejected', 'draft'],
+  'rejected':   ['draft'],
+  'accepted':   ['deprecated', 'superseded'],
+  'deprecated': ['draft'],
+  'superseded': []   // terminal state
+};
+
 // Results tracking
 const results = {
   errors: [],
@@ -100,6 +114,104 @@ function extractFrontMatter(content) {
   } catch (e) {
     return { error: e.message };
   }
+}
+
+/**
+ * Validate the universal contribution block in frontmatter.
+ * Returns { errors, warnings } arrays.
+ * If no contribution block is present, returns empty arrays (optional for now).
+ */
+function validateContributionBlock(filePath, frontMatter) {
+  const errors = [];
+  const warnings = [];
+
+  const contrib = frontMatter.contribution;
+  if (!contrib) {
+    errors.push('Missing required field: contribution (universal contribution lifecycle block)');
+    return { errors, warnings };
+  }
+
+  // Validate status
+  if (contrib.status && !VALID_CONTRIBUTION_STATUSES.includes(contrib.status)) {
+    errors.push(`Invalid contribution.status: ${contrib.status} (expected: ${VALID_CONTRIBUTION_STATUSES.join(', ')})`);
+  }
+
+  // Validate version
+  if (contrib.version !== undefined) {
+    if (!Number.isInteger(contrib.version) || contrib.version < 1) {
+      errors.push(`contribution.version must be a positive integer, got: ${contrib.version}`);
+    }
+  }
+
+  // Validate supersedes/superseded_by format (ITEM-ID@vN)
+  const versionRefPattern = /^[A-Z]+-\d+@v\d+$/;
+  if (contrib.supersedes && !versionRefPattern.test(contrib.supersedes)) {
+    errors.push(`Invalid contribution.supersedes format: ${contrib.supersedes} (expected ITEM-ID@vN)`);
+  }
+  if (contrib.superseded_by && !versionRefPattern.test(contrib.superseded_by)) {
+    errors.push(`Invalid contribution.superseded_by format: ${contrib.superseded_by} (expected ITEM-ID@vN)`);
+  }
+
+  // Validate timestamps are ISO-8601 date strings
+  const dateFields = ['submitted_at', 'reviewed_at', 'created_at', 'updated_at'];
+  for (const field of dateFields) {
+    if (contrib[field] && isNaN(Date.parse(contrib[field]))) {
+      errors.push(`contribution.${field} must be a valid ISO-8601 date, got: ${contrib[field]}`);
+    }
+  }
+
+  // Validate submitted_by is present when status is proposed or later
+  if (contrib.status === 'proposed' && !contrib.submitted_by) {
+    warnings.push('contribution.submitted_by should be set when status is proposed');
+  }
+  if (contrib.status === 'proposed' && !contrib.submitted_at) {
+    warnings.push('contribution.submitted_at should be set when status is proposed');
+  }
+
+  // Validate reviewed_by is present when status is accepted or rejected
+  if ((contrib.status === 'accepted' || contrib.status === 'rejected') && !contrib.reviewed_by) {
+    warnings.push('contribution.reviewed_by should be set when status is accepted or rejected');
+  }
+  if ((contrib.status === 'accepted' || contrib.status === 'rejected') && !contrib.reviewed_at) {
+    warnings.push('contribution.reviewed_at should be set when status is accepted or rejected');
+  }
+
+  // Validate review_feedback is present on rejection
+  if (contrib.status === 'rejected' && !contrib.review_feedback) {
+    warnings.push('contribution.review_feedback should explain the rejection reason');
+  }
+
+  // Validate superseded state has superseded_by
+  if (contrib.status === 'superseded' && !contrib.superseded_by) {
+    errors.push('contribution.superseded_by is required when status is superseded');
+  }
+
+  // Validate type-specific status is only meaningful when contribution is accepted
+  if (contrib.status && contrib.status !== 'accepted' && frontMatter.status) {
+    warnings.push(`Type-specific status (${frontMatter.status}) is only meaningful when contribution.status is accepted (currently: ${contrib.status})`);
+  }
+
+  return { errors, warnings };
+}
+
+/**
+ * Validate a contribution state transition
+ */
+function validateContributionTransition(filePath, frontMatter, previousContributionStatus) {
+  const errors = [];
+
+  if (!previousContributionStatus) return { errors };
+
+  const currentStatus = frontMatter.contribution?.status;
+  if (!currentStatus) return { errors };
+
+  const validNextStates = CONTRIBUTION_TRANSITIONS[previousContributionStatus] || [];
+
+  if (currentStatus !== previousContributionStatus && !validNextStates.includes(currentStatus)) {
+    errors.push(`Invalid contribution state transition: ${previousContributionStatus} → ${currentStatus}`);
+  }
+
+  return { errors };
 }
 
 /**
@@ -655,6 +767,11 @@ function lintRoadItem(roadId) {
   // Validate front matter
   const fmValidation = validateRoadFrontMatter(roadFile, frontMatter);
   
+  // Validate universal contribution block
+  const contribValidation = validateContributionBlock(roadFile, frontMatter);
+  fmValidation.errors.push(...contribValidation.errors);
+  fmValidation.warnings.push(...contribValidation.warnings);
+  
   for (const error of fmValidation.errors) {
     results.errors.push({
       file: roadFile,
@@ -843,6 +960,11 @@ function lintAdrs() {
     
     const validation = validateAdrFrontMatter(file, frontMatter);
     
+    // Validate universal contribution block
+    const contribValidation = validateContributionBlock(file, frontMatter);
+    validation.errors.push(...contribValidation.errors);
+    validation.warnings.push(...contribValidation.warnings);
+    
     for (const error of validation.errors) {
       results.errors.push({
         file,
@@ -902,6 +1024,11 @@ function lintCapabilities() {
     results.total++;
 
     const validation = validateCapabilityFrontMatter(file, frontMatter);
+
+    // Validate universal contribution block
+    const contribValidation = validateContributionBlock(file, frontMatter);
+    validation.errors.push(...contribValidation.errors);
+    validation.warnings.push(...contribValidation.warnings);
 
     for (const error of validation.errors) {
       results.errors.push({
@@ -963,6 +1090,11 @@ function lintUserStories() {
 
     const validation = validateUserStoryFrontMatter(file, frontMatter);
 
+    // Validate universal contribution block
+    const contribValidation = validateContributionBlock(file, frontMatter);
+    validation.errors.push(...contribValidation.errors);
+    validation.warnings.push(...contribValidation.warnings);
+
     for (const error of validation.errors) {
       results.errors.push({
         file,
@@ -1022,6 +1154,11 @@ function lintUserTypes() {
     results.total++;
 
     const validation = validateUserTypeFrontMatter(file, frontMatter);
+
+    // Validate universal contribution block
+    const contribValidation = validateContributionBlock(file, frontMatter);
+    validation.errors.push(...contribValidation.errors);
+    validation.warnings.push(...contribValidation.warnings);
 
     for (const error of validation.errors) {
       results.errors.push({

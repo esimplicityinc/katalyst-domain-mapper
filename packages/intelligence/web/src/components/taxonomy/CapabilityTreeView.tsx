@@ -69,6 +69,7 @@ function StatusDot({ status }: { status: ManagedCapability["status"] }) {
 // ── Empty form state ──────────────────────────────────────────────────────────
 
 function emptyForm(parentId?: string): Omit<ManagedCapability, "roadCount" | "storyCount"> {
+  const now = new Date().toISOString();
   return {
     id: "",
     title: "",
@@ -78,6 +79,19 @@ function emptyForm(parentId?: string): Omit<ManagedCapability, "roadCount" | "st
     parentCapability: parentId ?? null,
     dependsOn: [],
     taxonomyNode: null,
+    contribution: {
+      status: "draft",
+      version: 1,
+      supersedes: null,
+      supersededBy: null,
+      submittedAt: null,
+      submittedBy: null,
+      reviewedAt: null,
+      reviewedBy: null,
+      reviewFeedback: null,
+      createdAt: now,
+      updatedAt: now,
+    },
   };
 }
 

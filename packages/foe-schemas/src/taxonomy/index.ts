@@ -1,6 +1,9 @@
 // Shared patterns and enums
 export * from "./common.js";
 
+// Universal contribution lifecycle
+export * from "./contribution.js";
+
 // Core taxonomy node + infrastructure schemas
 export * from "./taxonomy-node.js";
 

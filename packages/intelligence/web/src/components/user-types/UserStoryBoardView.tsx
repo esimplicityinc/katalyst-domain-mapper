@@ -139,15 +139,31 @@ function StoryDetailPanel({
   onClose: () => void;
   saving: boolean;
 }) {
-  const [form, setForm] = useState<ManagedUserStory>({
-    id: story.id ?? "",
-    title: story.title ?? "",
-    userType: story.userType ?? "",
-    status: story.status ?? "draft",
-    capabilities: story.capabilities ?? [],
-    useCases: story.useCases ?? [],
-    acceptanceCriteria: story.acceptanceCriteria ?? [],
-    taxonomyNode: story.taxonomyNode ?? null,
+  const [form, setForm] = useState<ManagedUserStory>(() => {
+    const now = new Date().toISOString();
+    return {
+      id: story.id ?? "",
+      title: story.title ?? "",
+      userType: story.userType ?? "",
+      status: story.status ?? "draft",
+      capabilities: story.capabilities ?? [],
+      useCases: story.useCases ?? [],
+      acceptanceCriteria: story.acceptanceCriteria ?? [],
+      taxonomyNode: story.taxonomyNode ?? null,
+      contribution: story.contribution ?? {
+        status: "draft",
+        version: 1,
+        supersedes: null,
+        supersededBy: null,
+        submittedAt: null,
+        submittedBy: null,
+        reviewedAt: null,
+        reviewedBy: null,
+        reviewFeedback: null,
+        createdAt: now,
+        updatedAt: now,
+      },
+    };
   });
   const [newCap, setNewCap] = useState("");
   const [newUC, setNewUC] = useState("");

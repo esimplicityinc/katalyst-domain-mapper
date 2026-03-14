@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { SlugPattern } from "../common.js";
+import { ContributionSchema } from "../contribution.js";
 
 // ── Invariant ──────────────────────────────────────────────────────────────
 // Accepts both `rule` (web UI convention) and `description` (original schema).
@@ -34,6 +35,7 @@ export const AggregateExtSchema = z.object({
   invariants: z.array(InvariantSchema).default([]),
   sourceFile: z.string().optional(),
   status: z.enum(["draft", "implemented", "deprecated"]).default("draft"),
+  contribution: ContributionSchema,
 });
 
 export type AggregateExt = z.infer<typeof AggregateExtSchema>;

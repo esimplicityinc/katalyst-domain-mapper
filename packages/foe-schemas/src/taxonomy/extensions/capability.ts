@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ContributionSchema } from "../contribution.js";
 
 // ── Capability Extension ───────────────────────────────────────────────────
 // Carries governance lifecycle fields for taxonomy nodes with nodeType:
@@ -15,6 +16,7 @@ export const CapabilityExtSchema = z.object({
     "Technical",
   ]),
   status: z.enum(["planned", "stable", "deprecated"]),
+  contribution: ContributionSchema,
 });
 
 export type CapabilityExt = z.infer<typeof CapabilityExtSchema>;

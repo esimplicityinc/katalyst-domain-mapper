@@ -7,6 +7,7 @@ import {
   GovernancePhaseSchema,
   PrioritySchema,
 } from "../common.js";
+import { ContributionSchema } from "../contribution.js";
 
 // ── Road Status (8-state governance workflow) ──────────────────────────────
 export const RoadStatusSchema = z.enum([
@@ -118,6 +119,7 @@ export const RoadItemExtSchema = z.object({
     nfrs: NfrGovernanceSchema,
     capabilities: z.array(CapabilityIdPattern).default([]),
   }),
+  contribution: ContributionSchema,
 });
 
 export type RoadItemExt = z.infer<typeof RoadItemExtSchema>;

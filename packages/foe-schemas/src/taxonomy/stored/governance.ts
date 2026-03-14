@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ContributionSchema } from "../contribution.js";
 
 // ── Governance Snapshot Stats ──────────────────────────────────────────────
 
@@ -50,6 +51,7 @@ export const StoredCapabilitySchema = z.object({
   roadCount: z.number().default(0),
   storyCount: z.number().default(0),
   taxonomyNode: z.string().nullable().default(null),
+  contribution: ContributionSchema,
 });
 export type StoredCapability = z.infer<typeof StoredCapabilitySchema>;
 
@@ -113,6 +115,7 @@ export const StoredUserTypeSchema = z.object({
   relatedUserTypes: z.array(z.string()).default([]),
   storyCount: z.number().default(0),
   capabilityCount: z.number().default(0),
+  contribution: ContributionSchema,
 });
 export type StoredUserType = z.infer<typeof StoredUserTypeSchema>;
 
@@ -167,6 +170,7 @@ export const StoredUserStorySchema = z.object({
   useCases: z.array(z.string()).default([]),
   acceptanceCriteria: z.array(z.string()).default([]),
   taxonomyNode: z.string().nullable().default(null),
+  contribution: ContributionSchema,
 });
 export type StoredUserStory = z.infer<typeof StoredUserStorySchema>;
 

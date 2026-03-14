@@ -2,6 +2,21 @@ import { describe, it, expect } from "bun:test";
 import { CMLWriter } from "./CMLWriter.js";
 import type { CMLDomainInput } from "./CMLWriter.js";
 
+// Shared contribution block for test fixtures
+const testContribution = {
+  status: "accepted" as const,
+  version: 1,
+  supersedes: null,
+  supersededBy: null,
+  submittedAt: null,
+  submittedBy: null,
+  reviewedAt: null,
+  reviewedBy: null,
+  reviewFeedback: null,
+  createdAt: "2026-01-01T00:00:00Z",
+  updatedAt: "2026-01-01T00:00:00Z",
+};
+
 describe("CMLWriter", () => {
   const writer = new CMLWriter();
 
@@ -33,6 +48,7 @@ describe("CMLWriter", () => {
           upstreamContexts: [],
           downstreamContexts: [],
           contextType: "internal",
+          contribution: testContribution,
         },
         {
           slug: "inventory",
@@ -45,6 +61,7 @@ describe("CMLWriter", () => {
           upstreamContexts: [],
           downstreamContexts: [],
           contextType: "internal",
+          contribution: testContribution,
         },
       ],
     };
@@ -76,6 +93,7 @@ describe("CMLWriter", () => {
           upstreamContexts: [],
           downstreamContexts: [],
           contextType: "internal",
+          contribution: testContribution,
         },
         {
           slug: "downstream",
@@ -96,6 +114,7 @@ describe("CMLWriter", () => {
           upstreamContexts: [],
           downstreamContexts: [],
           contextType: "internal",
+          contribution: testContribution,
         },
       ],
     };
@@ -129,6 +148,7 @@ describe("CMLWriter", () => {
           upstreamContexts: [],
           downstreamContexts: [],
           contextType: "internal",
+          contribution: testContribution,
         },
         {
           slug: "partner-b",
@@ -141,6 +161,7 @@ describe("CMLWriter", () => {
           upstreamContexts: [],
           downstreamContexts: [],
           contextType: "internal",
+          contribution: testContribution,
         },
       ],
     };
@@ -173,6 +194,7 @@ describe("CMLWriter", () => {
           upstreamContexts: [],
           downstreamContexts: [],
           contextType: "internal",
+          contribution: testContribution,
         },
         {
           slug: "shared-b",
@@ -185,6 +207,7 @@ describe("CMLWriter", () => {
           upstreamContexts: [],
           downstreamContexts: [],
           contextType: "internal",
+          contribution: testContribution,
         },
       ],
     };
@@ -217,6 +240,7 @@ describe("CMLWriter", () => {
           upstreamContexts: [],
           downstreamContexts: [],
           contextType: "internal",
+          contribution: testContribution,
         },
         {
           slug: "separate-b",
@@ -229,6 +253,7 @@ describe("CMLWriter", () => {
           upstreamContexts: [],
           downstreamContexts: [],
           contextType: "internal",
+          contribution: testContribution,
         },
       ],
     };

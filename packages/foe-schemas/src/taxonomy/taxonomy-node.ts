@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TaxonomyNodeNamePattern } from "./common.js";
+import { ContributionSchema } from "./contribution.js";
 
 // ── Taxonomy Node Type ─────────────────────────────────────────────────────
 // Expanded to include all entity kinds from the former ddd/ and governance/
@@ -63,6 +64,9 @@ export type ActionType = z.infer<typeof ActionTypeSchema>;
 // ── Taxonomy Node Schema ───────────────────────────────────────────────────
 // The universal base for every entity in the taxonomy tree.
 // UUID is the primary identity; name is the human-readable slug.
+// The `contribution` block gates the universal contribution lifecycle
+// (draft → proposed → accepted, etc.). Type-specific statuses only
+// activate after contribution.status === "accepted".
 export const TaxonomyNodeSchema = z.object({
   id: z.string().uuid(),
   name: TaxonomyNodeNamePattern,
@@ -77,6 +81,7 @@ export const TaxonomyNodeSchema = z.object({
   path: z.string().default(""),
   createdAt: z.string().default(""),
   updatedAt: z.string().default(""),
+  contribution: ContributionSchema,
 });
 
 export type TaxonomyNode = z.infer<typeof TaxonomyNodeSchema>;

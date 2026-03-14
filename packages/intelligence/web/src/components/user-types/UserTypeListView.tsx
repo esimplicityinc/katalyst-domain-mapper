@@ -219,20 +219,36 @@ function UserTypeDetailPanel({
   onClose: () => void;
   saving: boolean;
 }) {
-  const [form, setForm] = useState<Omit<ManagedUserType, "storyCount" | "capabilityCount">>({
-    id: userType.id ?? "",
-    name: userType.name,
-    type: userType.type ?? "human",
-    status: userType.status ?? "draft",
-    archetype: userType.archetype ?? "consumer",
-    description: userType.description ?? null,
-    goals: userType.goals ?? [],
-    painPoints: userType.painPoints ?? [],
-    behaviors: userType.behaviors ?? [],
-    typicalCapabilities: userType.typicalCapabilities ?? [],
-    technicalProfile: userType.technicalProfile ?? null,
-    relatedStories: userType.relatedStories ?? [],
-    relatedUserTypes: userType.relatedUserTypes ?? [],
+  const [form, setForm] = useState<Omit<ManagedUserType, "storyCount" | "capabilityCount">>(() => {
+    const now = new Date().toISOString();
+    return {
+      id: userType.id ?? "",
+      name: userType.name,
+      type: userType.type ?? "human",
+      status: userType.status ?? "draft",
+      archetype: userType.archetype ?? "consumer",
+      description: userType.description ?? null,
+      goals: userType.goals ?? [],
+      painPoints: userType.painPoints ?? [],
+      behaviors: userType.behaviors ?? [],
+      typicalCapabilities: userType.typicalCapabilities ?? [],
+      technicalProfile: userType.technicalProfile ?? null,
+      relatedStories: userType.relatedStories ?? [],
+      relatedUserTypes: userType.relatedUserTypes ?? [],
+      contribution: userType.contribution ?? {
+        status: "draft",
+        version: 1,
+        supersedes: null,
+        supersededBy: null,
+        submittedAt: null,
+        submittedBy: null,
+        reviewedAt: null,
+        reviewedBy: null,
+        reviewFeedback: null,
+        createdAt: now,
+        updatedAt: now,
+      },
+    };
   });
   const [showTechnicalProfile, setShowTechnicalProfile] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);

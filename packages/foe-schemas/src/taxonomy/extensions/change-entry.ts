@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { RoadItemIdPattern } from "../common.js";
+import { ContributionSchema } from "../contribution.js";
 
 // ── Change Status ──────────────────────────────────────────────────────────
 export const ChangeStatusSchema = z.enum(["draft", "published", "archived"]);
@@ -68,6 +69,7 @@ export const ChangeEntryExtSchema = z.object({
     }),
   }),
   signatures: z.array(AgentSignatureSchema).default([]),
+  contribution: ContributionSchema,
 });
 
 export type ChangeEntryExt = z.infer<typeof ChangeEntryExtSchema>;

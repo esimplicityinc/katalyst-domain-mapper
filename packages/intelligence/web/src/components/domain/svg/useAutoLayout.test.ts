@@ -36,6 +36,19 @@ function makeContext(
     relationships: [],
     createdAt: "2024-01-01T00:00:00Z",
     updatedAt: "2024-01-01T00:00:00Z",
+    contribution: {
+      status: "accepted",
+      version: 1,
+      supersedes: null,
+      supersededBy: null,
+      submittedAt: null,
+      submittedBy: null,
+      reviewedAt: null,
+      reviewedBy: null,
+      reviewFeedback: null,
+      createdAt: "2024-01-01T00:00:00Z",
+      updatedAt: "2024-01-01T00:00:00Z",
+    },
   };
 }
 

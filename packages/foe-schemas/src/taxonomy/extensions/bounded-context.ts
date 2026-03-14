@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { SlugPattern } from "../common.js";
+import { ContributionSchema } from "../contribution.js";
 
 // ── Communication Pattern ──────────────────────────────────────────────────
 export const CommunicationPatternSchema = z.enum([
@@ -77,6 +78,7 @@ export const BoundedContextExtSchema = z.object({
   status: z.enum(["draft", "stable", "deprecated"]).default("draft"),
   subdomainType: SubdomainTypeSchema.nullable().default(null),
   contextType: ContextTypeSchema.default("internal"),
+  contribution: ContributionSchema,
 });
 
 export type BoundedContextExt = z.infer<typeof BoundedContextExtSchema>;

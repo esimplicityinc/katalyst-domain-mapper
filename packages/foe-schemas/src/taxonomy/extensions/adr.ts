@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { AdrIdPattern } from "../common.js";
+import { ContributionSchema } from "../contribution.js";
 
 // ── ADR Status ─────────────────────────────────────────────────────────────
 export const AdrStatusSchema = z.enum([
@@ -33,6 +34,7 @@ export const AdrExtSchema = z.object({
   created: z.string(),
   updated: z.string(),
   supersededBy: AdrIdPattern.optional(),
+  contribution: ContributionSchema,
 });
 
 export type AdrExt = z.infer<typeof AdrExtSchema>;
