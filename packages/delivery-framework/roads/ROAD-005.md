@@ -17,17 +17,11 @@ governance:
     validated_by: "architecture-inspector"
     validated_at: "2026-02-06"
   bdd:
-    status: approved
-    feature_files:
-      - stack-tests/features/api/governance/01_governance_ingest.feature
-      - stack-tests/features/api/governance/02_governance_coverage.feature
-      - stack-tests/features/api/governance/03_governance_state_machine.feature
-      - stack-tests/features/hybrid/governance/01_governance_e2e.feature
-    scenarios: 10
-    passing: 10
-    test_results:
-      api_ingest: "4/4 passing"
-      api_coverage: "6/6 passing"
+    id: BDD-005
+    status: draft
+    feature_files: []
+    scenarios: 0
+    passing: 0
   nfrs:
     applicable: [NFR-PERF-001, NFR-PERF-002, NFR-SEC-001, NFR-REL-001]
     status: pass
@@ -58,9 +52,18 @@ governance:
 dependencies:
   requires: [ROAD-004]
   enables: [ROAD-009]
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-05"
+  accepted_at: "2026-02-12"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-005: API Governance Domain
+
+> **Note:** BDD feature files were removed during codebase reorganization. The `governance.bdd` section has been reset to `draft` with empty feature files until new scenarios are written.
 
 ## Summary
 

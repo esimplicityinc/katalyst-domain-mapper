@@ -22,7 +22,7 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "Zoned layout computes positions for 50+ bounded contexts in < 200ms. Trunk routing avoids O(n^2) edge-crossing calculations by using shared trunk lines."
+      evidence: "Zoned layout computes positions for 50+ bounded contexts in &lt; 200ms. Trunk routing avoids O(n^2) edge-crossing calculations by using shared trunk lines."
       validated_by: "@opencode"
     security:
       status: pass
@@ -82,5 +82,5 @@ notes: "Awaiting UI stabilization before removing @wip tag"
 **Dependencies:** None (pure layout computation)
 **Breaking changes:** None — additive engine behind feature flag
 **Migration notes:** Enable `landscape-layout-v2` feature flag to make the Zoned engine available in the layout selector
-**Performance impact:** Zoned layout computes in < 200ms for 50+ contexts. Trunk routing is O(n log n) vs O(n^2) for naive edge routing.
+**Performance impact:** Zoned layout computes in `< 200ms` for 50+ contexts. Trunk routing is O(n log n) vs O(n^2) for naive edge routing.
 **Security considerations:** No external dependencies or user input parsing. Layout operates on validated taxonomy data only.

@@ -16,6 +16,7 @@ governance:
     validated_by: ""
     validated_at: ""
   bdd:
+    id: BDD-016
     status: approved
     feature_files: [stack-tests/features/ui/domain-model/05_context_map_diagram.feature]
     scenarios: 5
@@ -34,6 +35,13 @@ governance:
 dependencies:
   requires: [ROAD-009, ROAD-020]
   enables: [ROAD-022]
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-06"
+  accepted_at: "2026-02-10"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-016: Interactive Context Map Diagram

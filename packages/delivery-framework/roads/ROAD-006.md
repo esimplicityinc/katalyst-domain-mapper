@@ -14,6 +14,7 @@ governance:
     ids: [ADR-006, ADR-007]
     validated_by: "architecture-inspector"
     validated_at: "2026-02-06"
+  capabilities: [CAP-006]
   bdd:
     status: draft
     feature_files: []
@@ -26,6 +27,15 @@ governance:
 dependencies:
   requires: [ROAD-004]
   enables: []
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-05"
+  submitted_by: "Katalyst Team"
+  submitted_at: "2026-02-17"
+  accepted_at: ""
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-006: Scanner Governance Agent

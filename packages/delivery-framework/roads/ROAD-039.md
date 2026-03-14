@@ -18,6 +18,7 @@ governance:
     validated_by: "roadmap-addition"
     validated_at: "2026-02-16"
   bdd:
+    id: BDD-039
     status: approved
     feature_files: ["stack-tests/features/ui/navigation-restructure.feature"]
     scenarios: 42
@@ -54,6 +55,13 @@ notes: |
   - This implementation was about "Lifecycle Navigation" (Docusaurus docs site)
   - Renumbered to ROAD-039 to resolve duplicate/mismatch
   - Sibling to ROAD-040 (web app lifecycle navigation)
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-16"
+  accepted_at: "2026-02-19"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-039: Lifecycle-Oriented Navigation + System Taxonomy (Docs Site)

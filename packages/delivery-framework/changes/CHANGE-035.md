@@ -23,10 +23,10 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "Navigation loads within 300ms. Route changes within 100ms. First Contentful Paint <1.5 seconds."
+      evidence: "Navigation loads within 300ms. Route changes within 100ms. First Contentful Paint &lt;1.5 seconds."
       validated_by: "opencode"
     security:
-      status: na
+      status: pending
       evidence: "Frontend-only changes. No new attack surface."
       validated_by: "opencode"
     accessibility:
@@ -142,6 +142,6 @@ test_results:
 **Compliance Evidence:**
 - 28/28 BDD scenarios passing (100%)
 - WCAG 2.1 AA accessibility maintained
-- Navigation <300ms, route changes <100ms
+- Navigation &lt;300ms, route changes &lt;100ms
 - Legacy URLs redirect properly for backward compatibility
 - Dark mode respects system preferences

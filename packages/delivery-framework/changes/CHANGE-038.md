@@ -1,6 +1,6 @@
 ---
 id: CHANGE-038
-road_id: null
+road_id: ROAD-002
 title: "Domain Events Collapsible Context Groups"
 date: "2026-02-17"
 version: "0.10.0"
@@ -25,7 +25,7 @@ compliance:
       evidence: "Collapsed groups reduce initial DOM node count. Faster initial render for large event lists."
       validated_by: "opencode"
     security:
-      status: na
+      status: pending
       evidence: "UI-only change. No data or API modifications."
       validated_by: "opencode"
     accessibility:

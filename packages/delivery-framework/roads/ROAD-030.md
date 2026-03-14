@@ -19,6 +19,7 @@ governance:
     validated_at: "2026-02-19"
     notes: "Follows established patterns from DomainMapperPage (ROAD-029). No new architectural decisions needed."
   bdd:
+    id: BDD-030
     status: approved
     feature_files: [stack-tests/features/ui/reporting/02_foe_project_browser.feature]
     scenarios: 24
@@ -40,6 +41,13 @@ dependencies:
 notes: |
   Transform FOE Reports page from one-shot upload/view to multi-project browser.
   Mirrors DomainMapperPage pattern: project list, selection state, sub-navigation tabs.
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-17"
+  accepted_at: "2026-02-19"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-030: FOE Project Browser & Persistent Report Selection

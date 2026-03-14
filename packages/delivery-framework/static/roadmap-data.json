@@ -218,24 +218,17 @@
           ]
         },
         "bdd": {
-          "status": "approved",
+          "status": "draft",
           "approved_by": [],
           "test_results": {
             "total": 0,
             "passed": 0,
             "failed": 0,
-            "coverage": "0%",
-            "api_ingest": "4/4 passing",
-            "api_coverage": "6/6 passing"
+            "coverage": "0%"
           },
-          "feature_files": [
-            "stack-tests/features/api/governance/01_governance_ingest.feature",
-            "stack-tests/features/api/governance/02_governance_coverage.feature",
-            "stack-tests/features/api/governance/03_governance_state_machine.feature",
-            "stack-tests/features/hybrid/governance/01_governance_e2e.feature"
-          ],
-          "scenarios": 10,
-          "passing": 10
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
         },
         "nfrs": {
           "applicable": [
@@ -436,22 +429,17 @@
           "ids": []
         },
         "bdd": {
-          "status": "approved",
+          "status": "draft",
           "approved_by": [],
           "test_results": {
             "total": 0,
             "passed": 0,
             "failed": 0,
-            "coverage": "0%",
-            "hybrid_data": "6/6 passing (data-dependent scenarios)",
-            "hybrid_structure": "10/10 passing (structural/interactive scenarios)"
+            "coverage": "0%"
           },
-          "feature_files": [
-            "stack-tests/features/hybrid/governance/02_governance_dashboard.feature",
-            "stack-tests/features/hybrid/governance/03_governance_dashboard_structure.feature"
-          ],
-          "scenarios": 16,
-          "passing": 16
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
         },
         "nfrs": {
           "applicable": [
@@ -571,20 +559,17 @@
           "ids": []
         },
         "bdd": {
-          "status": "approved",
+          "status": "draft",
           "approved_by": [],
           "test_results": {
             "total": 0,
             "passed": 0,
             "failed": 0,
-            "coverage": "0%",
-            "aggregate_tree": "4/4 passing"
+            "coverage": "0%"
           },
-          "feature_files": [
-            "stack-tests/features/hybrid/domain-models/02_aggregate_tree.feature"
-          ],
-          "scenarios": 4,
-          "passing": 4
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
         },
         "nfrs": {
           "applicable": [
@@ -633,20 +618,17 @@
           "ids": []
         },
         "bdd": {
-          "status": "approved",
+          "status": "draft",
           "approved_by": [],
           "test_results": {
             "total": 0,
             "passed": 0,
             "failed": 0,
-            "coverage": "0%",
-            "event_flow": "5/5 passing"
+            "coverage": "0%"
           },
-          "feature_files": [
-            "stack-tests/features/hybrid/domain-models/03_event_flow.feature"
-          ],
-          "scenarios": 5,
-          "passing": 5
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
         },
         "nfrs": {
           "applicable": [
@@ -708,7 +690,7 @@
           "ids": []
         },
         "bdd": {
-          "status": "approved",
+          "status": "draft",
           "approved_by": [],
           "test_results": {
             "total": 0,
@@ -716,12 +698,9 @@
             "failed": 0,
             "coverage": "0%"
           },
-          "feature_files": [
-            "stack-tests/features/api/domain-models/05_domain_workflows.feature",
-            "stack-tests/features/hybrid/domain-models/04_state_machine.feature"
-          ],
-          "scenarios": 7,
-          "passing": 7
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
         },
         "nfrs": {
           "applicable": [
@@ -758,7 +737,7 @@
           "ids": []
         },
         "bdd": {
-          "status": "approved",
+          "status": "draft",
           "approved_by": [],
           "test_results": {
             "total": 0,
@@ -766,11 +745,9 @@
             "failed": 0,
             "coverage": "0%"
           },
-          "feature_files": [
-            "stack-tests/features/api/domain-models/04_subdomain_classification.feature"
-          ],
-          "scenarios": 6,
-          "passing": 6
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
         },
         "nfrs": {
           "applicable": [],
@@ -973,36 +950,17 @@
           ]
         },
         "bdd": {
-          "status": "approved",
+          "status": "draft",
           "approved_by": [],
           "test_results": {
             "total": 0,
             "passed": 0,
             "failed": 0,
-            "coverage": "0%",
-            "domain_model_crud": "9/9 passing",
-            "bounded_context_management": "6/6 passing",
-            "domain_artifacts": "8/8 passing",
-            "subdomain_classification": "6/6 passing",
-            "domain_workflows": "3/3 passing",
-            "domain_model_e2e": "2/2 passing",
-            "aggregate_tree": "4/4 passing",
-            "event_flow": "5/5 passing",
-            "state_machine": "4/4 passing"
+            "coverage": "0%"
           },
-          "feature_files": [
-            "stack-tests/features/api/domain-models/01_domain_model_crud.feature",
-            "stack-tests/features/api/domain-models/02_bounded_context_management.feature",
-            "stack-tests/features/api/domain-models/03_domain_artifacts.feature",
-            "stack-tests/features/api/domain-models/04_subdomain_classification.feature",
-            "stack-tests/features/api/domain-models/05_domain_workflows.feature",
-            "stack-tests/features/hybrid/domain-models/01_domain_model_e2e.feature",
-            "stack-tests/features/hybrid/domain-models/02_aggregate_tree.feature",
-            "stack-tests/features/hybrid/domain-models/03_event_flow.feature",
-            "stack-tests/features/hybrid/domain-models/04_state_machine.feature"
-          ],
-          "scenarios": 47,
-          "passing": 47
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0
         },
         "nfrs": {
           "applicable": [
@@ -1492,10 +1450,9 @@
           "feature_files": [
             "api/landscape/01_landscape_graph.feature",
             "api/landscape/02_landscape_lint.feature",
-            "hybrid/landscape/01_landscape_visualization_e2e.feature",
-            "hybrid/landscape/02_landscape_v2_layout.feature"
+            "hybrid/landscape/01_landscape_visualization_e2e.feature"
           ],
-          "scenarios": 22,
+          "scenarios": 19,
           "passing": 19
         },
         "nfrs": {
@@ -1505,7 +1462,7 @@
           ],
           "status": "pass",
           "results": {
-            "performance": "Layout computation < 500ms for 50 contexts; SVG rendering < 100ms post-layout",
+            "performance": "Layout computation &lt; 500ms for 50 contexts; SVG rendering &lt; 100ms post-layout",
             "accessibility": "Canvas uses ARIA labels on interactive user type badges and filter controls"
           }
         },
@@ -1610,7 +1567,7 @@
           ],
           "status": "pass",
           "results": {
-            "performance": "CRUD operations < 200ms (SQLite). AI chat first token < 2s (SSE streaming)."
+            "performance": "CRUD operations &lt; 200ms (SQLite). AI chat first token &lt; 2s (SSE streaming)."
           }
         },
         "agent_signatures": {
@@ -1661,7 +1618,7 @@
           ],
           "status": "pass",
           "results": {
-            "performance": "just dev-ready completes in < 3s. just dev brings both servers up in < 15s."
+            "performance": "just dev-ready completes in &lt; 3s. just dev brings both servers up in &lt; 15s."
           }
         },
         "agent_signatures": {
@@ -1675,7 +1632,7 @@
       "filePath": "roads/ROAD-047"
     }
   ],
-  "generatedAt": "2026-03-14T18:29:50.920Z",
+  "generatedAt": "2026-03-14T19:33:13.887Z",
   "validStatuses": [
     "proposed",
     "adr_validated",

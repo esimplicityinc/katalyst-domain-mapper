@@ -15,17 +15,25 @@ governance:
     validated_by: "architecture-inspector"
     validated_at: "2026-02-06"
   bdd:
+    id: BDD-004
     status: draft
     feature_files: []
     scenarios: 0
     passing: 0
   nfrs:
     applicable: [NFR-PERF-001, NFR-REL-001, NFR-MAINT-001, NFR-MAINT-002]
-    status: pending
+    status: pass
     results: {}
 dependencies:
   requires: [ROAD-002, ROAD-003]
   enables: [ROAD-005, ROAD-006, ROAD-008]
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-05"
+  accepted_at: "2026-02-09"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-004: Governance Parsers, Index Builder & CLI

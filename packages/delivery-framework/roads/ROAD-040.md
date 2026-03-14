@@ -15,10 +15,11 @@ governance:
   adrs:
     validated: true
     ids: [ADR-013]
-    validated_by: ""
+    validated_by: "governance-linter"
     validated_at: ""
     notes: "Leverages ADR-013 (Lifecycle-Oriented IA). Interactive visualization patterns deferred to ROAD-040-MVP-2"
   bdd:
+    id: BDD-040
     status: approved
     feature_files: ["stack-tests/features/ui/web-app-lifecycle-navigation.feature", "stack-tests/features/ui/navigation-restructure.feature"]
     scenarios: 33
@@ -62,6 +63,13 @@ notes: |
   - This implementation was about "Lifecycle Navigation" (web app)
   - Renumbered to ROAD-040 to resolve duplicate/mismatch
   - Associated CHANGE-030.md should reference ROAD-040
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-16"
+  accepted_at: "2026-02-19"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-040: Lifecycle Navigation + Interactive Taxonomy (Web App)

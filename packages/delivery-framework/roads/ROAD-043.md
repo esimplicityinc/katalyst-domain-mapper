@@ -16,11 +16,28 @@ dependencies: []
 enables: []
 estimated_effort: M
 governance:
+  adrs:
+    validated: false
+    ids: []
+    validated_by: ""
+    validated_at: ""
+    notes: "No ADR required."
+  capabilities: [CAP-002]
   bdd:
+    id: BDD-043
     status: draft
     feature_files: []
     scenarios: 0
     passing: 0
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-17"
+  submitted_by: "Katalyst Team"
+  submitted_at: "2026-02-17"
+  accepted_at: ""
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-043: Manual FOE Assessment Wizard UI
@@ -254,7 +271,7 @@ rm -rf packages/web-report/src/app/manual-assessment/
 - [ ] Users can create FOE reports without AI scanner
 - [ ] Generated JSON validates against schema
 - [ ] Reports display correctly in all 11 templates
-- [ ] Wizard completion time < 10 minutes
+- [ ] Wizard completion time `< 10 minutes`
 - [ ] No TypeScript errors
 - [ ] Responsive on mobile/tablet/desktop
 - [ ] 100% acceptance criteria met

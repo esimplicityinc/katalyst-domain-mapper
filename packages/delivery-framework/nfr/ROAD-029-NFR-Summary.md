@@ -13,7 +13,7 @@
 
 ## Critical Blocker: Performance
 
-**Time to Interactive (TTI)**: 9.7s average (Target: < 3.0s)  
+**Time to Interactive (TTI)**: 9.7s average (Target: `< 3.0s`)  
 **Root Cause**: React hydration delay + no code splitting  
 **Fix Required**: Implement lazy loading for dropdown components  
 **Estimated Effort**: 6-8 hours  
@@ -34,7 +34,7 @@
 
 1. ✅ Fix announcement bar color contrast (CRITICAL - 1 hour)
 2. ✅ Add checkbox labels (CRITICAL - 30 min)
-3. ✅ Optimize TTI to < 3.0s (CRITICAL - 6-8 hours)
+3. ✅ Optimize TTI to `< 3.0s` (CRITICAL - 6-8 hours)
    - Code split dropdown menus
    - Preload critical fonts
    - Enable bfcache

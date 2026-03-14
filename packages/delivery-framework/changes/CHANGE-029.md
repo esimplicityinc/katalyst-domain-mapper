@@ -25,7 +25,7 @@ compliance:
       evidence: "TTI 9.7s avg (target &lt;3.0s). Root cause: React hydration delay + no code splitting. Requires lazy loading for dropdown components. Detailed findings in nfr/ROAD-029-NFR-Validation-Report.md"
       validated_by: "ci-runner"
     security:
-      status: na
+      status: pending
       evidence: "Documentation-only changes. No security implications."
       validated_by: "superpowers-orchestrator"
     accessibility:

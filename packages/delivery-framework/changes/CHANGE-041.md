@@ -14,7 +14,7 @@ compliance:
     validated_at: "2026-02-19"
     notes: "LandscapeLayoutEngine interface follows ports-and-adapters (ADR-003). Three layout engine adapters (ELK, Dagre, D3-Force) correctly implement the interface (ADR-018). React+Vite frontend (ADR-012). SQLite migrations are additive-only (ADR-011)."
   bdd_check:
-    status: na
+    status: pending
     scenarios: 0
     passed: 0
     coverage: "N/A"
@@ -22,7 +22,7 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "ELK layout <500ms for 20-context graphs. SVG rendering <100ms post-layout. User type filter toggle is client-side state, <50ms response."
+      evidence: "ELK layout &lt;500ms for 20-context graphs. SVG rendering &lt;100ms post-layout. User type filter toggle is client-side state, &lt;50ms response."
       validated_by: "@opencode"
     security:
       status: pass

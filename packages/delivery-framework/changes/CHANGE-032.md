@@ -14,7 +14,7 @@ compliance:
     validated_at: "2026-02-17"
     notes: "No new ADR required. Follows existing client-side state management patterns."
   bdd_check:
-    status: na
+    status: pending
     scenarios: 0
     passed: 0
     coverage: "N/A"
@@ -29,7 +29,7 @@ compliance:
       evidence: "Only non-sensitive IDs stored in localStorage. No PII or credentials persisted."
       validated_by: "opencode"
     accessibility:
-      status: na
+      status: pending
       evidence: "No UI changes. State persistence is invisible to the user."
       validated_by: "opencode"
 signatures:

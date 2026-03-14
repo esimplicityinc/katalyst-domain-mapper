@@ -17,13 +17,11 @@ governance:
     validated_by: "superpowers-orchestrator"
     validated_at: "2026-02-12"
   bdd:
-    status: approved
-    feature_files:
-      - stack-tests/features/hybrid/domain-models/03_event_flow.feature
-    scenarios: 5
-    passing: 5
-    test_results:
-      event_flow: "5/5 passing"
+    id: BDD-018
+    status: draft
+    feature_files: []
+    scenarios: 0
+    passing: 0
   nfrs:
     applicable: [NFR-PERF-001, NFR-A11Y-001]
     status: pass
@@ -53,9 +51,18 @@ governance:
 dependencies:
   requires: [ROAD-009]
   enables: [ROAD-022]
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-06"
+  accepted_at: "2026-02-12"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-018: Domain Event Flow Visualization
+
+> **Note:** BDD feature files were removed during codebase reorganization. The `governance.bdd` section has been reset to `draft` with empty feature files until new scenarios are written.
 
 ## Summary
 

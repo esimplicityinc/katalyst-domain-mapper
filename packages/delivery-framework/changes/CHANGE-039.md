@@ -1,6 +1,6 @@
 ---
 id: CHANGE-039
-road_id: null
+road_id: ROAD-001
 title: "AWS Bedrock Scanner Support as Alternative LLM Provider"
 date: "2026-02-17"
 version: "0.10.0"
@@ -14,7 +14,7 @@ compliance:
     validated_at: "2026-02-17"
     notes: "No new ADR required. Extends existing scanner configuration pattern. Provider abstraction already supported by OpenCode."
   bdd_check:
-    status: na
+    status: pending
     scenarios: 0
     passed: 0
     coverage: "N/A"
@@ -29,7 +29,7 @@ compliance:
       evidence: "AWS IAM authentication used instead of raw API keys. Follows AWS security best practices with role-based access."
       validated_by: "opencode"
     accessibility:
-      status: na
+      status: pending
       evidence: "Backend infrastructure change. No UI impact."
       validated_by: "opencode"
 signatures:

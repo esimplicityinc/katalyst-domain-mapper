@@ -1,6 +1,6 @@
 ---
 id: CHANGE-047
-road_id: ~
+road_id: ROAD-044
 title: "Port/Adapter Pattern for Switchable AI Runtimes"
 date: "2026-03-14"
 version: "0.12.0"
@@ -22,14 +22,14 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "Adapter instantiation adds < 5ms overhead. Runtime switching via feature flag does not require server restart. Fallback detection completes within 2 seconds."
+      evidence: "Adapter instantiation adds &lt; 5ms overhead. Runtime switching via feature flag does not require server restart. Fallback detection completes within 2 seconds."
       validated_by: "@opencode"
     security:
       status: pass
       evidence: "API keys for AI runtimes remain in environment variables. Adapter selection logic does not expose credentials. Feature flag values are server-side only."
       validated_by: "@opencode"
     accessibility:
-      status: na
+      status: pending
       evidence: "Backend orchestration change. No user-facing interface modifications."
       validated_by: "@opencode"
 signatures:
@@ -87,5 +87,5 @@ coverage: "100%"
 **Dependencies:** @langchain/langgraph (optional peer dependency), opencode CLI
 **Breaking changes:** None — existing OpenCode behavior is preserved as the default adapter
 **Migration notes:** No migration required. Set `orchestrator-runtime` feature flag to `langgraph` to switch runtimes. Ensure LangGraph dependencies are installed if using that adapter.
-**Performance impact:** Adapter instantiation adds < 5ms. No runtime overhead once adapter is selected.
+**Performance impact:** Adapter instantiation adds `< 5ms`. No runtime overhead once adapter is selected.
 **Security considerations:** API keys remain in environment variables. Adapter selection is server-side only and not exposed to clients.

@@ -37,7 +37,7 @@ Without validation at each boundary, a single malformed field in a markdown file
 | Invalid JSON index rejection | Build fails with clear error | CLI test: corrupted index file |
 | Error message quality | Contains field path + expected type | Manual review of error output samples |
 | Schema alignment across packages | All packages use `@foe/schemas` types | Dependency audit: no local type redefinitions |
-| Validation performance | < 5ms per document | Benchmark (per NFR-PERF-001) |
+| Validation performance | &lt; 5ms per document | Benchmark (per NFR-PERF-001) |
 | Edge case handling | Graceful for empty, null, oversized inputs | Unit tests with edge case fixtures |
 
 ## Test Strategy

@@ -15,17 +15,25 @@ governance:
     validated_by: "architecture-inspector"
     validated_at: "2026-02-06"
   bdd:
+    id: BDD-003
     status: draft
     feature_files: []
     scenarios: 0
     passing: 0
   nfrs:
     applicable: [NFR-REL-001]
-    status: pending
+    status: pass
     results: {}
 dependencies:
   requires: [ROAD-001]
   enables: [ROAD-004]
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-05"
+  accepted_at: "2026-02-09"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-003: DDD Artifact Schemas

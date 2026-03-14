@@ -19,6 +19,7 @@ governance:
     validated_at: "2026-02-16"
     notes: "No new ADRs needed — follows existing React state management patterns"
   bdd:
+    id: BDD-029
     status: implemented
     feature_files: ["stack-tests/features/ui/navigation-restructure.feature"]
     scenarios: 42
@@ -32,6 +33,13 @@ governance:
 dependencies:
   requires: []
   enables: []
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-16"
+  accepted_at: "2026-02-19"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-029: Lifecycle-Oriented Navigation + System Taxonomy
@@ -82,7 +90,7 @@ Reorganize the Katalyst Delivery Framework documentation into a **lifecycle-orie
 ### Quality Gates
 10. ✅ All cross-references remain valid (automated link checking)
 11. ✅ WCAG 2.1 AA accessibility compliance maintained
-12. ✅ Page load time does not increase (< 100ms baseline)
+12. ✅ Page load time does not increase (`< 100ms` baseline)
 13. ✅ Mobile responsive navigation (collapsible dropdowns)
 14. ✅ Dark mode support for all new content
 
@@ -400,11 +408,11 @@ redirects: [
 - **Status**: Pending
 
 ### NFR-PERF-002: API Response Time
-- **Requirement**: Page load time must not regress (baseline < 100ms for static pages)
+- **Requirement**: Page load time must not regress (baseline `< 100ms` for static pages)
 - **Validation**:
   - Lighthouse audit: Performance score ≥ 90
-  - First Contentful Paint (FCP) < 1.5s
-  - Time to Interactive (TTI) < 3.0s
+  - First Contentful Paint (FCP) `< 1.5s`
+  - Time to Interactive (TTI) `< 3.0s`
 - **Status**: Pending
 
 ## Estimation

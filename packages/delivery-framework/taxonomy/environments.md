@@ -144,8 +144,8 @@ Katalyst supports **three primary environments** with distinct purposes:
 
 **SLA**:
 - **Availability**: 99.9% uptime (43.2 minutes downtime/month max)
-- **Response Time**: p95 < 500ms
-- **Error Rate**: < 0.1%
+- **Response Time**: p95 `< 500ms`
+- **Error Rate**: `< 0.1%`
 
 ---
 

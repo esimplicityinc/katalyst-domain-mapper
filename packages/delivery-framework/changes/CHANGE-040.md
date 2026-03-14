@@ -1,6 +1,6 @@
 ---
 id: CHANGE-040
-road_id: null
+road_id: ROAD-005
 title: "Pre-commit Quality Hooks with Husky"
 date: "2026-02-17"
 version: "0.10.0"
@@ -14,7 +14,7 @@ compliance:
     validated_at: "2026-02-17"
     notes: "No new ADR required. Standard industry practice for git hooks. Aligns with CI quality gate strategy."
   bdd_check:
-    status: na
+    status: pending
     scenarios: 0
     passed: 0
     coverage: "N/A"
@@ -22,14 +22,14 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "Pre-commit hook runs lint + format in <10 seconds. Light mode option available for faster commits when iterating."
+      evidence: "Pre-commit hook runs lint + format in &lt;10 seconds. Light mode option available for faster commits when iterating."
       validated_by: "opencode"
     security:
       status: pass
       evidence: "Hooks prevent committing code with linting errors, reducing risk of shipping defects."
       validated_by: "opencode"
     accessibility:
-      status: na
+      status: pending
       evidence: "Developer tooling only. No end-user impact."
       validated_by: "opencode"
 signatures:

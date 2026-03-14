@@ -15,11 +15,13 @@ governance:
     ids: []
     validated_by: "architecture-inspector"
     validated_at: "2026-02-09"
+  capabilities: [CAP-002]
   bdd:
-    status: approved
-    feature_files: ["stack-tests/features/api/domain-models/04_subdomain_classification.feature"]
-    scenarios: 6
-    passing: 6
+    id: BDD-020
+    status: draft
+    feature_files: []
+    scenarios: 0
+    passing: 0
   nfrs:
     applicable: []
     status: pass
@@ -31,9 +33,18 @@ governance:
 dependencies:
   requires: [ROAD-009]
   enables: [ROAD-016, ROAD-021]
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-06"
+  accepted_at: "2026-02-10"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-020: Subdomain Classification System
+
+> **Note:** BDD feature files were removed during codebase reorganization. The `governance.bdd` section has been reset to `draft` with empty feature files until new scenarios are written.
 
 ## Summary
 

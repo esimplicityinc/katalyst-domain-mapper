@@ -1,6 +1,6 @@
 ---
 id: CHANGE-045
-road_id: ~
+road_id: ROAD-009
 title: "Taxonomy Schema Consolidation — Unified Node + Extension Architecture"
 date: "2026-03-14"
 version: "0.12.0"
@@ -15,7 +15,7 @@ compliance:
     validated_at: "2026-03-14"
     notes: "ADR-020 governs the taxonomy consolidation strategy. Merging ddd/ and governance/ into a unified taxonomy/ module with a universal TaxonomyNodeSchema was an explicit architectural decision."
   bdd_check:
-    status: na
+    status: pending
     scenarios: 0
     passed: 0
     coverage: "N/A"
@@ -30,7 +30,7 @@ compliance:
       evidence: "Zod schemas enforce strict input validation at all taxonomy boundaries. No new attack surface introduced."
       validated_by: "@opencode"
     accessibility:
-      status: na
+      status: pending
       evidence: "Schema-only change. No user-facing interface modifications."
       validated_by: "@opencode"
 signatures:

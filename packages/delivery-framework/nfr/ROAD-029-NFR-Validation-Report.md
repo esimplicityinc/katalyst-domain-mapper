@@ -210,10 +210,10 @@ All tested links returned HTTP 200 OK:
 
 | Metric | Target | Actual (Avg) | Status |
 |--------|--------|--------------|--------|
-| First Contentful Paint (FCP) | < 1.5s | 0.9s | ✅ PASS |
-| Time to Interactive (TTI) | < 3.0s | **9.7s** | ❌ FAIL (3.2x slower) |
-| Largest Contentful Paint (LCP) | < 2.5s | **9.2s** | ❌ FAIL (3.7x slower) |
-| Page Load (Complete) | < 5.0s | **~10s** | ❌ FAIL (2x slower) |
+| First Contentful Paint (FCP) | &lt; 1.5s | 0.9s | ✅ PASS |
+| Time to Interactive (TTI) | &lt; 3.0s | **9.7s** | ❌ FAIL (3.2x slower) |
+| Largest Contentful Paint (LCP) | &lt; 2.5s | **9.2s** | ❌ FAIL (3.7x slower) |
+| Page Load (Complete) | &lt; 5.0s | **~10s** | ❌ FAIL (2x slower) |
 
 ### Critical Performance Issues
 
@@ -463,9 +463,9 @@ npx pa11y http://localhost:3003 --standard WCAG2AA --threshold 0
 
 | Metric | Target | Current | After Phase 1+2 (Projected) |
 |--------|--------|---------|------------------------------|
-| FCP | < 1.5s | 0.9s ✅ | 0.8s ✅ |
-| TTI | < 3.0s | 9.7s ❌ | 2.5s ✅ |
-| LCP | < 2.5s | 9.2s ❌ | 2.2s ✅ |
+| FCP | &lt; 1.5s | 0.9s ✅ | 0.8s ✅ |
+| TTI | &lt; 3.0s | 9.7s ❌ | 2.5s ✅ |
+| LCP | &lt; 2.5s | 9.2s ❌ | 2.2s ✅ |
 | Performance Score | > 90% | 55% ❌ | 92% ✅ |
 
 ---
@@ -578,7 +578,7 @@ All links returned HTTP 200 OK
    - Files: `taxonomy/index.md` (2 sections)
    - Test: Re-run axe-core scan
 
-3. **Optimize TTI to < 3.0s** (6-8 hours)
+3. **Optimize TTI to `< 3.0s`** (6-8 hours)
    - Implement code splitting for dropdowns
    - Preload critical fonts
    - Enable bfcache
@@ -633,7 +633,7 @@ npx linkinator http://localhost:3003 --recurse
 |-----|---------------|-----------------|
 | NFR-A11Y-001 | ⚠️ Partial Pass (94%) | ✅ Full Pass (100%) |
 | NFR-MAINT-001 | ✅ Pass | ✅ Pass |
-| NFR-PERF-002 | ❌ Fail (TTI 9.7s) | ✅ Pass (TTI < 3.0s) |
+| NFR-PERF-002 | ❌ Fail (TTI 9.7s) | ✅ Pass (TTI &lt; 3.0s) |
 
 **Estimated Time to Complete**: 10-12 hours  
 **Recommended Assignee**: Frontend developer with accessibility & performance expertise  

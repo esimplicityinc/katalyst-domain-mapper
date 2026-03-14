@@ -24,7 +24,7 @@ compliance:
       evidence: "Dashboard renders in &lt;100ms, Vite build 3.05s for 2413 modules"
       validated_by: "ci-runner"
     security:
-      status: na
+      status: pending
       evidence: "No new endpoints — reads existing governance API (ROAD-005)"
       validated_by: ""
     accessibility:

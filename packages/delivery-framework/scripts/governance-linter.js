@@ -33,23 +33,26 @@ const VALID_ROAD_STATUSES = [
 const VALID_ADR_STATUSES = ['proposed', 'accepted', 'deprecated', 'superseded'];
 const VALID_NFR_TYPES = ['performance', 'security', 'accessibility'];
 
-const VALID_CAPABILITY_IDS = [
-  'CAP-001', 'CAP-002', 'CAP-003', 'CAP-004',
-  'CAP-005', 'CAP-006', 'CAP-007', 'CAP-008'
-];
+// Dynamically discover valid IDs from files on disk
+function discoverIds(dirGlob, idPrefix) {
+  const files = glob.sync(dirGlob);
+  const ids = [];
+  for (const file of files) {
+    const basename = path.basename(file, '.md');
+    if (basename === 'index' || basename.includes('TEMPLATE')) continue;
+    const content = fs.readFileSync(file, 'utf8');
+    const fm = extractFrontMatter(content);
+    if (fm && fm.id && fm.id.startsWith(idPrefix)) {
+      ids.push(fm.id);
+    }
+  }
+  return ids;
+}
 
-const VALID_USER_STORY_IDS = [
-  'US-001', 'US-002', 'US-004'
-];
-
-const VALID_USE_CASE_IDS = [
-  'UC-001', 'UC-002', 'UC-003', 'UC-010', 'UC-011',
-  'UC-012', 'UC-013', 'UC-014', 'UC-020', 'UC-021'
-];
-
-const VALID_USER_TYPE_IDS = [
-  'UT-001', 'UT-002', 'UT-003', 'UT-004', 'UT-005'
-];
+const VALID_CAPABILITY_IDS = discoverIds(path.join(DOCS_DIR, 'capabilities/CAP-*.md'), 'CAP-');
+const VALID_USER_STORY_IDS = discoverIds(path.join(DOCS_DIR, 'user-stories/US-*.md'), 'US-');
+const VALID_USE_CASE_IDS = discoverIds(path.join(DOCS_DIR, 'use-cases/UC-*.md'), 'UC-');
+const VALID_USER_TYPE_IDS = discoverIds(path.join(DOCS_DIR, 'user-types/UT-*.md'), 'UT-');
 
 const VALID_USER_TYPE_TYPES = ['human', 'bot', 'system', 'external_api'];
 const VALID_USER_TYPE_STATUSES = ['draft', 'approved', 'deprecated'];

@@ -14,7 +14,9 @@ governance:
     ids: [ADR-001, ADR-005, ADR-008, ADR-011, ADR-012]
     validated_by: "architecture-inspector"
     validated_at: "2026-02-06"
+  capabilities: [CAP-001]
   bdd:
+    id: BDD-001
     status: active
     feature_files:
       - api/reporting/05_foe_dimension_scores.feature
@@ -26,11 +28,18 @@ governance:
     passing: 0
   nfrs:
     applicable: []
-    status: pending
+    status: pass
     results: {}
 dependencies:
   requires: []
   enables: [ROAD-002, ROAD-003, ROAD-007]
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-05"
+  accepted_at: "2026-02-09"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-001: Import Governance Infrastructure

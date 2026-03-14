@@ -19,6 +19,7 @@ governance:
     validated_at: "2026-02-19"
     notes: "Will reference ADR-013 (Hexagonal Architecture). May need new ADR for dual persistence strategy."
   bdd:
+    id: BDD-041
     status: approved
     feature_files: []
     scenarios: 0
@@ -35,6 +36,13 @@ governance:
 dependencies:
   requires: [ROAD-004]
   enables: [ROAD-042]
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-17"
+  accepted_at: "2026-02-19"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-041: Taxonomy CRUD Operations with Port/Adapter Pattern

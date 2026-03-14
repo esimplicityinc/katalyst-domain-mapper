@@ -25,11 +25,11 @@ compliance:
       evidence: "Architecture score improved from 52/100 to 97.5/100. No performance regression — all API endpoints maintain sub-200ms response times."
       validated_by: "architecture-inspector"
     security:
-      status: na
+      status: pending
       evidence: "No new attack surface. Refactoring only — identical external behavior."
       validated_by: "superpowers-orchestrator"
     accessibility:
-      status: na
+      status: pending
       evidence: "Backend-only refactoring. No UI changes."
       validated_by: "superpowers-orchestrator"
 signatures:

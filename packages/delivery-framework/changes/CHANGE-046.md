@@ -1,6 +1,6 @@
 ---
 id: CHANGE-046
-road_id: ~
+road_id: ROAD-041
 title: "Teams and Persons as First-Class Taxonomy Entities"
 date: "2026-03-14"
 version: "0.12.0"
@@ -22,14 +22,14 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "Team and person queries execute in < 50ms. Migration 0010 adds indexed columns for team lookups."
+      evidence: "Team and person queries execute in &lt; 50ms. Migration 0010 adds indexed columns for team lookups."
       validated_by: "@opencode"
     security:
       status: pass
       evidence: "Person entities contain only organizational metadata (name, role, team membership). No PII beyond display names. Access controlled by existing authorization layer."
       validated_by: "@opencode"
     accessibility:
-      status: na
+      status: pending
       evidence: "Backend-only change. No user-facing interface modifications in this change record."
       validated_by: "@opencode"
 signatures:

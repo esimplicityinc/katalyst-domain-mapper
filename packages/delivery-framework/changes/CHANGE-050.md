@@ -1,6 +1,6 @@
 ---
 id: CHANGE-050
-road_id: ~
+road_id: ROAD-039
 title: "Shared AI Chat Component Library (@katalyst/chat)"
 date: "2026-03-14"
 version: "0.12.0"
@@ -23,7 +23,7 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "SSE streaming delivers first token in < 500ms. Chat component bundle adds ~18KB gzipped. useOpenCodeChat hook memoizes agent connections to prevent redundant handshakes."
+      evidence: "SSE streaming delivers first token in &lt; 500ms. Chat component bundle adds ~18KB gzipped. useOpenCodeChat hook memoizes agent connections to prevent redundant handshakes."
       validated_by: "@opencode"
     security:
       status: pass
@@ -85,5 +85,5 @@ notes: "Feature files created. Awaiting integration test environment for SSE str
 **Dependencies:** React 18, EventSource polyfill (for SSE in non-browser environments)
 **Breaking changes:** FOEChat, DDDChat, and TaxonomyChat now import from `@katalyst/chat` instead of using inline implementations. Props API is backward-compatible.
 **Migration notes:** Add `@katalyst/chat` as a dependency to consuming packages. Replace inline chat implementations with `<OpenCodeChat agent="..." accentColor="..." />`.
-**Performance impact:** Shared bundle reduces total JS payload by ~24KB across the three consumers. SSE streaming delivers first token in < 500ms.
+**Performance impact:** Shared bundle reduces total JS payload by ~24KB across the three consumers. SSE streaming delivers first token in `< 500ms`.
 **Security considerations:** No client-side API key exposure. All AI communication flows through authenticated server-side endpoints. SSE connections inherit session authentication.

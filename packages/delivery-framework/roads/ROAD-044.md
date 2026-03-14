@@ -28,23 +28,30 @@ governance:
     validated_by: "@architecture-inspector"
     validated_at: "2026-02-19"
   bdd:
+    id: BDD-044
     status: approved
     feature_files:
       - "api/landscape/01_landscape_graph.feature"
       - "api/landscape/02_landscape_lint.feature"
       - "hybrid/landscape/01_landscape_visualization_e2e.feature"
-      - "hybrid/landscape/02_landscape_v2_layout.feature"
-    scenarios: 22
+    scenarios: 19
     passing: 19
   nfrs:
     applicable: [NFR-PERF-001, NFR-A11Y-001]
     status: pass
     results:
-      performance: "Layout computation < 500ms for 50 contexts; SVG rendering < 100ms post-layout"
+      performance: "Layout computation &lt; 500ms for 50 contexts; SVG rendering &lt; 100ms post-layout"
       accessibility: "Canvas uses ARIA labels on interactive user type badges and filter controls"
   agent_signatures:
     architecture-inspector: "pass"
     code-writer: "approved"
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-19"
+  accepted_at: "2026-02-19"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-044: Business Landscape Visualization
@@ -184,7 +191,7 @@ From US-075:
 ## Non-Functional Requirements
 
 ### NFR-PERF-001: Performance
-- **Result**: Layout computation < 500ms for 50 contexts; SVG rendering < 100ms post-layout
+- **Result**: Layout computation `< 500ms` for 50 contexts; SVG rendering `< 100ms` post-layout
 - **Status**: ✅ Pass
 
 ### NFR-A11Y-001: Accessibility

@@ -58,7 +58,7 @@
       "total": 0,
       "passed": 0,
       "failed": 0,
-      "status": "na"
+      "status": "pending"
     },
     {
       "changeId": "CHANGE-044",
@@ -68,7 +68,7 @@
       "total": 0,
       "passed": 0,
       "failed": 0,
-      "status": "na"
+      "status": "pending"
     },
     {
       "changeId": "CHANGE-043",
@@ -78,7 +78,7 @@
       "total": 0,
       "passed": 0,
       "failed": 0,
-      "status": "na"
+      "status": "pending"
     },
     {
       "changeId": "CHANGE-042",
@@ -88,7 +88,7 @@
       "total": 0,
       "passed": 0,
       "failed": 0,
-      "status": "na"
+      "status": "pending"
     },
     {
       "changeId": "CHANGE-041",
@@ -98,7 +98,7 @@
       "total": 0,
       "passed": 0,
       "failed": 0,
-      "status": "na"
+      "status": "pending"
     },
     {
       "changeId": "CHANGE-040",
@@ -108,7 +108,7 @@
       "total": 0,
       "passed": 0,
       "failed": 0,
-      "status": "na"
+      "status": "pending"
     },
     {
       "changeId": "CHANGE-039",
@@ -118,7 +118,7 @@
       "total": 0,
       "passed": 0,
       "failed": 0,
-      "status": "na"
+      "status": "pending"
     },
     {
       "changeId": "CHANGE-038",
@@ -178,7 +178,7 @@
       "total": 0,
       "passed": 0,
       "failed": 0,
-      "status": "na"
+      "status": "pending"
     },
     {
       "changeId": "CHANGE-030",
@@ -208,7 +208,7 @@
       "total": 0,
       "passed": 0,
       "failed": 0,
-      "status": "na"
+      "status": "pending"
     },
     {
       "changeId": "CHANGE-007",
@@ -218,7 +218,7 @@
       "total": 0,
       "passed": 0,
       "failed": 0,
-      "status": "na"
+      "status": "pending"
     },
     {
       "changeId": "CHANGE-031",
@@ -271,5 +271,5 @@
       "status": "pass"
     }
   ],
-  "generatedAt": "2026-03-14T18:29:50.901Z"
+  "generatedAt": "2026-03-14T19:33:13.848Z"
 }

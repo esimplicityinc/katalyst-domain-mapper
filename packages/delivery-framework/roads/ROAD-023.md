@@ -26,6 +26,15 @@ governance:
 dependencies:
   requires: [ROAD-009]
   enables: []
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-06"
+  submitted_by: "Katalyst Team"
+  submitted_at: "2026-02-17"
+  accepted_at: ""
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-023: Onboarding & How It Works Experience

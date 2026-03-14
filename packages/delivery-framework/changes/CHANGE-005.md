@@ -28,7 +28,7 @@ compliance:
       evidence: "NFR-SEC-001: .env files in .gitignore (5 patterns), .env not tracked by git, no hardcoded API keys in source. API validates all input payloads with structured error responses."
       validated_by: "superpowers-orchestrator"
     accessibility:
-      status: na
+      status: pending
       evidence: "API-only change — no UI components. Accessibility not applicable."
       validated_by: ""
 signatures:

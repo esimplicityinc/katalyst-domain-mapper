@@ -402,7 +402,7 @@ bun run check-circular-deps
 - Queue write operations for later processing
 
 **Recovery Time**:
-- Automatic failover to replica: < 1 minute
+- Automatic failover to replica: `< 1 minute`
 - Manual restoration from backup: 1 hour (RTO)
 
 ---
@@ -436,8 +436,8 @@ bun run check-circular-deps
 - Direct database access for internal tools (emergency only)
 
 **Recovery Time**:
-- Auto-scaling adds instances: < 5 minutes
-- Manual intervention: < 15 minutes
+- Auto-scaling adds instances: `< 5 minutes`
+- Manual intervention: `< 15 minutes`
 
 ---
 

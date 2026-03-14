@@ -21,7 +21,9 @@ governance:
     validated_by: "@opencode"
     validated_at: "2026-02-19"
     notes: "No new ADR required. Data pipeline follows established scan patterns."
+  capabilities: [CAP-001]
   bdd:
+    id: BDD-045
     status: na
     feature_files: []
     scenarios: 0
@@ -34,6 +36,13 @@ governance:
       performance: "Batch scan runner processes one scan per month sequentially. Total runtime under 15 minutes for 9 months."
   agent_signatures:
     code-writer: "approved"
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-19"
+  accepted_at: "2026-02-19"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-045: FOE Historical Scan Data Pipeline
@@ -41,7 +50,7 @@ governance:
 **Status**: ✅ Complete  
 **Priority**: Medium  
 **Phase**: 2 — Advanced Features  
-**Estimated Effort**: S (< 1 day)  
+**Estimated Effort**: S (`< 1 day`)  
 **Completed**: 2026-02-19
 
 ## Description

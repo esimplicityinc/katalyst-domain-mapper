@@ -1,6 +1,6 @@
 ---
 id: CHANGE-049
-road_id: ~
+road_id: ROAD-040
 title: "Feature Flags Infrastructure with OpenFeature Integration"
 date: "2026-03-14"
 version: "0.12.0"
@@ -22,14 +22,14 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "Flag resolution is synchronous in-memory lookup: < 1ms. flags.json loaded once at startup. No external service calls for evaluation."
+      evidence: "Flag resolution is synchronous in-memory lookup: &lt; 1ms. flags.json loaded once at startup. No external service calls for evaluation."
       validated_by: "@opencode"
     security:
       status: pass
       evidence: "GET /api/v1/flags endpoint returns only flag names and current boolean values — no internal configuration details. FF_* env var overrides are server-side only."
       validated_by: "@opencode"
     accessibility:
-      status: na
+      status: pending
       evidence: "Infrastructure package. No user-facing interface."
       validated_by: "@opencode"
 signatures:
@@ -84,5 +84,5 @@ coverage: "100%"
 **Dependencies:** None (zero external dependencies — pure TypeScript)
 **Breaking changes:** None — new additive package
 **Migration notes:** Add `@foe/feature-flags` to consuming packages. Call `initServerFlags()` at server startup. Call `fetchAndInitFlags()` in client app initialization.
-**Performance impact:** Flag resolution is synchronous in-memory lookup (< 1ms). No network calls during evaluation.
+**Performance impact:** Flag resolution is synchronous in-memory lookup (`< 1ms`). No network calls during evaluation.
 **Security considerations:** `FF_*` overrides are server-side only. API endpoint exposes flag names and boolean values only — no internal configuration or override sources revealed.

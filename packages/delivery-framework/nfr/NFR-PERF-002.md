@@ -29,14 +29,14 @@ Slow API responses degrade the developer experience (loading spinners in dashboa
 
 | Metric | Target | Measurement Method |
 |--------|--------|-------------------|
-| Response time (p50) | < 50 ms | Load test with k6 or autocannon |
-| Response time (p95) | < 200 ms | Load test with k6 or autocannon |
-| Response time (p99) | < 500 ms | Load test with k6 or autocannon |
+| Response time (p50) | &lt; 50ms | Load test with k6 or autocannon |
+| Response time (p95) | &lt; 200ms | Load test with k6 or autocannon |
+| Response time (p99) | &lt; 500ms | Load test with k6 or autocannon |
 | Concurrent connections | 50 simultaneous | Load test with sustained connections |
 | Throughput | > 500 req/s | Load test on governance endpoints |
-| JSON serialization overhead | < 10 ms | Per-request timing for large governance snapshots |
-| Database query time | < 50 ms | Drizzle query timing for governance queries |
-| Health check endpoint | < 10 ms | `/api/v1/health` response time |
+| JSON serialization overhead | &lt; 10ms | Per-request timing for large governance snapshots |
+| Database query time | &lt; 50ms | Drizzle query timing for governance queries |
+| Health check endpoint | &lt; 10ms | `/api/v1/health` response time |
 
 ## Test Strategy
 

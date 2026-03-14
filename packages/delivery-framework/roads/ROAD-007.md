@@ -15,7 +15,9 @@ governance:
     ids: [ADR-006]
     validated_by: "architecture-inspector"
     validated_at: "2026-02-06"
+  capabilities: [CAP-008]
   bdd:
+    id: BDD-007
     status: not_applicable
     feature_files: []
     scenarios: 0
@@ -23,12 +25,19 @@ governance:
     note: "Reference documentation only - no executable tests required"
   nfrs:
     applicable: []
-    status: complete
+    status: pass
     results: {}
     note: "No runtime dependencies - static markdown files only"
 dependencies:
   requires: []
   enables: []
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-05"
+  accepted_at: "2026-02-13"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-007: BDD Agent Skills

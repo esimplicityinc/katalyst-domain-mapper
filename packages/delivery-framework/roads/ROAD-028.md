@@ -15,6 +15,7 @@ governance:
     validated_by: "architecture-inspector"
     validated_at: "2026-02-12"
   bdd:
+    id: BDD-028
     status: draft
     feature_files: []
     scenarios: 0
@@ -31,6 +32,13 @@ governance:
 dependencies:
   requires: [ROAD-009]
   enables: [ROAD-023]
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-12"
+  accepted_at: "2026-02-12"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-028: DDD Terminology Explainer Tooltips

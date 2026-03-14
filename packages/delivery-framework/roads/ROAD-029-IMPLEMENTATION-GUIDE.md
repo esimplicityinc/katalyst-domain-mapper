@@ -851,7 +851,7 @@ bun run build
   - Manual spot-check 20 cross-references
 - [ ] **NFR-PERF-002**: Performance baseline
   - Lighthouse Performance score ≥ 90
-  - FCP < 1.5s, TTI < 3.0s
+  - FCP `< 1.5s`, TTI `< 3.0s`
 
 ### Change Record
 - [ ] Create CHANGE-XXX: "Lifecycle-Oriented Navigation + System Taxonomy"

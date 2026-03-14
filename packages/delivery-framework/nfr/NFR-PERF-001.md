@@ -29,12 +29,12 @@ Slow builds directly impact developer feedback loops (FOE Feedback dimension) an
 
 | Metric | Target | Measurement Method |
 |--------|--------|-------------------|
-| Index build time (100 artifacts) | < 5 seconds | `time bunx foe-field-guide build:governance` with 100 test artifacts |
-| Index build time (500 artifacts) | < 15 seconds | `time bunx foe-field-guide build:governance` with 500 test artifacts |
-| Single schema validation | < 5 ms | `performance.now()` around `schema.parse()` in benchmark suite |
-| CLI startup time | < 500 ms | `time bunx foe-field-guide --help` (cold start) |
-| Output file size (100 artifacts) | < 500 KB | `ls -la governance-index.json` |
-| Memory usage (100 artifacts) | < 256 MB | `node --max-old-space-size=256` constraint test |
+| Index build time (100 artifacts) | &lt; 5 seconds | `time bunx foe-field-guide build:governance` with 100 test artifacts |
+| Index build time (500 artifacts) | &lt; 15 seconds | `time bunx foe-field-guide build:governance` with 500 test artifacts |
+| Single schema validation | &lt; 5ms | `performance.now()` around `schema.parse()` in benchmark suite |
+| CLI startup time | &lt; 500ms | `time bunx foe-field-guide --help` (cold start) |
+| Output file size (100 artifacts) | &lt; 500KB | `ls -la governance-index.json` |
+| Memory usage (100 artifacts) | &lt; 256MB | `node --max-old-space-size=256` constraint test |
 
 ## Test Strategy
 

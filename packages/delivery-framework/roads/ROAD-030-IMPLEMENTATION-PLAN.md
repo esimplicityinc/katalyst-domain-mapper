@@ -1132,7 +1132,7 @@ bun test stack-tests/features/ui/reporting/02_foe_project_browser.feature
 **Expected Result:**
 - All 24 scenarios pass
 - No flaky tests
-- Execution time < 5 minutes
+- Execution time `< 5 minutes`
 
 **Acceptance Criteria:**
 - ✅ All scenarios passing
@@ -1278,9 +1278,9 @@ bun run type-check
 - Measure Time to Interactive (TTI)
 
 **Targets:**
-- Project list page TTI < 1s (with 20 projects)
-- Project detail page TTI < 2s
-- Tab switching < 100ms
+- Project list page TTI `< 1s` (with 20 projects)
+- Project detail page TTI `< 2s`
+- Tab switching `< 100ms`
 
 **Optimization Checks:**
 - [ ] Components lazy-loaded where appropriate
@@ -1291,7 +1291,7 @@ bun run type-check
 **Acceptance Criteria:**
 - Lighthouse performance score ≥ 90
 - TTI meets targets
-- No layout shift (CLS < 0.1)
+- No layout shift (CLS `< 0.1`)
 - No performance warnings in console
 
 **Agent:** Developer (manual) + automated tools
@@ -1407,7 +1407,7 @@ The Reports page now supports multi-project management:
 - Loom, QuickTime, or OBS
 
 **Acceptance Criteria:**
-- Video < 3 minutes
+- Video `< 3 minutes`
 - Audio clear
 - Covers all main features
 

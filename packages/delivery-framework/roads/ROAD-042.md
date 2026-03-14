@@ -27,6 +27,15 @@ governance:
 dependencies:
   requires: []
   enables: []
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-17"
+  submitted_by: "Katalyst Team"
+  submitted_at: "2026-02-17"
+  accepted_at: ""
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-042: FOE Report Trend Visualization (Web UI)

@@ -14,7 +14,7 @@ compliance:
     validated_at: "2026-02-19"
     notes: "No new ADR required. Historical scan data follows established FOEReport schema (ADR-002). Data pipeline follows existing batch scan patterns."
   bdd_check:
-    status: na
+    status: pending
     scenarios: 0
     passed: 0
     coverage: "N/A"
@@ -22,14 +22,14 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "Batch scan runner completes 9 months of scans in under 15 minutes total. Individual scan files are < 50KB each."
+      evidence: "Batch scan runner completes 9 months of scans in under 15 minutes total. Individual scan files are &lt; 50KB each."
       validated_by: "@opencode"
     security:
       status: pass
       evidence: "Scan files contain only synthetic assessment data. No credentials, keys, or production data."
       validated_by: "@opencode"
     accessibility:
-      status: na
+      status: pending
       evidence: "Data pipeline change only. No end-user UI impact."
       validated_by: "@opencode"
 signatures:

@@ -23,6 +23,7 @@ governance:
     validated_at: "2026-02-19"
     notes: "No new ADR required. Tooling improvements follow established quality gate strategy."
   bdd:
+    id: BDD-047
     status: na
     feature_files: []
     scenarios: 0
@@ -32,10 +33,17 @@ governance:
     applicable: [NFR-PERF-001]
     status: pass
     results:
-      performance: "just dev-ready completes in < 3s. just dev brings both servers up in < 15s."
+      performance: "just dev-ready completes in &lt; 3s. just dev brings both servers up in &lt; 15s."
   agent_signatures:
     ci-runner: "approved"
     code-writer: "approved"
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-19"
+  accepted_at: "2026-02-19"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-047: Developer Environment & Quality Gates
@@ -43,7 +51,7 @@ governance:
 **Status**: ✅ Complete  
 **Priority**: High  
 **Phase**: 1 — Core Features  
-**Estimated Effort**: S (< 1 day)  
+**Estimated Effort**: S (`< 1 day`)  
 **Completed**: 2026-02-19
 
 ## Description
@@ -53,7 +61,7 @@ Unified developer experience for the Intelligence package full-stack environment
 ## Value Proposition
 
 - **One command**: `just dev` starts everything needed for BDD testing
-- **Fast failure**: `just dev-ready` fails in < 3s with exact fix instructions instead of 30s timeouts
+- **Fast failure**: `just dev-ready` fails in `< 3s` with exact fix instructions instead of 30s timeouts
 - **CI safety**: Pre-push hook skips BDD gracefully when running on machines without a dev server
 
 ## User Stories
@@ -153,7 +161,7 @@ Added missing BDD step definitions for mobile tab scroll scenarios. Added `Archi
 ## Non-Functional Requirements
 
 ### NFR-PERF-001: Performance
-- **Result**: `just dev-ready` completes in < 3s. `just dev` brings both servers up in < 15s.
+- **Result**: `just dev-ready` completes in `< 3s`. `just dev` brings both servers up in `< 15s`.
 - **Status**: ✅ Pass
 
 ## Testing Strategy
@@ -177,8 +185,8 @@ Added missing BDD step definitions for mobile tab scroll scenarios. Added `Archi
 
 ## Success Metrics
 
-- ✅ `just dev` starts both API and frontend reliably in < 15s
-- ✅ `just dev-ready` provides < 3s fast-fail with actionable instructions
+- ✅ `just dev` starts both API and frontend reliably in `< 15s`
+- ✅ `just dev-ready` provides `< 3s` fast-fail with actionable instructions
 - ✅ Zero ESLint errors or warnings across entire monorepo
 - ✅ BDD smoke tests run cleanly in pre-push hook when server is up
 - ✅ Pre-push hook does not block commits on CI machines without dev server

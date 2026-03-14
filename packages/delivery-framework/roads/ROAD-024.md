@@ -8,11 +8,21 @@ created: 2026-02-10
 governance:
   adrs:
     validated: false
+  capabilities: [CAP-008]
   bdd:
     status: draft
   nfrs:
     applicable: []
     status: pending
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-10"
+  submitted_by: "Katalyst Team"
+  submitted_at: "2026-02-17"
+  accepted_at: ""
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-024: ContextMapper CML Export Adapter

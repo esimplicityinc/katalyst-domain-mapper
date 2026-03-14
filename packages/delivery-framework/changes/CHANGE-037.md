@@ -14,7 +14,7 @@ compliance:
     validated_at: "2026-02-13"
     notes: "No new ADR required. Follows existing component patterns and accessibility guidelines."
   bdd_check:
-    status: na
+    status: pending
     scenarios: 0
     passed: 0
     coverage: "N/A"
@@ -25,7 +25,7 @@ compliance:
       evidence: "Tooltips render on hover with no perceptible delay. Dictionary loaded at module import time (static object)."
       validated_by: "opencode"
     security:
-      status: na
+      status: pending
       evidence: "Static tooltip content only. No user input or external data."
       validated_by: "opencode"
     accessibility:

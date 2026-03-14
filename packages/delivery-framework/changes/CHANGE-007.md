@@ -14,22 +14,22 @@ compliance:
     validated_at: "2026-02-06"
     notes: "ADR-006 validated — static markdown reference docs with no runtime dependencies."
   bdd_check:
-    status: na
+    status: pending
     scenarios: 0
     passed: 0
     coverage: "N/A"
     notes: "Reference documentation only — no executable tests required."
   nfr_checks:
     performance:
-      status: na
+      status: pending
       evidence: "Static markdown files with no runtime performance impact."
       validated_by: ""
     security:
-      status: na
+      status: pending
       evidence: "No runtime code, secrets, or security surface area."
       validated_by: ""
     accessibility:
-      status: na
+      status: pending
       evidence: "Documentation-only change — no UI components."
       validated_by: ""
 signatures:

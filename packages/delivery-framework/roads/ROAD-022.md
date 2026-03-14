@@ -26,6 +26,15 @@ governance:
 dependencies:
   requires: [ROAD-016, ROAD-017, ROAD-018, ROAD-019, ROAD-020, ROAD-021]
   enables: []
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-06"
+  submitted_by: "Katalyst Team"
+  submitted_at: "2026-02-17"
+  accepted_at: ""
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-022: Static Documentation Site Generator

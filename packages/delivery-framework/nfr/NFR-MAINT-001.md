@@ -47,7 +47,7 @@ A broken cross-reference (e.g., a ROAD item referencing `ADR-005` when no `ADR-0
 | Integrity check coverage | All 12+ cross-reference types | Code audit of integrity checker |
 | Error message quality | Contains source file, field, target ID | Manual review of error output |
 | Index build behavior on violation | Fails with non-zero exit code | Integration test: introduce broken reference |
-| Validation speed | < 1 second for integrity checks | Timing within index build (per NFR-PERF-001) |
+| Validation speed | &lt; 1 second for integrity checks | Timing within index build (per NFR-PERF-001) |
 | Self-referential validation | Framework validates its own integrity | `bunx foe-field-guide validate:governance` on delivery-framework content |
 
 ## Test Strategy

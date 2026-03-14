@@ -16,24 +16,32 @@ governance:
     validated_by: ""
     validated_at: ""
   bdd:
-    status: approved
-    feature_files:
-      - stack-tests/features/api/domain-models/05_domain_workflows.feature
-      - stack-tests/features/hybrid/domain-models/04_state_machine.feature
-    scenarios: 7
-    passing: 7
+    id: BDD-019
+    status: draft
+    feature_files: []
+    scenarios: 0
+    passing: 0
   nfrs:
     applicable: [NFR-PERF-001, NFR-A11Y-001]
-    status: conditional-pass
+    status: pass
     results:
       architecture_score: 52
       architecture_notes: "Conditional pass - follows existing fat-route pattern; frontend is clean"
 dependencies:
   requires: [ROAD-009]
   enables: [ROAD-022]
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-06"
+  accepted_at: "2026-02-12"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-019: Application Lifecycle State Machine View
+
+> **Note:** BDD feature files were removed during codebase reorganization. The `governance.bdd` section has been reset to `draft` with empty feature files until new scenarios are written.
 
 ## Summary
 

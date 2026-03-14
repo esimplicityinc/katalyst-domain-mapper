@@ -27,7 +27,7 @@ compliance:
       evidence: "Navigation loads within 300ms. No performance regression in routing or rendering."
       validated_by: "opencode"
     security:
-      status: na
+      status: pending
       evidence: "Frontend-only changes. No new attack surface."
       validated_by: "opencode"
     accessibility:

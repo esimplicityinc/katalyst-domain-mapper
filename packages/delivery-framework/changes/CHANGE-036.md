@@ -22,14 +22,14 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "API endpoints respond in <50ms for single entity operations. Referential integrity checks add <10ms overhead."
+      evidence: "API endpoints respond in &lt;50ms for single entity operations. Referential integrity checks add &lt;10ms overhead."
       validated_by: "opencode"
     security:
       status: pass
       evidence: "All endpoints behind existing authentication middleware. Input validation on all mutation payloads."
       validated_by: "opencode"
     accessibility:
-      status: na
+      status: pending
       evidence: "Backend API only. No UI changes."
       validated_by: "opencode"
 signatures:
@@ -98,5 +98,5 @@ Implemented full CRUD operations for all 8 taxonomy entity types using the port/
 **Compliance Evidence:**
 - Port/adapter pattern consistent with ADR-014
 - Referential integrity enforced at adapter level
-- API latency <50ms per operation
+- API latency &lt;50ms per operation
 - Input validation on all mutation payloads

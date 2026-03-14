@@ -15,7 +15,7 @@ compliance:
     validated_at: "2026-02-19"
     notes: "No new ADR required. Developer tooling and quality gate improvements follow existing patterns. ESLint config follows project-wide TypeScript standards."
   bdd_check:
-    status: na
+    status: pending
     scenarios: 0
     passed: 0
     coverage: "N/A"
@@ -23,14 +23,14 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "just dev-ready completes in < 3 seconds. just dev brings both servers to accepting-connections state in < 15 seconds on warm node_modules."
+      evidence: "just dev-ready completes in &lt; 3 seconds. just dev brings both servers to accepting-connections state in &lt; 15 seconds on warm node_modules."
       validated_by: "@opencode"
     security:
       status: pass
       evidence: "Pre-push hook runs BDD suite before allowing push — prevents broken tests reaching shared repository. ESLint enforces type safety."
       validated_by: "@opencode"
     accessibility:
-      status: na
+      status: pending
       evidence: "Developer tooling only. No end-user interface changes."
       validated_by: "@opencode"
 signatures:
@@ -104,5 +104,5 @@ Introduces a unified one-command developer experience for the Intelligence packa
 **Dependencies:** None  
 **Breaking changes:** None  
 **Migration notes:** Developers should run `bun install` to pick up any updated dev dependency scripts, then use `just dev` instead of separate server start commands  
-**Performance impact:** `just dev-ready` adds < 3 second overhead to BDD recipe execution — a worthwhile trade for eliminating cryptic timeout failures  
+**Performance impact:** `just dev-ready` adds `< 3s`econd overhead to BDD recipe execution — a worthwhile trade for eliminating cryptic timeout failures  
 **Security considerations:** Pre-push hook ensures broken tests cannot reach the shared repository. ESLint type-safety rules reduce defect injection risk.

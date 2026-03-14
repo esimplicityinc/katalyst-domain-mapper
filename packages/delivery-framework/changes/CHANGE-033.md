@@ -22,10 +22,10 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "Project list renders <200ms with 50+ projects. Search filtering is instant (client-side). No API latency for cached projects."
+      evidence: "Project list renders &lt;200ms with 50+ projects. Search filtering is instant (client-side). No API latency for cached projects."
       validated_by: "opencode"
     security:
-      status: na
+      status: pending
       evidence: "Frontend-only changes. Project data fetched from existing authenticated API."
       validated_by: "opencode"
     accessibility:
@@ -123,5 +123,5 @@ test_results:
 **Compliance Evidence:**
 - 24/24 BDD scenarios passing (100%)
 - WCAG 2.1 AA accessibility maintained
-- Performance targets met (<200ms render)
+- Performance targets met (&lt;200ms render)
 - Strategy namespace properly organized

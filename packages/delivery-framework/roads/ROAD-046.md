@@ -25,6 +25,7 @@ governance:
     validated_by: "@architecture-inspector"
     validated_at: "2026-02-19"
   bdd:
+    id: BDD-046
     status: approved
     feature_files:
       - "hybrid/architecture/01_architecture_ui.feature"
@@ -34,10 +35,17 @@ governance:
     applicable: [NFR-PERF-001]
     status: pass
     results:
-      performance: "CRUD operations < 200ms (SQLite). AI chat first token < 2s (SSE streaming)."
+      performance: "CRUD operations &lt; 200ms (SQLite). AI chat first token &lt; 2s (SSE streaming)."
   agent_signatures:
     architecture-inspector: "pass"
     code-writer: "approved"
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-19"
+  accepted_at: "2026-02-19"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-046: Taxonomy & User Type Management UI
@@ -173,7 +181,7 @@ From US-078:
 ## Non-Functional Requirements
 
 ### NFR-PERF-001: Performance
-- **Result**: CRUD operations < 200ms (SQLite). AI chat first token < 2s (SSE streaming).
+- **Result**: CRUD operations `< 200ms` (SQLite). AI chat first token `< 2s` (SSE streaming).
 - **Status**: ✅ Pass
 
 ## Testing Strategy

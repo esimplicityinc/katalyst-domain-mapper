@@ -16,29 +16,11 @@ governance:
     validated_by: "superpowers-orchestrator"
     validated_at: "2026-02-12"
   bdd:
-    status: approved
-    feature_files:
-      - stack-tests/features/api/domain-models/01_domain_model_crud.feature
-      - stack-tests/features/api/domain-models/02_bounded_context_management.feature
-      - stack-tests/features/api/domain-models/03_domain_artifacts.feature
-      - stack-tests/features/api/domain-models/04_subdomain_classification.feature
-      - stack-tests/features/api/domain-models/05_domain_workflows.feature
-      - stack-tests/features/hybrid/domain-models/01_domain_model_e2e.feature
-      - stack-tests/features/hybrid/domain-models/02_aggregate_tree.feature
-      - stack-tests/features/hybrid/domain-models/03_event_flow.feature
-      - stack-tests/features/hybrid/domain-models/04_state_machine.feature
-    scenarios: 47
-    passing: 47
-    test_results:
-      domain_model_crud: "9/9 passing"
-      bounded_context_management: "6/6 passing"
-      domain_artifacts: "8/8 passing"
-      subdomain_classification: "6/6 passing"
-      domain_workflows: "3/3 passing"
-      domain_model_e2e: "2/2 passing"
-      aggregate_tree: "4/4 passing"
-      event_flow: "5/5 passing"
-      state_machine: "4/4 passing"
+    id: BDD-027
+    status: draft
+    feature_files: []
+    scenarios: 0
+    passing: 0
   nfrs:
     applicable: [NFR-PERF-001, NFR-SEC-001]
     status: pass
@@ -50,9 +32,18 @@ governance:
 dependencies:
   requires: [ROAD-009, ROAD-019]
   enables: [ROAD-022]
+contribution:
+  status: accepted
+  proposed_by: "Katalyst Team"
+  proposed_at: "2026-02-12"
+  accepted_at: "2026-02-12"
+  reviewed_by: "governance-linter"
+  reviewed_at: "2026-03-14"
 ---
 
 # ROAD-027: Hexagonal Architecture Extraction & BDD Test Stability
+
+> **Note:** BDD feature files were removed during codebase reorganization. The `governance.bdd` section has been reset to `draft` with empty feature files until new scenarios are written.
 
 ## Summary
 

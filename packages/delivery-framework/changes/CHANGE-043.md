@@ -14,7 +14,7 @@ compliance:
     validated_at: "2026-02-19"
     notes: "Hexagonal architecture maintained (ADR-003, ADR-014): GovernanceRepository port extended, GovernanceRepositorySQLite adapter implements all new methods, domain layer pure. AI agent pattern documented in ADR-019. React+Vite frontend (ADR-012). SQLite migration uses IF NOT EXISTS guards (ADR-011)."
   bdd_check:
-    status: na
+    status: pending
     scenarios: 0
     passed: 0
     coverage: "N/A"
@@ -22,7 +22,7 @@ compliance:
   nfr_checks:
     performance:
       status: pass
-      evidence: "CRUD operations complete < 200ms (SQLite with indexed primary keys). AI chat first token < 2s (SSE streaming via Elysia). Capability tree renders 50+ nodes without lag."
+      evidence: "CRUD operations complete &lt; 200ms (SQLite with indexed primary keys). AI chat first token &lt; 2s (SSE streaming via Elysia). Capability tree renders 50+ nodes without lag."
       validated_by: "@opencode"
     security:
       status: pass

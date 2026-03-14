@@ -25,11 +25,11 @@ compliance:
       evidence: "Architecture score improved from 52/100 to 97.5/100. No runtime performance regression."
       validated_by: "opencode"
     security:
-      status: na
+      status: pending
       evidence: "Internal refactoring only. No new endpoints or attack surface."
       validated_by: "opencode"
     accessibility:
-      status: na
+      status: pending
       evidence: "Backend-only refactoring. No UI changes."
       validated_by: "opencode"
 signatures:
