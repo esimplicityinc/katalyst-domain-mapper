@@ -15,6 +15,12 @@ user_stories:
 dependencies: []
 enables: []
 estimated_effort: M
+governance:
+  bdd:
+    status: draft
+    feature_files: []
+    scenarios: 0
+    passing: 0
 ---
 
 # ROAD-043: Manual FOE Assessment Wizard UI

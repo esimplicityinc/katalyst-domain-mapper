@@ -36,3 +36,8 @@ Capabilities represent the core functional areas the system provides. Each capab
 | [CAP-024](CAP-024) | Landscape Domain Linter | Technical | stable |
 | [CAP-025](CAP-025) | Taxonomy & User Type Management UI | Business | stable |
 | [CAP-026](CAP-026) | Developer Environment Tooling | Technical | stable |
+| [CAP-027](CAP-027) | Reusable AI Chat Component Library | Technical | stable |
+| [CAP-028](CAP-028) | Feature Flag Management | Technical | stable |
+| [CAP-029](CAP-029) | Team Topology Management | Business | stable |
+| [CAP-030](CAP-030) | Switchable AI Runtime Orchestration | Technical | stable |
+| [CAP-031](CAP-031) | Layer Health Measurement | Business | planned |

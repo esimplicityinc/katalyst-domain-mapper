@@ -25,11 +25,11 @@ governance:
     validated_by: "@architecture-inspector"
     validated_at: "2026-02-19"
   bdd:
-    status: implementing
-    feature_files: []
-    scenarios: 0
+    status: approved
+    feature_files:
+      - "hybrid/architecture/01_architecture_ui.feature"
+    scenarios: 5
     passing: 0
-    notes: "CRUD and chat interfaces implemented; BDD scenarios to be written in subsequent sprint"
   nfrs:
     applicable: [NFR-PERF-001]
     status: pass

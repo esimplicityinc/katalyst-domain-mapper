@@ -28,11 +28,14 @@ governance:
     validated_by: "@architecture-inspector"
     validated_at: "2026-02-19"
   bdd:
-    status: implementing
-    feature_files: []
-    scenarios: 0
-    passing: 0
-    notes: "Landscape visualization implemented; BDD scenarios to be written in subsequent sprint"
+    status: approved
+    feature_files:
+      - "api/landscape/01_landscape_graph.feature"
+      - "api/landscape/02_landscape_lint.feature"
+      - "hybrid/landscape/01_landscape_visualization_e2e.feature"
+      - "hybrid/landscape/02_landscape_v2_layout.feature"
+    scenarios: 22
+    passing: 19
   nfrs:
     applicable: [NFR-PERF-001, NFR-A11Y-001]
     status: pass

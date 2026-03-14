@@ -60,6 +60,9 @@ created: YYYY-MM-DD
 | [ADR-017](./ADR-017.md) | Sequential Numbering for Retroactive Governance Artifacts | Process | Accepted |
 | [ADR-018](./ADR-018.md) | Multi-Engine Layout Strategy for Business Landscape Visualization | Architecture | Accepted |
 | [ADR-019](./ADR-019.md) | AI Agent-Assisted Governance Discovery with Auto-Persistence | Architecture | Accepted |
+| [ADR-020](./ADR-020.md) | Unified Taxonomy Node Schema with Extensions | Architecture | Accepted |
+| [ADR-021](./ADR-021.md) | Dual AI Runtime Strategy (OpenCode + LangGraph) | Architecture | Accepted |
+| [ADR-022](./ADR-022.md) | OpenFeature for Vendor-Agnostic Feature Flags | Infrastructure | Accepted |
 
 ## Governance
 

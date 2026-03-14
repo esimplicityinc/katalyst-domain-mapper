@@ -88,3 +88,16 @@ User stories define requirements from the perspective of user types interacting 
 | [US-077](US-077) | Manage User Types and User Stories via UI | UT-001 | CAP-025 | complete |
 | [US-078](US-078) | Use AI Chat for Taxonomy and User Type Discovery | UT-001 | CAP-025, CAP-017 | complete |
 | [US-079](US-079) | Start Full Dev Environment in One Command | UT-003 | CAP-026 | complete |
+| [US-080](US-080) | Use Shared Chat Component Across AI Pages | UT-002 | CAP-027 | complete |
+| [US-081](US-081) | Toggle Features Via Flags Without Redeployment | UT-002 | CAP-028 | complete |
+| [US-082](US-082) | Override Flags Via Environment Variables in CI/CD | UT-008 | CAP-028 | complete |
+| [US-083](US-083) | Universal Contribution Lifecycle for Governance Artifacts | UT-004 | CAP-002 | complete |
+| [US-084](US-084) | Capture Organizational Structure Via Taxonomy Teams | UT-002 | CAP-029 | complete |
+| [US-085](US-085) | Query Team Membership Across Multiple Teams | UT-007 | CAP-029 | draft |
+| [US-086](US-086) | Switch Scan Runtime Via Feature Flag | UT-002 | CAP-030, CAP-028 | complete |
+| [US-087](US-087) | Receive Real-Time Scan Progress Events | UT-001 | CAP-030, CAP-008 | draft |
+| [US-088](US-088) | Chat Sessions Persist Conversation History | UT-001 | CAP-027, CAP-017 | draft |
+| [US-089](US-089) | Measure Layer Health Linked to NFRs and ADRs | UT-001 | CAP-031 | planned |
+| [US-090](US-090) | View Layer Health Dashboard | UT-006 | CAP-031 | planned |
+| [US-091](US-091) | View Landscape With Zoned Trunk Layout | UT-007 | CAP-023 | complete |
+| [US-092](US-092) | Trigger Governance Validation From CI Pipeline | UT-008 | CAP-002 | draft |

@@ -1,6 +1,66 @@
 {
   "tests": [
     {
+      "changeId": "CHANGE-050",
+      "roadId": null,
+      "title": "Shared AI Chat Component Library (@katalyst/chat)",
+      "date": "2026-03-14",
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "status": "pending"
+    },
+    {
+      "changeId": "CHANGE-049",
+      "roadId": null,
+      "title": "Feature Flags Infrastructure with OpenFeature Integration",
+      "date": "2026-03-14",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "status": "pass"
+    },
+    {
+      "changeId": "CHANGE-048",
+      "roadId": "ROAD-044",
+      "title": "Landscape v2 Zoned Layout Engine with Trunk Routing",
+      "date": "2026-03-14",
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "status": "pending"
+    },
+    {
+      "changeId": "CHANGE-047",
+      "roadId": null,
+      "title": "Port/Adapter Pattern for Switchable AI Runtimes",
+      "date": "2026-03-14",
+      "total": 11,
+      "passed": 11,
+      "failed": 0,
+      "status": "pass"
+    },
+    {
+      "changeId": "CHANGE-046",
+      "roadId": null,
+      "title": "Teams and Persons as First-Class Taxonomy Entities",
+      "date": "2026-03-14",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "status": "pass"
+    },
+    {
+      "changeId": "CHANGE-045",
+      "roadId": null,
+      "title": "Taxonomy Schema Consolidation — Unified Node + Extension Architecture",
+      "date": "2026-03-14",
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "status": "na"
+    },
+    {
       "changeId": "CHANGE-044",
       "roadId": "ROAD-047",
       "title": "Developer Environment Recipes and Quality Gate Hardening",
@@ -211,5 +271,5 @@
       "status": "pass"
     }
   ],
-  "generatedAt": "2026-03-14T14:30:29.019Z"
+  "generatedAt": "2026-03-14T18:29:50.901Z"
 }
