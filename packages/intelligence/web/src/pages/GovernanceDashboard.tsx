@@ -18,7 +18,7 @@ import type {
   GovernanceSnapshot,
   RoadItemSummary,
   CapabilityCoverage,
-  PersonaCoverage,
+  UserTypeCoverage,
   IntegrityReport,
 } from "../types/governance";
 
@@ -32,7 +32,7 @@ export function GovernanceDashboard() {
   const [snapshot, setSnapshot] = useState<GovernanceSnapshot | null>(null);
   const [roads, setRoads] = useState<RoadItemSummary[]>([]);
   const [capabilities, setCapabilities] = useState<CapabilityCoverage[]>([]);
-  const [personas, setPersonas] = useState<PersonaCoverage[]>([]);
+  const [userTypes, setUserTypes] = useState<UserTypeCoverage[]>([]);
   const [integrity, setIntegrity] = useState<IntegrityReport | null>(null);
 
   // Kanban filter
@@ -47,7 +47,7 @@ export function GovernanceDashboard() {
         api.getGovernanceLatest(),
         api.getGovernanceRoads(),
         api.getCapabilityCoverage(),
-        api.getPersonaCoverage(),
+        api.getUserTypeCoverage(),
         api.getGovernanceIntegrity(),
       ]);
 
@@ -55,7 +55,7 @@ export function GovernanceDashboard() {
         snapshotResult,
         roadsResult,
         capsResult,
-        personasResult,
+        userTypesResult,
         integrityResult,
       ] = results;
 
@@ -76,8 +76,8 @@ export function GovernanceDashboard() {
       setCapabilities(
         capsResult.status === "fulfilled" ? capsResult.value : [],
       );
-      setPersonas(
-        personasResult.status === "fulfilled" ? personasResult.value : [],
+      setUserTypes(
+        userTypesResult.status === "fulfilled" ? userTypesResult.value : [],
       );
       setIntegrity(
         integrityResult.status === "fulfilled" ? integrityResult.value : null,
@@ -195,7 +195,7 @@ export function GovernanceDashboard() {
           integrityPercentage={integrityPercentage}
           completedRoads={completedRoads}
           totalRoads={totalRoads}
-          personaCount={personas.length}
+          userTypeCount={userTypes.length}
         />
 
         {/* ── Kanban Board ────────────────────────────────────────────── */}
@@ -216,10 +216,10 @@ export function GovernanceDashboard() {
           </DashboardSection>
         )}
 
-        {/* ── Persona Summary ─────────────────────────────────────────── */}
-        {personas.length > 0 && (
-          <DashboardSection title="Persona Coverage" icon={Users}>
-            <PersonaSummary personas={personas} />
+        {/* ── User Type Summary ─────────────────────────────────────── */}
+        {userTypes.length > 0 && (
+          <DashboardSection title="User Type Coverage" icon={Users}>
+            <UserTypeSummary userTypes={userTypes} />
           </DashboardSection>
         )}
 
@@ -306,14 +306,14 @@ function HealthSummaryCard({
   integrityPercentage,
   completedRoads,
   totalRoads,
-  personaCount,
+  userTypeCount,
 }: {
   snapshot: GovernanceSnapshot | null;
   governanceScore: number;
   integrityPercentage: number;
   completedRoads: number;
   totalRoads: number;
-  personaCount: number;
+  userTypeCount: number;
 }) {
   return (
     <div
@@ -369,8 +369,8 @@ function HealthSummaryCard({
           icon={Layers}
         />
         <StatCell
-          label="Personas"
-          value={snapshot?.stats.personas ?? personaCount}
+          label="User Types"
+          value={snapshot?.stats.userTypes ?? userTypeCount}
           icon={Users}
         />
         <StatCell
@@ -457,12 +457,12 @@ function DashboardSection({
   );
 }
 
-// ── PersonaSummary ───────────────────────────────────────────────────────────
+// ── UserTypeSummary ──────────────────────────────────────────────────────────
 
-function PersonaSummary({ personas }: { personas: PersonaCoverage[] }) {
+function UserTypeSummary({ userTypes }: { userTypes: UserTypeCoverage[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      {personas.map((p) => (
+      {userTypes.map((p) => (
         <div
           key={p.id}
           className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"

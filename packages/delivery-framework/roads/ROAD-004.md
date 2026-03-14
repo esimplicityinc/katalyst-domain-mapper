@@ -44,7 +44,7 @@ Replaces ~1,500 lines of hand-written JS validation scripts with a single, schem
 2. Each parser follows the existing `parseMethodFile()` pattern with snake_case → camelCase mapping
 3. `governance-index.ts` builder validates referential integrity across all cross-references
 4. Referential integrity report: orphaned references, missing targets, circular dependencies
-5. 6 new CLI commands: `build:governance`, `build:all`, `validate:governance`, `validate:transitions`, `coverage:capabilities`, `coverage:personas`
+5. 6 new CLI commands: `build:governance`, `build:all`, `validate:governance`, `validate:transitions`, `coverage:capabilities`, `coverage:user types`
 6. Single `governance-index.json` output baked into scanner container at build time
 7. All existing `build` and `validate` CLI commands continue working
 8. Index build completes in &lt;5s for 100 artifacts
@@ -56,7 +56,7 @@ Replaces ~1,500 lines of hand-written JS validation scripts with a single, schem
 ```
 packages/foe-field-guide-tools/src/parsers/governance/
 ├── capability.ts
-├── persona.ts
+├── user-type.ts
 ├── user-story.ts
 ├── use-case.ts
 ├── road-item.ts
@@ -87,13 +87,13 @@ Added to existing `packages/foe-field-guide-tools/src/cli.ts`:
 | `validate:governance` | Validate all frontmatter without building |
 | `validate:transitions` | Check state machine transition validity |
 | `coverage:capabilities` | Report capability coverage across road items |
-| `coverage:personas` | Report persona coverage across user stories |
+| `coverage:user types` | Report user type coverage across user stories |
 
 ### Referential Integrity Checks
 
 - Every `ROAD-XXX` reference in depends_on/blocked_by resolves
 - Every `CAP-XXX` in governance.capabilities exists
-- Every `PER-XXX` in user stories exists
+- Every `UT-XXX` in user stories exists
 - Every `CTX-xxx` in aggregates/events exists
 - Every `AGG-xxx` in domain events exists
 - Circular dependency detection in road item dependency graph
@@ -143,6 +143,6 @@ See [Parsers and Builders Plan](../plans/parsers-and-builders.md) for the full s
 ## CLI Test Results
 
 ```
-build:governance → 12 capabilities, 5 personas, 40 stories, 17 roads, 12 ADRs, 8 NFRs (78ms)
+build:governance → 12 capabilities, 5 user types, 40 stories, 17 roads, 12 ADRs, 8 NFRs (78ms)
 validate:governance → 93/93 files valid
 ```

@@ -7,7 +7,7 @@
 
 import type {
   LintContext,
-  LintPersona,
+  LintUserType,
   LintUserStory,
   LintCapability,
   LintTaxonomyNode,
@@ -21,10 +21,10 @@ import type {
 
 // ── Builders ──────────────────────────────────────────────────────────────────
 
-export function makePersona(overrides: Partial<LintPersona> = {}): LintPersona {
+export function makeUserType(overrides: Partial<LintUserType> = {}): LintUserType {
   return {
-    id: "PER-001",
-    name: "Test Persona",
+    id: "UT-001",
+    name: "Test User Type",
     type: "human",
     typicalCapabilities: ["CAP-001"],
     ...overrides,
@@ -35,7 +35,7 @@ export function makeUserStory(overrides: Partial<LintUserStory> = {}): LintUserS
   return {
     id: "US-001",
     title: "Test User Story",
-    persona: "PER-001",
+    userType: "UT-001",
     capabilities: ["CAP-001"],
     status: "approved",
     ...overrides,
@@ -143,7 +143,7 @@ export function makeWorkflow(overrides: Partial<LintWorkflow> = {}): LintWorkflo
 export function emptyContext(overrides: Partial<LintContext> = {}): LintContext {
   return {
     domainModelId: "model-001",
-    personas: [],
+    userTypes: [],
     userStories: [],
     capabilities: [],
     boundedContexts: [],
@@ -160,7 +160,7 @@ export function emptyContext(overrides: Partial<LintContext> = {}): LintContext 
 // ── Full valid context (no findings expected from referential/coverage rules) ─
 
 export function validContext(): LintContext {
-  const persona = makePersona();
+  const userType = makeUserType();
   const capability = makeCapability();
   const story = makeUserStory();
   const taxNode = makeTaxonomyNode();
@@ -186,7 +186,7 @@ export function validContext(): LintContext {
 
   return {
     domainModelId: "model-001",
-    personas: [persona],
+    userTypes: [userType],
     userStories: [story],
     capabilities: [capability],
     boundedContexts: [ctxA, ctxB],

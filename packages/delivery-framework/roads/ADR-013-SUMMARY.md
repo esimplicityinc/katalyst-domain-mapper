@@ -33,7 +33,7 @@ Reorganize documentation into **7 lifecycle stages**:
 
 ```
 🎯 Strategy        → Roadmap, System Taxonomy
-👥 Discovery       → Personas, User Stories
+👥 Discovery       → User Types, User Stories
 📋 Planning        → Implementation Plans, System Capabilities
 🏗️ Design          → Domain-Driven Design, Architecture Decisions
 🧪 Testing         → BDD Tests, Non-Functional Requirements
@@ -61,7 +61,7 @@ Group by bounded contexts (Governance, Scanning, Visualization, API)
 - **Rejected**: Too technical for non-technical leaders
 
 ### 2. Role-Based Navigation ❌
-Group by persona (Team Lead, Platform Engineer, AI Agent, etc.)
+Group by user type (Team Lead, Platform Engineer, AI Agent, etc.)
 - **Rejected**: Content duplication, users wear multiple hats
 
 ### 3. Alphabetical Navigation ❌
@@ -89,7 +89,7 @@ Each stage answers a key question:
 | Stage | Question | Artifacts |
 |-------|----------|-----------|
 | **Strategy** | What should we build? Where are we going? | Roadmap, System Taxonomy |
-| **Discovery** | Who are we building for? What do they need? | Personas, User Stories |
+| **Discovery** | Who are we building for? What do they need? | User Types, User Stories |
 | **Planning** | How will we build it? What's required? | Plans, Capabilities |
 | **Design** | What's the architecture? How is it structured? | DDD Models, ADRs |
 | **Testing** | How do we validate? What are quality thresholds? | BDD Tests, NFRs |

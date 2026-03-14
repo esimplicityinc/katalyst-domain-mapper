@@ -21,7 +21,7 @@ export function createDomainModelRoutes(deps: {
   manageWorkflows: ManageWorkflows;
 }) {
   return (
-    new Elysia({ prefix: "/domain-models" })
+    new Elysia({ prefix: "/taxonomy/domain-models" })
 
       // ── Domain Models CRUD ────────────────────────────────────────────────
 

@@ -1,20 +1,20 @@
 import Elysia, { t } from "elysia";
-import type { GovernanceRepository, StoredCapability } from "../../../ports/GovernanceRepository.js";
+import type { TaxonomyRepository, StoredCapability } from "../../../ports/TaxonomyRepository.js";
 
 type CreateCapabilityBody = Omit<StoredCapability, 'roadCount' | 'storyCount'>;
 type UpdateCapabilityBody = Partial<Omit<StoredCapability, 'id' | 'roadCount' | 'storyCount'>>;
 
 export function createGovernanceCapabilityRoutes(deps: {
-  governanceRepo: GovernanceRepository;
+  governanceRepo: TaxonomyRepository;
 }) {
   return (
-    new Elysia({ prefix: "/governance/capabilities" })
+    new Elysia({ prefix: "/taxonomy/capabilities" })
 
       // GET / — List all capabilities from latest snapshot
       .get(
         "/",
         async () => {
-          return deps.governanceRepo.listCapabilities();
+          return deps.governanceRepo.listGovernanceCapabilities();
         },
         {
           detail: {
@@ -28,7 +28,7 @@ export function createGovernanceCapabilityRoutes(deps: {
       .get(
         "/:id",
         async ({ params, set }) => {
-          const cap = await deps.governanceRepo.getCapabilityById(params.id);
+          const cap = await deps.governanceRepo.getGovernanceCapabilityById(params.id);
           if (!cap) {
             set.status = 404;
             return { error: `Capability not found: ${params.id}` };
@@ -49,7 +49,7 @@ export function createGovernanceCapabilityRoutes(deps: {
         "/",
         async ({ body, set }) => {
           try {
-            const cap = await deps.governanceRepo.createCapability(body as CreateCapabilityBody);
+            const cap = await deps.governanceRepo.createGovernanceCapability(body as CreateCapabilityBody);
             set.status = 201;
             return cap;
           } catch (err: unknown) {
@@ -69,7 +69,7 @@ export function createGovernanceCapabilityRoutes(deps: {
       .put(
         "/:id",
         async ({ params, body, set }) => {
-          const cap = await deps.governanceRepo.updateCapability(params.id, body as UpdateCapabilityBody);
+          const cap = await deps.governanceRepo.updateGovernanceCapability(params.id, body as UpdateCapabilityBody);
           if (!cap) {
             set.status = 404;
             return { error: `Capability not found: ${params.id}` };
@@ -89,7 +89,7 @@ export function createGovernanceCapabilityRoutes(deps: {
       .delete(
         "/:id",
         async ({ params, set }) => {
-          const deleted = await deps.governanceRepo.deleteCapability(params.id);
+          const deleted = await deps.governanceRepo.deleteGovernanceCapability(params.id);
           if (!deleted) {
             set.status = 404;
             return { error: `Capability not found: ${params.id}` };

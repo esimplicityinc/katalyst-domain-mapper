@@ -1,12 +1,12 @@
 ---
 id: ROAD-046
-title: "Taxonomy & Persona Management UI"
+title: "Taxonomy & User Type Management UI"
 status: complete
 priority: High
 phase: 2
 created: 2026-02-19
 completed: 2026-02-19
-tags: [taxonomy, persona, user-stories, crud, ui, react, api, db, ai-agent]
+tags: [taxonomy, user-type, user-stories, crud, ui, react, api, db, ai-agent]
 capabilities:
   - CAP-025
   - CAP-019
@@ -40,7 +40,7 @@ governance:
     code-writer: "approved"
 ---
 
-# ROAD-046: Taxonomy & Persona Management UI
+# ROAD-046: Taxonomy & User Type Management UI
 
 **Status**: ✅ Complete  
 **Priority**: High  
@@ -50,11 +50,11 @@ governance:
 
 ## Description
 
-Full CRUD management UI for capabilities, personas, and user stories, with AI-assisted discovery agents embedded as chat tabs. New Architecture and Personas pages under the Design section. Database migration 0009 adds `governance_personas` and `governance_user_stories` tables. Nine new API routes. Five large React components. Two new AI agents (`taxonomy-architect`, `persona-storyteller`) that discover artifacts conversationally and auto-persist them to the API.
+Full CRUD management UI for capabilities, user types, and user stories, with AI-assisted discovery agents embedded as chat tabs. New Architecture and User Types pages under the Design section. Database migration 0009 adds `governance_user_types` and `governance_user_stories` tables. Nine new API routes. Five large React components. Two new AI agents (`taxonomy-architect`, `user-type-storyteller`) that discover artifacts conversationally and auto-persist them to the API.
 
 ## Value Proposition
 
-- **Management UI**: No more hand-editing markdown files for capabilities, personas, and stories
+- **Management UI**: No more hand-editing markdown files for capabilities, user types, and stories
 - **AI-assisted discovery**: Guided conversation surfaces artifacts that manual creation misses
 - **Real-time persistence**: Discovered artifacts appear in the landscape immediately
 - **Kanban workflow**: User story board makes story lifecycle visible at a glance
@@ -62,13 +62,13 @@ Full CRUD management UI for capabilities, personas, and user stories, with AI-as
 ## User Stories
 
 - **US-076** — Manage Capabilities via UI (CapabilityTreeView with 3-level hierarchy CRUD)
-- **US-077** — Manage Personas and User Stories via UI (PersonaListView + UserStoryBoardView kanban)
-- **US-078** — Use AI Chat for Taxonomy and Persona Discovery (TaxonomyChat + PersonaChat)
+- **US-077** — Manage User Types and User Stories via UI (UserTypeListView + UserStoryBoardView kanban)
+- **US-078** — Use AI Chat for Taxonomy and User Type Discovery (TaxonomyChat + UserTypeChat)
 
 ## Capabilities
 
-- **Implements**: CAP-025 (Taxonomy & Persona Management UI)
-- **Extends**: CAP-019 (Taxonomy CRUD API — new capabilities, personas, user-stories CRUD)
+- **Implements**: CAP-025 (Taxonomy & User Type Management UI)
+- **Extends**: CAP-019 (Taxonomy CRUD API — new capabilities, user-types, user-stories CRUD)
 
 ## Technical Design
 
@@ -76,31 +76,31 @@ Full CRUD management UI for capabilities, personas, and user stories, with AI-as
 
 ```
 DB: migration 0009
-  governance_personas table
+  governance_user_types table
   governance_user_stories table
   governance_capabilities expanded (parent, description, category, dependsOn)
 
 API Routes:
   GET/POST/PUT/DELETE /api/v1/governance/capabilities
-  GET/POST/PUT/DELETE /api/v1/governance/personas
+  GET/POST/PUT/DELETE /api/v1/governance/user-types
   GET/POST/PUT/DELETE /api/v1/governance/user-stories
 
 Frontend Pages:
   ArchitecturePage (/design/architecture/*)
     └── Systems | Capabilities | Chat tabs
-  PersonasPage (/design/personas/*)
-    └── Personas | Stories | Chat tabs
+  UserTypesPage (/design/user-types/*)
+    └── User Types | Stories | Chat tabs
 
 Frontend Components:
   CapabilityTreeView.tsx (813 lines)
-  PersonaListView.tsx (798 lines)
+  UserTypeListView.tsx (798 lines)
   UserStoryBoardView.tsx (739 lines)
   TaxonomyChat.tsx (698 lines)
-  PersonaChat.tsx (697 lines)
+  UserTypeChat.tsx (697 lines)
 
 AI Agents:
   .opencode/agents/taxonomy-architect.md
-  .opencode/agents/persona-storyteller.md
+  .opencode/agents/user-type-storyteller.md
 
 Ports/Adapters:
   GovernanceRepository (interface) — +16 new CRUD methods
@@ -109,22 +109,22 @@ Ports/Adapters:
 
 ### Implementation Tasks
 
-- [x] DB migration 0009: `governance_personas`, `governance_user_stories`, expanded capabilities columns
-- [x] `GovernanceRepository` port: +16 CRUD methods for capabilities, personas, user stories
+- [x] DB migration 0009: `governance_user_types`, `governance_user_stories`, expanded capabilities columns
+- [x] `GovernanceRepository` port: +16 CRUD methods for capabilities, user types, user stories
 - [x] `GovernanceRepositorySQLite` adapter: full implementation (+375 lines)
 - [x] `governance-capabilities.ts` HTTP route (GET/POST/PUT/DELETE)
-- [x] `governance-personas.ts` HTTP route (GET/POST/PUT/DELETE)
+- [x] `governance-user-types.ts` HTTP route (GET/POST/PUT/DELETE)
 - [x] `governance-user-stories.ts` HTTP route (GET/POST/PUT/DELETE)
 - [x] `ArchitecturePage.tsx` — tabbed page with Systems, Capabilities, Chat tabs
-- [x] `PersonasPage.tsx` — tabbed page with Personas, Stories, Chat tabs
+- [x] `UserTypesPage.tsx` — tabbed page with User Types, Stories, Chat tabs
 - [x] `ArchitectureCanvas.tsx` — systems diagram view (740 lines)
 - [x] `CapabilityTreeView.tsx` — 3-level hierarchy CRUD tree (813 lines)
 - [x] `TaxonomyChat.tsx` — taxonomy-architect agent chat interface (698 lines)
-- [x] `PersonaListView.tsx` — persona card grid with CRUD (798 lines)
+- [x] `UserTypeListView.tsx` — user type card grid with CRUD (798 lines)
 - [x] `UserStoryBoardView.tsx` — kanban board by status (739 lines)
-- [x] `PersonaChat.tsx` — persona-storyteller agent chat interface (697 lines)
+- [x] `UserTypeChat.tsx` — user-type-storyteller agent chat interface (697 lines)
 - [x] `taxonomy-architect.md` AI agent (261 lines)
-- [x] `persona-storyteller.md` AI agent (307 lines)
+- [x] `user-type-storyteller.md` AI agent (307 lines)
 
 ### Key Files Added/Changed (37 total)
 
@@ -132,18 +132,18 @@ Ports/Adapters:
 - `packages/intelligence/api/ports/GovernanceRepository.ts` (+97 lines, 16 new methods)
 - `packages/intelligence/api/adapters/sqlite/GovernanceRepositorySQLite.ts` (+375 lines)
 - `packages/intelligence/api/http/routes/v1/governance-capabilities.ts` (108 lines)
-- `packages/intelligence/api/http/routes/v1/governance-personas.ts` (108 lines)
+- `packages/intelligence/api/http/routes/v1/governance-user-types.ts` (108 lines)
 - `packages/intelligence/api/http/routes/v1/governance-user-stories.ts` (120 lines)
 - `packages/intelligence/web/src/pages/ArchitecturePage.tsx` (+346 lines)
-- `packages/intelligence/web/src/pages/PersonasPage.tsx` (160 lines)
+- `packages/intelligence/web/src/pages/UserTypesPage.tsx` (160 lines)
 - `packages/intelligence/web/src/components/architecture/ArchitectureCanvas.tsx` (740 lines)
 - `packages/intelligence/web/src/components/taxonomy/CapabilityTreeView.tsx` (813 lines)
 - `packages/intelligence/web/src/components/taxonomy/TaxonomyChat.tsx` (698 lines)
-- `packages/intelligence/web/src/components/personas/PersonaListView.tsx` (798 lines)
-- `packages/intelligence/web/src/components/personas/UserStoryBoardView.tsx` (739 lines)
-- `packages/intelligence/web/src/components/personas/PersonaChat.tsx` (697 lines)
+- `packages/intelligence/web/src/components/user-types/UserTypeListView.tsx` (798 lines)
+- `packages/intelligence/web/src/components/user-types/UserStoryBoardView.tsx` (739 lines)
+- `packages/intelligence/web/src/components/user-types/UserTypeChat.tsx` (697 lines)
 - `.opencode/agents/taxonomy-architect.md` (261 lines)
-- `.opencode/agents/persona-storyteller.md` (307 lines)
+- `.opencode/agents/user-type-storyteller.md` (307 lines)
 
 ## Acceptance Criteria
 
@@ -154,14 +154,14 @@ From US-076:
 4. ✅ Changes immediately persisted to API
 
 From US-077:
-1. ✅ Personas page shows cards with archetype, goals, behaviors, story count
-2. ✅ Full CRUD for personas
+1. ✅ User Types page shows cards with archetype, goals, behaviors, story count
+2. ✅ Full CRUD for user types
 3. ✅ Stories tab shows kanban board by status (draft → deprecated)
-4. ✅ Full CRUD for user stories with persona linking + capability multi-select
+4. ✅ Full CRUD for user stories with user type linking + capability multi-select
 
 From US-078:
 1. ✅ Architecture Chat tab opens taxonomy-architect agent
-2. ✅ Personas Chat tab opens persona-storyteller agent
+2. ✅ User Types Chat tab opens user-type-storyteller agent
 3. ✅ Both agents read live state before responding
 4. ✅ Artifacts auto-persist during conversation
 5. ✅ New artifacts appear in UI without reload
@@ -185,9 +185,9 @@ From US-078:
 
 ### Manual
 - Capability tree: create/edit/delete at each hierarchy level; parent-child relationships preserved
-- Persona kanban: drag story between status columns; count badge updates
+- User type kanban: drag story between status columns; count badge updates
 - AI chat: taxonomy-architect creates a capability → appears in tree without reload
-- AI chat: persona-storyteller creates a persona → appears in persona card grid without reload
+- AI chat: user-type-storyteller creates a user type → appears in user type card grid without reload
 
 ## Files Changed
 
@@ -195,7 +195,7 @@ See **Key Files Added/Changed** section above. 37 files total across drizzle, ap
 
 ## Success Metrics
 
-- ✅ Full CRUD operational for capabilities, personas, and user stories
+- ✅ Full CRUD operational for capabilities, user types, and user stories
 - ✅ Both AI agents auto-persist discovered artifacts via API
 - ✅ Kanban board reflects live story status changes
 - ✅ TypeScript compiles with zero errors across all packages
@@ -203,4 +203,4 @@ See **Key Files Added/Changed** section above. 37 files total across drizzle, ap
 
 ## Git Commits
 
-- `3c17425` — feat(taxonomy): add Architecture and Personas & Stories management UI
+- `3c17425` — feat(taxonomy): add Architecture and User Types & Stories management UI

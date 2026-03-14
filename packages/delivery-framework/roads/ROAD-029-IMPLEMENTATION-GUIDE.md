@@ -199,20 +199,20 @@ const sidebars: SidebarsConfig = {
   ],
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 👥 DISCOVERY: Personas, User Stories
+  // 👥 DISCOVERY: User Types, User Stories
   // ──────────────────────────────────────────────────────────────────────────
   discoverySidebar: [
     {
       type: 'category',
-      label: 'Personas',
+      label: 'User Types',
       collapsed: false,
       items: [
-        { type: 'doc', id: 'personas/index', label: 'Personas Overview' },
-        { type: 'doc', id: 'personas/PER-001', label: 'PER-001: Engineering Team Lead' },
-        { type: 'doc', id: 'personas/PER-002', label: 'PER-002: Platform Engineer' },
-        { type: 'doc', id: 'personas/PER-003', label: 'PER-003: AI Agent' },
-        { type: 'doc', id: 'personas/PER-004', label: 'PER-004: Documentation Author' },
-        { type: 'doc', id: 'personas/PER-005', label: 'PER-005: Framework Adopter' },
+        { type: 'doc', id: 'user-types/index', label: 'User Types Overview' },
+        { type: 'doc', id: 'user-types/UT-001', label: 'UT-001: Engineering Team Lead' },
+        { type: 'doc', id: 'user-types/UT-002', label: 'UT-002: Platform Engineer' },
+        { type: 'doc', id: 'user-types/UT-003', label: 'UT-003: AI Agent' },
+        { type: 'doc', id: 'user-types/UT-004', label: 'UT-004: Documentation Author' },
+        { type: 'doc', id: 'user-types/UT-005', label: 'UT-005: Framework Adopter' },
       ],
     },
     {
@@ -478,7 +478,7 @@ docs: {
     'agents/**/*.md', 'agents/**/*.mdx',
     'adr/**/*.md', 'adr/**/*.mdx',
     'nfr/**/*.md', 'nfr/**/*.mdx',
-    'personas/**/*.md', 'personas/**/*.mdx',
+    'user-types/**/*.md', 'user-types/**/*.mdx',
     'capabilities/**/*.md', 'capabilities/**/*.mdx',
     'user-stories/**/*.md', 'user-stories/**/*.mdx',
     'taxonomy/**/*.md', 'taxonomy/**/*.mdx',  // ADD THIS LINE
@@ -508,7 +508,7 @@ items: [
     label: '👥 Discovery',
     position: 'left',
     items: [
-      { to: '/docs/personas', label: 'Personas' },
+      { to: '/docs/user types', label: 'User Types' },
       { to: '/docs/user-stories', label: 'User Stories' },
     ],
   },
@@ -618,7 +618,7 @@ The Katalyst Delivery Framework documentation has been reorganized into **lifecy
 - Planning
 - BDD
 - Agents
-- Personas
+- User Types
 - Capabilities
 - Stories
 - Roadmap
@@ -628,7 +628,7 @@ The Katalyst Delivery Framework documentation has been reorganized into **lifecy
 
 ### After: Lifecycle Navigation (7 stages)
 - 🎯 **Strategy** → Roadmap, System Taxonomy
-- 👥 **Discovery** → Personas, User Stories
+- 👥 **Discovery** → User Types, User Stories
 - 📋 **Planning** → Implementation Plans, System Capabilities
 - 🏗️ **Design** → Domain-Driven Design, Architecture Decisions
 - 🧪 **Testing** → BDD Tests, Non-Functional Requirements
@@ -643,7 +643,7 @@ The Katalyst Delivery Framework documentation has been reorganized into **lifecy
 | Planning | 📋 Planning → Implementation Plans |
 | BDD | 🧪 Testing → BDD Tests |
 | Agents | 🤖 Automation → AI Agents |
-| Personas | 👥 Discovery → Personas |
+| User Types | 👥 Discovery → User Types |
 | Capabilities | 📋 Planning → System Capabilities |
 | Stories | 👥 Discovery → User Stories |
 | Roadmap | 🎯 Strategy → Roadmap |
@@ -676,7 +676,7 @@ The new lifecycle-oriented structure:
 
 All old URLs redirect to new locations automatically. Update your bookmarks to:
 - `/docs/strategy` - Roadmap & Taxonomy
-- `/docs/discovery` - Personas & Stories
+- `/docs/discovery` - User Types & Stories
 - `/docs/planning` - Plans & Capabilities
 - `/docs/design` - DDD & ADRs
 - `/docs/testing` - BDD & NFRs
@@ -705,7 +705,7 @@ plugins: [
         { from: '/docs/adr', to: '/docs/design/adr' },
         { from: '/docs/nfr', to: '/docs/testing/nfr' },
         { from: '/docs/agents', to: '/docs/automation/agents' },
-        { from: '/docs/personas', to: '/docs/discovery/personas' },
+        { from: '/docs/user types', to: '/docs/discovery/user types' },
         { from: '/docs/user-stories', to: '/docs/discovery/user-stories' },
         { from: '/docs/capabilities', to: '/docs/planning/capabilities' },
         { from: '/docs/plans', to: '/docs/planning/plans' },
@@ -737,7 +737,7 @@ Welcome to the Katalyst Delivery Framework - governance-driven delivery with DDD
 Documentation is now organized by **software delivery lifecycle**:
 
 - **🎯 Strategy** - Plan what to build (Roadmap, System Taxonomy)
-- **👥 Discovery** - Understand who you're building for (Personas, User Stories)
+- **👥 Discovery** - Understand who you're building for (User Types, User Stories)
 - **📋 Planning** - Plan how to build it (Implementation Plans, Capabilities)
 - **🏗️ Design** - Design the architecture (DDD, ADRs)
 - **🧪 Testing** - Validate quality (BDD Tests, NFRs)

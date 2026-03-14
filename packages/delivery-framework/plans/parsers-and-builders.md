@@ -55,12 +55,12 @@ export async function parseCapabilityFile(filePath: string): Promise<Capability>
 }
 ```
 
-### `packages/foe-field-guide-tools/src/parsers/persona.ts`
+### `packages/foe-field-guide-tools/src/parsers/user-type.ts`
 
 Same pattern. Key mapping from snake_case frontmatter to camelCase:
 - `typical_capabilities` → `typicalCapabilities`
 - `related_stories` → `relatedStories`
-- `related_personas` → `relatedPersonas`
+- `related_user_types` → `relatedUserTypes`
 - `pain_points` → `painPoints`
 - `technical_profile.skill_level` → `technicalProfile.skillLevel`
 - `technical_profile.integration_type` → `technicalProfile.integrationType`
@@ -159,7 +159,7 @@ This is the core of Phase 3. It:
 import { glob } from 'glob';
 import { GovernanceIndex } from '@foe/schemas/governance';
 import { parseCapabilityFile } from '../parsers/capability.js';
-import { parsePersonaFile } from '../parsers/persona.js';
+import { parseUserTypeFile } from '../parsers/user-type.js';
 // ... all other parsers
 
 import {
@@ -170,7 +170,7 @@ import {
 export async function buildGovernanceIndex(): Promise<GovernanceIndex> {
   // 1. Parse all artifacts
   const capabilities = await parseAll('capabilities/*.md', parseCapabilityFile);
-  const personas = await parseAll('personas/*.md', parsePersonaFile);
+  const userTypes = await parseAll('user-types/*.md', parseUserTypeFile);
   const userStories = await parseAll('user-stories/*.md', parseUserStoryFile);
   const useCases = await parseAll('use-cases/*.md', parseUseCaseFile);
   const roadItems = await parseAll('roads/ROAD-*.md', parseRoadItemFile);
@@ -185,15 +185,15 @@ export async function buildGovernanceIndex(): Promise<GovernanceIndex> {
   const domainEvents = await parseAll('ddd/events/*.md', parseDomainEventFile);
 
   // 2. Build reverse indices
-  const byCapability = buildCapabilityIndex(capabilities, personas, userStories, roadItems);
-  const byPersona = buildPersonaIndex(personas, userStories);
+  const byCapability = buildCapabilityIndex(capabilities, userTypes, userStories, roadItems);
+  const byUserType = buildUserTypeIndex(userTypes, userStories);
   const byRoad = buildRoadIndex(roadItems, adrs, changeEntries);
   const byContext = buildContextIndex(boundedContexts, aggregates, domainEvents, valueObjects);
   const byAggregate = buildAggregateIndex(aggregates, valueObjects, domainEvents);
 
   // 3. Validate referential integrity
   const integrityErrors = validateReferentialIntegrity({
-    capabilities, personas, userStories, useCases, roadItems,
+    capabilities, userTypes, userStories, useCases, roadItems,
     adrs, nfrs, changeEntries, boundedContexts, aggregates,
     valueObjects, domainEvents,
   });
@@ -204,10 +204,10 @@ export async function buildGovernanceIndex(): Promise<GovernanceIndex> {
   return {
     version: '1.0.0',
     generated: new Date().toISOString(),
-    capabilities, personas, userStories, useCases,
+    capabilities, userTypes, userStories, useCases,
     roadItems, adrs, nfrs, changeEntries,
     boundedContexts, aggregates, valueObjects, domainEvents,
-    byCapability, byPersona, byRoad, byContext, byAggregate,
+    byCapability, byUserType, byRoad, byContext, byAggregate,
     stats,
   };
 }
@@ -219,24 +219,24 @@ export async function buildGovernanceIndex(): Promise<GovernanceIndex> {
 function validateReferentialIntegrity(artifacts: AllArtifacts): string[] {
   const errors: string[] = [];
 
-  // Persona → Capability references
-  for (const [id, persona] of Object.entries(artifacts.personas)) {
-    for (const capId of persona.typicalCapabilities) {
+  // User Type → Capability references
+  for (const [id, userType] of Object.entries(artifacts.userTypes)) {
+    for (const capId of userType.typicalCapabilities) {
       if (!artifacts.capabilities[capId]) {
-        errors.push(`Persona ${id} references non-existent capability ${capId}`);
+        errors.push(`User Type ${id} references non-existent capability ${capId}`);
       }
     }
-    for (const storyId of persona.relatedStories) {
+    for (const storyId of userType.relatedStories) {
       if (!artifacts.userStories[storyId]) {
-        errors.push(`Persona ${id} references non-existent user story ${storyId}`);
+        errors.push(`User Type ${id} references non-existent user story ${storyId}`);
       }
     }
   }
 
-  // User Story → Persona/Capability references
+  // User Story → User Type/Capability references
   for (const [id, story] of Object.entries(artifacts.userStories)) {
-    if (!artifacts.personas[story.persona]) {
-      errors.push(`User story ${id} references non-existent persona ${story.persona}`);
+    if (!artifacts.userTypes[story.userType]) {
+      errors.push(`User story ${id} references non-existent user type ${story.userType}`);
     }
     for (const capId of story.capabilities) {
       if (!artifacts.capabilities[capId]) {
@@ -310,7 +310,7 @@ export const GOVERNANCE_ROOT = process.env.FOE_GOVERNANCE_ROOT
 
 // Individual artifact directories (relative to GOVERNANCE_ROOT)
 export const CAPABILITIES_DIR = join(GOVERNANCE_ROOT, 'capabilities');
-export const PERSONAS_DIR = join(GOVERNANCE_ROOT, 'personas');
+export const USER_TYPES_DIR = join(GOVERNANCE_ROOT, 'user-types');
 export const USER_STORIES_DIR = join(GOVERNANCE_ROOT, 'user-stories');
 export const USE_CASES_DIR = join(GOVERNANCE_ROOT, 'use-cases');
 export const ROADS_DIR = join(GOVERNANCE_ROOT, 'roads');
@@ -332,7 +332,7 @@ export { parseMethodFile } from './method.js';
 export { parseObservationFile } from './observation.js';
 // NEW
 export { parseCapabilityFile } from './capability.js';
-export { parsePersonaFile } from './persona.js';
+export { parseUserTypeFile } from './user-type.js';
 export { parseUserStoryFile } from './user-story.js';
 export { parseUseCaseFile } from './use-case.js';
 export { parseRoadItemFile } from './road-item.js';
@@ -371,7 +371,7 @@ program
     const kb = (json.length / 1024).toFixed(1);
     console.log(chalk.green('✓ Built governance index'));
     console.log(`  - ${index.stats.totalCapabilities} capabilities`);
-    console.log(`  - ${index.stats.totalPersonas} personas`);
+    console.log(`  - ${index.stats.totalUserTypes} user types`);
     console.log(`  - ${index.stats.totalRoadItems} road items`);
     console.log(`  - ${index.stats.totalContexts} bounded contexts`);
     console.log(`  - ${index.stats.totalAggregates} aggregates`);
@@ -416,13 +416,13 @@ program
     // Builds governance index, computes coverage per capability
   });
 
-// coverage:personas — replaces prima's persona-coverage-report.js
+// coverage:user-types — replaces prima's user-type-coverage-report.js
 program
-  .command('coverage:personas')
-  .description('Report persona-to-story coverage')
+  .command('coverage:user-types')
+  .description('Report user-type-to-story coverage')
   .option('--format <format>', 'Output format: human or json', 'human')
   .action(async (opts) => {
-    // Builds governance index, computes coverage per persona
+    // Builds governance index, computes coverage per user type
   });
 ```
 
@@ -463,7 +463,7 @@ This file is:
 
 Create `src/__fixtures__/governance/` with minimal markdown files:
 - `capabilities/CAP-001.md`
-- `personas/PER-001.md`
+- `user-types/UT-001.md`
 - `user-stories/US-001.md`
 - `roads/ROAD-001.md`
 - `adr/ADR-001.md`

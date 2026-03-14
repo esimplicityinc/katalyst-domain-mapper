@@ -40,6 +40,8 @@ export const FLAG_KEYS = {
   GOVERNANCE_V2: "governance-v2",
   /** Maximum number of concurrent scan jobs allowed */
   MAX_CONCURRENT_SCANS: "max-concurrent-scans",
+  /** Enables v2 zoned landscape layout with trunk routing */
+  LANDSCAPE_LAYOUT_V2: "landscape-layout-v2",
 } as const;
 
 /** Union type of all valid flag key values */
@@ -53,6 +55,7 @@ export interface FlagTypes {
   [FLAG_KEYS.AI_INSIGHTS_ENABLED]: boolean;
   [FLAG_KEYS.GOVERNANCE_V2]: boolean;
   [FLAG_KEYS.MAX_CONCURRENT_SCANS]: number;
+  [FLAG_KEYS.LANDSCAPE_LAYOUT_V2]: boolean;
 }
 
 // ── Environment variable override prefix ─────────────────────────────────────

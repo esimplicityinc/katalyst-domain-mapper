@@ -7,13 +7,11 @@ import type { ScanJobRepository } from "../ports/ScanJobRepository.js";
 import type { ScanRunner } from "../ports/ScanRunner.js";
 import type { ScanOrchestrator } from "../ports/ScanOrchestrator.js";
 import type { ChatOrchestrator } from "../ports/ChatOrchestrator.js";
-import type { GovernanceRepository } from "../ports/GovernanceRepository.js";
 import type { TaxonomyRepository } from "../ports/TaxonomyRepository.js";
 import { StructuredLogger } from "../observability/logging.js";
 import { createDatabase, type DrizzleDB } from "../db/client.js";
 import { ReportRepositorySQLite } from "../adapters/sqlite/ReportRepositorySQLite.js";
 import { ScanJobRepositorySQLite } from "../adapters/sqlite/ScanJobRepositorySQLite.js";
-import { GovernanceRepositorySQLite } from "../adapters/sqlite/GovernanceRepositorySQLite.js";
 import { TaxonomyRepositorySQLite } from "../adapters/sqlite/TaxonomyRepositorySQLite.js";
 import { DockerScanRunner } from "../adapters/docker/DockerScanRunner.js";
 import {
@@ -33,8 +31,6 @@ import { GetGovernanceTrend } from "../usecases/governance/GetGovernanceTrend.js
 import { ValidateTransition } from "../usecases/governance/ValidateTransition.js";
 import { IngestTaxonomySnapshot } from "../usecases/taxonomy/IngestTaxonomySnapshot.js";
 import { QueryTaxonomyState } from "../usecases/taxonomy/QueryTaxonomyState.js";
-import type { DomainModelRepository } from "../ports/DomainModelRepository.js";
-import { DomainModelRepositorySQLite } from "../adapters/sqlite/DomainModelRepositorySQLite.js";
 import { CreateDomainModel } from "../usecases/domain-model/CreateDomainModel.js";
 import { UpdateDomainModel } from "../usecases/domain-model/UpdateDomainModel.js";
 import { GetDomainModel } from "../usecases/domain-model/GetDomainModel.js";
@@ -62,7 +58,7 @@ export interface Container {
   scanOrchestrator: ScanOrchestrator;
   /** Feature-flag-driven chat orchestrator (OpenCode or LangGraph) */
   chatOrchestrator: ChatOrchestrator;
-  governanceRepo: GovernanceRepository;
+  governanceRepo: TaxonomyRepository;
   taxonomyRepo: TaxonomyRepository;
   ingestReport: IngestReport;
   getReport: GetReport;
@@ -77,7 +73,7 @@ export interface Container {
   validateTransition: ValidateTransition;
   ingestTaxonomySnapshot: IngestTaxonomySnapshot;
   queryTaxonomyState: QueryTaxonomyState;
-  domainModelRepo: DomainModelRepository;
+  domainModelRepo: TaxonomyRepository;
   createDomainModel: CreateDomainModel;
   updateDomainModel: UpdateDomainModel;
   getDomainModel: GetDomainModel;
@@ -147,7 +143,6 @@ export async function createContainer(config: AppConfig): Promise<Container> {
   // Repositories (adapters)
   const reportRepo = new ReportRepositorySQLite(db);
   const scanJobRepo = new ScanJobRepositorySQLite(db);
-  const governanceRepo = new GovernanceRepositorySQLite(db);
   const taxonomyRepo = new TaxonomyRepositorySQLite(db);
 
   // Scan runner — uses whichever LLM key is active
@@ -172,12 +167,12 @@ export async function createContainer(config: AppConfig): Promise<Container> {
   );
   const getScanStatus = new GetScanStatus(scanJobRepo);
   const ingestGovernanceSnapshot = new IngestGovernanceSnapshot(
-    governanceRepo,
+    taxonomyRepo,
     logger.child({ usecase: "ingest-governance" }),
   );
-  const queryGovernanceState = new QueryGovernanceState(governanceRepo);
-  const getCapabilityCoverage = new GetCapabilityCoverage(governanceRepo);
-  const getGovernanceTrend = new GetGovernanceTrend(governanceRepo);
+  const queryGovernanceState = new QueryGovernanceState(taxonomyRepo);
+  const getCapabilityCoverage = new GetCapabilityCoverage(taxonomyRepo);
+  const getGovernanceTrend = new GetGovernanceTrend(taxonomyRepo);
   const validateTransitionUseCase = new ValidateTransition();
   const ingestTaxonomySnapshot = new IngestTaxonomySnapshot(
     taxonomyRepo,
@@ -185,18 +180,17 @@ export async function createContainer(config: AppConfig): Promise<Container> {
   );
   const queryTaxonomyState = new QueryTaxonomyState(taxonomyRepo);
 
-  // Domain Model repository + use cases
-  const domainModelRepo = new DomainModelRepositorySQLite(db);
-  const createDomainModel = new CreateDomainModel(domainModelRepo);
-  const updateDomainModel = new UpdateDomainModel(domainModelRepo);
-  const getDomainModel = new GetDomainModel(domainModelRepo);
-  const listDomainModels = new ListDomainModels(domainModelRepo);
-  const deleteDomainModel = new DeleteDomainModel(domainModelRepo);
-  const manageBoundedContexts = new ManageBoundedContexts(domainModelRepo);
-  const manageArtifacts = new ManageArtifacts(domainModelRepo);
-  const manageGlossary = new ManageGlossary(domainModelRepo);
-  const manageWorkflows = new ManageWorkflows(domainModelRepo);
-  const lintLandscape = new LintLandscape(domainModelRepo, governanceRepo as never, taxonomyRepo as never);
+  // Domain Model use cases (all use unified taxonomyRepo)
+  const createDomainModel = new CreateDomainModel(taxonomyRepo);
+  const updateDomainModel = new UpdateDomainModel(taxonomyRepo);
+  const getDomainModel = new GetDomainModel(taxonomyRepo);
+  const listDomainModels = new ListDomainModels(taxonomyRepo);
+  const deleteDomainModel = new DeleteDomainModel(taxonomyRepo);
+  const manageBoundedContexts = new ManageBoundedContexts(taxonomyRepo);
+  const manageArtifacts = new ManageArtifacts(taxonomyRepo);
+  const manageGlossary = new ManageGlossary(taxonomyRepo);
+  const manageWorkflows = new ManageWorkflows(taxonomyRepo);
+  const lintLandscape = new LintLandscape(taxonomyRepo as never);
 
   // Feature flags — initialize OpenFeature and create adapter
   const openFeatureClient = await initServerFlags();
@@ -244,7 +238,7 @@ export async function createContainer(config: AppConfig): Promise<Container> {
     scanRunner,
     scanOrchestrator,
     chatOrchestrator,
-    governanceRepo,
+    governanceRepo: taxonomyRepo,
     taxonomyRepo,
     ingestReport,
     getReport,
@@ -259,7 +253,7 @@ export async function createContainer(config: AppConfig): Promise<Container> {
     validateTransition: validateTransitionUseCase,
     ingestTaxonomySnapshot,
     queryTaxonomyState,
-    domainModelRepo,
+    domainModelRepo: taxonomyRepo,
     createDomainModel,
     updateDomainModel,
     getDomainModel,

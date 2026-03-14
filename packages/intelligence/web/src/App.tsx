@@ -20,7 +20,7 @@ import { HistoryPage } from "./pages/lifecycle/HistoryPage";
 // Design tools under /design */}
 import { BusinessLandscapePage } from "./pages/BusinessLandscapePage";
 import { ArchitecturePage } from "./pages/ArchitecturePage";
-import { PersonasPage } from "./pages/PersonasPage";
+import { UserTypesPage } from "./pages/UserTypesPage";
 
 function App() {
   return (
@@ -43,7 +43,7 @@ function App() {
           <Route path="design/business-domain/*" element={<DomainMapperPage />} />
           <Route path="design/business-landscape/:domainModelId" element={<BusinessLandscapePage />} />
           <Route path="design/architecture/*" element={<ArchitecturePage />} />
-          <Route path="design/personas/*" element={<PersonasPage />} />
+          <Route path="design/user-types/*" element={<UserTypesPage />} />
 
           {/* Strategy tools under /strategy */}
           <Route path="strategy/foe-projects/*" element={<FOEProjectsPage />} />

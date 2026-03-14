@@ -1,14 +1,14 @@
 import type {
-  DomainModelRepository,
+  TaxonomyRepository,
   DomainModelWithArtifacts,
-} from "../../ports/DomainModelRepository.js";
+} from "../../ports/TaxonomyRepository.js";
 import { DomainModelNotFoundError } from "../../domain/domain-model/DomainModelErrors.js";
 
 export class GetDomainModel {
-  constructor(private repo: DomainModelRepository) {}
+  constructor(private repo: TaxonomyRepository) {}
 
   async execute(id: string): Promise<DomainModelWithArtifacts> {
-    const model = await this.repo.getById(id);
+    const model = await this.repo.getDomainModelById(id);
     if (!model) {
       throw new DomainModelNotFoundError(id);
     }

@@ -2,11 +2,21 @@ import { z } from "zod";
 import { SlugPattern } from "../common.js";
 
 // ── Invariant ──────────────────────────────────────────────────────────────
-export const InvariantSchema = z.object({
-  description: z.string(),
-  enforced: z.boolean().default(false),
-  enforcementLocation: z.string().optional(),
-});
+// Accepts both `rule` (web UI convention) and `description` (original schema).
+// After parsing, both fields are present and normalized.
+export const InvariantSchema = z
+  .object({
+    rule: z.string().optional(),
+    description: z.string().optional(),
+    enforced: z.boolean().default(false),
+    enforcementLocation: z.string().optional(),
+  })
+  .transform((val) => ({
+    rule: val.rule ?? val.description ?? "",
+    description: val.description ?? val.rule ?? "",
+    enforced: val.enforced,
+    enforcementLocation: val.enforcementLocation,
+  }));
 
 export type Invariant = z.infer<typeof InvariantSchema>;
 

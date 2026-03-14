@@ -1,6 +1,6 @@
 import { z } from "zod";
 import {
-  PersonaIdPattern,
+  UserTypeIdPattern,
   CapabilityIdPattern,
   UseCaseIdPattern,
 } from "../common.js";
@@ -11,7 +11,7 @@ import {
 // labels (including governance-id e.g. "US-001"), dependsOn, etc.
 export const UserStoryExtSchema = z.object({
   title: z.string(),
-  persona: PersonaIdPattern,
+  userType: UserTypeIdPattern,
   status: z.enum([
     "draft",
     "approved",

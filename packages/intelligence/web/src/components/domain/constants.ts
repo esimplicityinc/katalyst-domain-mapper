@@ -10,6 +10,7 @@ export const RELATIONSHIP_LABELS: Record<ContextRelationship["type"], string> = 
   "customer-supplier": "Customer-Supplier",
   partnership: "Partnership",
   "published-language": "Published Language",
+  "separate-ways": "Separate Ways",
 };
 
 /**

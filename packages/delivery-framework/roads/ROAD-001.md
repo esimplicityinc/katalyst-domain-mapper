@@ -73,7 +73,7 @@ Provides a unified documentation and governance platform for the Katalyst Domain
 - **Components** (16): RoadmapDashboard, RoadmapFilter, RoadmapStats, RoadmapCard, KanbanView, TimelineView, DependencyView, MobileListView, BDDViewer, BDDSummary, SearchBDD (+ CSS modules)
 - **Hooks/Types**: useRoadmapItems, useBDDData, roadmap.ts, bdd.ts
 - **Plugins**: roadmap-data-plugin.js, bdd-data-plugin.js
-- **Scripts** (6): governance-linter.js, validate-changes.js, validate-bdd-tags.js, capability-coverage-report.js, persona-coverage-report.js, validate-docs.js
+- **Scripts** (6): governance-linter.js, validate-changes.js, validate-bdd-tags.js, capability-coverage-report.js, user-type-coverage-report.js, validate-docs.js
 - **Templates** (27 doc files): roads, ADR, NFR, changes, DDD (9), BDD (4), plans, agents
 
 ### Adaptations Made

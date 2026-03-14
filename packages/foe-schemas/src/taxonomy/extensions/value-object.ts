@@ -2,11 +2,21 @@ import { z } from "zod";
 import { SlugPattern } from "../common.js";
 
 // ── Value Object Property ──────────────────────────────────────────────────
-export const ValueObjectPropertySchema = z.object({
-  name: z.string(),
-  type: z.string(),
-  constraints: z.string().optional(),
-});
+// Accepts both `constraints` (original schema) and `description` (web UI).
+// After parsing, both fields are present.
+export const ValueObjectPropertySchema = z
+  .object({
+    name: z.string(),
+    type: z.string(),
+    constraints: z.string().optional(),
+    description: z.string().optional(),
+  })
+  .transform((val) => ({
+    name: val.name,
+    type: val.type,
+    constraints: val.constraints ?? val.description,
+    description: val.description ?? val.constraints,
+  }));
 
 export type ValueObjectProperty = z.infer<typeof ValueObjectPropertySchema>;
 

@@ -161,15 +161,15 @@ Feature: Web App Lifecycle Navigation (ROAD-040 - Minimal Scope)
     And I should see the Flow Optimized Scanner page
 
   @ui @ROAD-040 @migration @redirect
-  Scenario: Legacy /mapper route redirects to Design Business Domain
+  Scenario: Legacy /mapper route redirects to Taxonomy Domain Models
     When I navigate to "/mapper"
-    Then I should be automatically redirected to "/design/business-domain"
-    And I should see the Business Domain page
+    Then I should be automatically redirected to "/taxonomy/domain-models"
+    And I should see the Domain Models page
 
   @ui @ROAD-040 @migration @redirect
-  Scenario: Legacy /governance route redirects to Strategy Governance Dashboard
+  Scenario: Legacy /governance route redirects to Taxonomy Governance Dashboard
     When I navigate to "/governance"
-    Then I should be automatically redirected to "/strategy/governance"
+    Then I should be automatically redirected to "/taxonomy/governance"
     And I should see the Governance Dashboard page
 
   # ============================================================
@@ -208,9 +208,9 @@ Feature: Web App Lifecycle Navigation (ROAD-040 - Minimal Scope)
     Given I am on the web app homepage
     When I navigate to "/strategy/foe-scanner"
     Then I should be able to upload a scan report
-    When I navigate to "/design/business-domain"
+    When I navigate to "/taxonomy/domain-models"
     Then I should be able to view domain models
-    When I navigate to "/strategy/governance"
+    When I navigate to "/taxonomy/governance"
     Then I should be able to view governance metrics
 
   @ui @ROAD-040 @content-preservation
@@ -219,7 +219,7 @@ Feature: Web App Lifecycle Navigation (ROAD-040 - Minimal Scope)
     Then the page should load successfully (with redirect)
     And I should not see a 404 error
     When I navigate directly to "http://localhost:3002/mapper"
-    Then the page should load successfully (with redirect to /design/business-domain)
+    Then the page should load successfully (with redirect to /taxonomy/domain-models)
     When I navigate directly to "http://localhost:3002/governance"
     Then the page should load successfully (with redirect)
 

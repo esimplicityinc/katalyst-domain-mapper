@@ -16,6 +16,7 @@ services:
       - AWS_REGION=${AWS_REGION:-us-east-1}
       - SCAN_POLL_INTERVAL_MS=5000
       - LOG_LEVEL=info
+      - FF_LANDSCAPE_LAYOUT_V2=${FF_LANDSCAPE_LAYOUT_V2:-false}
     volumes:
       - foe-data:/app/data
       - /var/run/docker.sock:/var/run/docker.sock  # Needed to spawn scanner containers

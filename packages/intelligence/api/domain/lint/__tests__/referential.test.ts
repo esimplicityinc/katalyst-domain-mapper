@@ -6,7 +6,7 @@ import { describe, it, expect } from "bun:test";
 import { runReferentialRules } from "../rules/referential.js";
 import {
   emptyContext,
-  makePersona,
+  makeUserType,
   makeUserStory,
   makeCapability,
   makeBoundedContext,
@@ -17,33 +17,33 @@ import {
 } from "./fixtures.js";
 
 describe("referential rules", () => {
-  describe("story-persona-exists", () => {
-    it("passes when story persona exists", () => {
+  describe("story-user-type-exists", () => {
+    it("passes when story user type exists", () => {
       const ctx = emptyContext({
-        personas: [makePersona({ id: "PER-001" })],
-        userStories: [makeUserStory({ persona: "PER-001" })],
+        userTypes: [makeUserType({ id: "UT-001" })],
+        userStories: [makeUserStory({ userType: "UT-001" })],
       });
-      const findings = runReferentialRules(ctx).filter((f) => f.rule === "story-persona-exists");
+      const findings = runReferentialRules(ctx).filter((f) => f.rule === "story-user-type-exists");
       expect(findings).toHaveLength(0);
     });
 
-    it("flags story with missing persona", () => {
+    it("flags story with missing user type", () => {
       const ctx = emptyContext({
-        personas: [],
-        userStories: [makeUserStory({ persona: "PER-GHOST" })],
+        userTypes: [],
+        userStories: [makeUserStory({ userType: "UT-GHOST" })],
       });
-      const findings = runReferentialRules(ctx).filter((f) => f.rule === "story-persona-exists");
+      const findings = runReferentialRules(ctx).filter((f) => f.rule === "story-user-type-exists");
       expect(findings).toHaveLength(1);
       expect(findings[0].severity).toBe("error");
       expect(findings[0].category).toBe("broken-reference");
     });
 
-    it("flags story with no persona at all", () => {
+    it("flags story with no user type at all", () => {
       const ctx = emptyContext({
-        personas: [makePersona()],
-        userStories: [makeUserStory({ persona: "" })],
+        userTypes: [makeUserType()],
+        userStories: [makeUserStory({ userType: "" })],
       });
-      const findings = runReferentialRules(ctx).filter((f) => f.rule === "story-persona-exists");
+      const findings = runReferentialRules(ctx).filter((f) => f.rule === "story-user-type-exists");
       expect(findings).toHaveLength(1);
     });
   });
@@ -69,13 +69,13 @@ describe("referential rules", () => {
     });
   });
 
-  describe("persona-capability-exists", () => {
-    it("flags persona with nonexistent typicalCapability", () => {
+  describe("user-type-capability-exists", () => {
+    it("flags user type with nonexistent typicalCapability", () => {
       const ctx = emptyContext({
-        personas: [makePersona({ typicalCapabilities: ["CAP-GHOST"] })],
+        userTypes: [makeUserType({ typicalCapabilities: ["CAP-GHOST"] })],
         capabilities: [],
       });
-      const findings = runReferentialRules(ctx).filter((f) => f.rule === "persona-capability-exists");
+      const findings = runReferentialRules(ctx).filter((f) => f.rule === "user-type-capability-exists");
       expect(findings).toHaveLength(1);
     });
   });

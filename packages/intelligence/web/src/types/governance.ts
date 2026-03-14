@@ -1,93 +1,23 @@
 // ── Governance Dashboard types ──────────────────────────────────────────────
-// These match the API response shapes from packages/foe-api governance routes (ROAD-005).
+// Re-exported from @foe/schemas — the single source of truth.
 
-export interface GovernanceSnapshot {
-  id: string;
-  project: string;
-  version: string;
-  generated: string;
-  createdAt: string;
-  stats: {
-    capabilities: number;
-    personas: number;
-    userStories: number;
-    roadItems: number;
-    integrityStatus: string; // "pass" | "fail"
-    integrityErrors: number;
-  };
-}
+import { taxonomy } from "@foe/schemas";
 
-export interface RoadItemSummary {
-  id: string;
-  title: string;
-  status: string; // governance states from RoadStatusSchema: proposed, adr_validated, bdd_pending, etc.
-  phase: number;
-  priority: string; // critical, high, medium, low
-}
+export type GovernanceSnapshot = taxonomy.StoredGovernanceSnapshot;
+export type RoadItemSummary = taxonomy.RoadItemSummary;
+export type CapabilityCoverage = taxonomy.CapabilityCoverage;
+export type UserTypeCoverage = taxonomy.UserTypeCoverage;
+export type IntegrityReport = taxonomy.IntegrityReport;
+export type TrendPoint = taxonomy.TrendPoint;
+export type GovernanceState = taxonomy.GovernanceState;
 
-export interface CapabilityCoverage {
-  id: string;
-  title: string;
-  status: string;
-  roadCount: number;
-  storyCount: number;
-}
+// Re-export runtime constants from @foe/schemas
+export const GOVERNANCE_STATES = taxonomy.GOVERNANCE_STATES;
+export const STATE_LABELS = taxonomy.STATE_LABELS;
 
-export interface PersonaCoverage {
-  id: string;
-  name: string;
-  type: string;
-  storyCount: number;
-  capabilityCount: number;
-}
+// ── Display Constants (UI-only, not in @foe/schemas) ───────────────────────
+// These Tailwind CSS class maps are presentation concerns and stay here.
 
-export interface IntegrityReport {
-  valid: boolean;
-  errors: string[];
-  totalArtifacts: number;
-  checkedAt: string;
-}
-
-export interface TrendPoint {
-  snapshotId: string;
-  generated: string;
-  totalCapabilities: number;
-  totalRoadItems: number;
-  integrityStatus: string;
-  completedRoads: number;
-}
-
-// State machine states aligned with RoadStatusSchema from @foe/schemas
-// 8-state governance workflow pipeline:
-//   proposed → adr_validated → bdd_pending → bdd_complete → implementing → nfr_validating → complete
-//                                                                              ↓
-//                                                                         nfr_blocked (loops back)
-export const GOVERNANCE_STATES = [
-  "proposed",
-  "adr_validated",
-  "bdd_pending",
-  "bdd_complete",
-  "implementing",
-  "nfr_validating",
-  "nfr_blocked",
-  "complete",
-] as const;
-
-export type GovernanceState = (typeof GOVERNANCE_STATES)[number];
-
-// Human-readable labels for Kanban column headers
-export const STATE_LABELS: Record<GovernanceState, string> = {
-  proposed: "Proposed",
-  adr_validated: "ADR Validated",
-  bdd_pending: "BDD Pending",
-  bdd_complete: "BDD Complete",
-  implementing: "Implementing",
-  nfr_validating: "NFR Validating",
-  nfr_blocked: "NFR Blocked",
-  complete: "Complete",
-};
-
-// Color mapping for governance states
 export const STATE_COLORS: Record<
   GovernanceState,
   { bg: string; text: string; border: string }

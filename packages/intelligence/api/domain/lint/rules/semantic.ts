@@ -3,7 +3,7 @@
  *
  * These rules detect higher-level logical inconsistencies: workflows whose
  * contexts aren't connected by events, missing bidirectional context
- * relationships, mismatched persona types, orphan inferred systems, stale
+ * relationships, mismatched user type types, orphan inferred systems, stale
  * capabilities, and workflow transitions that reference unknown event slugs.
  *
  * Violations are `warning` or `info` severity.
@@ -141,10 +141,10 @@ export function checkEventConsumerBidirectional(ctx: LintContext): LintFinding[]
   return findings;
 }
 
-// ── Rule: persona-archetype-type-alignment ────────────────────────────────────
+// ── Rule: user-type-archetype-alignment ───────────────────────────────────────
 
 /**
- * A "bot" or "system" persona should not own capabilities that are clearly
+ * A "bot" or "system" user type should not own capabilities that are clearly
  * human-facing (heuristic: capability title contains "review", "approve",
  * "manually", "sign-off", etc.).
  *
@@ -163,14 +163,14 @@ const HUMAN_INTERACTION_KEYWORDS = [
   "officer",
 ];
 
-export function checkPersonaArchetypeTypeAlignment(ctx: LintContext): LintFinding[] {
+export function checkUserTypeArchetypeAlignment(ctx: LintContext): LintFinding[] {
   const findings: LintFinding[] = [];
   const capabilityById = new Map(ctx.capabilities.map((c) => [c.id, c]));
 
-  for (const persona of ctx.personas) {
-    if (persona.type !== "bot" && persona.type !== "system") continue;
+  for (const userType of ctx.userTypes) {
+    if (userType.type !== "bot" && userType.type !== "system") continue;
 
-    for (const capId of persona.typicalCapabilities ?? []) {
+    for (const capId of userType.typicalCapabilities ?? []) {
       const cap = capabilityById.get(capId);
       if (!cap) continue;
 
@@ -181,15 +181,15 @@ export function checkPersonaArchetypeTypeAlignment(ctx: LintContext): LintFindin
 
       if (matchedKeyword) {
         findings.push({
-          rule: "persona-archetype-type-alignment",
+          rule: "user-type-archetype-alignment",
           severity: "info",
           category: "semantic-gap",
-          message: `${persona.type} persona "${persona.name}" is mapped to capability "${cap.title}" which appears to require human interaction (keyword: "${matchedKeyword}").`,
-          entityType: "persona",
-          entityId: persona.id,
-          entityName: persona.name,
+          message: `${userType.type} user type "${userType.name}" is mapped to capability "${cap.title}" which appears to require human interaction (keyword: "${matchedKeyword}").`,
+          entityType: "user-type",
+          entityId: userType.id,
+          entityName: userType.name,
           relatedEntities: [{ type: "capability", id: cap.id, name: cap.title }],
-          suggestion: `Verify that a ${persona.type} can fulfil capability "${cap.title}", or reassign it to a human persona.`,
+          suggestion: `Verify that a ${userType.type} can fulfil capability "${cap.title}", or reassign it to a human user type.`,
         });
       }
     }
@@ -304,7 +304,7 @@ export function runSemanticRules(ctx: LintContext): LintFinding[] {
   return [
     ...checkWorkflowContextsConnected(ctx),
     ...checkEventConsumerBidirectional(ctx),
-    ...checkPersonaArchetypeTypeAlignment(ctx),
+    ...checkUserTypeArchetypeAlignment(ctx),
     ...checkOrphanInferredSystems(ctx),
     ...checkCapabilityNoRoadItems(ctx),
     ...checkWorkflowTransitionTriggerEventExists(ctx),

@@ -83,7 +83,7 @@ New Docusaurus package with prima's generic infrastructure:
 | File | Adaptation |
 |------|------------|
 | `src/pages/index.tsx` | Replace ClawMarket branding with "Katalyst Delivery Framework" |
-| Scripts: `governance-linter.js`, `validate-changes.js`, `validate-bdd-tags.js`, `capability-coverage-report.js`, `persona-coverage-report.js` | Bring as-is initially — these are the "old system" that gets progressively replaced |
+| Scripts: `governance-linter.js`, `validate-changes.js`, `validate-bdd-tags.js`, `capability-coverage-report.js`, `user-type-coverage-report.js` | Bring as-is initially — these are the "old system" that gets progressively replaced |
 
 **Frontmatter templates (bring as-is):**
 - `roads/ROAD-TEMPLATE.md`
@@ -142,7 +142,7 @@ New Docusaurus package with prima's generic infrastructure:
 **`Justfile`** — Governance + docs recipes from prima:
 - `validate-docs`, `governance-lint`, `lint-road`, `lint-roads`, `lint-adrs`
 - `validate-changes`, `validate-bdd-tags`
-- `capability-coverage`, `persona-coverage`
+- `capability-coverage`, `user type-coverage`
 - `docs-dev`, `docs-build`
 - Title updated to "Katalyst Delivery Framework"
 

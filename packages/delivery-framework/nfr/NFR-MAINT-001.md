@@ -21,9 +21,9 @@ The governance index builder must validate all cross-references between governan
 The governance system's value depends on the integrity of cross-references between artifacts:
 
 ```
-PER-XXX.typical_capabilities[]  --> CAP-XXX
-PER-XXX.related_stories[]       --> US-XXX
-US-XXX.persona                  --> PER-XXX
+UT-XXX.typical_capabilities[]  --> CAP-XXX
+UT-XXX.related_stories[]       --> US-XXX
+US-XXX.user type                  --> UT-XXX
 US-XXX.capabilities[]           --> CAP-XXX
 ROAD-XXX.governance.adrs.ids[]  --> ADR-XXX
 ROAD-XXX.governance.nfrs[]      --> NFR-XXX
@@ -56,7 +56,7 @@ A broken cross-reference (e.g., a ROAD item referencing `ADR-005` when no `ADR-0
 
 1. **Create integrity violation fixtures**:
    - ROAD item referencing non-existent ADR (`ADR-999`)
-   - User story referencing non-existent persona (`PER-999`)
+   - User story referencing non-existent user type (`UT-999`)
    - Aggregate referencing non-existent bounded context (`CTX-nonexistent`)
    - Circular ROAD item dependencies (`ROAD-001 depends on ROAD-002 depends on ROAD-001`)
    - Orphaned capability (referenced by nothing)

@@ -12,15 +12,15 @@ export class QueryTaxonomyState {
   constructor(private taxonomyRepo: TaxonomyRepository) {}
 
   async getLatest(): Promise<StoredTaxonomySnapshot | null> {
-    return this.taxonomyRepo.getLatestSnapshot();
+    return this.taxonomyRepo.getLatestTaxonomySnapshot();
   }
 
   async getById(id: string): Promise<StoredTaxonomySnapshot | null> {
-    return this.taxonomyRepo.getSnapshotById(id);
+    return this.taxonomyRepo.getTaxonomySnapshotById(id);
   }
 
   async listSnapshots(limit?: number): Promise<StoredTaxonomySnapshot[]> {
-    return this.taxonomyRepo.listSnapshots(limit);
+    return this.taxonomyRepo.listTaxonomySnapshots(limit);
   }
 
   async getNodes(nodeType?: string): Promise<TaxonomyNodeSummary[]> {

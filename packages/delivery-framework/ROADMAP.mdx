@@ -64,8 +64,8 @@ Create Zod validation schemas for all 7 governance artifact types in `@foe/schem
 
 - 🎯 Create `common.ts` — shared enums, ID patterns, priority schema
 - 🎯 Create `capability.ts` — CAP-XXX schema with category and tag
-- 🎯 Create `persona.ts` — PER-XXX schema with archetypes and technical profile
-- 🎯 Create `user-story.ts` — US-XXX schema with persona and capability refs
+- 🎯 Create `user-type.ts` — UT-XXX schema with archetypes and technical profile
+- 🎯 Create `user-story.ts` — US-XXX schema with user type and capability refs
 - 🎯 Create `use-case.ts` — UC-XXX schema with actors and flows
 - 🎯 Create `road-item.ts` — ROAD-XXX schema with 8-state machine and governance block
 - 🎯 Create `adr.ts` — ADR-XXX schema with status and category
@@ -139,7 +139,7 @@ Install 5 OpenCode agent skills for the `@esimplicity/stack-tests` BDD framework
 
 Extend `@foe/field-guide-tools` with 11 new parsers, a governance index builder with referential integrity validation, and 6 new CLI commands. This is the critical convergence point.
 
-- 🎯 Create 11 parsers (capability, persona, user-story, use-case, road-item, adr, nfr, change-entry, bounded-context, aggregate, value-object, domain-event)
+- 🎯 Create 11 parsers (capability, user type, user-story, use-case, road-item, adr, nfr, change-entry, bounded-context, aggregate, value-object, domain-event)
 - 🎯 Create `governance-index.ts` builder with cross-reference validation
 - 🎯 Implement referential integrity checks (orphans, missing targets, circular deps)
 - 🎯 Add CLI: `build:governance` — parse all artifacts to `governance-index.json`
@@ -147,7 +147,7 @@ Extend `@foe/field-guide-tools` with 11 new parsers, a governance index builder 
 - 🎯 Add CLI: `validate:governance` — validate frontmatter without building
 - 🎯 Add CLI: `validate:transitions` — check state machine compliance
 - 🎯 Add CLI: `coverage:capabilities` — capability-to-feature coverage
-- 🎯 Add CLI: `coverage:personas` — persona-to-story coverage
+- 🎯 Add CLI: `coverage:user types` — user-type-to-story coverage
 - 🎯 Unit tests for parsers + integration tests for index builder
 
 **Requires**: [ROAD-002](#road-002-governance-zod-schemas-), [ROAD-003](#road-003-ddd-artifact-schemas-)

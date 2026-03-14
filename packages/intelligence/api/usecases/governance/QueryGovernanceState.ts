@@ -1,23 +1,23 @@
 import type {
-  GovernanceRepository,
-  StoredSnapshot,
+  TaxonomyRepository,
+  StoredGovernanceSnapshot,
   RoadItemSummary,
   IntegrityReport,
-} from "../../ports/GovernanceRepository.js";
+} from "../../ports/TaxonomyRepository.js";
 
 export class QueryGovernanceState {
-  constructor(private governanceRepo: GovernanceRepository) {}
+  constructor(private governanceRepo: TaxonomyRepository) {}
 
-  async getLatest(): Promise<StoredSnapshot | null> {
-    return this.governanceRepo.getLatestSnapshot();
+  async getLatest(): Promise<StoredGovernanceSnapshot | null> {
+    return this.governanceRepo.getLatestGovernanceSnapshot();
   }
 
-  async getById(id: string): Promise<StoredSnapshot | null> {
-    return this.governanceRepo.getSnapshotById(id);
+  async getById(id: string): Promise<StoredGovernanceSnapshot | null> {
+    return this.governanceRepo.getGovernanceSnapshotById(id);
   }
 
-  async listSnapshots(): Promise<StoredSnapshot[]> {
-    return this.governanceRepo.listSnapshots();
+  async listSnapshots(): Promise<StoredGovernanceSnapshot[]> {
+    return this.governanceRepo.listGovernanceSnapshots();
   }
 
   async getRoadItems(statusFilter?: string): Promise<RoadItemSummary[]> {

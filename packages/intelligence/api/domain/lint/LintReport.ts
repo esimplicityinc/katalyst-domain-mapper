@@ -24,7 +24,7 @@ export type LintCategory =
   | "orphaned-entity"
   /** An expected relationship between two entities is absent */
   | "missing-link"
-  /** Coverage is partial (e.g. a persona has no user stories) */
+  /** Coverage is partial (e.g. a user type has no user stories) */
   | "incomplete-coverage"
   /** A workflow spans contexts that have no connecting domain events */
   | "disconnected-workflow"
@@ -40,7 +40,7 @@ export interface LintRelatedEntity {
 }
 
 export interface LintFinding {
-  /** Machine-readable rule identifier, e.g. "story-persona-exists" */
+  /** Machine-readable rule identifier, e.g. "story-user-type-exists" */
   rule: string;
   severity: LintSeverity;
   category: LintCategory;
@@ -61,8 +61,8 @@ export interface LintFinding {
 // ── Coverage Scores ───────────────────────────────────────────────────────────
 
 export interface LintCoverageScores {
-  /** Percentage (0-100) of personas referenced by at least one user story */
-  personaToStory: number;
+  /** Percentage (0-100) of user types referenced by at least one user story */
+  userTypeToStory: number;
   /** Percentage of user stories referencing at least one valid capability */
   storyToCapability: number;
   /** Percentage of capabilities mapped to a bounded context via taxonomyNode */
@@ -100,9 +100,9 @@ export interface LintReport {
 // ── Input context for the linter ──────────────────────────────────────────────
 
 /**
- * Normalized persona from governance raw index
+ * Normalized user type from governance raw index
  */
-export interface LintPersona {
+export interface LintUserType {
   id: string;
   name: string;
   type: string;
@@ -116,7 +116,7 @@ export interface LintPersona {
 export interface LintUserStory {
   id: string;
   title: string;
-  persona: string;
+  userType: string;
   capabilities: string[];
   status: string;
 }
@@ -232,7 +232,7 @@ export interface LintContext {
   taxonomySnapshotId?: string;
 
   // Governance domain
-  personas: LintPersona[];
+  userTypes: LintUserType[];
   userStories: LintUserStory[];
   capabilities: LintCapability[];
 

@@ -2,7 +2,7 @@ import { glob } from "glob";
 import { randomUUID } from "node:crypto";
 import { taxonomy } from "@foe/schemas";
 import { parseCapabilityFile } from "../parsers/governance/capability.js";
-import { parsePersonaFile } from "../parsers/governance/persona.js";
+import { parseUserTypeFile } from "../parsers/governance/user-type.js";
 import { parseUserStoryFile } from "../parsers/governance/user-story.js";
 import { parseUseCaseFile } from "../parsers/governance/use-case.js";
 import { parseRoadItemFile } from "../parsers/governance/road-item.js";
@@ -73,13 +73,13 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
   );
   allErrors.push(...capErrors);
 
-  const { records: personas, errors: perErrors } = await parseAllFiles(
-    "personas/PER-*.md",
+  const { records: userTypes, errors: utErrors } = await parseAllFiles(
+    "user-types/UT-*.md",
     GOVERNANCE_ROOT,
-    parsePersonaFile,
+    parseUserTypeFile,
     "id",
   );
-  allErrors.push(...perErrors);
+  allErrors.push(...utErrors);
 
   const { records: userStories, errors: usErrors } = await parseAllFiles(
     "user-stories/US-*.md",
@@ -172,17 +172,17 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
 
   // ── Build reverse indices ──────────────────────────────────────
 
-  // byCapability: for each capability, which personas/stories/roads reference it
+  // byCapability: for each capability, which userTypes/stories/roads reference it
   const byCapability: Record<
     string,
-    { personas: string[]; stories: string[]; roads: string[] }
+    { userTypes: string[]; stories: string[]; roads: string[] }
   > = {};
   for (const capId of Object.keys(capabilities)) {
-    byCapability[capId] = { personas: [], stories: [], roads: [] };
+    byCapability[capId] = { userTypes: [], stories: [], roads: [] };
   }
-  for (const [perId, persona] of Object.entries(personas)) {
-    for (const capId of persona.typicalCapabilities) {
-      if (byCapability[capId]) byCapability[capId].personas.push(perId);
+  for (const [utId, userType] of Object.entries(userTypes)) {
+    for (const capId of userType.typicalCapabilities) {
+      if (byCapability[capId]) byCapability[capId].userTypes.push(utId);
     }
   }
   for (const [usId, story] of Object.entries(userStories)) {
@@ -196,15 +196,15 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
     }
   }
 
-  // byPersona: for each persona, their stories and capabilities
-  const byPersona: Record<
+  // byUserType: for each user type, their stories and capabilities
+  const byUserType: Record<
     string,
     { stories: string[]; capabilities: string[] }
   > = {};
-  for (const [perId, persona] of Object.entries(personas)) {
-    byPersona[perId] = {
-      stories: persona.relatedStories,
-      capabilities: persona.typicalCapabilities,
+  for (const [utId, userType] of Object.entries(userTypes)) {
+    byUserType[utId] = {
+      stories: userType.relatedStories,
+      capabilities: userType.typicalCapabilities,
     };
   }
 
@@ -277,29 +277,29 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
 
   const integrityErrors: string[] = [];
 
-  // Persona → Capability, UserStory
-  for (const [id, persona] of Object.entries(personas)) {
-    for (const capId of persona.typicalCapabilities) {
+  // UserType → Capability, UserStory
+  for (const [id, userType] of Object.entries(userTypes)) {
+    for (const capId of userType.typicalCapabilities) {
       if (!capabilities[capId]) {
         integrityErrors.push(
-          `Persona ${id} references non-existent capability ${capId}`,
+          `User type ${id} references non-existent capability ${capId}`,
         );
       }
     }
-    for (const storyId of persona.relatedStories) {
+    for (const storyId of userType.relatedStories) {
       if (!userStories[storyId]) {
         integrityErrors.push(
-          `Persona ${id} references non-existent user story ${storyId}`,
+          `User type ${id} references non-existent user story ${storyId}`,
         );
       }
     }
   }
 
-  // UserStory → Persona, Capability
+  // UserStory → UserType, Capability
   for (const [id, story] of Object.entries(userStories)) {
-    if (!personas[story.persona]) {
+    if (!userTypes[story.userType]) {
       integrityErrors.push(
-        `User story ${id} references non-existent persona ${story.persona}`,
+        `User story ${id} references non-existent user type ${story.userType}`,
       );
     }
     for (const capId of story.capabilities) {
@@ -405,7 +405,7 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
     // Node type extensions
     extensions: {
       capabilities,
-      personas,
+      userTypes,
       userStories,
       useCases,
       roadItems,
@@ -433,7 +433,7 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
     },
     reverseIndices: {
       byCapability,
-      byPersona,
+      byUserType,
       byRoad,
       byContext,
       byAggregate,
@@ -442,7 +442,7 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
       totalNodes: 0,
       totalEnvironments: 0,
       totalCapabilities: Object.keys(capabilities).length,
-      totalPersonas: Object.keys(personas).length,
+      totalUserTypes: Object.keys(userTypes).length,
       totalStories: Object.keys(userStories).length,
       totalUseCases: Object.keys(useCases).length,
       totalRoadItems: Object.keys(roadItems).length,
@@ -467,7 +467,7 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
   console.log(`\nTaxonomy snapshot built in ${duration}ms`);
   console.log(
     `Artifacts: ${Object.keys(capabilities).length} capabilities, ` +
-      `${Object.keys(personas).length} personas, ` +
+      `${Object.keys(userTypes).length} user types, ` +
       `${Object.keys(userStories).length} stories, ` +
       `${Object.keys(roadItems).length} roads, ` +
       `${Object.keys(adrs).length} ADRs, ` +

@@ -12,11 +12,14 @@ import type { LandscapeGraph, LandscapePositions, LandscapeLayoutEngine } from "
 import { ElkLayoutEngine } from "../../utils/layout/ElkLayoutEngine";
 import { DagreLayoutEngine } from "../../utils/layout/DagreLayoutEngine";
 import { D3ForceLayoutEngine } from "../../utils/layout/D3ForceLayoutEngine";
+import { ZonedLayoutEngine } from "../../utils/layout/ZonedLayoutEngine";
 import { LandscapeCanvas } from "../landscape/LandscapeCanvas";
+import { useFlag } from "../../flags";
+import { FLAG_KEYS } from "@foe/feature-flags/flags";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
-const PERSONA_COLORS = ["#ec4899", "#06b6d4", "#84cc16", "#f59e0b", "#8b5cf6", "#ef4444"];
+const USER_TYPE_COLORS = ["#ec4899", "#06b6d4", "#84cc16", "#f59e0b", "#8b5cf6", "#ef4444"];
 
 type EngineKey = "elkjs" | "dagre" | "d3-force";
 
@@ -39,6 +42,8 @@ interface Props {
 }
 
 export function LandscapeView({ model }: Props) {
+  const { value: layoutV2Enabled } = useFlag(FLAG_KEYS.LANDSCAPE_LAYOUT_V2, false);
+
   const [graph, setGraph] = useState<LandscapeGraph | null>(null);
   const [positions, setPositions] = useState<LandscapePositions | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,72 +58,72 @@ export function LandscapeView({ model }: Props) {
   const [wfDropdownOpen, setWfDropdownOpen] = useState(false);
   const wfDropdownRef = useRef<HTMLDivElement>(null);
 
-  // ── Persona collapse state ───────────────────────────────────
-  const [collapsedPersonas, setCollapsedPersonas] = useState<Set<string>>(new Set());
-  const allPersonasCollapsed = useMemo(
-    () => graph ? collapsedPersonas.size === graph.personas.length : true,
-    [collapsedPersonas, graph],
+  // ── User type collapse state ──────────────────────────────────
+  const [collapsedUserTypes, setCollapsedUserTypes] = useState<Set<string>>(new Set());
+  const allUserTypesCollapsed = useMemo(
+    () => graph ? collapsedUserTypes.size === graph.userTypes.length : true,
+    [collapsedUserTypes, graph],
   );
 
-  // ── Persona / story filter state ───────────────────────────────
-  const [activePersonaId, setActivePersonaId] = useState<string | null>(null);
+  // ── User type / story filter state ────────────────────────────
+  const [activeUserTypeId, setActiveUserTypeId] = useState<string | null>(null);
   const [activeStoryId, setActiveStoryId] = useState<string | null>(null);
 
-  // Initialize all personas collapsed by default when graph loads
+  // Initialize all user types collapsed by default when graph loads
   useEffect(() => {
     if (graph) {
-      setCollapsedPersonas(new Set(graph.personas.map((p) => p.id)));
+      setCollapsedUserTypes(new Set(graph.userTypes.map((p) => p.id)));
     }
   }, [graph]);
 
   const toggleCollapseAll = useCallback(() => {
     if (!graph) return;
-    if (allPersonasCollapsed) {
-      setCollapsedPersonas(new Set());
+    if (allUserTypesCollapsed) {
+      setCollapsedUserTypes(new Set());
     } else {
-      setCollapsedPersonas(new Set(graph.personas.map((p) => p.id)));
+      setCollapsedUserTypes(new Set(graph.userTypes.map((p) => p.id)));
     }
-  }, [graph, allPersonasCollapsed]);
+  }, [graph, allUserTypesCollapsed]);
 
-  // ── Persona / story filter handlers ────────────────────────────
+  // ── User type / story filter handlers ─────────────────────────
 
-  /** When a persona is clicked, filter to workflows that touch that persona's capabilities */
-  const handleSelectPersona = useCallback((personaId: string) => {
+  /** When a user type is clicked, filter to workflows that touch that user type's capabilities */
+  const handleSelectUserType = useCallback((userTypeId: string) => {
     if (!graph) return;
 
-    // Toggle off if same persona clicked again
-    if (activePersonaId === personaId) {
-      setActivePersonaId(null);
+    // Toggle off if same user type clicked again
+    if (activeUserTypeId === userTypeId) {
+      setActiveUserTypeId(null);
       setActiveStoryId(null);
       // Restore all workflows
       setActiveWorkflowIds(new Set(graph.workflows.map((w) => w.id)));
       return;
     }
 
-    setActivePersonaId(personaId);
+    setActiveUserTypeId(userTypeId);
     setActiveStoryId(null);
 
-    // Find all capabilities for this persona's stories
-    const personaCaps = new Set(
+    // Find all capabilities for this user type's stories
+    const utCaps = new Set(
       graph.userStories
-        .filter((s) => s.persona === personaId)
+        .filter((s) => s.userType === userTypeId)
         .flatMap((s) => s.capabilities),
     );
 
     // Find workflows whose capabilities overlap
     const matchingWorkflows = graph.workflows.filter((wf) =>
-      wf.capabilityIds?.some((capId) => personaCaps.has(capId)),
+      wf.capabilityIds?.some((capId) => utCaps.has(capId)),
     );
 
     setActiveWorkflowIds(new Set(matchingWorkflows.map((w) => w.id)));
 
-    // Also expand this persona's story group
-    setCollapsedPersonas((prev) => {
+    // Also expand this user type's story group
+    setCollapsedUserTypes((prev) => {
       const next = new Set(prev);
-      next.delete(personaId);
+      next.delete(userTypeId);
       return next;
     });
-  }, [graph, activePersonaId]);
+  }, [graph, activeUserTypeId]);
 
   /** When a user story is clicked, filter to just that story's capabilities */
   const handleSelectStory = useCallback((storyId: string) => {
@@ -127,9 +132,9 @@ export function LandscapeView({ model }: Props) {
     // Toggle off if same story clicked again
     if (activeStoryId === storyId) {
       setActiveStoryId(null);
-      // If persona filter was active, restore to persona level
-      if (activePersonaId) {
-        handleSelectPersona(activePersonaId);
+      // If user type filter was active, restore to user type level
+      if (activeUserTypeId) {
+        handleSelectUserType(activeUserTypeId);
       } else {
         setActiveWorkflowIds(new Set(graph.workflows.map((w) => w.id)));
       }
@@ -140,7 +145,7 @@ export function LandscapeView({ model }: Props) {
     if (!story) return;
 
     setActiveStoryId(storyId);
-    setActivePersonaId(story.persona);
+    setActiveUserTypeId(story.userType);
 
     const storyCaps = new Set(story.capabilities);
 
@@ -151,18 +156,18 @@ export function LandscapeView({ model }: Props) {
 
     setActiveWorkflowIds(new Set(matchingWorkflows.map((w) => w.id)));
 
-    // Expand the persona group for this story
-    setCollapsedPersonas((prev) => {
+    // Expand the user type group for this story
+    setCollapsedUserTypes((prev) => {
       const next = new Set(prev);
-      next.delete(story.persona);
+      next.delete(story.userType);
       return next;
     });
-  }, [graph, activeStoryId, activePersonaId, handleSelectPersona]);
+  }, [graph, activeStoryId, activeUserTypeId, handleSelectUserType]);
 
-  /** Clear all persona/story filters */
-  const clearPersonaFilter = useCallback(() => {
+  /** Clear all user type/story filters */
+  const clearUserTypeFilter = useCallback(() => {
     if (!graph) return;
-    setActivePersonaId(null);
+    setActiveUserTypeId(null);
     setActiveStoryId(null);
     setActiveWorkflowIds(new Set(graph.workflows.map((w) => w.id)));
   }, [graph]);
@@ -254,19 +259,31 @@ export function LandscapeView({ model }: Props) {
     }
   }, []);
 
+  // Re-initialize engine when v2 flag changes
+  useEffect(() => {
+    if (layoutV2Enabled) {
+      engineRef.current = new ZonedLayoutEngine();
+    } else {
+      engineRef.current = createEngine(engineKey);
+    }
+    if (graph) runLayout(graph, engineRef.current);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [layoutV2Enabled]);
+
   useEffect(() => {
     if (!graph) return;
     runLayout(graph, engineRef.current);
   }, [graph, runLayout]);
 
-  // Switch engine
+  // Switch engine (v1 only)
   const handleEngineChange = useCallback(
     (key: EngineKey) => {
+      if (layoutV2Enabled) return; // v2 mode uses ZonedLayoutEngine exclusively
       setEngineKey(key);
       engineRef.current = createEngine(key);
       if (graph) runLayout(graph, engineRef.current);
     },
-    [graph, runLayout],
+    [graph, runLayout, layoutV2Enabled],
   );
 
   if (loading) {
@@ -309,22 +326,30 @@ export function LandscapeView({ model }: Props) {
     <div className="relative">
       {/* ── Layout Engine Toolbar ──────────────────────────────────── */}
       <div className="absolute top-3 right-3 z-20 flex items-center gap-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 px-3 py-2">
-        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 mr-1">Layout:</span>
-        {(Object.keys(ENGINE_INFO) as EngineKey[]).map((key) => (
-          <button
-            key={key}
-            onClick={() => handleEngineChange(key)}
-            disabled={layoutLoading}
-            className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors ${
-              engineKey === key
-                ? "bg-purple-600 text-white shadow-sm"
-                : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            } ${layoutLoading ? "opacity-50 cursor-wait" : "cursor-pointer"}`}
-            title={ENGINE_INFO[key].description}
-          >
-            {ENGINE_INFO[key].label}
-          </button>
-        ))}
+        {/* ── Layout engine selector (hidden in v2 mode) ────────────── */}
+        {!layoutV2Enabled && (
+          <>
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 mr-1">Layout:</span>
+            {(Object.keys(ENGINE_INFO) as EngineKey[]).map((key) => (
+              <button
+                key={key}
+                onClick={() => handleEngineChange(key)}
+                disabled={layoutLoading}
+                className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors ${
+                  engineKey === key
+                    ? "bg-purple-600 text-white shadow-sm"
+                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                } ${layoutLoading ? "opacity-50 cursor-wait" : "cursor-pointer"}`}
+                title={ENGINE_INFO[key].description}
+              >
+                {ENGINE_INFO[key].label}
+              </button>
+            ))}
+          </>
+        )}
+        {layoutV2Enabled && (
+          <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 mr-1">Layout v2</span>
+        )}
         {layoutMs !== null && (
           <span className="text-[10px] text-gray-400 dark:text-gray-500 ml-1 tabular-nums">
             {layoutMs}ms
@@ -402,35 +427,35 @@ export function LandscapeView({ model }: Props) {
           </>
         )}
 
-        {/* ── Persona collapse toggle ─────────────────────────────── */}
-        {graph && graph.personas.length > 0 && (
+        {/* ── User type collapse toggle ────────────────────────────── */}
+        {graph && graph.userTypes.length > 0 && (
           <>
             <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1" />
             <button
               onClick={toggleCollapseAll}
               className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg transition-colors text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-              title={allPersonasCollapsed ? "Expand all persona story groups" : "Collapse all persona story groups"}
+              title={allUserTypesCollapsed ? "Expand all user type story groups" : "Collapse all user type story groups"}
             >
-              <svg className={`w-3.5 h-3.5 transition-transform ${allPersonasCollapsed ? "" : "rotate-90"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <svg className={`w-3.5 h-3.5 transition-transform ${allUserTypesCollapsed ? "" : "rotate-90"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
-              <span>{allPersonasCollapsed ? "Expand" : "Collapse"}</span>
+              <span>{allUserTypesCollapsed ? "Expand" : "Collapse"}</span>
               <span className="text-[10px] tabular-nums text-gray-400">
-                ({graph.personas.length - collapsedPersonas.size}/{graph.personas.length})
+                ({graph.userTypes.length - collapsedUserTypes.size}/{graph.userTypes.length})
               </span>
             </button>
           </>
         )}
 
-        {/* ── Active persona/story filter indicator ────────────────── */}
-        {(activePersonaId || activeStoryId) && (() => {
-          const persona = graph.personas.find((p) => p.id === activePersonaId);
+        {/* ── Active user type/story filter indicator ─────────────────── */}
+        {(activeUserTypeId || activeStoryId) && (() => {
+          const ut = graph.userTypes.find((p) => p.id === activeUserTypeId);
           const story = activeStoryId ? graph.userStories.find((s) => s.id === activeStoryId) : null;
-          const pi = persona ? graph.personas.indexOf(persona) : 0;
-          const color = PERSONA_COLORS[pi % PERSONA_COLORS.length];
+          const pi = ut ? graph.userTypes.indexOf(ut) : 0;
+          const color = USER_TYPE_COLORS[pi % USER_TYPE_COLORS.length];
           const label = story
             ? `${story.title.length > 25 ? story.title.slice(0, 25) + "..." : story.title}`
-            : persona?.name ?? "";
+            : ut?.name ?? "";
 
           return (
             <>
@@ -439,7 +464,7 @@ export function LandscapeView({ model }: Props) {
                 <span className="w-2 h-2 rounded-full" style={{ background: color }} />
                 <span className="max-w-[140px] truncate">{label}</span>
                 <button
-                  onClick={clearPersonaFilter}
+                  onClick={clearUserTypeFilter}
                   className="ml-0.5 hover:opacity-70 transition-opacity"
                   title="Clear filter"
                 >
@@ -456,18 +481,18 @@ export function LandscapeView({ model }: Props) {
       <LandscapeCanvas
         graph={graph}
         positions={positions}
-        activeWorkflowIds={allWorkflowsActive && !activePersonaId && !activeStoryId ? undefined : activeWorkflowIds}
-        collapsedPersonas={collapsedPersonas}
-        onTogglePersona={(personaId) => {
-          setCollapsedPersonas((prev) => {
+        activeWorkflowIds={allWorkflowsActive && !activeUserTypeId && !activeStoryId ? undefined : activeWorkflowIds}
+        collapsedUserTypes={collapsedUserTypes}
+        onToggleUserType={(userTypeId) => {
+          setCollapsedUserTypes((prev) => {
             const next = new Set(prev);
-            if (next.has(personaId)) { next.delete(personaId); } else { next.add(personaId); }
+            if (next.has(userTypeId)) { next.delete(userTypeId); } else { next.add(userTypeId); }
             return next;
           });
         }}
-        onSelectPersona={handleSelectPersona}
+        onSelectUserType={handleSelectUserType}
         onSelectStory={handleSelectStory}
-        activePersonaId={activePersonaId}
+        activeUserTypeId={activeUserTypeId}
         activeStoryId={activeStoryId}
       />
     </div>

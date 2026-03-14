@@ -52,11 +52,11 @@ Build React UI components to visualize FOE report history and trends over time. 
 - Data-driven decision making for improvement initiatives
 - Stakeholder-friendly visualizations for reporting
 
-**Target Personas:**
-- **PER-001** (Engineering Team Lead) — Primary user for tracking team progress
-- **PER-002** (Platform Engineer) — Monitors organizational maturity trends
-- **PER-005** (Framework Adopter) — Demonstrates value to leadership
-- **PER-006** (Non-Technical Stakeholder) — Views high-level progress
+**Target User Types:**
+- **UT-001** (Engineering Team Lead) — Primary user for tracking team progress
+- **UT-002** (Platform Engineer) — Monitors organizational maturity trends
+- **UT-005** (Framework Adopter) — Demonstrates value to leadership
+- **UT-006** (Non-Technical Stakeholder) — Views high-level progress
 
 ## Acceptance Criteria
 

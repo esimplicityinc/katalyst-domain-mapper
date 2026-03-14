@@ -51,7 +51,7 @@ extract_id() {
 # =============================================================================
 echo "─── Creating Domain Model ───"
 
-MODEL_RESP=$(post "$API/domain-models" '{
+MODEL_RESP=$(post "$API/taxonomy/domain-models" '{
   "name": "Prima AI Platform",
   "description": "eSimplicity enterprise AI platform — multi-model orchestration, governance, guardrails, RAG, and client applications serving government and enterprise customers. Official taxonomy from kata CLI."
 }')
@@ -65,7 +65,7 @@ echo ""
 # =============================================================================
 echo "─── Ingesting Taxonomy Snapshot (Official from kata) ───"
 
-post "$API/taxonomy" '{
+post "$API/taxonomy/snapshots" '{
   "project": "prima-platform",
   "version": "3.1.0",
   "generated": "2026-02-18T18:00:00Z",
@@ -739,7 +739,7 @@ echo "─── Creating Bounded Contexts ───"
 
 # --- Core Domain (Prima business logic) ---
 
-CTX_IAM_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_IAM_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "identity-access",
   "title": "Identity & Access Management",
   "description": "User registration, JWT/SSO authentication, SCIM provisioning, API token management, team/workspace role-based access control, rate limiting and budget enforcement.",
@@ -754,7 +754,7 @@ CTX_IAM_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_IAM=$(extract_id "$CTX_IAM_RESP")
 echo "  identity-access: $CTX_IAM"
 
-CTX_MODEL_REG_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_MODEL_REG_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "model-registry",
   "title": "LLM Model Registry & Credentials",
   "description": "Registration of Prima Models (abstraction over provider models), encrypted credential vault for 20+ LLM providers, workspace-level model assignment, guardrail rule management, tool provider management, and provider discovery.",
@@ -769,7 +769,7 @@ CTX_MODEL_REG_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_MODEL_REG=$(extract_id "$CTX_MODEL_REG_RESP")
 echo "  model-registry: $CTX_MODEL_REG"
 
-CTX_ORCHESTRATION_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_ORCHESTRATION_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "ai-orchestration",
   "title": "AI Orchestration (AiOx)",
   "description": "OpenAI-compatible chat completion gateway routing requests through guardrails to the appropriate LLM provider. Pydantic-AI agent framework, MCP tool gateway, RAG context injection, Redis Streams for SSE streaming.",
@@ -784,7 +784,7 @@ CTX_ORCHESTRATION_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_ORCHESTRATION=$(extract_id "$CTX_ORCHESTRATION_RESP")
 echo "  ai-orchestration: $CTX_ORCHESTRATION"
 
-CTX_PII_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_PII_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "pii-detection",
   "title": "PII Detection & Anonymization",
   "description": "Microsoft Presidio-based PII entity recognition and optional anonymization. Scans input/output for personally identifiable information with configurable entity types and actions.",
@@ -799,7 +799,7 @@ CTX_PII_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_PII=$(extract_id "$CTX_PII_RESP")
 echo "  pii-detection: $CTX_PII"
 
-CTX_LLM_PROXY_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_LLM_PROXY_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "llm-proxy",
   "title": "LLM Provider Proxy (LiteLLM)",
   "description": "Unified gateway for routing requests to 100+ LLM providers with load balancing, fallback, and spend tracking. Abstracts provider-specific APIs behind OpenAI-compatible interface.",
@@ -816,7 +816,7 @@ echo "  llm-proxy: $CTX_LLM_PROXY"
 
 # --- Supporting Domain ---
 
-CTX_RAG_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_RAG_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "knowledge-rag",
   "title": "Knowledge Base & RAG",
   "description": "Document ingestion pipeline with 9 file converters, OCR, Whisper transcription, web scraping. 7 data connectors (GitHub, GitLab, Confluence, YouTube, Obsidian, Drupal, Website). Vector storage via PostgreSQL + pgvector with 9 vector DB provider adapters.",
@@ -831,7 +831,7 @@ CTX_RAG_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_RAG=$(extract_id "$CTX_RAG_RESP")
 echo "  knowledge-rag: $CTX_RAG"
 
-CTX_WORKSPACE_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_WORKSPACE_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "workspace-chat",
   "title": "Workspace Chat & Agents",
   "description": "Multi-threaded AI chat within workspaces, visual agent flow builder with 9 node types, data connector UI, MCP tool integration, slash commands, prompt sidebar, citations, TTS/STT, i18n, community hub for sharing agent skills.",
@@ -846,7 +846,7 @@ CTX_WORKSPACE_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_WORKSPACE=$(extract_id "$CTX_WORKSPACE_RESP")
 echo "  workspace-chat: $CTX_WORKSPACE"
 
-CTX_WEB_SERVER_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_WEB_SERVER_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "web-api-server",
   "title": "Web API Server",
   "description": "Express.js backend API for Prima Web — handles chat sessions, workspace management, knowledge base CRUD, document uploads, agent flow execution, embeddable chat widgets, OpenAI-compatible API endpoints.",
@@ -861,7 +861,7 @@ CTX_WEB_SERVER_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_WEB_SERVER=$(extract_id "$CTX_WEB_SERVER_RESP")
 echo "  web-api-server: $CTX_WEB_SERVER"
 
-CTX_ASYNC_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_ASYNC_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "async-workers",
   "title": "Async Task Workers",
   "description": "Celery workers for background task execution — AI agent tool calls, MCP tool invocations, document processing, batch operations, and scheduled jobs.",
@@ -878,7 +878,7 @@ echo "  async-workers: $CTX_ASYNC"
 
 # --- Generic / External ---
 
-CTX_DELIVERY_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_DELIVERY_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "agent-delivery",
   "title": "Agent Delivery Hub",
   "description": "Distribution hub for 108+ AI agents, 140 skills, and 72 plugins via OpenPackage across categories: backend, security, CI/CD, frontend, and more.",
@@ -904,7 +904,7 @@ echo "─── Creating Domain Events ───"
 
 # Event 1: User authenticated
 # CAP-001 (control_tower.backend) → CAP-008 (engine.aiox), CAP-017 (web.web-frontend)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_IAM\",
   \"slug\": \"user-authenticated\",
   \"title\": \"User Authenticated\",
@@ -925,7 +925,7 @@ echo "  user-authenticated"
 
 # Event 2: Workspace created
 # CAP-001 (control_tower.backend) → CAP-017 (web.web-frontend), CAP-020 (web.collector)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_IAM\",
   \"slug\": \"workspace-created\",
   \"title\": \"Workspace Created\",
@@ -946,7 +946,7 @@ echo "  workspace-created"
 
 # Event 3: Prima model registered
 # CAP-002 (control_tower.backend) → CAP-008 (engine.aiox), CAP-011 (engine.litellm)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_MODEL_REG\",
   \"slug\": \"prima-model-registered\",
   \"title\": \"Prima Model Registered\",
@@ -967,7 +967,7 @@ echo "  prima-model-registered"
 
 # Event 4: Chat completion requested
 # CAP-008 (engine.aiox) → CAP-012 (engine.presidio), CAP-011 (engine.litellm)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_ORCHESTRATION\",
   \"slug\": \"chat-completion-requested\",
   \"title\": \"Chat Completion Requested\",
@@ -989,7 +989,7 @@ echo "  chat-completion-requested"
 
 # Event 5: PII detected
 # CAP-012 (engine.presidio) → CAP-008 (engine.aiox)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_PII\",
   \"slug\": \"pii-detected\",
   \"title\": \"PII Detected\",
@@ -1011,7 +1011,7 @@ echo "  pii-detected"
 
 # Event 6: LLM request routed
 # CAP-011 (engine.litellm) → CAP-008 (engine.aiox)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_LLM_PROXY\",
   \"slug\": \"llm-request-routed\",
   \"title\": \"LLM Request Routed\",
@@ -1033,7 +1033,7 @@ echo "  llm-request-routed"
 
 # Event 7: Chat response streamed
 # CAP-008 (engine.aiox) → CAP-017 (web.web-frontend)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_ORCHESTRATION\",
   \"slug\": \"chat-response-streamed\",
   \"title\": \"Chat Response Streamed\",
@@ -1055,7 +1055,7 @@ echo "  chat-response-streamed"
 
 # Event 8: Document embedded
 # CAP-020 (web.collector) → CAP-022 (web.storage), CAP-014 (web.server)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_RAG\",
   \"slug\": \"document-embedded\",
   \"title\": \"Document Embedded\",
@@ -1077,7 +1077,7 @@ echo "  document-embedded"
 
 # Event 9: Agent flow executed
 # CAP-017 (web.web-frontend) → CAP-008 (engine.aiox), CAP-013 (engine.worker)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_WORKSPACE\",
   \"slug\": \"agent-flow-executed\",
   \"title\": \"Agent Flow Executed\",
@@ -1098,7 +1098,7 @@ echo "  agent-flow-executed"
 
 # Event 10: Async task completed
 # CAP-013 (engine.worker) → CAP-008 (engine.aiox)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_ASYNC\",
   \"slug\": \"async-task-completed\",
   \"title\": \"Async Task Completed\",
@@ -1119,7 +1119,7 @@ echo "  async-task-completed"
 
 # Event 11: MCP tool invoked
 # CAP-009 (engine.aiox) → CAP-013 (engine.worker), CAP-017 (web.web-frontend)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_ORCHESTRATION\",
   \"slug\": \"mcp-tool-invoked\",
   \"title\": \"MCP Tool Invoked\",
@@ -1140,7 +1140,7 @@ echo "  mcp-tool-invoked"
 
 # Event 12: Agent skill published
 # CAP-030 (prima-delivery-hub) → CAP-017 (web.web-frontend)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_DELIVERY\",
   \"slug\": \"agent-skill-published\",
   \"title\": \"Agent Skill Published\",
@@ -1161,7 +1161,7 @@ echo "  agent-skill-published"
 
 # Event 13: Guardrail rule updated
 # CAP-003 (control_tower.backend) → CAP-012 (engine.presidio), CAP-008 (engine.aiox)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_MODEL_REG\",
   \"slug\": \"guardrail-rule-updated\",
   \"title\": \"Guardrail Rule Updated\",
@@ -1182,7 +1182,7 @@ echo "  guardrail-rule-updated"
 
 # Event 14: Web session started
 # CAP-014 (web.server) → CAP-017 (web.web-frontend), CAP-020 (web.collector)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_WEB_SERVER\",
   \"slug\": \"web-session-started\",
   \"title\": \"Web Session Started\",
@@ -1211,7 +1211,7 @@ echo ""
 echo "─── Creating Workflows ───"
 
 # Workflow 1: Chat Completion Lifecycle
-post "$API/domain-models/$MODEL_ID/workflows" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/workflows" "{
   \"slug\": \"chat-completion-lifecycle\",
   \"title\": \"Chat Completion Lifecycle\",
   \"description\": \"End-to-end flow from user sending a chat message through authentication, PII scanning, RAG context injection, LLM dispatch via LiteLLM, response streaming, and usage recording.\",
@@ -1242,7 +1242,7 @@ post "$API/domain-models/$MODEL_ID/workflows" "{
 echo "  chat-completion-lifecycle (7 contexts)"
 
 # Workflow 2: Model Governance Setup
-post "$API/domain-models/$MODEL_ID/workflows" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/workflows" "{
   \"slug\": \"model-governance-setup\",
   \"title\": \"Model Governance Setup\",
   \"description\": \"Admin workflow for registering a new LLM provider in LiteLLM, creating a Prima Model abstraction, attaching guardrail rules, and assigning to workspaces.\",
@@ -1276,7 +1276,7 @@ echo ""
 # =============================================================================
 echo "─── Creating Aggregates ───"
 
-post "$API/domain-models/$MODEL_ID/aggregates" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/aggregates" "{
   \"contextId\": \"$CTX_IAM\",
   \"slug\": \"user-identity\",
   \"title\": \"User Identity\",
@@ -1294,7 +1294,7 @@ post "$API/domain-models/$MODEL_ID/aggregates" "{
 }" > /dev/null
 echo "  user-identity (Identity & Access)"
 
-post "$API/domain-models/$MODEL_ID/aggregates" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/aggregates" "{
   \"contextId\": \"$CTX_MODEL_REG\",
   \"slug\": \"prima-model\",
   \"title\": \"Prima Model\",
@@ -1312,7 +1312,7 @@ post "$API/domain-models/$MODEL_ID/aggregates" "{
 }" > /dev/null
 echo "  prima-model (Model Registry)"
 
-post "$API/domain-models/$MODEL_ID/aggregates" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/aggregates" "{
   \"contextId\": \"$CTX_ORCHESTRATION\",
   \"slug\": \"chat-session\",
   \"title\": \"Chat Session\",
@@ -1331,7 +1331,7 @@ post "$API/domain-models/$MODEL_ID/aggregates" "{
 }" > /dev/null
 echo "  chat-session (AI Orchestration)"
 
-post "$API/domain-models/$MODEL_ID/aggregates" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/aggregates" "{
   \"contextId\": \"$CTX_RAG\",
   \"slug\": \"knowledge-document\",
   \"title\": \"Knowledge Document\",
@@ -1349,7 +1349,7 @@ post "$API/domain-models/$MODEL_ID/aggregates" "{
 }" > /dev/null
 echo "  knowledge-document (Knowledge & RAG)"
 
-post "$API/domain-models/$MODEL_ID/aggregates" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/aggregates" "{
   \"contextId\": \"$CTX_LLM_PROXY\",
   \"slug\": \"llm-route\",
   \"title\": \"LLM Route\",
@@ -1376,7 +1376,7 @@ echo ""
 # =============================================================================
 echo "─── Creating Glossary Terms ───"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_ORCHESTRATION\",
   \"term\": \"AiOx\",
   \"definition\": \"AI Orchestration Exchange — the core service that accepts OpenAI-compatible chat completion requests and routes them through guardrails to LLM providers via LiteLLM. Also serves as MCP tool gateway and RAG context injector. Pronounced 'AY-ox'.\",
@@ -1386,7 +1386,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  AiOx"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_MODEL_REG\",
   \"term\": \"Prima Model\",
   \"definition\": \"An abstraction over a specific LLM provider model (e.g., 'prima-mini' backed by Claude Sonnet). Includes encrypted credentials, workspace assignments, and guardrail rules.\",
@@ -1396,7 +1396,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  Prima Model"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_PII\",
   \"term\": \"Guardrail Rule\",
   \"definition\": \"A policy rule that scans LLM input/output for prohibited content, PII, or safety violations. Each rule has a severity (info/low/medium/high/critical) and action (log/warn/block/redact).\",
@@ -1406,7 +1406,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  Guardrail Rule"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_RAG\",
   \"term\": \"RAG\",
   \"definition\": \"Retrieval-Augmented Generation — a technique where relevant document chunks are retrieved from a vector database and injected into the LLM prompt context to provide grounded, factual answers.\",
@@ -1416,7 +1416,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  RAG"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_ORCHESTRATION\",
   \"term\": \"MCP\",
   \"definition\": \"Model Context Protocol — an open standard for connecting AI agents to external tools (GitHub, Slack, Atlassian, databases). Supports stdio and HTTP streamable transports.\",
@@ -1426,7 +1426,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  MCP"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_IAM\",
   \"term\": \"SCIM\",
   \"definition\": \"System for Cross-domain Identity Management — an open standard for automating user provisioning and deprovisioning between an identity provider (e.g., Entra ID) and Prima Control Tower.\",
@@ -1436,7 +1436,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  SCIM"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_LLM_PROXY\",
   \"term\": \"LiteLLM\",
   \"definition\": \"Unified LLM gateway proxy — routes requests to 100+ LLM providers (OpenAI, Anthropic, Bedrock, etc.) with a single OpenAI-compatible API. Provides load balancing, fallback, and spend tracking.\",
@@ -1446,7 +1446,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  LiteLLM"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_PII\",
   \"term\": \"Presidio\",
   \"definition\": \"Microsoft Presidio — open-source PII detection and anonymization engine. Recognizes entities (SSN, phone, email, credit card) with configurable confidence thresholds.\",
@@ -1456,7 +1456,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  Presidio"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_WORKSPACE\",
   \"term\": \"Agent Flow\",
   \"definition\": \"A visual no-code workflow built in the Agent Builder that chains together 9 node types (LLM instruction, API call, web scraping, code execution, etc.) to automate complex multi-step AI tasks.\",
@@ -1507,7 +1507,7 @@ echo "─── Ingesting Governance Snapshot ───"
 #   CAP-029: Service Mesh Networking               → prima.foundation.istio
 #   CAP-030: Agent Skill Distribution              → prima-delivery-hub
 
-post "$API/governance" '{
+post "$API/taxonomy/governance" '{
   "version": "3.1.0",
   "project": "prima-platform",
   "generated": "2026-02-18T18:00:00Z",
@@ -1753,172 +1753,172 @@ post "$API/governance" '{
       "taxonomyNode": "prima-delivery-hub"
     }
   },
-  "personas": {
-    "PER-001": {
-      "id": "PER-001",
+  "userTypes": {
+    "UT-001": {
+      "id": "UT-001",
       "name": "Platform Admin",
       "type": "human",
       "archetype": "IT administrator responsible for managing users, teams, workspaces, LLM models, guardrail policies, tool providers, and monitoring platform usage via Control Tower",
       "typicalCapabilities": ["CAP-001", "CAP-002", "CAP-003", "CAP-005", "CAP-006"],
-      "tag": "PER-001"
+      "tag": "UT-001"
     },
-    "PER-002": {
-      "id": "PER-002",
+    "UT-002": {
+      "id": "UT-002",
       "name": "Knowledge Worker",
       "type": "human",
       "archetype": "Government analyst or enterprise user who chats with AI assistants, uploads documents for RAG, uses agent workflows, and imports data from connectors",
       "typicalCapabilities": ["CAP-017", "CAP-018", "CAP-019", "CAP-020"],
-      "tag": "PER-002"
+      "tag": "UT-002"
     },
-    "PER-003": {
-      "id": "PER-003",
+    "UT-003": {
+      "id": "UT-003",
       "name": "Workspace Manager",
       "type": "human",
       "archetype": "Team lead who configures workspace settings, manages knowledge bases, curates agent skills, configures MCP tool providers, and controls team member access",
       "typicalCapabilities": ["CAP-007", "CAP-017", "CAP-020", "CAP-004"],
-      "tag": "PER-003"
+      "tag": "UT-003"
     },
-    "PER-004": {
-      "id": "PER-004",
+    "UT-004": {
+      "id": "UT-004",
       "name": "AiOx Service",
       "type": "system",
       "archetype": "The AI orchestration engine service principal that authenticates to Control Tower to resolve model credentials, invoke MCP tools, inject RAG context, and report usage telemetry",
       "typicalCapabilities": ["CAP-008", "CAP-009", "CAP-010", "CAP-012"],
-      "tag": "PER-004"
+      "tag": "UT-004"
     },
-    "PER-005": {
-      "id": "PER-005",
+    "UT-005": {
+      "id": "UT-005",
       "name": "Developer",
       "type": "human",
       "archetype": "Software developer who uses Prima Code CLI, installs agent skills from Delivery Hub, builds and publishes agent flows, and integrates via OpenAI-compatible API",
       "typicalCapabilities": ["CAP-030", "CAP-014", "CAP-018"],
-      "tag": "PER-005"
+      "tag": "UT-005"
     }
   },
   "userStories": {
     "US-001": {
       "id": "US-001",
       "title": "Register a new LLM provider model with guardrails and assign to workspace",
-      "persona": "PER-001",
+      "userType": "UT-001",
       "capabilities": ["CAP-002", "CAP-003", "CAP-006", "CAP-011"],
       "status": "complete"
     },
     "US-002": {
       "id": "US-002",
       "title": "Chat with AI about uploaded documents using RAG context",
-      "persona": "PER-002",
+      "userType": "UT-002",
       "capabilities": ["CAP-017", "CAP-010", "CAP-008", "CAP-020"],
       "status": "complete"
     },
     "US-003": {
       "id": "US-003",
       "title": "Review usage analytics to identify high-cost workspaces and set budgets",
-      "persona": "PER-001",
+      "userType": "UT-001",
       "capabilities": ["CAP-005", "CAP-006"],
       "status": "complete"
     },
     "US-004": {
       "id": "US-004",
       "title": "Upload knowledge base documents and configure workspace RAG settings",
-      "persona": "PER-003",
+      "userType": "UT-003",
       "capabilities": ["CAP-020", "CAP-022", "CAP-017"],
       "status": "complete"
     },
     "US-005": {
       "id": "US-005",
       "title": "Build a visual agent flow chaining LLM calls with API calls",
-      "persona": "PER-002",
+      "userType": "UT-002",
       "capabilities": ["CAP-018", "CAP-015", "CAP-008"],
       "status": "implementing"
     },
     "US-006": {
       "id": "US-006",
       "title": "Install agent skills from Delivery Hub into workspace",
-      "persona": "PER-005",
+      "userType": "UT-005",
       "capabilities": ["CAP-030", "CAP-017"],
       "status": "implementing"
     },
     "US-007": {
       "id": "US-007",
       "title": "Configure workspace MCP tool providers for team use",
-      "persona": "PER-003",
+      "userType": "UT-003",
       "capabilities": ["CAP-004", "CAP-009", "CAP-007"],
       "status": "complete"
     },
     "US-008": {
       "id": "US-008",
       "title": "Embed a chat widget on an external website for customer support",
-      "persona": "PER-003",
+      "userType": "UT-003",
       "capabilities": ["CAP-016", "CAP-014"],
       "status": "complete"
     },
     "US-009": {
       "id": "US-009",
       "title": "Ingest a GitHub repository as a workspace knowledge base",
-      "persona": "PER-002",
+      "userType": "UT-002",
       "capabilities": ["CAP-021", "CAP-020", "CAP-022"],
       "status": "complete"
     },
     "US-010": {
       "id": "US-010",
       "title": "Monitor LLM provider costs and configure fallback routing",
-      "persona": "PER-001",
+      "userType": "UT-001",
       "capabilities": ["CAP-011", "CAP-005", "CAP-006"],
       "status": "complete"
     },
     "US-011": {
       "id": "US-011",
       "title": "Provision users via SCIM from Azure AD identity provider",
-      "persona": "PER-001",
+      "userType": "UT-001",
       "capabilities": ["CAP-001", "CAP-006"],
       "status": "complete"
     },
     "US-012": {
       "id": "US-012",
       "title": "Use slash commands and prompt presets in workspace chat",
-      "persona": "PER-002",
+      "userType": "UT-002",
       "capabilities": ["CAP-017", "CAP-014"],
       "status": "complete"
     },
     "US-013": {
       "id": "US-013",
       "title": "Build and publish a reusable agent skill to Delivery Hub",
-      "persona": "PER-005",
+      "userType": "UT-005",
       "capabilities": ["CAP-030", "CAP-018", "CAP-015"],
       "status": "implementing"
     },
     "US-014": {
       "id": "US-014",
       "title": "Detect and redact PII in LLM responses via guardrail enforcement",
-      "persona": "PER-004",
+      "userType": "UT-004",
       "capabilities": ["CAP-012", "CAP-008", "CAP-003"],
       "status": "complete"
     },
     "US-015": {
       "id": "US-015",
       "title": "Configure TTS/STT for accessibility in workspace chat",
-      "persona": "PER-003",
+      "userType": "UT-003",
       "capabilities": ["CAP-017", "CAP-014"],
       "status": "implementing"
     },
     "US-016": {
       "id": "US-016",
       "title": "Use the OpenAI-compatible API to integrate Prima with external tools",
-      "persona": "PER-005",
+      "userType": "UT-005",
       "capabilities": ["CAP-014", "CAP-008"],
       "status": "complete"
     },
     "US-017": {
       "id": "US-017",
       "title": "Import Confluence documentation as workspace knowledge base",
-      "persona": "PER-002",
+      "userType": "UT-002",
       "capabilities": ["CAP-021", "CAP-019", "CAP-022"],
       "status": "complete"
     },
     "US-018": {
       "id": "US-018",
       "title": "Review and manage guardrail violations across all workspaces",
-      "persona": "PER-001",
+      "userType": "UT-001",
       "capabilities": ["CAP-003", "CAP-012", "CAP-005", "CAP-006"],
       "status": "complete"
     }
@@ -1948,7 +1948,7 @@ post "$API/governance" '{
   },
   "stats": {
     "totalCapabilities": 30,
-    "totalPersonas": 5,
+    "totalUserTypes": 5,
     "totalStories": 18,
     "totalRoadItems": 3,
     "integrityStatus": "valid",
@@ -1989,15 +1989,15 @@ post "$API/governance" '{
     "CAP-029": { "stories": [], "roads": [] },
     "CAP-030": { "stories": ["US-006", "US-013"], "roads": ["ROAD-003"] }
   },
-  "byPersona": {
-    "PER-001": { "stories": ["US-001", "US-003", "US-010", "US-011", "US-018"], "capabilities": ["CAP-001", "CAP-002", "CAP-003", "CAP-005", "CAP-006"] },
-    "PER-002": { "stories": ["US-002", "US-005", "US-009", "US-012", "US-017"], "capabilities": ["CAP-017", "CAP-018", "CAP-019", "CAP-020"] },
-    "PER-003": { "stories": ["US-004", "US-007", "US-008", "US-015"], "capabilities": ["CAP-007", "CAP-017", "CAP-020", "CAP-004"] },
-    "PER-004": { "stories": ["US-014"], "capabilities": ["CAP-008", "CAP-009", "CAP-010", "CAP-012"] },
-    "PER-005": { "stories": ["US-006", "US-013", "US-016"], "capabilities": ["CAP-030", "CAP-014", "CAP-018"] }
+  "byUserType": {
+    "UT-001": { "stories": ["US-001", "US-003", "US-010", "US-011", "US-018"], "capabilities": ["CAP-001", "CAP-002", "CAP-003", "CAP-005", "CAP-006"] },
+    "UT-002": { "stories": ["US-002", "US-005", "US-009", "US-012", "US-017"], "capabilities": ["CAP-017", "CAP-018", "CAP-019", "CAP-020"] },
+    "UT-003": { "stories": ["US-004", "US-007", "US-008", "US-015"], "capabilities": ["CAP-007", "CAP-017", "CAP-020", "CAP-004"] },
+    "UT-004": { "stories": ["US-014"], "capabilities": ["CAP-008", "CAP-009", "CAP-010", "CAP-012"] },
+    "UT-005": { "stories": ["US-006", "US-013", "US-016"], "capabilities": ["CAP-030", "CAP-014", "CAP-018"] }
   }
 }' > /dev/null
-echo "  Governance snapshot ingested (30 capabilities, 5 personas, 18 user stories, 3 road items)"
+echo "  Governance snapshot ingested (30 capabilities, 5 user types, 18 user stories, 3 road items)"
 
 echo ""
 
@@ -2016,7 +2016,7 @@ echo "    - 14 domain events with cap-to-cap cross-stack mappings"
 echo "    -  2 workflows spanning 5-7 contexts each"
 echo "    -  5 aggregates with commands and invariants"
 echo "    -  9 glossary terms"
-echo "    -  1 governance snapshot (30 capabilities, 5 personas, 18 user stories)"
+echo "    -  1 governance snapshot (30 capabilities, 5 user types, 18 user stories)"
 echo ""
 echo "  Official Taxonomy (from kata CLI, foundry excluded):"
 echo "    prima [system]"

@@ -55,7 +55,7 @@ Breaking changes to existing commands would cascade across all consumers, potent
    - `validate:governance` (not `validate-governance`)
    - `validate:transitions` (new functionality)
    - `coverage:capabilities` (new functionality)
-   - `coverage:personas` (new functionality)
+   - `coverage:user types` (new functionality)
 4. **Docker build test**: Verify existing Dockerfile `RUN` commands still work
 5. **Justfile test**: Verify existing Justfile recipes still work
 

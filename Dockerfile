@@ -30,6 +30,10 @@ RUN bun install --ignore-scripts \
  && bun install --ignore-scripts --cwd packages/intelligence \
  && bun install --ignore-scripts --cwd packages/intelligence/web
 
+# Build @foe/schemas so the web UI can import Zod-inferred types at bundle time
+WORKDIR /build/packages/foe-schemas
+RUN bun run build
+
 WORKDIR /build/packages/intelligence/web
 
 # In unified mode, the browser talks to the same origin — no separate hosts

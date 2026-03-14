@@ -67,9 +67,9 @@ Implement full CRUD (Create, Read, Update, Delete) operations for ALL taxonomy e
 - File adapter enables GitOps workflows (edit YAML → commit → CI ingests)
 - Maintains backward compatibility with existing snapshot ingestion
 
-**Target Personas:**
-- **PER-002** (Platform Engineer) — Primary user for taxonomy management
-- **PER-005** (Framework Adopter) — Needs to customize taxonomy structure
+**Target User Types:**
+- **UT-002** (Platform Engineer) — Primary user for taxonomy management
+- **UT-005** (Framework Adopter) — Needs to customize taxonomy structure
 
 ## Acceptance Criteria
 

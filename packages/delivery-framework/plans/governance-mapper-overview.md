@@ -9,7 +9,7 @@ sidebar_position: 2
 
 The **katalyst-domain-mapper** repo has a proven pipeline for turning structured markdown (with YAML frontmatter) into validated JSON indices, persisting them via an API, scanning repos with AI agents, and visualizing results in web UIs. The pipeline today handles **FOE Field Guide** artifacts (methods + observations).
 
-The **prima-delivery-demonstrator** repo defines a rich **governance framework** with 7 artifact types (Capabilities, Personas, User Stories, Road Items, ADRs, NFRs, Change Entries) plus a DDD domain model (Bounded Contexts, Aggregates, Value Objects, Domain Events). These artifacts have complex YAML frontmatter schemas and cross-reference each other. However, prima's validation is done via hand-written Node.js scripts (`governance-linter.js`, `validate-changes.js`, etc.) with no shared schema package, no type safety, and no API.
+The **prima-delivery-demonstrator** repo defines a rich **governance framework** with 7 artifact types (Capabilities, User Types, User Stories, Road Items, ADRs, NFRs, Change Entries) plus a DDD domain model (Bounded Contexts, Aggregates, Value Objects, Domain Events). These artifacts have complex YAML frontmatter schemas and cross-reference each other. However, prima's validation is done via hand-written Node.js scripts (`governance-linter.js`, `validate-changes.js`, etc.) with no shared schema package, no type safety, and no API.
 
 **This plan generalizes the domain-mapper pattern to handle governance and DDD artifacts**, making `@foe/schemas` the canonical schema source that both repos (and any future project) can import.
 
@@ -38,7 +38,7 @@ The **prima-delivery-demonstrator** repo defines a rich **governance framework**
      │   ├── method.ts      │          │   ├── ports
      │   ├── observation.ts │          │   ├── adapters (SQLite)
      │   ├── capability.ts  (NEW)      │   ├── use cases
-     │   ├── persona.ts     (NEW)      │   └── routes /api/v1/governance/*
+     │   ├── user-type.ts     (NEW)      │   └── routes /api/v1/governance/*
      │   ├── road-item.ts   (NEW)      ├── report domain (existing)
      │   ├── adr.ts         (NEW)      └── scan domain (existing)
      │   ├── nfr.ts         (NEW)
@@ -123,13 +123,13 @@ Phases 4, 5, and 6 can run in parallel once Phase 3 is complete.
 The governance system's core value is **referential integrity** across artifact types. Every cross-reference in frontmatter is validated at build time:
 
 ```
-PER-XXX (Persona)
+UT-XXX (User Type)
   ├── typical_capabilities[] ──→ CAP-XXX
   ├── related_stories[] ───────→ US-XXX
-  └── related_personas[] ─────→ PER-XXX
+  └── related_user_types[] ─────→ UT-XXX
 
 US-XXX (User Story)
-  ├── persona ─────────────────→ PER-XXX
+  ├── user_type ─────────────────→ UT-XXX
   ├── capabilities[] ──────────→ CAP-XXX
   └── use_cases[] ─────────────→ UC-XXX
 

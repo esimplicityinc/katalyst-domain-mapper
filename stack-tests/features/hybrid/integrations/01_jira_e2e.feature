@@ -60,6 +60,6 @@ Feature: Jira Integration End-to-End
     Given I register cleanup DELETE "/api/v1/integrations/jira/issues/{jiraKey}"
 
     # UI: Verify the ROAD item shows Jira link in the governance dashboard
-    Given I navigate to "/governance/roadmap"
+    Given I navigate to "/taxonomy/roads"
     Then I should see text "ROAD-001"
     And I should see text "{jiraKey}"

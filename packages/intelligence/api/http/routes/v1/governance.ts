@@ -4,7 +4,7 @@ import type { QueryGovernanceState } from "../../../usecases/governance/QueryGov
 import type { GetCapabilityCoverage } from "../../../usecases/governance/GetCapabilityCoverage.js";
 import type { GetGovernanceTrend } from "../../../usecases/governance/GetGovernanceTrend.js";
 import type { ValidateTransition } from "../../../usecases/governance/ValidateTransition.js";
-import type { GovernanceRepository } from "../../../ports/GovernanceRepository.js";
+import type { TaxonomyRepository } from "../../../ports/TaxonomyRepository.js";
 import { GovernanceNotFoundError } from "../../../domain/governance/GovernanceErrors.js";
 
 export function createGovernanceRoutes(deps: {
@@ -12,11 +12,11 @@ export function createGovernanceRoutes(deps: {
   queryGovernanceState: QueryGovernanceState;
   getCapabilityCoverage: GetCapabilityCoverage;
   getGovernanceTrend: GetGovernanceTrend;
-  governanceRepo: GovernanceRepository;
+  governanceRepo: TaxonomyRepository;
   validateTransition: ValidateTransition;
 }) {
   return (
-    new Elysia({ prefix: "/governance" })
+    new Elysia({ prefix: "/taxonomy/governance" })
 
       // POST / — Ingest governance-index.json
       .post(
@@ -117,15 +117,15 @@ export function createGovernanceRoutes(deps: {
         },
       )
 
-      // GET /coverage/personas — Persona coverage
+      // GET /coverage/user-types — User type coverage
       .get(
-        "/coverage/personas",
+        "/coverage/user-types",
         async () => {
-          return deps.getCapabilityCoverage.getPersonas();
+          return deps.getCapabilityCoverage.getUserTypes();
         },
         {
           detail: {
-            summary: "Get persona coverage report",
+            summary: "Get user type coverage report",
             tags: ["Governance"],
           },
         },
@@ -170,7 +170,7 @@ export function createGovernanceRoutes(deps: {
           const snapshots = await deps.queryGovernanceState.listSnapshots();
           let deleted = 0;
           for (const snapshot of snapshots) {
-            const ok = await deps.governanceRepo.deleteSnapshot(snapshot.id);
+            const ok = await deps.governanceRepo.deleteGovernanceSnapshot(snapshot.id);
             if (ok) deleted++;
           }
           return {
@@ -190,7 +190,7 @@ export function createGovernanceRoutes(deps: {
       .delete(
         "/:id",
         async ({ params, set }) => {
-          const deleted = await deps.governanceRepo.deleteSnapshot(params.id);
+          const deleted = await deps.governanceRepo.deleteGovernanceSnapshot(params.id);
           if (!deleted) {
             set.status = 404;
             return { error: `Governance snapshot not found: ${params.id}` };

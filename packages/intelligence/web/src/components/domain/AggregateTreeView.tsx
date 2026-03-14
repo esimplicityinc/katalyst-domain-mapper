@@ -114,7 +114,7 @@ function InvariantEditor({
     const rule = newRule.trim();
     if (!rule) return;
     const desc = newDesc.trim();
-    onChange([...invariants, { rule, description: desc || undefined }]);
+    onChange([...invariants, { rule, description: desc || rule, enforced: false, enforcementLocation: undefined }]);
     setNewRule("");
     setNewDesc("");
   };

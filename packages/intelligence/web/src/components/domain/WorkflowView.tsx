@@ -31,8 +31,13 @@ const ARROW_SIZE = 8;
 
 // ── Auto-layout for states without x/y positions ────────────────────────────
 
-/** A WorkflowState guaranteed to have x/y coordinates. */
-interface PositionedState extends WorkflowState {
+/** A WorkflowState with a guaranteed `id` (defaulting to `name`). */
+interface NormalizedState extends Omit<WorkflowState, "id"> {
+  id: string;
+}
+
+/** A NormalizedState guaranteed to have x/y coordinates. */
+interface PositionedState extends NormalizedState {
   x: number;
   y: number;
 }
@@ -43,7 +48,7 @@ interface PositionedState extends WorkflowState {
  * but the component needs { id, name, isTerminal, isError, x?, y? }.
  * Transitions reference states by name, so id = name.
  */
-function normalizeStates(rawStates: WorkflowState[]): WorkflowState[] {
+function normalizeStates(rawStates: WorkflowState[]): NormalizedState[] {
   return rawStates.map((s) => ({
     ...s,
     id: s.id || s.name,
@@ -869,7 +874,7 @@ export function WorkflowView({ model, onModelUpdated }: WorkflowViewProps) {
             {activeWorkflow.states.map((state) => (
               <button
                 key={state.id}
-                onClick={() => handleStateClick(state.id)}
+                onClick={() => handleStateClick(state.id ?? state.name)}
                 className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full border transition-colors ${
                   state.isError
                     ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800"

@@ -471,7 +471,7 @@ erDiagram
 |----------|-----------|-----------------|
 | **Infrastructure** | `system`, `subsystem`, `stack`, `layer`, `user`, `org_unit` | _(base node only)_ |
 | **DDD** | `bounded_context`, `aggregate`, `value_object`, `domain_event`, `glossary_term` | `BoundedContextExt`, `AggregateExt`, `ValueObjectExt`, `DomainEventExt`, `GlossaryTermExt` |
-| **Governance** | `capability`, `persona`, `user_story`, `use_case`, `road_item`, `adr`, `nfr`, `change_entry` | `CapabilityExt`, `PersonaExt`, `UserStoryExt`, `UseCaseExt`, `RoadItemExt`, `AdrExt`, `NfrExt`, `ChangeEntryExt` |
+| **Governance** | `capability`, `user type`, `user_story`, `use_case`, `road_item`, `adr`, `nfr`, `change_entry` | `CapabilityExt`, `UserTypeExt`, `UserStoryExt`, `UseCaseExt`, `RoadItemExt`, `AdrExt`, `NfrExt`, `ChangeEntryExt` |
 
 ### 5.5 Extension schemas — DDD
 
@@ -576,9 +576,9 @@ erDiagram
         enum status "planned | stable | deprecated"
     }
 
-    PersonaExt {
+    UserTypeExt {
         string title
-        string tag "@PER-NNN"
+        string tag "@UT-NNN"
         enum type "human | bot | system | external_api"
         enum status "draft | approved | deprecated"
         enum archetype "creator | operator | administrator | consumer | integrator"
@@ -588,7 +588,7 @@ erDiagram
         string[] typicalCapabilities "CAP-NNN FKs"
         TechnicalProfile technicalProfile "optional"
         string[] relatedStories "US-NNN FKs"
-        string[] relatedPersonas "PER-NNN FKs"
+        string[] relatedUserTypes "UT-NNN FKs"
         string created "optional"
         string updated "optional"
         string validatedBy "optional"
@@ -602,7 +602,7 @@ erDiagram
 
     UserStoryExt {
         string title
-        string persona "PER-NNN FK"
+        string userType "UT-NNN FK"
         enum status "draft | approved | implementing | complete | deprecated"
         string[] capabilities "CAP-NNN FKs, min 1"
         string[] useCases "UC-NNN FKs"
@@ -611,7 +611,7 @@ erDiagram
 
     UseCaseExt {
         string title
-        string[] actors "PER-NNN FKs"
+        string[] actors "UT-NNN FKs"
         string[] preconditions
         string[] postconditions
         string[] mainFlow
@@ -709,7 +709,7 @@ erDiagram
         string timestamp
     }
 
-    PersonaExt ||--o| TechnicalProfile : "technicalProfile"
+    UserTypeExt ||--o| TechnicalProfile : "technicalProfile"
     RoadItemExt ||--|| RoadGovernance : "governance"
     RoadGovernance ||--|| AdrGovernance : "adrs"
     RoadGovernance ||--|| BddGovernance : "bdd"
@@ -717,10 +717,10 @@ erDiagram
     ChangeEntryExt ||--|| ComplianceCheck : "compliance.adrCheck"
     ChangeEntryExt ||--o{ AgentSignature : "signatures[]"
 
-    UserStoryExt }o--|| PersonaExt : "persona (PER FK)"
+    UserStoryExt }o--|| UserTypeExt : "userType (UT FK)"
     UserStoryExt }o--o{ CapabilityExt : "capabilities (CAP FKs)"
     UserStoryExt }o--o{ UseCaseExt : "useCases (UC FKs)"
-    UseCaseExt }o--o{ PersonaExt : "actors (PER FKs)"
+    UseCaseExt }o--o{ UserTypeExt : "actors (UT FKs)"
     ChangeEntryExt }o--|| RoadItemExt : "roadId (ROAD FK)"
     RoadItemExt }o--o{ RoadItemExt : "blockedBy / blocks"
 ```
@@ -849,7 +849,7 @@ erDiagram
         record domainEvents "UUID -> DomainEventExt"
         record glossaryTerms "UUID -> GlossaryTermExt"
         record capabilities "UUID -> CapabilityExt"
-        record personas "UUID -> PersonaExt"
+        record userTypes "UUID -> UserTypeExt"
         record userStories "UUID -> UserStoryExt"
         record useCases "UUID -> UseCaseExt"
         record roadItems "UUID -> RoadItemExt"
@@ -871,8 +871,8 @@ erDiagram
     }
 
     ReverseIndices {
-        record byCapability "CAP-NNN -> personas, stories, roads"
-        record byPersona "PER-NNN -> stories, capabilities"
+        record byCapability "CAP-NNN -> user types, stories, roads"
+        record byUserType "UT-NNN -> stories, capabilities"
         record byRoad "ROAD-NNN -> adrs, changes, capabilities, nfrs"
         record byContext "slug -> aggregates, events, valueObjects, roads"
         record byAggregate "slug -> context, valueObjects, events"
@@ -882,7 +882,7 @@ erDiagram
         int totalNodes
         int totalEnvironments
         int totalCapabilities
-        int totalPersonas
+        int totalUserTypes
         int totalStories
         int totalUseCases
         int totalRoadItems
@@ -964,7 +964,7 @@ NodeExtensionsSchema = z.object({
   domainEvents:    z.record(DomainEventExtSchema).default({}),
   glossaryTerms:   z.record(GlossaryTermExtSchema).default({}),
   capabilities:    z.record(CapabilityExtSchema).default({}),
-  personas:        z.record(PersonaExtSchema).default({}),
+   userTypes:        z.record(UserTypeExtSchema).default({}),
   userStories:     z.record(UserStoryExtSchema).default({}),
   useCases:        z.record(UseCaseExtSchema).default({}),
   roadItems:       z.record(RoadItemExtSchema).default({}),
@@ -988,8 +988,8 @@ Precomputed indices for governance cross-references, migrated from the former `G
 
 | Index Key | Record Key | Value Fields | Use Case |
 |-----------|-----------|-------------|----------|
-| `byCapability` | `CAP-NNN` | `personas[]`, `stories[]`, `roads[]` | "Which road items deliver this capability?" |
-| `byPersona` | `PER-NNN` | `stories[]`, `capabilities[]` | "What capabilities does this persona need?" |
+| `byCapability` | `CAP-NNN` | `user types[]`, `stories[]`, `roads[]` | "Which road items deliver this capability?" |
+| `byUserType` | `UT-NNN` | `stories[]`, `capabilities[]` | "What capabilities does this user type need?" |
 | `byRoad` | `ROAD-NNN` | `adrs[]`, `changes[]`, `capabilities[]`, `nfrs[]` | "What governance artifacts are attached to this road item?" |
 | `byContext` | slug | `aggregates[]`, `events[]`, `valueObjects[]`, `roads[]` | "What DDD entities belong to this bounded context?" |
 | `byAggregate` | slug | `context`, `valueObjects[]`, `events[]` | "What is the context and contents of this aggregate?" |
@@ -1000,9 +1000,9 @@ Precomputed indices for governance cross-references, migrated from the former `G
 |-------------|---------|---------|
 | `TaxonomyNodeNamePattern` | `order-service` | TaxonomyNode.name, all infrastructure schemas |
 | `SlugPattern` | `my-context` | DDD extension schemas (context, aggregate, value-object, event refs) |
-| `CapabilityIdPattern` | `CAP-001` | CapabilityExt, PersonaExt, UserStoryExt, RoadItemExt, ReverseIndices |
-| `PersonaIdPattern` | `PER-001` | PersonaExt, UserStoryExt, UseCaseExt, ReverseIndices |
-| `UserStoryIdPattern` | `US-001` | UserStoryExt, PersonaExt, ReverseIndices |
+| `CapabilityIdPattern` | `CAP-001` | CapabilityExt, UserTypeExt, UserStoryExt, RoadItemExt, ReverseIndices |
+| `UserTypeIdPattern` | `UT-001` | UserTypeExt, UserStoryExt, UseCaseExt, ReverseIndices |
+| `UserStoryIdPattern` | `US-001` | UserStoryExt, UserTypeExt, ReverseIndices |
 | `UseCaseIdPattern` | `UC-001` | UseCaseExt, UserStoryExt |
 | `RoadItemIdPattern` | `ROAD-001` | RoadItemExt, ChangeEntryExt, ReverseIndices |
 | `AdrIdPattern` | `ADR-001` | AdrExt, RoadItemExt (AdrGovernance), ReverseIndices |
@@ -1041,7 +1041,7 @@ Additional enums:
 | Function | Signature | Description |
 |----------|----------|-------------|
 | `getRoadsByCapability` | `(snapshot, capId) → string[]` | Road item names by capability ID |
-| `getPersonasByCapability` | `(snapshot, capId) → string[]` | Persona names by capability ID |
+| `getUserTypesByCapability` | `(snapshot, capId) → string[]` | User type names by capability ID |
 | `getCapabilityCoverage` | `(snapshot) → Record<string, number>` | Count of roads per capability |
 | `getAggregatesByContext` | `(snapshot, contextSlug) → string[]` | Aggregate slugs by bounded context |
 | `getEventsByContext` | `(snapshot, contextSlug) → string[]` | Domain event slugs by bounded context |

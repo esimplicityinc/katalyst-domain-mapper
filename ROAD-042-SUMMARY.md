@@ -24,7 +24,7 @@
 ### 2. **User Story: US-047**
 - **Location**: `packages/delivery-framework/user-stories/US-047.md`
 - **Title**: View FOE Score Trends Over Time
-- **Persona**: PER-001 (Engineering Team Lead)
+- **User Type**: UT-001 (Engineering Team Lead)
 - **Capabilities**: CAP-014, CAP-001
 
 **Acceptance Criteria:**
@@ -40,7 +40,7 @@
 ### 3. **User Story: US-048**
 - **Location**: `packages/delivery-framework/user-stories/US-048.md`
 - **Title**: Track Maturity Level Progression
-- **Persona**: PER-001 (Engineering Team Lead)
+- **User Type**: UT-001 (Engineering Team Lead)
 - **Capabilities**: CAP-014, CAP-001
 
 **Acceptance Criteria:**

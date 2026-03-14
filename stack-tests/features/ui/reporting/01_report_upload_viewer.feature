@@ -18,7 +18,7 @@ Feature: FOE Report Upload & Viewer
   @dashboard @ROAD-009 @CAP-002
   Scenario: Governance dashboard shows road item Kanban
     # Seed governance data via API
-    When I POST "/api/v1/governance" with JSON body:
+    When I POST "/api/v1/taxonomy/governance" with JSON body:
       """
       {
         "version": "1.0.0",
@@ -27,8 +27,8 @@ Feature: FOE Report Upload & Viewer
         "capabilities": {
           "CAP-001": {"id": "CAP-001", "title": "Test Capability", "status": "stable"}
         },
-        "personas": {
-          "PER-001": {"id": "PER-001", "name": "Test Persona", "type": "human"}
+        "userTypes": {
+          "UT-001": {"id": "UT-001", "name": "Test User Type", "type": "human"}
         },
         "roadItems": {
           "ROAD-001": {"id": "ROAD-001", "title": "Implementing Item", "status": "implementing", "phase": 1, "priority": "high"},
@@ -36,7 +36,7 @@ Feature: FOE Report Upload & Viewer
         },
         "stats": {
           "capabilities": 1,
-          "personas": 1,
+          "userTypes": 1,
           "userStories": 2,
           "roadItems": 2,
           "integrityStatus": "pass",
@@ -46,10 +46,10 @@ Feature: FOE Report Upload & Viewer
       """
     Then the response status should be 200
     And I store the value at "id" as "snapshotId"
-    And I register cleanup DELETE "/api/v1/governance/{snapshotId}"
+    And I register cleanup DELETE "/api/v1/taxonomy/governance/{snapshotId}"
 
     # Navigate to governance dashboard
-    Given I navigate to "/governance"
+    Given I navigate to "/taxonomy/governance"
     Then I wait for the page to load
     Then I should see text "Road Items"
     And I should see text "Implementing"
@@ -58,7 +58,7 @@ Feature: FOE Report Upload & Viewer
   @context-map @ROAD-009 @CAP-002
   Scenario: DDD context map displays bounded contexts
     # Create domain model with bounded contexts via API
-    Given I POST "/api/v1/domain-models" with JSON body:
+    Given I POST "/api/v1/taxonomy/domain-models" with JSON body:
       """
       {
         "name": "Context Map Viewer Test",
@@ -67,9 +67,9 @@ Feature: FOE Report Upload & Viewer
       """
     Then the response status should be 200
     And I store the value at "id" as "modelId"
-    And I register cleanup DELETE "/api/v1/domain-models/{modelId}"
+    And I register cleanup DELETE "/api/v1/taxonomy/domain-models/{modelId}"
 
-    When I POST "/api/v1/domain-models/{modelId}/contexts" with JSON body:
+    When I POST "/api/v1/taxonomy/domain-models/{modelId}/contexts" with JSON body:
       """
       {
         "slug": "test-context",
@@ -81,6 +81,6 @@ Feature: FOE Report Upload & Viewer
     Then the response status should be 200
 
     # Navigate to context map
-    Given I navigate to "/mapper/contexts"
+    Given I navigate to "/taxonomy/domain-models/contexts"
     Then I wait for the page to load
     Then I should see text "Test Bounded Context"

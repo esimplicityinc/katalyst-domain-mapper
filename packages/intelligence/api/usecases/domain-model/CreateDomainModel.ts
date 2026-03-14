@@ -1,16 +1,16 @@
 import type {
-  DomainModelRepository,
+  TaxonomyRepository,
   StoredDomainModel,
   CreateDomainModelInput,
-} from "../../ports/DomainModelRepository.js";
+} from "../../ports/TaxonomyRepository.js";
 
 export class CreateDomainModel {
-  constructor(private repo: DomainModelRepository) {}
+  constructor(private repo: TaxonomyRepository) {}
 
   async execute(
     input: CreateDomainModelInput,
   ): Promise<{ id: string; name: string; createdAt: string }> {
-    const model: StoredDomainModel = await this.repo.create(input);
+    const model: StoredDomainModel = await this.repo.createDomainModel(input);
     return { id: model.id, name: model.name, createdAt: model.createdAt };
   }
 }

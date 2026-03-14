@@ -38,7 +38,7 @@ import {
   CTX_R,
   INFERRED_W,
   CAP_SIZE,
-  PERSONA_SIZE,
+  USER_TYPE_SIZE,
   groupKey,
   GROUP_META,
   groupContexts,
@@ -49,7 +49,7 @@ import {
 
 interface ForceNode extends SimulationNodeDatum {
   id: string;
-  kind: "context" | "inferred" | "capability" | "persona";
+  kind: "context" | "inferred" | "capability" | "userType";
   group?: string; // subdomain group key
   radius: number;
 }
@@ -129,12 +129,12 @@ export class D3ForceLayoutEngine implements LandscapeLayoutEngine {
       nodeById.set(node.id, node);
     }
 
-    // 4. Personas
-    for (const p of graph.personas) {
+    // 4. User types
+    for (const p of graph.userTypes) {
       const node: ForceNode = {
-        id: `persona-${p.id}`,
-        kind: "persona",
-        radius: PERSONA_SIZE / 2,
+        id: `ut-${p.id}`,
+        kind: "userType",
+        radius: USER_TYPE_SIZE / 2,
         x: CENTER_X + (Math.random() - 0.5) * 400,
         y: CENTER_Y + 400 + (Math.random() - 0.5) * 80,
       };
@@ -233,11 +233,11 @@ export class D3ForceLayoutEngine implements LandscapeLayoutEngine {
       }
     }
 
-    const personaPositions = new Map<string, Position>();
-    for (const p of graph.personas) {
-      const n = nodeById.get(`persona-${p.id}`);
-      if (n && n.x != null && n.y != null) {
-        personaPositions.set(p.id, { x: n.x, y: n.y });
+    const utPositions = new Map<string, Position>();
+    for (const p of graph.userTypes) {
+      const n = nodeById.get(`ut-${p.id}`);
+      if (n) {
+        utPositions.set(p.id, { x: n.x, y: n.y });
       }
     }
 
@@ -291,7 +291,7 @@ export class D3ForceLayoutEngine implements LandscapeLayoutEngine {
       groupBoxes,
       inferredPositions,
       capabilityPositions,
-      personaPositions,
+      utPositions,
       canvasWidth,
       canvasHeight,
     );

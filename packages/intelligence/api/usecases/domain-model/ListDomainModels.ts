@@ -1,12 +1,12 @@
 import type {
-  DomainModelRepository,
+  TaxonomyRepository,
   StoredDomainModel,
-} from "../../ports/DomainModelRepository.js";
+} from "../../ports/TaxonomyRepository.js";
 
 export class ListDomainModels {
-  constructor(private repo: DomainModelRepository) {}
+  constructor(private repo: TaxonomyRepository) {}
 
   async execute(): Promise<StoredDomainModel[]> {
-    return this.repo.list();
+    return this.repo.listDomainModels();
   }
 }

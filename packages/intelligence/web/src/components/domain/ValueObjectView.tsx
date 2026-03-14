@@ -183,7 +183,7 @@ export function ValueObjectView({ model, onModelUpdated }: ValueObjectViewProps)
   // ── Property list management ────────────────────────────────────────────
 
   const addProperty = useCallback(() => {
-    setFormProperties((prev) => [...prev, { name: "", type: "", description: "" }]);
+    setFormProperties((prev) => [...prev, { name: "", type: "", description: "", constraints: "" }]);
   }, []);
 
   const updateProperty = useCallback(
@@ -234,6 +234,7 @@ export function ValueObjectView({ model, onModelUpdated }: ValueObjectViewProps)
           name: p.name.trim(),
           type: p.type.trim(),
           description: p.description?.trim() || undefined,
+          constraints: p.constraints?.trim() || p.description?.trim() || undefined,
         })),
       validationRules: formValidationRules.filter((r) => r.trim()).map((r) => r.trim()),
     };

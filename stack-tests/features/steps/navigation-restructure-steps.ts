@@ -131,8 +131,8 @@ Then('I should navigate to the roadmap section', async ({ page }) => {
   await expect(page).toHaveURL(/\/docs\/roads/);
 });
 
-Then('I should navigate to the personas section', async ({ page }) => {
-  await expect(page).toHaveURL(/\/docs\/personas/);
+Then('I should navigate to the user types section', async ({ page }) => {
+  await expect(page).toHaveURL(/\/docs\/user-types/);
 });
 
 Then('I should navigate to the planning section', async ({ page }) => {

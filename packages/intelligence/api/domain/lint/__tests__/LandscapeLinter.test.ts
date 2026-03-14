@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from "bun:test";
 import { LandscapeLinter } from "../LandscapeLinter.js";
-import { emptyContext, validContext, makePersona, makeUserStory, makeBoundedContext, makeDomainEvent } from "./fixtures.js";
+import { emptyContext, validContext, makeUserType, makeUserStory, makeBoundedContext, makeDomainEvent } from "./fixtures.js";
 
 const linter = new LandscapeLinter();
 
@@ -27,8 +27,8 @@ describe("LandscapeLinter", () => {
 
     it("summary total equals findings length", () => {
       const ctx = emptyContext({
-        personas: [makePersona({ id: "PER-001" })],
-        userStories: [makeUserStory({ persona: "PER-GHOST", capabilities: ["CAP-GHOST"] })],
+        userTypes: [makeUserType({ id: "UT-001" })],
+        userStories: [makeUserStory({ userType: "UT-GHOST", capabilities: ["CAP-GHOST"] })],
       });
       const report = linter.lint(ctx);
       expect(report.summary.total).toBe(report.findings.length);
@@ -54,7 +54,7 @@ describe("LandscapeLinter", () => {
     it("returns 100 for all scores when there are no entities (vacuously complete)", () => {
       const report = linter.lint(emptyContext());
       const scores = report.summary.coverageScores;
-      expect(scores.personaToStory).toBe(100);
+      expect(scores.userTypeToStory).toBe(100);
       expect(scores.storyToCapability).toBe(100);
       expect(scores.capabilityToContext).toBe(100);
       expect(scores.contextToEvent).toBe(100);
@@ -63,13 +63,13 @@ describe("LandscapeLinter", () => {
       expect(scores.eventToCapability).toBe(100);
     });
 
-    it("computes personaToStory as 50% when 1 of 2 personas has stories", () => {
+    it("computes userTypeToStory as 50% when 1 of 2 user types has stories", () => {
       const ctx = emptyContext({
-        personas: [makePersona({ id: "PER-001" }), makePersona({ id: "PER-002", name: "B" })],
-        userStories: [makeUserStory({ persona: "PER-001" })],
+        userTypes: [makeUserType({ id: "UT-001" }), makeUserType({ id: "UT-002", name: "B" })],
+        userStories: [makeUserStory({ userType: "UT-001" })],
       });
       const report = linter.lint(ctx);
-      expect(report.summary.coverageScores.personaToStory).toBe(50);
+      expect(report.summary.coverageScores.userTypeToStory).toBe(50);
     });
 
     it("computes eventToCapability correctly", () => {
@@ -96,9 +96,9 @@ describe("LandscapeLinter", () => {
   describe("broken references", () => {
     it("detects multiple error-level violations in one report", () => {
       const ctx = emptyContext({
-        personas: [makePersona({ id: "PER-001" })],
+        userTypes: [makeUserType({ id: "UT-001" })],
         userStories: [
-          makeUserStory({ persona: "PER-GHOST", capabilities: ["CAP-GHOST"] }),
+          makeUserStory({ userType: "UT-GHOST", capabilities: ["CAP-GHOST"] }),
         ],
         capabilities: [],
         boundedContexts: [makeBoundedContext({ id: "ctx-001" })],
@@ -106,7 +106,7 @@ describe("LandscapeLinter", () => {
       });
       const report = linter.lint(ctx);
       const errors = report.findings.filter((f) => f.severity === "error");
-      // story-persona-exists + story-capability-exists + event-context-exists
+      // story-user-type-exists + story-capability-exists + event-context-exists
       expect(errors.length).toBeGreaterThanOrEqual(3);
       expect(report.summary.bySeverity.error).toBe(errors.length);
     });

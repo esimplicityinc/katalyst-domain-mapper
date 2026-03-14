@@ -1,5 +1,5 @@
 import type {
-  DomainModelRepository,
+  TaxonomyRepository,
   StoredAggregate,
   StoredDomainEvent,
   StoredValueObject,
@@ -9,11 +9,11 @@ import type {
   UpdateDomainEventInput,
   CreateValueObjectInput,
   UpdateValueObjectInput,
-} from "../../ports/DomainModelRepository.js";
+} from "../../ports/TaxonomyRepository.js";
 import { DomainModelNotFoundError } from "../../domain/domain-model/DomainModelErrors.js";
 
 export class ManageArtifacts {
-  constructor(private repo: DomainModelRepository) {}
+  constructor(private repo: TaxonomyRepository) {}
 
   // ── Aggregates ──────────────────────────────────────────────────────────────
 
@@ -21,7 +21,7 @@ export class ManageArtifacts {
     modelId: string,
     input: CreateAggregateInput,
   ): Promise<{ id: string; slug: string; title: string }> {
-    const exists = await this.repo.exists(modelId);
+    const exists = await this.repo.domainModelExists(modelId);
     if (!exists) {
       throw new DomainModelNotFoundError(modelId);
     }
@@ -48,7 +48,7 @@ export class ManageArtifacts {
     modelId: string,
     input: CreateDomainEventInput,
   ): Promise<{ id: string; slug: string; title: string }> {
-    const exists = await this.repo.exists(modelId);
+    const exists = await this.repo.domainModelExists(modelId);
     if (!exists) {
       throw new DomainModelNotFoundError(modelId);
     }
@@ -78,7 +78,7 @@ export class ManageArtifacts {
     modelId: string,
     input: CreateValueObjectInput,
   ): Promise<{ id: string; slug: string; title: string }> {
-    const exists = await this.repo.exists(modelId);
+    const exists = await this.repo.domainModelExists(modelId);
     if (!exists) {
       throw new DomainModelNotFoundError(modelId);
     }

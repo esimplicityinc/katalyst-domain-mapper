@@ -164,7 +164,7 @@ All tested links returned HTTP 200 OK:
 3. ✅ http://localhost:3003/docs/taxonomy/index
 4. ✅ http://localhost:3003/docs/roads/ (Roadmap)
 5. ✅ http://localhost:3003/docs/roads/index
-6. ✅ http://localhost:3003/docs/personas/
+6. ✅ http://localhost:3003/docs/user-types/
 7. ✅ http://localhost:3003/docs/plans/
 8. ✅ http://localhost:3003/docs/ddd/
 9. ✅ http://localhost:3003/docs/ddd/index

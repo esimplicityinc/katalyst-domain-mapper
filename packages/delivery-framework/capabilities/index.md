@@ -4,7 +4,7 @@ title: Capabilities
 
 # Capabilities
 
-Capabilities represent the core functional areas the system provides. Each capability is linked to personas who use it, user stories that define it, and road items that implement it.
+Capabilities represent the core functional areas the system provides. Each capability is linked to user types who use it, user stories that define it, and road items that implement it.
 
 ## Current Capabilities
 
@@ -34,5 +34,5 @@ Capabilities represent the core functional areas the system provides. Each capab
 | [CAP-022](CAP-022) | User State Persistence | Technical | stable |
 | [CAP-023](CAP-023) | Business Landscape Visualization | Business | stable |
 | [CAP-024](CAP-024) | Landscape Domain Linter | Technical | stable |
-| [CAP-025](CAP-025) | Taxonomy & Persona Management UI | Business | stable |
+| [CAP-025](CAP-025) | Taxonomy & User Type Management UI | Business | stable |
 | [CAP-026](CAP-026) | Developer Environment Tooling | Technical | stable |

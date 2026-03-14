@@ -6,7 +6,7 @@ Feature: Landscape Domain Linter API
 
   Background:
     # Create a domain model
-    When I POST "/api/v1/domain-models" with JSON body:
+    When I POST "/api/v1/taxonomy/domain-models" with JSON body:
       """
       {
         "name": "BDD Landscape Lint Test Model",
@@ -15,29 +15,29 @@ Feature: Landscape Domain Linter API
       """
     Then the response status should be 200
     And I store the value at "id" as "domainModelId"
-    Given I register cleanup DELETE "/api/v1/domain-models/{domainModelId}"
+    Given I register cleanup DELETE "/api/v1/taxonomy/domain-models/{domainModelId}"
 
-    # Ingest a governance snapshot with a persona but no user stories.
-    # The 'persona-has-stories' coverage rule fires a warning for every
-    # persona that is not referenced by at least one user story, guaranteeing
+    # Ingest a governance snapshot with a user type but no user stories.
+    # The 'user-type-has-stories' coverage rule fires a warning for every
+    # user type that is not referenced by at least one user story, guaranteeing
     # at least one lint finding for the scenarios that access findings[0].
-    When I POST "/api/v1/governance" with JSON body:
+    When I POST "/api/v1/taxonomy/governance" with JSON body:
       """
       {
         "version": "1.0.0",
         "generated": "2026-01-01T00:00:00Z",
         "project": "bdd-lint-test",
         "capabilities": {},
-        "personas": {
-          "PER-BDD-LINT-001": { "id": "PER-BDD-LINT-001", "name": "BDD Lint Test Persona", "type": "human" }
+        "userTypes": {
+          "UT-BDD-LINT-001": { "id": "UT-BDD-LINT-001", "name": "BDD Lint Test User Type", "type": "human" }
         },
         "roadItems": {},
-        "stats": { "capabilities": 0, "personas": 1, "userStories": 0, "roadItems": 0, "integrityStatus": "pass", "integrityErrors": 0 }
+        "stats": { "capabilities": 0, "userTypes": 1, "userStories": 0, "roadItems": 0, "integrityStatus": "pass", "integrityErrors": 0 }
       }
       """
     Then the response status should be 200
     And I store the value at "id" as "govSnapshotId"
-    Given I register cleanup DELETE "/api/v1/governance/{govSnapshotId}"
+    Given I register cleanup DELETE "/api/v1/taxonomy/governance/{govSnapshotId}"
 
   @smoke @lint
   Scenario: Lint a known domain model and receive a structured report

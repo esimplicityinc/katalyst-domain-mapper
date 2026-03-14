@@ -9,8 +9,7 @@ import Elysia, { t } from "elysia";
 import type { QueryTaxonomyState } from "../../../usecases/taxonomy/QueryTaxonomyState.js";
 import type { QueryGovernanceState } from "../../../usecases/governance/QueryGovernanceState.js";
 import type { GetDomainModel } from "../../../usecases/domain-model/GetDomainModel.js";
-import type { TaxonomyRepository, TaxonomyHierarchy, StoredTaxonomySnapshot } from "../../../ports/TaxonomyRepository.js";
-import type { GovernanceRepository, StoredSnapshot } from "../../../ports/GovernanceRepository.js";
+import type { TaxonomyRepository, TaxonomyHierarchy, StoredTaxonomySnapshot, StoredGovernanceSnapshot } from "../../../ports/TaxonomyRepository.js";
 import type { ValidatedSnapshotData } from "../../../domain/governance/validateSnapshotData.js";
 import type {
   LandscapeGraph,
@@ -18,7 +17,7 @@ import type {
   LandscapeCapabilityNode,
   ResolvedContext,
   LandscapeEvent,
-  LandscapePersona,
+  LandscapeUserType,
   LandscapeUserStory,
   LandscapeWorkflow,
 } from "../../../types/landscape.js";
@@ -30,14 +29,12 @@ import {
 
 // ── Augmented repo types ───────────────────────────────────────────────────
 
-type GovernanceRepoDeps = GovernanceRepository & {
-  getLatestSnapshotByProject?: (project: string) => Promise<StoredSnapshot | null>;
-  getRawIndex?: (snapshotId: string) => Promise<ValidatedSnapshotData | null>;
+type GovernanceRepoDeps = TaxonomyRepository & {
+  governanceGetRawIndex?: (snapshotId: string) => Promise<ValidatedSnapshotData | null>;
 };
 
 type TaxonomyRepoDeps = TaxonomyRepository & {
   getHierarchyBySnapshotId?: (id: string) => Promise<TaxonomyHierarchy>;
-  listSnapshots?: (limit?: number) => Promise<StoredTaxonomySnapshot[]>;
 };
 
 interface LandscapeDeps {
@@ -98,11 +95,11 @@ export function createLandscapeRoutes(deps: LandscapeDeps) {
         // Find the taxonomy snapshot whose nodes include these system names
         let taxonomySnapshot: StoredTaxonomySnapshot | null = null;
         let taxonomyHierarchy: TaxonomyHierarchy | null = null;
-        let governanceSnapshot: StoredSnapshot | null = null;
+        let governanceSnapshot: StoredGovernanceSnapshot | null = null;
         let governanceRawIndex: ValidatedSnapshotData | null = null;
 
         if (systemNames.size > 0) {
-          const taxSnapshots = await deps.taxonomyRepo.listSnapshots?.(50) ?? [];
+          const taxSnapshots = await deps.taxonomyRepo.listTaxonomySnapshots(50) ?? [];
           for (const snap of taxSnapshots) {
             const hier = await deps.taxonomyRepo.getHierarchyBySnapshotId?.(snap.id).catch(() => null);
             if (!hier) continue;
@@ -111,9 +108,9 @@ export function createLandscapeRoutes(deps: LandscapeDeps) {
             if (hasMatch) {
               taxonomySnapshot = snap;
               taxonomyHierarchy = hier;
-              governanceSnapshot = await deps.governanceRepo.getLatestSnapshotByProject?.(snap.project).catch(() => null) ?? null;
+              governanceSnapshot = await deps.governanceRepo.getLatestGovernanceSnapshotByProject?.(snap.project).catch(() => null) ?? null;
               if (governanceSnapshot) {
-                governanceRawIndex = await deps.governanceRepo.getRawIndex?.(governanceSnapshot.id).catch(() => null) ?? null;
+                governanceRawIndex = await deps.governanceRepo.governanceGetRawIndex?.(governanceSnapshot.id).catch(() => null) ?? null;
               }
               break;
             }
@@ -138,7 +135,7 @@ export function createLandscapeRoutes(deps: LandscapeDeps) {
         if (!governanceSnapshot) {
           governanceSnapshot = await deps.queryGovernanceState.getLatest().catch(() => null);
           governanceRawIndex = governanceSnapshot
-            ? await deps.governanceRepo.getRawIndex?.(governanceSnapshot.id).catch(() => null) ?? null
+            ? await deps.governanceRepo.governanceGetRawIndex?.(governanceSnapshot.id).catch(() => null) ?? null
             : null;
         }
 
@@ -266,17 +263,27 @@ export function createLandscapeRoutes(deps: LandscapeDeps) {
           const validStatus = (s: unknown): "planned" | "stable" | "deprecated" =>
             s === "planned" || s === "stable" || s === "deprecated" ? s : "stable";
 
+          // Prefer governance's stack-level taxonomyNode (e.g. "prima.engine.litellm")
+          // over taxonomy's bare subsystem name (e.g. "engine") when available.
+          const govTaxNode = govMatch?.["taxonomyNode"] as string | undefined;
+          const mergedTaxNode = govTaxNode || tc.taxonomyNodes[0];
+          // Build taxonomyNodes: if governance provides a more specific FQTN, use it;
+          // otherwise keep the taxonomy-sourced array.
+          const mergedTaxNodes = govTaxNode
+            ? [govTaxNode, ...tc.taxonomyNodes.filter(n => n !== govTaxNode)]
+            : tc.taxonomyNodes;
+
           capabilities.push({
             id: tc.tag ?? tc.name, // prefer tag (CAP-XXX) for backward-compat
             name: (govMatch?.["title"] as string | undefined) ?? tc.name,
             category: (govMatch?.["category"] as string | undefined) ?? (tc.taxonomyNodes[0] ?? ""),
-            taxonomyNode: tc.taxonomyNodes[0],
+            taxonomyNode: mergedTaxNode,
             tag: tc.tag ?? undefined,
             status: govMatch ? validStatus(govMatch["status"]) : tc.declaredStatus,
             derivedStatus: tc.derivedStatus,
             source: govMatch ? "merged" : "taxonomy",
             parentName: tc.parentName,
-            taxonomyNodes: tc.taxonomyNodes,
+            taxonomyNodes: mergedTaxNodes,
           });
         }
 
@@ -291,17 +298,18 @@ export function createLandscapeRoutes(deps: LandscapeDeps) {
           const validStatus = (s: unknown): "planned" | "stable" | "deprecated" =>
             s === "planned" || s === "stable" || s === "deprecated" ? s : "stable";
 
+          const govOnlyTaxNode = cap["taxonomyNode"] as string | undefined;
           capabilities.push({
             id: capId,
             name: (cap["title"] as string | undefined) ?? capId,
             category: (cap["category"] as string | undefined) ?? "",
-            taxonomyNode: cap["taxonomyNode"] as string | undefined,
+            taxonomyNode: govOnlyTaxNode,
             tag: capTag,
             status: validStatus(cap["status"]),
             derivedStatus: validStatus(cap["status"]),
             source: "governance",
             parentName: null,
-            taxonomyNodes: [],
+            taxonomyNodes: govOnlyTaxNode ? [govOnlyTaxNode] : [],
           });
         }
 
@@ -341,17 +349,17 @@ export function createLandscapeRoutes(deps: LandscapeDeps) {
           };
         });
 
-        // ── 8. Personas ────────────────────────────────────────────────────
-        const personas: LandscapePersona[] = governanceRawIndex?.personas
-          ? Object.values(governanceRawIndex.personas as Record<string, unknown>).map((p) => {
-              const persona = p as Record<string, unknown>;
+        // ── 8. User Types ────────────────────────────────────────────────────
+        const userTypes: LandscapeUserType[] = governanceRawIndex?.userTypes
+          ? Object.values(governanceRawIndex.userTypes as Record<string, unknown>).map((p) => {
+              const userType = p as Record<string, unknown>;
               return {
-                id: persona["id"] as string,
-                name: persona["name"] as string,
-                type: (persona["type"] ?? "human") as LandscapePersona["type"],
-                archetype: persona["archetype"] as string | undefined,
-                typicalCapabilities: (persona["typicalCapabilities"] as string[]) ?? [],
-                tag: (persona["tag"] as string) ?? "",
+                id: userType["id"] as string,
+                name: userType["name"] as string,
+                type: (userType["type"] ?? "human") as LandscapeUserType["type"],
+                archetype: userType["archetype"] as string | undefined,
+                typicalCapabilities: (userType["typicalCapabilities"] as string[]) ?? [],
+                tag: (userType["tag"] as string) ?? "",
               };
             })
           : [];
@@ -363,7 +371,7 @@ export function createLandscapeRoutes(deps: LandscapeDeps) {
               return {
                 id: story["id"] as string,
                 title: story["title"] as string,
-                persona: story["persona"] as string,
+                userType: (story["userType"]) as string,
                 capabilities: (story["capabilities"] as string[]) ?? [],
                 status: (story["status"] ?? "draft") as LandscapeUserStory["status"],
               };
@@ -381,7 +389,7 @@ export function createLandscapeRoutes(deps: LandscapeDeps) {
           workflows,
           capabilities,
           capabilityTree,
-          personas,
+          userTypes,
           userStories,
           inferredSystems,
           domainModelId: domainModel.id,

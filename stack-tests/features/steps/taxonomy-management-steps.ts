@@ -1,11 +1,11 @@
 /**
- * Custom BDD step definitions for Taxonomy & Persona Management UI (CAP-025, ROAD-046)
+ * Custom BDD step definitions for Taxonomy & User Type Management UI (CAP-025, ROAD-046)
  *
  * These steps extend the built-in @esimplicity/stack-tests steps with
  * taxonomy-management-specific assertions for:
  * - Capability tree view interactions (expand/collapse)
  * - Kanban column visibility on the User Story board
- * - Persona list assertions
+ * - User type list assertions
  */
 
 import { createBdd } from 'playwright-bdd';
@@ -83,28 +83,28 @@ Then('the user story board should show status columns', async ({ page }) => {
  * Then the user story board should be visible
  */
 Then('the user story board should be visible', async ({ page }) => {
-  // PersonasPage renders "Personas & Stories" heading
-  await expect(page.getByRole('heading', { name: 'Personas & Stories' }).first()).toBeVisible({ timeout: 10000 });
+  // UserTypesPage renders "User Types & Stories" heading
+  await expect(page.getByRole('heading', { name: 'User Types & Stories' }).first()).toBeVisible({ timeout: 10000 });
 });
 
-// ── Persona List Steps ────────────────────────────────────────────────────────
+// ── User Type List Steps ──────────────────────────────────────────────────────
 
 /**
- * Asserts the persona list page is visible.
+ * Asserts the user type list page is visible.
  *
  * @example
- * Then the persona list should be visible
+ * Then the user type list should be visible
  */
-Then('the persona list should be visible', async ({ page }) => {
-  await expect(page.getByRole('heading', { name: 'Personas & Stories' }).first()).toBeVisible({ timeout: 10000 });
+Then('the user type list should be visible', async ({ page }) => {
+  await expect(page.getByRole('heading', { name: 'User Types & Stories' }).first()).toBeVisible({ timeout: 10000 });
 });
 
 /**
- * Asserts that a persona with the given name is shown in the list.
+ * Asserts that a user type with the given name is shown in the list.
  *
  * @example
- * Then I should see persona "BDD Test Persona" in the list
+ * Then I should see user type "BDD Test User Type" in the list
  */
-Then('I should see persona {string} in the list', async ({ page }, personaName: string) => {
-  await expect(page.getByText(personaName, { exact: false }).first()).toBeVisible({ timeout: 10000 });
+Then('I should see user type {string} in the list', async ({ page }, userTypeName: string) => {
+  await expect(page.getByText(userTypeName, { exact: false }).first()).toBeVisible({ timeout: 10000 });
 });

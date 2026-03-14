@@ -27,7 +27,7 @@ export const governanceRoutes = new Elysia({ prefix: "/api/v1/governance" })
         project: t.String(),
         roadItems: t.Record(t.String(), t.Any()),
         capabilities: t.Record(t.String(), t.Any()),
-        personas: t.Optional(t.Record(t.String(), t.Any())),
+        userTypes: t.Optional(t.Record(t.String(), t.Any())),
         stats: t.Optional(t.Any()),
         contexts: t.Optional(t.Record(t.String(), t.Any())),
       }),
@@ -53,7 +53,7 @@ export const governanceRoutes = new Elysia({ prefix: "/api/v1/governance" })
   .get("/coverage/capabilities", async () => {
     return queryUseCase.getCapabilityCoverage();
   })
-  .get("/coverage/personas", async () => {
+  .get("/coverage/user-types", async () => {
     return []; // Stub
   })
   .delete("/:id", async ({ params: { id } }) => {

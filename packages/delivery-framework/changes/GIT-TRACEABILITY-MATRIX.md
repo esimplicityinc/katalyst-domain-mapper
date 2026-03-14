@@ -27,9 +27,9 @@ last_updated: "2026-02-19"
 | `fb13b4d` | 02-19 | feat | feat(seeds): add 3-level capability hierarchy with parentCapability and tag fields | ROAD-044 | US-072 | CAP-023 | — | CHANGE-041 |
 | `7556b22` | 02-19 | feat | feat(web): add elkjs dependency, improve SVG pan/zoom, extend domain types | ROAD-044 | US-073 | CAP-023 | ADR-018 | CHANGE-041 |
 | `50e82d9` | 02-19 | feat | feat(web): enhance workflow view and wire BusinessLandscapePage | ROAD-044 | US-072 | CAP-023 | — | CHANGE-041 |
-| `0164a90` | 02-19 | feat | feat(web): add Business Landscape visualization with collapsible personas | ROAD-044 | US-072,US-073,US-074 | CAP-023 | ADR-018 | CHANGE-041 |
-| `380a001` | 02-19 | fix | fix(landscape): persona filter now dims non-selected elements instead of hiding them | ROAD-044 | US-074 | CAP-023 | — | CHANGE-041 |
-| `d96e9b6` | 02-19 | feat | feat(landscape): highlight persona's story-to-capability lines in persona color | ROAD-044 | US-074 | CAP-023 | — | CHANGE-041 |
+| `0164a90` | 02-19 | feat | feat(web): add Business Landscape visualization with collapsible user types | ROAD-044 | US-072,US-073,US-074 | CAP-023 | ADR-018 | CHANGE-041 |
+| `380a001` | 02-19 | fix | fix(landscape): user type filter now dims non-selected elements instead of hiding them | ROAD-044 | US-074 | CAP-023 | — | CHANGE-041 |
+| `d96e9b6` | 02-19 | feat | feat(landscape): highlight user type's story-to-capability lines in user type color | ROAD-044 | US-074 | CAP-023 | — | CHANGE-041 |
 | `7c6a726` | 02-19 | docs | Add FOE Historical Scan Summary and update BDD and roadmap data | ROAD-045 | — | CAP-001,CAP-004 | — | CHANGE-042 |
 | `9d9da2b` | 02-19 | fix | fix(lint): resolve all ESLint errors and warnings blocking push | ROAD-047 | US-079 | CAP-026,CAP-002 | — | CHANGE-044 |
 | `07dc052` | 02-19 | fix | fix(lint): resolve unused variable warnings in web-report templates | ROAD-047 | US-079 | CAP-026 | — | CHANGE-044 |
@@ -38,7 +38,7 @@ last_updated: "2026-02-19"
 | `dda447f` | 02-19 | fix | fix(lint): add MutationObserver, ResizeObserver, IntersectionObserver to ESLint globals | ROAD-047 | US-079 | CAP-026 | — | CHANGE-044 |
 | `675071f` | 02-19 | feat | feat(dev): add dev-status and dev-ready recipes; gate BDD on environment health | ROAD-047 | US-079 | CAP-026 | — | CHANGE-044 |
 | `55f09df` | 02-19 | feat | feat(dev): add 'dev' and 'dev-intelligence-*' recipes for starting the active dev servers | ROAD-047 | US-079 | CAP-026 | — | CHANGE-044 |
-| `3c17425` | 02-19 | feat | feat(taxonomy): add Architecture and Personas & Stories management UI | ROAD-046 | US-076,US-077,US-078 | CAP-025,CAP-019 | ADR-019,ADR-003 | CHANGE-043 |
+| `3c17425` | 02-19 | feat | feat(taxonomy): add Architecture and User Types & Stories management UI | ROAD-046 | US-076,US-077,US-078 | CAP-025,CAP-019 | ADR-019,ADR-003 | CHANGE-043 |
 
 This matrix maps every git commit to its corresponding governance artifacts (ROAD items, user stories, capabilities, ADRs, and CHANGE entries). Created retroactively per ADR-017. Extended on 2026-02-19 to cover all Feb 19 commits.
 
@@ -97,7 +97,7 @@ This matrix maps every git commit to its corresponding governance artifacts (ROA
 | `21c89e8` | 02-12 | docs | Add comprehensive agent usage plan and README | — | — | — | — | — |
 | `d4ddfde` | 02-12 | feat | Add Bedrock provider, fix domain mapper chat, UI/UX improvements | — | US-069 | CAP-004 | — | CHANGE-039 |
 | `6e42c84` | 02-10 | feat | Package restructure, CML export, and BDD test fixes | ROAD-024 | — | CAP-012 | — | — |
-| `6149fcb` | 02-10 | feat | Add 4 new personas, rebalance PER-001, close schema gaps | — | — | — | — | — |
+| `6149fcb` | 02-10 | feat | Add 4 new user types, rebalance UT-001, close schema gaps | — | — | — | — | — |
 | `8b71962` | 02-10 | fix | Fix MDX syntax error in CAP-012 | — | — | CAP-012 | — | — |
 | `48733ba` | 02-10 | docs | Mark ROAD-020 subdomain classification complete | ROAD-020 | US-037 | CAP-011 | — | — |
 | `fadd6e8` | 02-10 | fix | Resolve DRY violations and DDD alignment issues (ROAD-016) | ROAD-016 | US-033 | CAP-010 | — | — |
@@ -155,7 +155,7 @@ This matrix maps every git commit to its corresponding governance artifacts (ROA
 | CAP-022 | 2 | User State Persistence |
 | CAP-023 | 12 | Business Landscape Visualization |
 | CAP-024 | 1 | Landscape Domain Linter |
-| CAP-025 | 1 | Taxonomy & Persona Management UI |
+| CAP-025 | 1 | Taxonomy & User Type Management UI |
 | CAP-026 | 7 | Developer Environment Tooling |
 
 ### By Commit Type

@@ -10,14 +10,14 @@
  */
 
 import type { TaxonomyRepository, TaxonomyHierarchy } from "../ports/TaxonomyRepository.js";
-import type { GovernanceRepository, StoredSnapshot } from "../ports/GovernanceRepository.js";
+import type { StoredGovernanceSnapshot } from "../ports/TaxonomyRepository.js";
 import type { StoredTaxonomySnapshot } from "../ports/TaxonomyRepository.js";
 import type { ValidatedSnapshotData } from "../domain/governance/validateSnapshotData.js";
 
 export interface ResolvedSnapshots {
   taxonomySnapshot: StoredTaxonomySnapshot | null;
   taxonomyHierarchy: TaxonomyHierarchy | null;
-  governanceSnapshot: StoredSnapshot | null;
+  governanceSnapshot: StoredGovernanceSnapshot | null;
   governanceRawIndex: ValidatedSnapshotData | null;
 }
 
@@ -50,21 +50,20 @@ export async function resolveSnapshots(
   systemNames: Set<string>,
   taxonomyRepo: TaxonomyRepository & {
     getHierarchyBySnapshotId?: (id: string) => Promise<TaxonomyHierarchy>;
-    listSnapshots?: (limit?: number) => Promise<StoredTaxonomySnapshot[]>;
   },
-  governanceRepo: GovernanceRepository & {
-    getLatestSnapshotByProject?: (project: string) => Promise<StoredSnapshot | null>;
-    getRawIndex?: (snapshotId: string) => Promise<ValidatedSnapshotData | null>;
+  governanceRepo: TaxonomyRepository & {
+    getLatestGovernanceSnapshotByProject?: (project: string) => Promise<StoredGovernanceSnapshot | null>;
+    governanceGetRawIndex?: (snapshotId: string) => Promise<ValidatedSnapshotData | null>;
   },
 ): Promise<ResolvedSnapshots> {
   let taxonomySnapshot: StoredTaxonomySnapshot | null = null;
   let taxonomyHierarchy: TaxonomyHierarchy | null = null;
-  let governanceSnapshot: StoredSnapshot | null = null;
+  let governanceSnapshot: StoredGovernanceSnapshot | null = null;
   let governanceRawIndex: ValidatedSnapshotData | null = null;
 
   if (systemNames.size > 0) {
     // Walk recent taxonomy snapshots looking for one whose root nodes match
-    const taxSnapshots = await taxonomyRepo.listSnapshots?.(50) ?? [];
+    const taxSnapshots = await taxonomyRepo.listTaxonomySnapshots(50) ?? [];
 
     for (const snap of taxSnapshots) {
       const hierarchy = await taxonomyRepo.getHierarchyBySnapshotId?.(snap.id).catch(
@@ -81,12 +80,12 @@ export async function resolveSnapshots(
 
         // Attempt governance match by same project
         governanceSnapshot =
-          (await governanceRepo.getLatestSnapshotByProject?.(snap.project).catch(
+          (await governanceRepo.getLatestGovernanceSnapshotByProject?.(snap.project).catch(
             () => null,
           )) ?? null;
         if (governanceSnapshot) {
           governanceRawIndex =
-            (await governanceRepo.getRawIndex?.(governanceSnapshot.id).catch(
+            (await governanceRepo.governanceGetRawIndex?.(governanceSnapshot.id).catch(
               () => null,
             )) ?? null;
         }
@@ -97,7 +96,7 @@ export async function resolveSnapshots(
 
   // Fall back to latest taxonomy snapshot
   if (!taxonomyHierarchy) {
-    taxonomySnapshot = await taxonomyRepo.getLatestSnapshot().catch(() => null);
+    taxonomySnapshot = await taxonomyRepo.getLatestTaxonomySnapshot().catch(() => null);
     if (taxonomySnapshot) {
       taxonomyHierarchy =
         (await taxonomyRepo.getHierarchyBySnapshotId?.(taxonomySnapshot.id).catch(
@@ -108,10 +107,10 @@ export async function resolveSnapshots(
 
   // Fall back to latest governance snapshot
   if (!governanceSnapshot) {
-    governanceSnapshot = await governanceRepo.getLatestSnapshot().catch(() => null);
+    governanceSnapshot = await governanceRepo.getLatestGovernanceSnapshot().catch(() => null);
     if (governanceSnapshot) {
       governanceRawIndex =
-        (await governanceRepo.getRawIndex?.(governanceSnapshot.id).catch(
+        (await governanceRepo.governanceGetRawIndex?.(governanceSnapshot.id).catch(
           () => null,
         )) ?? null;
     }

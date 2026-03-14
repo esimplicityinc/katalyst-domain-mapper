@@ -8,13 +8,13 @@
  *  1. Grid background
  *  2. Subdomain group boxes
  *  3. Domain-event flow arrows (workflow-aware: highlighted when filter active)
- *  4. Invisible workflow chain paths (for persona dot animation)
- *  5. Persona flow lines (persona → capability)
+ *  4. Invisible workflow chain paths (for user type dot animation)
+ *  5. User type flow lines (user type → capability)
  *  5b. Story box → capability connection lines
  *  5c. Invisible story→capability paths (for dot animation)
  *  6. Capability port nodes (orange diamonds)
  *  7. Context overlays (transparent bounding boxes)
- *  8. Persona badges
+ *  8. User type badges
  *  9. Inferred unknown systems (dashed boxes)
  * 10. Animated dots – ALWAYS on top (workflow chain + story line dots)
  * 11. Detail panel (HTML overlay, slide-in on click)
@@ -27,19 +27,20 @@ import type {
   ResolvedContext,
   LandscapeEvent,
   LandscapeCapability,
-  LandscapePersona,
+  LandscapeUserType,
   LandscapeWorkflow,
   InferredSystem,
   SystemBounds,
   GroupBox,
-  PersonaWorkflowDot,
-  PersonaStoryLine,
+  UserTypeWorkflowDot,
+  UserTypeStoryLine,
   UserStoryBox,
-  CollapsedPersonaGroup,
+  CollapsedUserTypeGroup,
   Position,
 } from "../../types/landscape.js";
 import { useSvgPanZoom } from "../domain/svg/useSvgPanZoom.js";
-import { routedPath, COLLAPSED_GROUP_H, COLLAPSED_PERSONA_GAP } from "../../utils/layout/layout-helpers.js";
+import { routedPath, COLLAPSED_GROUP_H, COLLAPSED_USER_TYPE_GAP } from "../../utils/layout/layout-helpers.js";
+import { trunkRoutedPath } from "../../utils/layout/trunk-path.js";
 import { useCollapseAnimation } from "./useCollapseAnimation.js";
 import type { DynamicLayoutSnapshot } from "./useCollapseAnimation.js";
 
@@ -103,9 +104,7 @@ const CAP_STATUS_LABEL_COLOR: Record<string, string> = {
   planned: "#713f12",
   deprecated: "#991b1b",
 };
-const STORY_LINE_COLOR = EVENT_COLOR; // Same as event flows — story lines are the start of the flow
-
-const PERSONA_COLORS = ["#ec4899", "#06b6d4", "#84cc16", "#f59e0b", "#8b5cf6", "#ef4444"];
+const USER_TYPE_COLORS = ["#ec4899", "#06b6d4", "#84cc16", "#f59e0b", "#8b5cf6", "#ef4444"];
 
 /* ── Props ──────────────────────────────────────────────────────────── */
 interface Props {
@@ -113,16 +112,16 @@ interface Props {
   positions: LandscapePositions;
   /** When provided, only render workflows whose ID is in this set */
   activeWorkflowIds?: Set<string>;
-  /** Set of persona IDs whose story groups are collapsed */
-  collapsedPersonas: Set<string>;
-  /** Toggle a single persona's collapsed state */
-  onTogglePersona: (personaId: string) => void;
-  /** Called when a persona badge is clicked (for filtering) */
-  onSelectPersona?: (personaId: string) => void;
+  /** Set of user type IDs whose story groups are collapsed */
+  collapsedUserTypes: Set<string>;
+  /** Toggle a single user type's collapsed state */
+  onToggleUserType: (userTypeId: string) => void;
+  /** Called when a user type badge is clicked (for filtering) */
+  onSelectUserType?: (userTypeId: string) => void;
   /** Called when an individual user story is clicked (for filtering) */
   onSelectStory?: (storyId: string) => void;
-  /** Currently active persona filter (to highlight) */
-  activePersonaId?: string | null;
+  /** Currently active user type filter (to highlight) */
+  activeUserTypeId?: string | null;
   /** Currently active story filter (to highlight) */
   activeStoryId?: string | null;
 }
@@ -131,13 +130,13 @@ type Selection =
   | { kind: "context"; data: ResolvedContext }
   | { kind: "event"; data: LandscapeEvent }
   | { kind: "capability"; data: LandscapeCapability }
-  | { kind: "persona"; data: LandscapePersona }
+  | { kind: "userType"; data: LandscapeUserType }
   | { kind: "inferred"; data: InferredSystem }
   | { kind: "workflow"; data: LandscapeWorkflow }
   | null;
 
 /* ══════════════════════════════════════════════════════════════════════ */
-export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsedPersonas, onTogglePersona, onSelectPersona, onSelectStory, activePersonaId, activeStoryId }: Props) {
+export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsedUserTypes, onToggleUserType, onSelectUserType, onSelectStory, activeUserTypeId, activeStoryId }: Props) {
   const [selection, setSelection] = useState<Selection>(null);
   const [hoveredEvent, setHoveredEvent] = useState<string | null>(null);
   const [animationPaused, setAnimationPaused] = useState(false);
@@ -145,7 +144,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
   const { viewBox, handlers, svgRef } = useSvgPanZoom(positions.canvasWidth, positions.canvasHeight);
   const vb = `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`;
 
-  // ── Dynamic layout based on which personas are collapsed ───────
+   // ── Dynamic layout based on which user types are collapsed ───────
   // Recompute Y positions, story boxes, group boxes, and connection
   // lines whenever the collapsed set changes.
   const targetLayout = useMemo((): DynamicLayoutSnapshot => {
@@ -153,48 +152,72 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
     const STORY_BOX_W = 220;
     const STORY_BOX_H = 28;
     const STORY_GAP = 6;
-    const PERSONA_GAP = 20;
-    const PERSONA_X = 160; // fallback; use actual X from positions if available
+    const USER_TYPE_GAP = 20;
+    const USER_TYPE_X = 160; // fallback; use actual X from positions if available
 
-    // Group stories by persona
-    const storiesByPersona = new Map<string, typeof graph.userStories>();
+    // V2 trunk routing: use cubic Bezier through trunk X (right→down)
+    const isV2 = positions.layoutVersion === 2;
+    const trunk = positions.trunkX ?? (STORY_BOX_X + STORY_BOX_W + 120);
+    const trunkY = positions.trunkY;
+
+    // Capability node half-height (matches the ph=18 in the render layer).
+    // Lines should terminate at the TOP CENTER of the capability node,
+    // not its geometric center.
+    const CAP_HALF_H = 18;
+
+    /** Compute connection line path (v2 = right→convergence→down to cap top-center) */
+    const computePath = (
+      boxRightX: number, boxCenterY: number,
+      capX: number, capY: number,
+      bendFactor: number,
+    ): string => {
+      // Target the top-center of the capability node
+      const capTopY = capY - CAP_HALF_H;
+      if (isV2) {
+        return trunkRoutedPath(boxRightX, boxCenterY, trunk, capX, capTopY, bendFactor, trunkY);
+      }
+      return routedPath(boxRightX, boxCenterY, capX, capTopY, bendFactor);
+    };
+
+    // Group stories by user type
+    const storiesByUserType = new Map<string, typeof graph.userStories>();
     for (const story of graph.userStories) {
-      if (!storiesByPersona.has(story.persona)) storiesByPersona.set(story.persona, []);
-      storiesByPersona.get(story.persona)!.push(story);
+      if (!storiesByUserType.has(story.userType)) storiesByUserType.set(story.userType, []);
+      storiesByUserType.get(story.userType)!.push(story);
     }
 
-    const personaPositions = new Map<string, Position>();
+    const userTypePositions = new Map<string, Position>();
     const storyBoxes: UserStoryBox[] = [];
-    const storyLines: PersonaStoryLine[] = [];
-    const collapsedGroups: CollapsedPersonaGroup[] = [];
-    const collapsedLines: PersonaStoryLine[] = [];
+    const storyLines: UserTypeStoryLine[] = [];
+    const collapsedGroups: CollapsedUserTypeGroup[] = [];
+    const collapsedLines: UserTypeStoryLine[] = [];
 
-    // Use the first persona's X from pre-computed positions, or default
-    const firstPersonaPos = graph.personas.length > 0
-      ? positions.personaPositions.get(graph.personas[0].id)
+    // Use the first user type's X from pre-computed positions, or default
+    const firstUserTypePos = graph.userTypes.length > 0
+      ? positions.userTypePositions.get(graph.userTypes[0].id)
       : null;
-    const pX = firstPersonaPos?.x ?? PERSONA_X;
+    const pX = firstUserTypePos?.x ?? USER_TYPE_X;
 
     let cursorY = 50;
 
-    for (let pi = 0; pi < graph.personas.length; pi++) {
-      const persona = graph.personas[pi];
-      const stories = storiesByPersona.get(persona.id) || [];
-      const isCollapsed = collapsedPersonas.has(persona.id);
+    for (let pi = 0; pi < graph.userTypes.length; pi++) {
+      const ut = graph.userTypes[pi];
+      const stories = storiesByUserType.get(ut.id) || [];
+      const isCollapsed = collapsedUserTypes.has(ut.id);
 
       if (isCollapsed) {
         // Collapsed: single group box
         const groupHeight = COLLAPSED_GROUP_H;
-        const personaCenterY = cursorY + groupHeight / 2;
-        personaPositions.set(persona.id, { x: pX, y: personaCenterY });
+        const utCenterY = cursorY + groupHeight / 2;
+        userTypePositions.set(ut.id, { x: pX, y: utCenterY });
 
         const uniqueCaps = [...new Set(stories.flatMap((s) => s.capabilities))];
-        const groupY = personaCenterY - COLLAPSED_GROUP_H / 2;
+        const groupY = utCenterY - COLLAPSED_GROUP_H / 2;
 
         collapsedGroups.push({
-          personaId: persona.id,
-          personaIndex: pi,
-          personaName: persona.name,
+          userTypeId: ut.id,
+          userTypeIndex: pi,
+          userTypeName: ut.name,
           storyCount: stories.length,
           uniqueCapabilities: uniqueCaps,
           x: STORY_BOX_X,
@@ -203,7 +226,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
           height: COLLAPSED_GROUP_H,
         });
 
-        // Connection lines from collapsed group to capabilities
+        // Connection lines from collapsed group RIGHT EDGE to capabilities
         const boxCenterY = groupY + COLLAPSED_GROUP_H / 2;
         const boxRightX = STORY_BOX_X + STORY_BOX_W;
         for (let ci = 0; ci < uniqueCaps.length; ci++) {
@@ -214,28 +237,28 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
           const bendFactor = (pi * 3) + (ci * 4);
 
           collapsedLines.push({
-            personaId: persona.id,
-            personaIndex: pi,
-            userStoryId: `collapsed-${persona.id}`,
+            userTypeId: ut.id,
+            userTypeIndex: pi,
+            userStoryId: `collapsed-${ut.id}`,
             userStoryTitle: `${stories.length} stories`,
             userStoryStatus: "approved",
             capabilityId: capId,
             storyBoxPos: { x: boxRightX, y: boxCenterY },
             path: {
-              d: routedPath(boxRightX, boxCenterY, cPos.x, cPos.y, bendFactor),
+              d: computePath(boxRightX, boxCenterY, cPos.x, cPos.y, bendFactor),
               points: [{ x: boxRightX, y: boxCenterY }, cPos],
             },
           });
         }
 
-        cursorY += groupHeight + COLLAPSED_PERSONA_GAP;
+        cursorY += groupHeight + COLLAPSED_USER_TYPE_GAP;
       } else {
         // Expanded: individual story boxes
         const groupHeight = Math.max(1, stories.length) * (STORY_BOX_H + STORY_GAP) - STORY_GAP;
-        const personaCenterY = cursorY + groupHeight / 2;
-        personaPositions.set(persona.id, { x: pX, y: personaCenterY });
+        const utCenterY = cursorY + groupHeight / 2;
+        userTypePositions.set(ut.id, { x: pX, y: utCenterY });
 
-        const startY = personaCenterY - groupHeight / 2;
+        const startY = utCenterY - groupHeight / 2;
         stories.forEach((story, si) => {
           const boxY = startY + si * (STORY_BOX_H + STORY_GAP);
           const boxCenterY = boxY + STORY_BOX_H / 2;
@@ -244,8 +267,8 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
           storyBoxes.push({
             id: story.id,
             title: story.title,
-            personaId: persona.id,
-            personaIndex: pi,
+            userTypeId: ut.id,
+            userTypeIndex: pi,
             capabilities: story.capabilities,
             status: story.status,
             x: STORY_BOX_X,
@@ -262,43 +285,43 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             const bendFactor = (pi * 3) + (si * 2) + (ci * 4);
 
             storyLines.push({
-              personaId: persona.id,
-              personaIndex: pi,
+              userTypeId: ut.id,
+              userTypeIndex: pi,
               userStoryId: story.id,
               userStoryTitle: story.title,
               userStoryStatus: story.status,
               capabilityId: capId,
               storyBoxPos: { x: boxRightX, y: boxCenterY },
               path: {
-                d: routedPath(boxRightX, boxCenterY, cPos.x, cPos.y, bendFactor),
+                d: computePath(boxRightX, boxCenterY, cPos.x, cPos.y, bendFactor),
                 points: [{ x: boxRightX, y: boxCenterY }, cPos],
               },
             });
           }
         });
 
-        cursorY += groupHeight + PERSONA_GAP;
+        cursorY += groupHeight + USER_TYPE_GAP;
       }
     }
 
     // Build lookup for collapsed groups
-    const collapsedGroupsByPersona = new Map<string, CollapsedPersonaGroup>();
+    const collapsedGroupsByUserType = new Map<string, CollapsedUserTypeGroup>();
     for (const g of collapsedGroups) {
-      collapsedGroupsByPersona.set(g.personaId, g);
+      collapsedGroupsByUserType.set(g.userTypeId, g);
     }
 
     return {
-      personaPositions,
+      userTypePositions,
       storyBoxes,
       storyLines,
       collapsedGroups,
       collapsedLines,
-      collapsedGroupsByPersona,
+      collapsedGroupsByUserType,
     };
-  }, [graph, positions.capabilityPositions, positions.personaPositions, collapsedPersonas]);
+  }, [graph, positions.capabilityPositions, positions.userTypePositions, positions.layoutVersion, positions.trunkX, positions.trunkY, collapsedUserTypes]);
 
   // ── Smooth animation layer ─────────────────────────────────────
-  const animatedLayout = useCollapseAnimation(targetLayout, collapsedPersonas);
+  const animatedLayout = useCollapseAnimation(targetLayout, collapsedUserTypes);
 
   return (
     <div className="relative w-full h-[calc(100vh-120px)] overflow-hidden bg-white dark:bg-gray-950">
@@ -338,6 +361,30 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
         {/* 1 ── grid ──────────────────────────────────────────────── */}
         <rect width={positions.canvasWidth} height={positions.canvasHeight} fill="url(#lg)" style={{ pointerEvents: "none" }} />
 
+        {/* 1b ── User types container box ──────────────────────────── */}
+        {positions.layoutVersion === 2 && (() => {
+          const allUserTypePos = Array.from(animatedLayout.userTypePositions.values());
+          if (allUserTypePos.length === 0) return null;
+          const STORY_BOX_W = 220;
+          const STORY_BOX_X = 200;
+          const minX = Math.min(...allUserTypePos.map(p => p.x)) - 30;
+          const maxX = STORY_BOX_X + STORY_BOX_W + 20;
+          const minY = Math.min(...allUserTypePos.map(p => p.y)) - 30;
+          const allBoxes = [...animatedLayout.storyBoxes, ...animatedLayout.collapsedGroups];
+          const maxBoxY = allBoxes.length > 0
+            ? Math.max(...allBoxes.map(b => b.y + b.height)) + 15
+            : Math.max(...allUserTypePos.map(p => p.y)) + 40;
+          return (
+            <g style={{ pointerEvents: "none" }}>
+              <rect x={minX} y={minY} width={maxX - minX} height={maxBoxY - minY}
+                fill="rgba(0,0,0,0.02)" stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4,4" rx="12" />
+              <text x={minX + 12} y={minY + 16} fill="#94a3b8" fontSize="12" fontWeight="600">
+                User Types
+              </text>
+            </g>
+          );
+        })()}
+
         {/* 2 ── system hierarchy boxes OR flat subdomain group boxes ── */}
         {positions.systemBounds.size > 0 ? (
           /* Render nested taxonomy system boxes */
@@ -370,6 +417,13 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
               const dashArray = isExternal ? "8,4" : sys.nodeType === "stack" ? "6,3" : undefined;
               const nodeTypeLabel = isExternal ? "external system" : sys.nodeType;
 
+              // Left indent: consistent padding from box edge
+              const leftIndent = 14;
+              const labelX = sys.x + leftIndent;
+
+              // Show full label — boxes are sized by ELK MINIMUM_SIZE to fit
+              const displayLabel = sys.name.replace(/-/g, " ").toUpperCase();
+
               return (
                 <g key={sys.fqtn} style={{ pointerEvents: "none" }}>
                   <rect
@@ -380,14 +434,14 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
                     strokeDasharray={dashArray}
                   />
                   <text
-                    x={sys.x + 14} y={sys.y + 20}
+                    x={labelX} y={sys.y + 20}
                     fill={labelColor}
                     fontSize={fontSize} fontWeight="700" letterSpacing="0.5"
                   >
-                    {icon} {sys.name.replace(/-/g, " ").toUpperCase()}
+                    {icon} {displayLabel}
                   </text>
                   <text
-                    x={sys.x + 14} y={sys.y + 20 + fontSize + 2}
+                    x={labelX} y={sys.y + 20 + fontSize + 2}
                     fill={labelColor}
                     fontSize="9" fontWeight="400" opacity="0.6"
                   >
@@ -517,28 +571,28 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
           const elements: React.ReactNode[] = [];
 
           // ── Render ALL collapsed group boxes from animation (includes fade-outs) ──
-          const isPersonaFilter = !!activePersonaId;
+          const isUserTypeFilter = !!activeUserTypeId;
 
           for (const group of animatedLayout.collapsedGroups) {
-            const pi = group.personaIndex;
-            const personaColor = PERSONA_COLORS[pi % PERSONA_COLORS.length] || "#999";
-            const groupOpacity = animatedLayout.collapsedGroupOpacity.get(group.personaId) ?? 1;
+            const pi = group.userTypeIndex;
+            const utColor = USER_TYPE_COLORS[pi % USER_TYPE_COLORS.length] || "#999";
+            const groupOpacity = animatedLayout.collapsedGroupOpacity.get(group.userTypeId) ?? 1;
 
-            // Only apply activeCaps filter when there's a pure workflow filter (no persona selection)
-            if (!isPersonaFilter && activeCaps && !group.uniqueCapabilities.some((c: string) => activeCaps.has(c))) continue;
+            // Only apply activeCaps filter when there's a pure workflow filter (no user type selection)
+            if (!isUserTypeFilter && activeCaps && !group.uniqueCapabilities.some((c: string) => activeCaps.has(c))) continue;
             // Skip fully transparent elements
             if (groupOpacity <= 0.01) continue;
 
-            // Dim non-selected personas when a persona filter is active
-            const isSelectedPersona = group.personaId === activePersonaId;
-            const groupDim = isPersonaFilter && !isSelectedPersona ? 0.25 : 1;
+            // Dim non-selected user types when a user type filter is active
+            const isSelectedUserType = group.userTypeId === activeUserTypeId;
+            const groupDim = isUserTypeFilter && !isSelectedUserType ? 0.25 : 1;
 
-            // Label: show plain count when persona filter active; show "X of Y" only for pure workflow filter
-            const label = (!isPersonaFilter && activeCaps)
+            // Label: show plain count when user type filter active; show "X of Y" only for pure workflow filter
+            const label = (!isUserTypeFilter && activeCaps)
               ? (() => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const matchingStories = graph.userStories.filter((s: any) =>
-                    s.persona === group.personaId &&
+                    s.userType === group.userTypeId &&
                     s.capabilities.some((c: string) => activeCaps.has(c))
                   ).length;
                   return `${matchingStories} of ${group.storyCount} ${group.storyCount === 1 ? "story" : "stories"}`;
@@ -547,8 +601,8 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
 
             elements.push(
               <g
-                key={`collapsed-${group.personaId}`}
-                onClick={(e) => { e.stopPropagation(); onTogglePersona(group.personaId); }}
+                key={`collapsed-${group.userTypeId}`}
+                onClick={(e) => { e.stopPropagation(); onToggleUserType(group.userTypeId); }}
                 style={{ cursor: "pointer", opacity: groupOpacity * groupDim }}
               >
                 <rect
@@ -556,19 +610,19 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
                   width={group.width} height={group.height}
                   rx="6"
                   fill="rgba(0,0,0,0.45)"
-                  stroke={personaColor} strokeWidth="1.5" strokeOpacity="0.5"
+                  stroke={utColor} strokeWidth="1.5" strokeOpacity="0.5"
                 />
-                {/* Persona color accent on left edge */}
+                {/* User type color accent on left edge */}
                 <rect
                   x={group.x} y={group.y}
                   width="3" height={group.height}
                   rx="1"
-                  fill={personaColor} fillOpacity="0.8"
+                  fill={utColor} fillOpacity="0.8"
                 />
                 {/* Expand chevron */}
                 <text
                   x={group.x + 11} y={group.y + group.height / 2 + 4}
-                  fill={personaColor} fontSize="10" fontWeight="700"
+                  fill={utColor} fontSize="10" fontWeight="700"
                   style={{ pointerEvents: "none" }}
                 >
                   {"\u25B8"}
@@ -587,7 +641,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
                 <text
                   x={group.x + group.width - 8} y={group.y + group.height / 2 + 3}
                   textAnchor="end"
-                  fill={personaColor} fontSize="7" opacity="0.5"
+                  fill={utColor} fontSize="7" opacity="0.5"
                   style={{ pointerEvents: "none" }}
                 >
                   {group.uniqueCapabilities.length} cap{group.uniqueCapabilities.length !== 1 ? "s" : ""}
@@ -598,18 +652,18 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
 
           // ── Render ALL expanded story boxes from animation (includes fade-outs) ──
           for (const box of animatedLayout.storyBoxes) {
-            const pi = box.personaIndex;
-            const personaColor = PERSONA_COLORS[pi % PERSONA_COLORS.length] || "#999";
+            const pi = box.userTypeIndex;
+            const utColor = USER_TYPE_COLORS[pi % USER_TYPE_COLORS.length] || "#999";
             const boxOpacity = animatedLayout.storyBoxOpacity.get(box.id) ?? 1;
 
             // Hide story boxes that have no capability overlap with active workflows (pure workflow filter only)
-            if (!isPersonaFilter && activeCaps && !box.capabilities.some((c: string) => activeCaps.has(c))) continue;
+            if (!isUserTypeFilter && activeCaps && !box.capabilities.some((c: string) => activeCaps.has(c))) continue;
             // Skip fully transparent
             if (boxOpacity <= 0.01) continue;
 
             const isImplementing = box.status === "implementing";
             const isActiveStory = activeStoryId === box.id;
-            const boxDim = isPersonaFilter && box.personaId !== activePersonaId ? 0.25 : 1;
+            const boxDim = isUserTypeFilter && box.userTypeId !== activeUserTypeId ? 0.25 : 1;
 
             elements.push(
               <g key={box.id}
@@ -621,16 +675,16 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
                   width={box.width} height={box.height}
                   rx="4"
                   fill={isActiveStory ? "rgba(139,92,246,0.15)" : "rgba(0,0,0,0.5)"}
-                  stroke={isActiveStory ? "#a78bfa" : personaColor}
+                  stroke={isActiveStory ? "#a78bfa" : utColor}
                   strokeWidth={isActiveStory ? 2 : 1}
                   strokeOpacity={isImplementing && !isActiveStory ? 0.3 : 0.6}
                 />
-                {/* Persona color accent on left edge */}
+                {/* User type color accent on left edge */}
                 <rect
                   x={box.x} y={box.y}
                   width="3" height={box.height}
                   rx="1"
-                  fill={personaColor} fillOpacity={isImplementing ? 0.4 : 0.8}
+                  fill={utColor} fillOpacity={isImplementing ? 0.4 : 0.8}
                 />
                 <text
                   x={box.x + 10} y={box.y + box.height / 2 + 4}
@@ -672,16 +726,14 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
 
           // ── Render ALL collapsed lines from animation (includes fade-outs) ──
           for (const line of animatedLayout.collapsedLines) {
-            if (activePersonaId && line.personaId !== activePersonaId) continue;
+            if (activeUserTypeId && line.userTypeId !== activeUserTypeId) continue;
             if (activeCaps && !activeCaps.has(line.capabilityId)) continue;
-            const key = `collapsed-${line.personaId}-${line.capabilityId}`;
+            const key = `collapsed-${line.userTypeId}-${line.capabilityId}`;
             const lineOpacity = animatedLayout.collapsedLineOpacity.get(key) ?? 1;
             if (lineOpacity <= 0.01) continue;
 
-            const isHighlighted = !!activePersonaId && line.personaId === activePersonaId;
-            const lineColor = isHighlighted
-              ? PERSONA_COLORS[line.personaIndex % PERSONA_COLORS.length]
-              : STORY_LINE_COLOR;
+            const isHighlighted = !!activeUserTypeId && line.userTypeId === activeUserTypeId;
+            const lineColor = USER_TYPE_COLORS[line.userTypeIndex % USER_TYPE_COLORS.length];
 
             elements.push(
               <path
@@ -690,7 +742,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
                 fill="none"
                 stroke={lineColor}
                 strokeWidth={isHighlighted ? "2.5" : "1.8"}
-                strokeOpacity={(isHighlighted ? 0.8 : 0.4) * lineOpacity}
+                strokeOpacity={(isHighlighted ? 0.8 : 0.5) * lineOpacity}
                 markerEnd="url(#ea)"
               />
             );
@@ -698,20 +750,18 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
 
           // ── Render ALL expanded lines from animation (includes fade-outs) ──
           for (const line of animatedLayout.storyLines) {
-            if (activePersonaId && line.personaId !== activePersonaId) continue;
+            if (activeUserTypeId && line.userTypeId !== activeUserTypeId) continue;
             const isImplementing = line.userStoryStatus === "implementing";
             if (activeCaps && !activeCaps.has(line.capabilityId)) continue;
             const key = `${line.userStoryId}-${line.capabilityId}`;
             const lineOpacity = animatedLayout.storyLineOpacity.get(key) ?? 1;
             if (lineOpacity <= 0.01) continue;
 
-            const isHighlighted = !!activePersonaId && line.personaId === activePersonaId;
+            const isHighlighted = !!activeUserTypeId && line.userTypeId === activeUserTypeId;
             const baseOpacity = isHighlighted
               ? (isImplementing ? 0.5 : 0.8)
-              : (isImplementing ? 0.15 : 0.35);
-            const lineColor = isHighlighted
-              ? PERSONA_COLORS[line.personaIndex % PERSONA_COLORS.length]
-              : STORY_LINE_COLOR;
+              : (isImplementing ? 0.2 : 0.45);
+            const lineColor = USER_TYPE_COLORS[line.userTypeIndex % USER_TYPE_COLORS.length];
 
             elements.push(
               <path
@@ -730,7 +780,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
         })()}
 
         {/* 5c ── invisible story→capability paths (for dot animation in layer 10) */}
-        {!animationPaused && (activePersonaId || activeStoryId) && (() => {
+        {!animationPaused && (activeUserTypeId || activeStoryId) && (() => {
           const hasWorkflowFilter = activeWorkflowIds !== undefined;
           const activeCaps = hasWorkflowFilter
             ? new Set(graph.workflows
@@ -740,14 +790,14 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
 
           const paths: React.ReactNode[] = [];
 
-          for (const persona of graph.personas) {
-            if (activePersonaId && persona.id !== activePersonaId) continue;
+          for (const ut of graph.userTypes) {
+            if (activeUserTypeId && ut.id !== activeUserTypeId) continue;
 
-            const isCollapsed = collapsedPersonas.has(persona.id);
+            const isCollapsed = collapsedUserTypes.has(ut.id);
 
             let lines = isCollapsed
-              ? targetLayout.collapsedLines.filter(l => l.personaId === persona.id)
-              : targetLayout.storyLines.filter(l => l.personaId === persona.id);
+              ? targetLayout.collapsedLines.filter(l => l.userTypeId === ut.id)
+              : targetLayout.storyLines.filter(l => l.userTypeId === ut.id);
 
             if (activeStoryId) {
               lines = lines.filter(l => l.userStoryId === activeStoryId);
@@ -756,7 +806,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             for (const line of lines) {
               if (activeCaps && !activeCaps.has(line.capabilityId)) continue;
 
-              const pathId = `story-path-${persona.id}-${line.userStoryId}-${line.capabilityId}`;
+              const pathId = `story-path-${ut.id}-${line.userStoryId}-${line.capabilityId}`;
 
               paths.push(
                 <path
@@ -937,20 +987,20 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
           );
         })}
 
-        {/* 8 ── persona badges ─────────────────────────────────────── */}
-        {graph.personas.map((persona, pi) => {
-          const isCollapsed = collapsedPersonas.has(persona.id);
+        {/* 8 ── user type badges ──────────────────────────────────── */}
+        {graph.userTypes.map((ut, pi) => {
+          const isCollapsed = collapsedUserTypes.has(ut.id);
           // Use dynamically computed position (accounts for mixed collapsed/expanded)
-          const pos = animatedLayout.personaPositions.get(persona.id);
+          const pos = animatedLayout.userTypePositions.get(ut.id);
           if (!pos) return null;
 
-          const color = PERSONA_COLORS[pi % PERSONA_COLORS.length];
-          const isActiveFilter = activePersonaId === persona.id;
-          const badgeDim = activePersonaId && !isActiveFilter ? 0.3 : 1;
+          const color = USER_TYPE_COLORS[pi % USER_TYPE_COLORS.length];
+          const isActiveFilter = activeUserTypeId === ut.id;
+          const badgeDim = activeUserTypeId && !isActiveFilter ? 0.3 : 1;
           return (
-            <g key={persona.id} style={{ opacity: badgeDim }}>
-              {/* Persona name + tag anchored to the LEFT of the badge */}
-              <g onClick={() => { onSelectPersona?.(persona.id); setSelection({ kind: "persona", data: persona }); }} style={{ cursor: "pointer" }}>
+            <g key={ut.id} style={{ opacity: badgeDim }}>
+              {/* User type name + tag anchored to the LEFT of the badge */}
+              <g onClick={() => { onSelectUserType?.(ut.id); setSelection({ kind: "userType", data: ut }); }} style={{ cursor: "pointer" }}>
                 <text
                   x={pos.x - 24} y={pos.y - 4}
                   textAnchor="end"
@@ -958,7 +1008,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
                   opacity={isActiveFilter ? 1 : 0.8}
                   style={{ pointerEvents: "none" }}
                 >
-                  {persona.name}
+                  {ut.name}
                 </text>
                 <text
                   x={pos.x - 24} y={pos.y + 9}
@@ -966,11 +1016,11 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
                   fill={color} fontSize="8" fontWeight="400" opacity={isActiveFilter ? 0.8 : 0.6}
                   style={{ pointerEvents: "none" }}
                 >
-                  {persona.tag}
+                  {ut.tag}
                 </text>
               </g>
-              {/* Clickable persona circle badge → filters graph */}
-              <g onClick={() => { onSelectPersona?.(persona.id); setSelection({ kind: "persona", data: persona }); }} style={{ cursor: "pointer" }}>
+              {/* Clickable user type circle badge → filters graph */}
+              <g onClick={() => { onSelectUserType?.(ut.id); setSelection({ kind: "userType", data: ut }); }} style={{ cursor: "pointer" }}>
                 <circle cx={pos.x} cy={pos.y} r="18"
                   fill={isActiveFilter ? color : color} fillOpacity={isActiveFilter ? 0.3 : 0.15}
                   stroke={color} strokeWidth={isActiveFilter ? 3 : 2}
@@ -984,7 +1034,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
               </g>
               {/* Collapse/expand toggle chevron */}
               <g
-                onClick={(e) => { e.stopPropagation(); onTogglePersona(persona.id); }}
+                onClick={(e) => { e.stopPropagation(); onToggleUserType(ut.id); }}
                 style={{ cursor: "pointer" }}
               >
                 <circle cx={pos.x + 22} cy={pos.y - 14} r="7" fill="rgba(0,0,0,0.4)" stroke={color} strokeWidth="1" strokeOpacity="0.5" />
@@ -1024,18 +1074,18 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
 
         {/* 10 ── animated dots (always on top of everything) ─────── */}
 
-        {/* 10a ── workflow chain dots (persona dots riding event chains) */}
+        {/* 10a ── workflow chain dots (user type dots riding event chains) */}
         {!animationPaused &&
-          positions.personaFlowDots
+          positions.userTypeFlowDots
             .filter((dot) =>
               (!activeWorkflowIds || activeWorkflowIds.has(dot.workflowId)) &&
-              (!activePersonaId || dot.personaId === activePersonaId)
+              (!activeUserTypeId || dot.userTypeId === activeUserTypeId)
             )
-            .map((dot: PersonaWorkflowDot) => {
+            .map((dot: UserTypeWorkflowDot) => {
             const chain = positions.workflowEventChains.get(dot.workflowId);
             if (!chain) return null;
 
-            const color = PERSONA_COLORS[dot.personaIndex % PERSONA_COLORS.length];
+            const color = USER_TYPE_COLORS[dot.userTypeIndex % USER_TYPE_COLORS.length];
 
             // Duration scales with path length so all dots move at ~same velocity.
             // Target: ~150 px/s, clamped 6s–20s, with ±10% random jitter.
@@ -1048,10 +1098,10 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
               }
             }
             const baseDuration = Math.max(6, Math.min(20, pathLen / 150));
-            const seed = (dot.personaIndex * 7 + dot.staggerIndex * 13 + dot.workflowId.length * 3) % 100;
+            const seed = (dot.userTypeIndex * 7 + dot.staggerIndex * 13 + dot.workflowId.length * 3) % 100;
             const duration = baseDuration * (0.9 + (seed / 100) * 0.2); // ±10%
             const staggerDelay = (dot.staggerIndex / Math.max(dot.totalOnWorkflow, 1)) * duration + (seed % 2);
-            const dotKey = `dot-${dot.personaId}-${dot.workflowId}`;
+            const dotKey = `dot-${dot.userTypeId}-${dot.workflowId}`;
 
             return (
               <g key={dotKey}>
@@ -1077,7 +1127,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
                     <mpath href={`#wf-chain-${dot.workflowId}`} />
                   </animateMotion>
                 </circle>
-                {/* Persona initial label */}
+                {/* User type initial label */}
                 <text
                   textAnchor="middle"
                   dy="3.5"
@@ -1086,7 +1136,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
                   fontWeight="800"
                   style={{ pointerEvents: "none" }}
                 >
-                  {dot.personaName.split(" ").map(w => w[0]).join("").slice(0, 2)}
+                  {dot.userTypeName.split(" ").map(w => w[0]).join("").slice(0, 2)}
                   <animateMotion
                     dur={`${duration}s`}
                     begin={`${staggerDelay}s`}
@@ -1100,8 +1150,8 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             );
           })}
 
-        {/* 10b ── story→capability dots (persona dots riding story lines) */}
-        {!animationPaused && (activePersonaId || activeStoryId) && (() => {
+        {/* 10b ── story→capability dots (user type dots riding story lines) */}
+        {!animationPaused && (activeUserTypeId || activeStoryId) && (() => {
           const hasWorkflowFilter = activeWorkflowIds !== undefined;
           const activeCaps = hasWorkflowFilter
             ? new Set(graph.workflows
@@ -1111,17 +1161,17 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
 
           const dots: React.ReactNode[] = [];
 
-          for (const persona of graph.personas) {
-            if (activePersonaId && persona.id !== activePersonaId) continue;
+          for (const ut of graph.userTypes) {
+            if (activeUserTypeId && ut.id !== activeUserTypeId) continue;
 
-            const pi = graph.personas.indexOf(persona);
-            const isCollapsed = collapsedPersonas.has(persona.id);
-            const color = PERSONA_COLORS[pi % PERSONA_COLORS.length];
-            const initials = persona.name.split(" ").map(w => w[0]).join("").slice(0, 2);
+            const pi = graph.userTypes.indexOf(ut);
+            const isCollapsed = collapsedUserTypes.has(ut.id);
+            const color = USER_TYPE_COLORS[pi % USER_TYPE_COLORS.length];
+            const initials = ut.name.split(" ").map(w => w[0]).join("").slice(0, 2);
 
             let lines = isCollapsed
-              ? targetLayout.collapsedLines.filter(l => l.personaId === persona.id)
-              : targetLayout.storyLines.filter(l => l.personaId === persona.id);
+              ? targetLayout.collapsedLines.filter(l => l.userTypeId === ut.id)
+              : targetLayout.storyLines.filter(l => l.userTypeId === ut.id);
 
             if (activeStoryId) {
               lines = lines.filter(l => l.userStoryId === activeStoryId);
@@ -1131,7 +1181,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             for (const line of lines) {
               if (activeCaps && !activeCaps.has(line.capabilityId)) continue;
 
-              const pathId = `story-path-${persona.id}-${line.userStoryId}-${line.capabilityId}`;
+              const pathId = `story-path-${ut.id}-${line.userStoryId}-${line.capabilityId}`;
               const duration = 4 + (lineIdx * 0.7) % 3; // 4-7s, staggered
               const delay = (lineIdx * 1.3) % 3;
 
@@ -1169,7 +1219,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
       <div className="absolute bottom-4 left-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 text-xs">
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-bold text-gray-800 dark:text-gray-200 text-sm">Legend</h3>
-          {positions.personaFlowDots.length > 0 && (
+          {positions.userTypeFlowDots.length > 0 && (
             <button
               onClick={() => setAnimationPaused((p) => !p)}
               className="ml-3 px-2 py-0.5 rounded text-xs font-medium border transition-colors"
@@ -1200,12 +1250,12 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
               <div className="flex items-center gap-2"><div className="w-4 h-3 rounded border-2 border-dashed" style={{ borderColor: "#f87171", background: "rgba(239,68,68,0.04)" }} /><span className="text-gray-600 dark:text-gray-400">External System</span></div>
             </>
           )}
-          {/* Persona colors */}
-          {graph.personas.length > 0 && (
+          {/* User type colors */}
+          {graph.userTypes.length > 0 && (
             <>
-              <div className="col-span-2 mt-1 pt-1 border-t border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold text-[10px] uppercase tracking-wider">Personas</div>
-              {graph.personas.map((p, pi) => {
-                const color = PERSONA_COLORS[pi % PERSONA_COLORS.length];
+              <div className="col-span-2 mt-1 pt-1 border-t border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold text-[10px] uppercase tracking-wider">User Types</div>
+              {graph.userTypes.map((p, pi) => {
+                const color = USER_TYPE_COLORS[pi % USER_TYPE_COLORS.length];
                 return (
                   <div key={p.id} className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{ background: color }} />
@@ -1226,7 +1276,7 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
               {selection.kind === "context" && selection.data.title}
               {selection.kind === "event" && selection.data.title}
               {selection.kind === "capability" && selection.data.name}
-              {selection.kind === "persona" && selection.data.name}
+              {selection.kind === "userType" && selection.data.name}
               {selection.kind === "inferred" && selection.data.slug}
               {selection.kind === "workflow" && selection.data.title}
             </h3>
@@ -1324,8 +1374,8 @@ export function LandscapeCanvas({ graph, positions, activeWorkflowIds, collapsed
             );
           })()}
 
-          {/* Persona detail */}
-          {selection.kind === "persona" && (
+          {/* User Type detail */}
+          {selection.kind === "userType" && (
             <dl className="text-sm space-y-2">
               <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Type</dt><dd>{selection.data.type}</dd></div>
               <div><dt className="text-gray-500 dark:text-gray-400 text-xs">Archetype</dt><dd>{selection.data.archetype || "—"}</dd></div>

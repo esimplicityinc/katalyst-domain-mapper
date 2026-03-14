@@ -9,15 +9,14 @@
  * can detect issues that the landscape assembler would silently ignore.
  */
 
-import type { DomainModelRepository } from "../../ports/DomainModelRepository.js";
-import type { GovernanceRepository, StoredSnapshot } from "../../ports/GovernanceRepository.js";
-import type { TaxonomyRepository, TaxonomyHierarchy, StoredTaxonomySnapshot } from "../../ports/TaxonomyRepository.js";
+import type { TaxonomyRepository, StoredGovernanceSnapshot } from "../../ports/TaxonomyRepository.js";
+import type { TaxonomyHierarchy, StoredTaxonomySnapshot } from "../../ports/TaxonomyRepository.js";
 import type { ValidatedSnapshotData } from "../../domain/governance/validateSnapshotData.js";
 import { LandscapeLinter } from "../../domain/lint/LandscapeLinter.js";
 import type {
   LintReport,
   LintContext,
-  LintPersona,
+  LintUserType,
   LintUserStory,
   LintCapability,
   LintTaxonomyNode,
@@ -31,14 +30,10 @@ import type {
 
 // ── Augmented repo types (extra methods on SQLite adapters) ──────────────────
 
-type GovernanceRepoDeps = GovernanceRepository & {
-  getLatestSnapshotByProject?: (project: string) => Promise<StoredSnapshot | null>;
-  getRawIndex?: (snapshotId: string) => Promise<ValidatedSnapshotData | null>;
-};
-
 type TaxonomyRepoDeps = TaxonomyRepository & {
+  getLatestGovernanceSnapshotByProject?: (project: string) => Promise<StoredGovernanceSnapshot | null>;
+  governanceGetRawIndex?: (snapshotId: string) => Promise<ValidatedSnapshotData | null>;
   getHierarchyBySnapshotId?: (id: string) => Promise<TaxonomyHierarchy>;
-  listSnapshots?: (limit?: number) => Promise<StoredTaxonomySnapshot[]>;
 };
 
 // ── Use Case ─────────────────────────────────────────────────────────────────
@@ -47,14 +42,12 @@ export class LintLandscape {
   private linter = new LandscapeLinter();
 
   constructor(
-    private domainModelRepo: DomainModelRepository,
-    private governanceRepo: GovernanceRepoDeps,
-    private taxonomyRepo: TaxonomyRepoDeps,
+    private repo: TaxonomyRepoDeps,
   ) {}
 
   async execute(domainModelId: string): Promise<LintReport> {
     // ── 1. Fetch domain model with all artifacts ────────────────────────────
-    const domainModel = await this.domainModelRepo.getById(domainModelId);
+    const domainModel = await this.repo.getDomainModelById(domainModelId);
     if (!domainModel) {
       throw new Error(`Domain model "${domainModelId}" not found`);
     }
@@ -75,19 +68,19 @@ export class LintLandscape {
     let taxonomyHierarchy: TaxonomyHierarchy | null = null;
 
     if (systemNames.size > 0) {
-      const taxSnapshots = await this.taxonomyRepo.listSnapshots?.(50) ?? [];
+      const taxSnapshots = await this.repo.listTaxonomySnapshots(50) ?? [];
       for (const snap of taxSnapshots) {
-        const hier = await this.taxonomyRepo.getHierarchyBySnapshotId?.(snap.id).catch(() => null);
+        const hier = await this.repo.getHierarchyBySnapshotId?.(snap.id).catch(() => null);
         if (!hier) continue;
         const snapSystemNames = new Set(hier.systems.map((s) => (s as { name: string }).name));
         const hasMatch = [...systemNames].some((n) => snapSystemNames.has(n));
         if (hasMatch) {
           taxonomySnapshotId = snap.id;
           taxonomyHierarchy = hier;
-          const govSnap = await this.governanceRepo.getLatestSnapshotByProject?.(snap.project).catch(() => null);
+          const govSnap = await this.repo.getLatestGovernanceSnapshotByProject?.(snap.project).catch(() => null);
           if (govSnap) {
             governanceSnapshotId = govSnap.id;
-            governanceRawIndex = await this.governanceRepo.getRawIndex?.(govSnap.id).catch(() => null) ?? null;
+            governanceRawIndex = await this.repo.governanceGetRawIndex?.(govSnap.id).catch(() => null) ?? null;
           }
           break;
         }
@@ -96,34 +89,34 @@ export class LintLandscape {
 
     // Fallback: latest taxonomy
     if (!taxonomyHierarchy) {
-      const latest = await this.taxonomyRepo.getLatestSnapshot().catch(() => null);
+      const latest = await this.repo.getLatestTaxonomySnapshot().catch(() => null);
       if (latest) {
         taxonomySnapshotId = latest.id;
-        taxonomyHierarchy = await this.taxonomyRepo.getHierarchyBySnapshotId?.(latest.id).catch(() => null) ?? null;
+        taxonomyHierarchy = await this.repo.getHierarchyBySnapshotId?.(latest.id).catch(() => null) ?? null;
       }
     }
 
     // Fallback: latest governance
     if (!governanceRawIndex) {
-      const latest = await this.governanceRepo.getLatestSnapshot().catch(() => null);
+      const latest = await this.repo.getLatestGovernanceSnapshot().catch(() => null);
       if (latest) {
         governanceSnapshotId = latest.id;
-        governanceRawIndex = await this.governanceRepo.getRawIndex?.(latest.id).catch(() => null) ?? null;
+        governanceRawIndex = await this.repo.governanceGetRawIndex?.(latest.id).catch(() => null) ?? null;
       }
     }
 
     // ── 3. Build LintContext ─────────────────────────────────────────────────
 
-    // Governance: personas
-    const personas: LintPersona[] = governanceRawIndex?.personas
-      ? Object.values(governanceRawIndex.personas).map((p) => {
-          const persona = p as Record<string, unknown>;
+    // Governance: user types
+    const userTypes: LintUserType[] = governanceRawIndex?.userTypes
+      ? Object.values(governanceRawIndex.userTypes).map((p) => {
+          const userType = p as Record<string, unknown>;
           return {
-            id: String(persona["id"] ?? ""),
-            name: String(persona["name"] ?? ""),
-            type: String(persona["type"] ?? "human"),
-            archetype: persona["archetype"] as string | undefined,
-            typicalCapabilities: (persona["typicalCapabilities"] as string[]) ?? [],
+            id: String(userType["id"] ?? ""),
+            name: String(userType["name"] ?? ""),
+            type: String(userType["type"] ?? "human"),
+            archetype: userType["archetype"] as string | undefined,
+            typicalCapabilities: (userType["typicalCapabilities"] as string[]) ?? [],
           };
         })
       : [];
@@ -135,7 +128,7 @@ export class LintLandscape {
           return {
             id: String(story["id"] ?? ""),
             title: String(story["title"] ?? ""),
-            persona: String(story["persona"] ?? ""),
+            userType: String(story["userType"] ?? ""),
             capabilities: (story["capabilities"] as string[]) ?? [],
             status: String(story["status"] ?? "draft"),
           };
@@ -183,7 +176,7 @@ export class LintLandscape {
     // Taxonomy: load capability tree and flatten to LintTaxonomyCapability list
     const taxonomyCapabilities: LintTaxonomyCapability[] = [];
     if (taxonomySnapshotId) {
-      const capTree = await this.taxonomyRepo
+      const capTree = await this.repo
         .getCapabilityTreeBySnapshotId(taxonomySnapshotId)
         .catch(() => null);
       if (capTree) {
@@ -270,7 +263,7 @@ export class LintLandscape {
       domainModelId,
       governanceSnapshotId,
       taxonomySnapshotId,
-      personas,
+      userTypes,
       userStories,
       capabilities,
       boundedContexts,

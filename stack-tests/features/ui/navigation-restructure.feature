@@ -30,13 +30,13 @@ Feature: Lifecycle-Oriented Navigation Restructure
     And the sidebar should show "Roadmap" and "System Taxonomy" categories
 
   @ui @ROAD-029 @navigation @dropdown
-  Scenario: Discovery dropdown contains Personas and User Stories
+  Scenario: Discovery dropdown contains User Types and User Stories
     Given I am on the documentation homepage
     When I click the "Discovery" dropdown
-    Then I should see "Personas & Stories" option
-    When I click "Personas & Stories"
-    Then I should navigate to the personas section
-    And the sidebar should show "Personas" and "User Stories" categories
+    Then I should see "User Types & Stories" option
+    When I click "User Types & Stories"
+    Then I should navigate to the user types section
+    And the sidebar should show "User Types" and "User Stories" categories
 
   @ui @ROAD-029 @navigation @dropdown
   Scenario: Planning dropdown contains Plans and Capabilities
@@ -151,7 +151,7 @@ Feature: Lifecycle-Oriented Navigation Restructure
       | /docs/bdd/index              |
       | /docs/adr/index              |
       | /docs/nfr/index              |
-      | /docs/personas/index         |
+      | /docs/user-types/index     |
       | /docs/capabilities/index     |
       | /docs/user-stories/index     |
       | /docs/roads/index            |

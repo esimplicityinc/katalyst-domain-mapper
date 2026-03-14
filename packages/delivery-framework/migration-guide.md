@@ -17,7 +17,7 @@ The old navigation had 11 separate top-level items:
 - Planning
 - BDD
 - Agents
-- Personas
+- User Types
 - Capabilities
 - Stories
 - Roadmap
@@ -35,7 +35,7 @@ The old navigation had 11 separate top-level items:
 The new navigation groups content by software delivery lifecycle stages:
 
 - **🎯 Strategy** → Roadmap, System Taxonomy
-- **👥 Discovery** → Personas, User Stories
+- **👥 Discovery** → User Types, User Stories
 - **📋 Planning** → Implementation Plans, System Capabilities
 - **🏗️ Design** → Domain-Driven Design, Architecture Decisions
 - **🧪 Testing** → BDD Tests, Non-Functional Requirements
@@ -60,7 +60,7 @@ All existing content has been **preserved** - just reorganized. Here's where eve
 | **Planning** | 📋 Planning → Implementation Plans | Planning |
 | **BDD** | 🧪 Testing → BDD Tests | Testing |
 | **Agents** | 🤖 Automation → AI Agents | Automation |
-| **Personas** | 👥 Discovery → Personas | Discovery |
+| **User Types** | 👥 Discovery → User Types | Discovery |
 | **Capabilities** | 📋 Planning → System Capabilities | Planning |
 | **Stories** | 👥 Discovery → User Stories | Discovery |
 | **Roadmap** | 🎯 Strategy → Roadmap | Strategy |
@@ -198,8 +198,8 @@ If you want to update your bookmarks to the new structure:
 **When to use**: Understanding who you're building for, what they need
 
 **Contents**:
-- **Personas** - PER-001 through PER-005
-- **User Stories** - US-001 through US-032 (grouped by persona)
+- **User Types** - UT-001 through UT-005
+- **User Stories** - US-001 through US-032 (grouped by user type)
 
 **Key questions answered**:
 - Who are our users?
@@ -294,7 +294,7 @@ Print or bookmark this quick reference:
 
 ```
 🎯 Strategy      → Roadmap, System Taxonomy
-👥 Discovery     → Personas, User Stories  
+👥 Discovery     → User Types, User Stories  
 📋 Planning      → Implementation Plans, System Capabilities
 🏗️ Design        → Domain-Driven Design, Architecture Decisions
 🧪 Testing       → BDD Tests, Non-Functional Requirements

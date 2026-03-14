@@ -12,9 +12,9 @@ export function createTaxonomyRoutes(deps: {
   return (
     new Elysia({ prefix: "/taxonomy" })
 
-      // POST / — Ingest taxonomy snapshot
+      // POST /snapshots/ — Ingest taxonomy snapshot
       .post(
-        "/",
+        "/snapshots/",
         async ({ body }) => {
           const snapshot = await deps.ingestTaxonomySnapshot.execute(body);
           return snapshot;
@@ -27,9 +27,9 @@ export function createTaxonomyRoutes(deps: {
         },
       )
 
-      // GET /latest — Latest snapshot
+      // GET /snapshots/latest — Latest snapshot
       .get(
-        "/latest",
+        "/snapshots/latest",
         async ({ set }) => {
           const snapshot = await deps.queryTaxonomyState.getLatest();
           if (!snapshot) {
@@ -46,9 +46,9 @@ export function createTaxonomyRoutes(deps: {
         },
       )
 
-      // GET /snapshots — List all snapshots
+      // GET /snapshots/ — List all snapshots
       .get(
-        "/snapshots",
+        "/snapshots/",
         async ({ query }) => {
           const limit = query.limit ? Number(query.limit) : undefined;
           return deps.queryTaxonomyState.listSnapshots(limit);
@@ -64,9 +64,9 @@ export function createTaxonomyRoutes(deps: {
         },
       )
 
-      // GET /snapshot/:id — Specific snapshot
+      // GET /snapshots/:id — Specific snapshot
       .get(
-        "/snapshot/:id",
+        "/snapshots/:id",
         async ({ params }) => {
           const snapshot = await deps.queryTaxonomyState.getById(params.id);
           if (!snapshot) {
@@ -205,14 +205,14 @@ export function createTaxonomyRoutes(deps: {
         },
       )
 
-      // DELETE / — Delete ALL snapshots
+      // DELETE /snapshots/ — Delete ALL snapshots
       .delete(
-        "/",
+        "/snapshots/",
         async () => {
           const snapshots = await deps.queryTaxonomyState.listSnapshots();
           let deleted = 0;
           for (const snapshot of snapshots) {
-            const ok = await deps.taxonomyRepo.deleteSnapshot(snapshot.id);
+            const ok = await deps.taxonomyRepo.deleteTaxonomySnapshot(snapshot.id);
             if (ok) deleted++;
           }
           return {
@@ -228,11 +228,11 @@ export function createTaxonomyRoutes(deps: {
         },
       )
 
-      // DELETE /:id — Delete specific snapshot
+      // DELETE /snapshots/:id — Delete specific snapshot
       .delete(
-        "/:id",
+        "/snapshots/:id",
         async ({ params, set }) => {
-          const deleted = await deps.taxonomyRepo.deleteSnapshot(params.id);
+          const deleted = await deps.taxonomyRepo.deleteTaxonomySnapshot(params.id);
           if (!deleted) {
             set.status = 404;
             return { error: `Taxonomy snapshot not found: ${params.id}` };

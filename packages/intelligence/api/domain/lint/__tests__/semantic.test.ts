@@ -6,7 +6,7 @@ import { describe, it, expect } from "bun:test";
 import { runSemanticRules } from "../rules/semantic.js";
 import {
   emptyContext,
-  makePersona,
+  makeUserType,
   makeCapability,
   makeBoundedContext,
   makeDomainEvent,
@@ -105,12 +105,12 @@ describe("semantic rules", () => {
     });
   });
 
-  describe("persona-archetype-type-alignment", () => {
-    it("flags bot persona linked to approval capability", () => {
+  describe("user-type-archetype-alignment", () => {
+    it("flags bot user type linked to approval capability", () => {
       const ctx = emptyContext({
-        personas: [
-          makePersona({
-            id: "PER-BOT",
+        userTypes: [
+          makeUserType({
+            id: "UT-BOT",
             name: "CI Bot",
             type: "bot",
             typicalCapabilities: ["CAP-001"],
@@ -121,30 +121,30 @@ describe("semantic rules", () => {
         ],
       });
       const findings = runSemanticRules(ctx).filter(
-        (f) => f.rule === "persona-archetype-type-alignment",
+        (f) => f.rule === "user-type-archetype-alignment",
       );
       expect(findings).toHaveLength(1);
       expect(findings[0].severity).toBe("info");
     });
 
-    it("does not flag human persona with approval capability", () => {
+    it("does not flag human user type with approval capability", () => {
       const ctx = emptyContext({
-        personas: [makePersona({ type: "human", typicalCapabilities: ["CAP-001"] })],
+        userTypes: [makeUserType({ type: "human", typicalCapabilities: ["CAP-001"] })],
         capabilities: [makeCapability({ id: "CAP-001", title: "Manager Approval" })],
       });
       const findings = runSemanticRules(ctx).filter(
-        (f) => f.rule === "persona-archetype-type-alignment",
+        (f) => f.rule === "user-type-archetype-alignment",
       );
       expect(findings).toHaveLength(0);
     });
 
-    it("does not flag bot persona with unambiguous capability", () => {
+    it("does not flag bot user type with unambiguous capability", () => {
       const ctx = emptyContext({
-        personas: [makePersona({ type: "bot", typicalCapabilities: ["CAP-001"] })],
+        userTypes: [makeUserType({ type: "bot", typicalCapabilities: ["CAP-001"] })],
         capabilities: [makeCapability({ id: "CAP-001", title: "Scan Repository" })],
       });
       const findings = runSemanticRules(ctx).filter(
-        (f) => f.rule === "persona-archetype-type-alignment",
+        (f) => f.rule === "user-type-archetype-alignment",
       );
       expect(findings).toHaveLength(0);
     });

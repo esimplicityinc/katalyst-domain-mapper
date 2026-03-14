@@ -68,7 +68,7 @@ export function createLintRoutes(deps: LintRouteDeps) {
         severity: t.Optional(t.String()),
         /** Comma-separated category names to include */
         category: t.Optional(t.String()),
-        /** Comma-separated entity types to include: "persona,capability,domainEvent" */
+        /** Comma-separated entity types to include: "user-type,capability,domainEvent" */
         entityType: t.Optional(t.String()),
       }),
       detail: {

@@ -58,7 +58,7 @@ signatures:
 
 #### Summary
 
-Completed the API Governance Domain — a full hexagonal architecture implementation providing REST endpoints for governance index ingestion, road item tracking, capability/persona coverage reporting, trend analysis, and cross-reference integrity checking. Powered by Elysia + SQLite + Drizzle in `packages/intelligence/`.
+Completed the API Governance Domain — a full hexagonal architecture implementation providing REST endpoints for governance index ingestion, road item tracking, capability/user type coverage reporting, trend analysis, and cross-reference integrity checking. Powered by Elysia + SQLite + Drizzle in `packages/intelligence/`.
 
 #### Changes
 
@@ -74,7 +74,7 @@ Completed the API Governance Domain — a full hexagonal architecture implementa
 - Created `ValidateTransition` — validates road item state machine transitions with governance gates
 
 **Port Interface:**
-- Created `GovernanceRepository` port with 10 methods and 6 domain DTOs (StoredSnapshot, CapabilityCoverage, PersonaCoverage, RoadItemSummary, IntegrityReport, TrendPoint)
+- Created `GovernanceRepository` port with 10 methods and 6 domain DTOs (StoredSnapshot, CapabilityCoverage, User TypeCoverage, RoadItemSummary, IntegrityReport, TrendPoint)
 
 **Infrastructure Layer:**
 - Created `GovernanceRepositorySQLite` adapter (364 lines) — implements full port with denormalized storage
@@ -88,7 +88,7 @@ Completed the API Governance Domain — a full hexagonal architecture implementa
 - `GET /api/v1/governance/snapshots` — List all snapshots
 - `GET /api/v1/governance/roads` — List road items with status
 - `GET /api/v1/governance/coverage/capabilities` — Capability coverage matrix
-- `GET /api/v1/governance/coverage/personas` — Persona coverage report
+- `GET /api/v1/governance/coverage/user types` — User Type coverage report
 - `GET /api/v1/governance/trends` — Governance health over time
 - `GET /api/v1/governance/integrity` — Cross-reference integrity report
 - `DELETE /api/v1/governance/` — Delete all snapshots

@@ -38,7 +38,7 @@ governance:
     status: pass
     results:
       performance: "Layout computation < 500ms for 50 contexts; SVG rendering < 100ms post-layout"
-      accessibility: "Canvas uses ARIA labels on interactive persona badges and filter controls"
+      accessibility: "Canvas uses ARIA labels on interactive user type badges and filter controls"
   agent_signatures:
     architecture-inspector: "pass"
     code-writer: "approved"
@@ -56,11 +56,11 @@ governance:
 
 ## Description
 
-Build a full-stack Business Landscape visualization: a `GET /api/v1/landscape/:domainModelId` API endpoint that assembles a complete `LandscapeGraph`, a pure-function Landscape Linter domain with 7 coverage metrics, and a React SVG canvas with 10 composited rendering layers, 3 interchangeable layout engines (ELK/Dagre/D3-Force), animated persona workflow dots, persona click-to-filter with dimming, story-to-capability connection lines in persona color, and collapse/expand persona groups with 300ms cubic-eased transitions.
+Build a full-stack Business Landscape visualization: a `GET /api/v1/landscape/:domainModelId` API endpoint that assembles a complete `LandscapeGraph`, a pure-function Landscape Linter domain with 7 coverage metrics, and a React SVG canvas with 10 composited rendering layers, 3 interchangeable layout engines (ELK/Dagre/D3-Force), animated user type workflow dots, user type click-to-filter with dimming, story-to-capability connection lines in user type color, and collapse/expand user type groups with 300ms cubic-eased transitions.
 
 ## Value Proposition
 
-- **Unified domain view**: One canvas shows the full interconnection of bounded contexts, events, capabilities, personas, and workflows
+- **Unified domain view**: One canvas shows the full interconnection of bounded contexts, events, capabilities, user types, and workflows
 - **Discovery**: Auto-detects unknown external systems from unresolved event consumer references
 - **Quality gating**: 7-metric linter surfaces coverage gaps before they compound
 - **Flexibility**: Three layout engines adapt to any domain topology
@@ -69,7 +69,7 @@ Build a full-stack Business Landscape visualization: a `GET /api/v1/landscape/:d
 
 - **US-072** — View Business Landscape Graph (primary visualization)
 - **US-073** — Switch Between Layout Engines (ELK/Dagre/D3-Force)
-- **US-074** — Filter Landscape by Persona (click-to-filter with dimming)
+- **US-074** — Filter Landscape by User Type (click-to-filter with dimming)
 - **US-075** — Lint Domain Model for Coverage Gaps (7 metrics)
 
 ## Capabilities
@@ -116,8 +116,8 @@ Frontend Layer:
 - [x] Schema extensions: `sourceCapabilityId`, `targetCapabilityIds` on events; `contextType`, `taxonomyNode` on bounded contexts
 - [x] Port extensions: `getLatestSnapshotByProject`, `getCapabilityTree`
 - [x] Seed scripts for Durham Water and Prima Katalyst (3-level capability hierarchies)
-- [x] Persona filter bug fixes (3 bugs resolved)
-- [x] Persona color propagation to connection lines when filter active
+- [x] User type filter bug fixes (3 bugs resolved)
+- [x] User type color propagation to connection lines when filter active
 
 ### Key Files Changed
 
@@ -153,7 +153,7 @@ From US-072:
 1. ✅ Bounded contexts render grouped under taxonomy system hierarchy
 2. ✅ Domain event flow arrows render between producer/consumer contexts
 3. ✅ Capability nodes render as port-style connectors
-4. ✅ Animated persona dots ride workflow event chains
+4. ✅ Animated user type dots ride workflow event chains
 5. ✅ Inferred unknown external systems render as dashed boxes
 6. ✅ Graph loads within 3 seconds for ≤20 bounded contexts
 
@@ -163,13 +163,13 @@ From US-073:
 3. ✅ Execution time displays in toolbar in milliseconds
 
 From US-074:
-1. ✅ Clicking persona activates filter — persona connections render in persona color
+1. ✅ Clicking user type activates filter — user type connections render in user type color
 2. ✅ Non-selected elements dim to 0.25 opacity
 3. ✅ Active filter pill in toolbar with clear button
 4. ✅ Collapsed labels show accurate story counts
 
 From US-075:
-1. ✅ 7 coverage metrics computed: personaToStory through eventToCapability
+1. ✅ 7 coverage metrics computed: userTypeToStory through eventToCapability
 2. ✅ Referential, semantic, and coverage rule sets implemented
 3. ✅ Severity levels (error/warning/info) on all findings
 4. ✅ Pure-function linter with zero I/O in domain layer
@@ -185,7 +185,7 @@ From US-075:
 - **Status**: ✅ Pass
 
 ### NFR-A11Y-001: Accessibility
-- **Result**: Canvas uses ARIA labels on interactive persona badges and filter controls
+- **Result**: Canvas uses ARIA labels on interactive user type badges and filter controls
 - **Status**: ✅ Pass
 
 ## Testing Strategy
@@ -197,7 +197,7 @@ From US-075:
 
 ### Manual
 - Visual regression: 3 layout engines render without overlap for reference seed data
-- Persona filter: click/clear cycle, opacity transitions, connection line coloring
+- User type filter: click/clear cycle, opacity transitions, connection line coloring
 - Collapse/expand: 300ms animation completes without jank
 
 ## Files Changed
@@ -208,7 +208,7 @@ See **Key Files Changed** section above. 37 files total across api, web, drizzle
 
 - ✅ Landscape page renders for both Durham Water and Prima Katalyst seed data
 - ✅ All 3 layout engines produce non-overlapping layouts
-- ✅ Persona filter correctly dims non-selected elements
+- ✅ User type filter correctly dims non-selected elements
 - ✅ Linter reports 7 coverage metrics with severity classification
 - ✅ TypeScript compiles with zero errors across all packages
 - ✅ No ESLint errors in new landscape components
@@ -226,5 +226,5 @@ See **Key Files Changed** section above. 37 files total across api, web, drizzle
 - `7556b22` — Add elkjs/d3-force, improve SVG pan/zoom, extend domain types
 - `50e82d9` — Wire BusinessLandscapePage, enhance WorkflowView
 - `0164a90` — Build LandscapeCanvas + 3 layout engines + animation
-- `380a001` — Fix 3 persona filter bugs
-- `d96e9b6` — Persona color on connection lines when filter active
+- `380a001` — Fix 3 user type filter bugs
+- `d96e9b6` — User type color on connection lines when filter active

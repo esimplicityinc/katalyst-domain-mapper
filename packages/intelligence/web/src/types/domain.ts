@@ -1,169 +1,30 @@
 // ── DDD Domain Model types ─────────────────────────────────────────────────
-// These mirror the API response shapes from packages/foe-api domain-models routes.
+// Re-exported from @foe/schemas — the single source of truth.
+// Web UI components import these types for rendering domain model data.
 
-export interface DomainModel {
-  id: string;
-  name: string;
-  description: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
+import { taxonomy } from "@foe/schemas";
 
-export type SubdomainType = "core" | "supporting" | "generic";
+// ── Core domain model types ────────────────────────────────────────────────
 
-export interface BoundedContext {
-  id: string;
-  domainModelId: string;
-  slug: string;
-  title: string;
-  description: string | null;
-  responsibility: string;
-  sourceDirectory: string | null;
-  teamOwnership: string | null;
-  status: string | null;
-  subdomainType: SubdomainType | null;
-  relationships: ContextRelationship[];
-  createdAt: string;
-  updatedAt: string;
-}
+export type DomainModel = taxonomy.StoredDomainModel;
+export type BoundedContext = taxonomy.StoredBoundedContext;
+export type Aggregate = taxonomy.StoredAggregate;
+export type DomainEvent = taxonomy.StoredDomainEvent;
+export type ValueObject = taxonomy.StoredValueObject;
+export type GlossaryTerm = taxonomy.StoredGlossaryTerm;
+export type DomainWorkflow = taxonomy.StoredWorkflow;
+export type DomainModelFull = taxonomy.DomainModelWithArtifacts;
 
-export interface ContextRelationship {
-  targetContextId: string;
-  type:
-    | "upstream"
-    | "downstream"
-    | "conformist"
-    | "anticorruption-layer"
-    | "shared-kernel"
-    | "customer-supplier"
-    | "partnership"
-    | "published-language";
-  description?: string;
-}
+// ── Sub-types ──────────────────────────────────────────────────────────────
 
-export interface Aggregate {
-  id: string;
-  domainModelId: string;
-  contextId: string;
-  slug: string;
-  title: string;
-  rootEntity: string;
-  entities: string[];
-  valueObjects: string[];
-  events: string[];
-  commands: string[];
-  invariants: AggregateInvariant[];
-  sourceFile: string | null;
-  status: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
+export type SubdomainType = taxonomy.SubdomainType;
+export type ContextRelationship = taxonomy.ContextRelationship;
+export type EventPayloadField = taxonomy.EventPayloadField;
+export type WorkflowState = taxonomy.WorkflowState;
+export type WorkflowTransition = taxonomy.WorkflowTransition;
 
-export interface AggregateInvariant {
-  rule: string;
-  description?: string;
-}
+// ── Invariant (both `rule` and `description` available after Zod transform)
+export type AggregateInvariant = taxonomy.Invariant;
 
-export interface DomainEvent {
-  id: string;
-  domainModelId: string;
-  contextId: string;
-  aggregateId: string | null;
-  slug: string;
-  title: string;
-  description: string | null;
-  payload: EventPayloadField[];
-  consumedBy: string[];
-  triggers: string[];
-  sideEffects: string[];
-  sourceFile: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface EventPayloadField {
-  name: string;
-  type: string;
-  description?: string;
-}
-
-export interface ValueObject {
-  id: string;
-  domainModelId: string;
-  contextId: string;
-  slug: string;
-  title: string;
-  description: string | null;
-  properties: ValueObjectProperty[];
-  validationRules: string[];
-  immutable: boolean;
-  sourceFile: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ValueObjectProperty {
-  name: string;
-  type: string;
-  description?: string;
-}
-
-export interface GlossaryTerm {
-  id: string;
-  domainModelId: string;
-  contextId: string | null;
-  term: string;
-  definition: string;
-  aliases: string[];
-  examples: string[];
-  relatedTerms: string[];
-  source: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// ── Workflow / State Machine types ──────────────────────────────────────────
-
-export interface WorkflowState {
-  /** State identifier — may be absent from API; derived from name at runtime */
-  id: string;
-  name: string;
-  description?: string;
-  x?: number;
-  y?: number;
-  /** Derived from type === "terminal" when missing */
-  isTerminal?: boolean;
-  /** True for error/failure states */
-  isError?: boolean;
-  timestampField?: string;
-}
-
-export interface WorkflowTransition {
-  from: string;
-  to: string;
-  label: string;
-  isAsync: boolean;
-}
-
-export interface DomainWorkflow {
-  id: string;
-  domainModelId: string;
-  slug: string;
-  title: string;
-  description: string | null;
-  states: WorkflowState[];
-  transitions: WorkflowTransition[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-// ── Full domain model with all artifacts ───────────────────────────────────
-
-export interface DomainModelFull extends DomainModel {
-  boundedContexts: BoundedContext[];
-  aggregates: Aggregate[];
-  domainEvents: DomainEvent[];
-  valueObjects: ValueObject[];
-  glossaryTerms: GlossaryTerm[];
-  workflows: DomainWorkflow[];
-}
+// ── Value Object Property (both `constraints` and `description` available)
+export type ValueObjectProperty = taxonomy.ValueObjectProperty;

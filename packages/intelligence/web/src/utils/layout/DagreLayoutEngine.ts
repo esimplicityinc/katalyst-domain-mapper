@@ -26,7 +26,7 @@ import {
   INFERRED_W,
   INFERRED_H,
   CAP_SIZE,
-  PERSONA_SIZE,
+  USER_TYPE_SIZE,
   groupKey,
   GROUP_META,
   groupContexts,
@@ -93,12 +93,12 @@ export class DagreLayoutEngine implements LandscapeLayoutEngine {
       });
     }
 
-    // 5. Personas
-    for (const persona of graph.personas) {
-      g.setNode(`persona-${persona.id}`, {
-        label: persona.name,
-        width: PERSONA_SIZE,
-        height: PERSONA_SIZE,
+    // 5. User types
+    for (const ut of graph.userTypes) {
+      g.setNode(`ut-${ut.id}`, {
+        label: ut.name,
+        width: USER_TYPE_SIZE,
+        height: USER_TYPE_SIZE,
       });
     }
 
@@ -166,10 +166,10 @@ export class DagreLayoutEngine implements LandscapeLayoutEngine {
       if (n) capabilityPositions.set(cap.id, { x: n.x, y: n.y });
     }
 
-    const personaPositions = new Map<string, Position>();
-    for (const p of graph.personas) {
-      const n = g.node(`persona-${p.id}`);
-      if (n) personaPositions.set(p.id, { x: n.x, y: n.y });
+    const utPositions = new Map<string, Position>();
+    for (const p of graph.userTypes) {
+      const n = g.node(`ut-${p.id}`);
+      if (n) utPositions.set(p.id, { x: n.x, y: n.y });
     }
 
     const graphInfo = g.graph();
@@ -182,7 +182,7 @@ export class DagreLayoutEngine implements LandscapeLayoutEngine {
       groupBoxes,
       inferredPositions,
       capabilityPositions,
-      personaPositions,
+      utPositions,
       canvasWidth,
       canvasHeight,
     );

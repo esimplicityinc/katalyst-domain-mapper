@@ -16,7 +16,7 @@ Individual change records with full governance tracking. Each change includes co
 
 - [CHANGE-041](./CHANGE-041.md) — Business Landscape Visualization with Multi-Engine Layout (ROAD-044)
 - [CHANGE-042](./CHANGE-042.md) — FOE Historical Scan Data Pipeline (ROAD-045)
-- [CHANGE-043](./CHANGE-043.md) — Taxonomy & Persona Management UI with AI Discovery Agents (ROAD-046)
+- [CHANGE-043](./CHANGE-043.md) — Taxonomy & User Type Management UI with AI Discovery Agents (ROAD-046)
 - [CHANGE-044](./CHANGE-044.md) — Developer Environment Recipes and Quality Gate Hardening (ROAD-047)
 
 ### v0.10.0 (2026-02-17)

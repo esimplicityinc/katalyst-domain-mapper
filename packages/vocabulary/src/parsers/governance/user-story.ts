@@ -19,7 +19,7 @@ export async function parseUserStoryFile(
   const mapped = {
     id: data.id,
     title: data.title,
-    persona: data.persona,
+    userType: data.user_type,
     status: data.status,
     capabilities: data.capabilities,
     useCases: data.use_cases,

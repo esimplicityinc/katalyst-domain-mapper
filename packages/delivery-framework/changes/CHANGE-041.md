@@ -18,11 +18,11 @@ compliance:
     scenarios: 0
     passed: 0
     coverage: "N/A"
-    notes: "Landscape visualization implemented in this sprint. BDD scenarios to be written in subsequent sprint targeting GET /api/v1/landscape and persona filter interactions."
+    notes: "Landscape visualization implemented in this sprint. BDD scenarios to be written in subsequent sprint targeting GET /api/v1/landscape and user type filter interactions."
   nfr_checks:
     performance:
       status: pass
-      evidence: "ELK layout <500ms for 20-context graphs. SVG rendering <100ms post-layout. Persona filter toggle is client-side state, <50ms response."
+      evidence: "ELK layout <500ms for 20-context graphs. SVG rendering <100ms post-layout. User type filter toggle is client-side state, <50ms response."
       validated_by: "@opencode"
     security:
       status: pass
@@ -30,7 +30,7 @@ compliance:
       validated_by: "@opencode"
     accessibility:
       status: pass
-      evidence: "Interactive persona badges include aria-label attributes. Filter clear button has descriptive label. Collapse/expand controls are keyboard accessible."
+      evidence: "Interactive user type badges include aria-label attributes. Filter clear button has descriptive label. Collapse/expand controls are keyboard accessible."
       validated_by: "@opencode"
 signatures:
   - agent: "@architecture-inspector"
@@ -55,7 +55,7 @@ signatures:
 
 #### Summary
 
-Introduces a full-stack Business Landscape visualization: a new `GET /api/v1/landscape/:domainModelId` API endpoint that assembles a complete domain graph (bounded contexts, events, capabilities, personas, user stories, workflows), a pure-function Landscape Linter with 7 coverage metrics, and a React SVG canvas with 10 composited rendering layers and three interchangeable layout engines (ELK, Dagre, D3-Force). Persona click-to-filter, animated workflow dots, collapse/expand persona groups, and real-time layout engine switching are all included.
+Introduces a full-stack Business Landscape visualization: a new `GET /api/v1/landscape/:domainModelId` API endpoint that assembles a complete domain graph (bounded contexts, events, capabilities, user types, user stories, workflows), a pure-function Landscape Linter with 7 coverage metrics, and a React SVG canvas with 10 composited rendering layers and three interchangeable layout engines (ELK, Dagre, D3-Force). User type click-to-filter, animated workflow dots, collapse/expand user type groups, and real-time layout engine switching are all included.
 
 #### Changes
 
@@ -70,7 +70,7 @@ Introduces a full-stack Business Landscape visualization: a new `GET /api/v1/lan
 - `0008_capability_hierarchy` — adds `parent_capability` (self-FK), `tag` to `taxonomy_capabilities`
 
 **API (Application Layer):**
-- `GET /api/v1/landscape/:domainModelId` — Assembles `LandscapeGraph`: resolves bounded contexts with taxonomy positions, splits event consumers into resolved/unresolved, infers unknown external systems, associates workflow capabilities via transitive FQTN ancestor matching, includes personas/stories from governance
+- `GET /api/v1/landscape/:domainModelId` — Assembles `LandscapeGraph`: resolves bounded contexts with taxonomy positions, splits event consumers into resolved/unresolved, infers unknown external systems, associates workflow capabilities via transitive FQTN ancestor matching, includes user types/stories from governance
 - `LintLandscape` use case — Fetches data from 3 repos, normalizes to `LintContext`, delegates to `LandscapeLinter`
 
 **Domain (Lint Rules):**
@@ -91,11 +91,11 @@ Introduces a full-stack Business Landscape visualization: a new `GET /api/v1/lan
 - `layout-helpers.ts` (829 lines) — shared geometry utilities
 - Added `elkjs`, `@types/d3-force` to package.json; Vite `optimizeDeps` for elkjs
 
-**Bug Fixes (Persona Filter):**
-- Non-selected persona groups now dim to 0.25 opacity instead of disappearing
+**Bug Fixes (User Type Filter):**
+- Non-selected user type groups now dim to 0.25 opacity instead of disappearing
 - Collapsed group labels show accurate story counts (not capability counts)
-- Non-selected workflow dots/lines correctly hidden when persona filter is active
-- Selected persona connection lines render in persona color at 0.8 opacity
+- Non-selected workflow dots/lines correctly hidden when user type filter is active
+- Selected user type connection lines render in user type color at 0.8 opacity
 
 **Seed Scripts:**
 - `seed-durham-water.sh` — 3-level capability hierarchy (1 root → 4 subsystem → 8 leaf)
@@ -112,9 +112,9 @@ Introduces a full-stack Business Landscape visualization: a new `GET /api/v1/lan
 - `fb13b4d` — feat(seeds): add 3-level capability hierarchy with parentCapability and tag fields
 - `7556b22` — feat(web): add elkjs dependency, improve SVG pan/zoom, extend domain types
 - `50e82d9` — feat(web): enhance workflow view and wire BusinessLandscapePage
-- `0164a90` — feat(web): add Business Landscape visualization with collapsible personas
-- `380a001` — fix(landscape): persona filter now dims non-selected elements instead of hiding them
-- `d96e9b6` — feat(landscape): highlight persona's story-to-capability lines in persona color
+- `0164a90` — feat(web): add Business Landscape visualization with collapsible user types
+- `380a001` — fix(landscape): user type filter now dims non-selected elements instead of hiding them
+- `d96e9b6` — feat(landscape): highlight user type's story-to-capability lines in user type color
 
 #### BDD Test Results
 

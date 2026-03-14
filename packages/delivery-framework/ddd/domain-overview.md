@@ -46,12 +46,12 @@ Parses, validates, and indexes 65+ methods and 39+ observations from markdown fi
 | **Output** | `methods-index.json`, `observations-index.json` (baked into scanner container at build time) |
 
 ### Governance (Delivery Process Tracking)
-Tracks road items, capabilities, personas, NFRs, ADRs, change entries, and user stories. Provides the infrastructure for governing domain modeling decisions and tracking the delivery process itself.
+Tracks road items, capabilities, user types, NFRs, ADRs, change entries, and user stories. Provides the infrastructure for governing domain modeling decisions and tracking the delivery process itself.
 
 | Aspect | Detail |
 |--------|--------|
 | **Package** | `packages/delivery-framework/` |
-| **Artifacts** | Markdown files with structured frontmatter (ROAD-xxx, CAP-xxx, PER-xxx, ADR-xxx, NFR-xxx) |
+| **Artifacts** | Markdown files with structured frontmatter (ROAD-xxx, CAP-xxx, UT-xxx, ADR-xxx, NFR-xxx) |
 
 ## Domain Type
 
@@ -89,7 +89,7 @@ The system does NOT process transactions, handle payments, or manage user accoun
 - **Report visualization** — Web UI with radial charts, triangle diagrams, expandable findings
 - **Report persistence** — Normalized storage, filtering, comparison, score trends
 - **Domain model management** — CRUD for bounded contexts, aggregates, value objects, domain events, glossary terms
-- **Governance infrastructure** — Road items, capabilities, personas, ADRs, NFRs, change tracking
+- **Governance infrastructure** — Road items, capabilities, user types, ADRs, NFRs, change tracking
 - **Schema validation** — Zod-based runtime validation for all data boundaries
 
 ### Out of Scope

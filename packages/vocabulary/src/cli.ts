@@ -10,7 +10,7 @@ import { parseMethodFile } from "./parsers/method.js";
 import { parseObservationFile } from "./parsers/observation.js";
 import {
   parseCapabilityFile,
-  parsePersonaFile,
+  parseUserTypeFile,
   parseUserStoryFile,
   parseUseCaseFile,
   parseRoadItemFile,
@@ -150,7 +150,7 @@ program
       const { stats } = index;
       console.log(chalk.green("\n✓ Built governance index"));
       console.log(`  - ${stats.totalCapabilities} capabilities`);
-      console.log(`  - ${stats.totalPersonas} personas`);
+      console.log(`  - ${stats.totalUserTypes} user types`);
       console.log(`  - ${stats.totalStories} user stories`);
       console.log(`  - ${stats.totalUseCases} use cases`);
       console.log(`  - ${stats.totalRoadItems} road items`);
@@ -396,9 +396,9 @@ program
           parser: parseCapabilityFile,
         },
         {
-          name: "Personas",
-          pattern: "personas/PER-*.md",
-          parser: parsePersonaFile,
+          name: "User Types",
+          pattern: "user-types/UT-*.md",
+          parser: parseUserTypeFile,
         },
         {
           name: "User Stories",
@@ -585,7 +585,7 @@ program
 
 program
   .command("coverage:capabilities")
-  .description("Report capability coverage across personas, stories, and roads")
+  .description("Report capability coverage across user types, stories, and roads")
   .action(async () => {
     try {
       console.log(chalk.blue("Building capability coverage report...\n"));
@@ -596,7 +596,7 @@ program
       console.log(
         chalk.dim("ID".padEnd(10)) +
           chalk.dim("Title".padEnd(40)) +
-          chalk.dim("Personas".padEnd(10)) +
+          chalk.dim("User Types".padEnd(12)) +
           chalk.dim("Stories".padEnd(10)) +
           chalk.dim("Roads".padEnd(10)) +
           chalk.dim("Coverage"),
@@ -612,20 +612,20 @@ program
 
       for (const [capId, cap] of Object.entries(capabilities)) {
         const refs = byCapability[capId];
-        const personaCount = refs?.personas.length ?? 0;
+        const userTypeCount = refs?.userTypes.length ?? 0;
         const storyCount = refs?.stories.length ?? 0;
         const roadCount = refs?.roads.length ?? 0;
 
-        // A capability is "fully covered" if it has at least 1 persona, 1 story, and 1 road
-        const hasPersona = personaCount > 0;
+        // A capability is "fully covered" if it has at least 1 user type, 1 story, and 1 road
+        const hasUserType = userTypeCount > 0;
         const hasStory = storyCount > 0;
         const hasRoad = roadCount > 0;
 
         let coverageLabel: string;
-        if (hasPersona && hasStory && hasRoad) {
+        if (hasUserType && hasStory && hasRoad) {
           coverageLabel = chalk.green("Full");
           fullyCovered++;
-        } else if (hasPersona || hasStory || hasRoad) {
+        } else if (hasUserType || hasStory || hasRoad) {
           coverageLabel = chalk.yellow("Partial");
           partiallyCovered++;
         } else {
@@ -636,7 +636,7 @@ program
         console.log(
           capId.padEnd(10) +
             cap.title.substring(0, 38).padEnd(40) +
-            String(personaCount).padEnd(10) +
+            String(userTypeCount).padEnd(12) +
             String(storyCount).padEnd(10) +
             String(roadCount).padEnd(10) +
             coverageLabel,
@@ -668,18 +668,18 @@ program
   });
 
 program
-  .command("coverage:personas")
-  .description("Report persona coverage across stories and capabilities")
+  .command("coverage:user-types")
+  .description("Report user type coverage across stories and capabilities")
   .action(async () => {
     try {
-      console.log(chalk.blue("Building persona coverage report...\n"));
+      console.log(chalk.blue("Building user type coverage report...\n"));
 
       const index = await buildGovernanceIndex();
 
-      const personas = index.extensions.personas;
-      const byPersona = index.reverseIndices.byPersona;
+      const userTypes = index.extensions.userTypes;
+      const byUserType = index.reverseIndices.byUserType;
 
-      console.log(chalk.bold("\n=== Persona Coverage Matrix ===\n"));
+      console.log(chalk.bold("\n=== User Type Coverage Matrix ===\n"));
       console.log(
         chalk.dim("ID".padEnd(10)) +
           chalk.dim("Name".padEnd(30)) +
@@ -690,42 +690,42 @@ program
       );
       console.log("-".repeat(86));
 
-      for (const [perId, persona] of Object.entries(personas)) {
-        const refs = byPersona[perId];
+      for (const [utId, userType] of Object.entries(userTypes)) {
+        const refs = byUserType[utId];
         const capCount = refs?.capabilities.length ?? 0;
         const storyCount = refs?.stories.length ?? 0;
 
         const statusColor =
-          persona.status === "approved"
+          userType.status === "approved"
             ? chalk.green
-            : persona.status === "draft"
+            : userType.status === "draft"
               ? chalk.yellow
               : chalk.red;
 
         console.log(
-          perId.padEnd(10) +
-            persona.title.substring(0, 28).padEnd(30) +
-            persona.type.padEnd(12) +
+          utId.padEnd(10) +
+            userType.title.substring(0, 28).padEnd(30) +
+            userType.type.padEnd(12) +
             String(capCount).padEnd(14) +
             String(storyCount).padEnd(10) +
-            statusColor(persona.status),
+            statusColor(userType.status),
         );
       }
 
-      const total = Object.keys(personas).length;
-      const approved = Object.values(personas).filter(
-        (p) => p.status === "approved",
+      const total = Object.keys(userTypes).length;
+      const approved = Object.values(userTypes).filter(
+        (ut) => ut.status === "approved",
       ).length;
       const totalStories = Object.keys(index.extensions.userStories).length;
-      const storiesWithPersona = new Set(
-        Object.values(index.extensions.userStories).map((s) => s.persona),
+      const storiesWithUserType = new Set(
+        Object.values(index.extensions.userStories).map((s) => s.userType),
       );
 
       console.log("\n" + "-".repeat(86));
-      console.log(chalk.bold(`\nSummary: ${total} personas`));
+      console.log(chalk.bold(`\nSummary: ${total} user types`));
       console.log(`  Approved: ${approved}/${total}`);
       console.log(
-        `  Active personas (referenced by stories): ${storiesWithPersona.size}`,
+        `  Active user types (referenced by stories): ${storiesWithUserType.size}`,
       );
       console.log(`  Total stories: ${totalStories}`);
     } catch (err) {

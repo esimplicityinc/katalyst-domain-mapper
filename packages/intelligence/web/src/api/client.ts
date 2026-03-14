@@ -14,12 +14,12 @@ import type {
   GovernanceSnapshot,
   RoadItemSummary,
   CapabilityCoverage,
-  PersonaCoverage,
+  UserTypeCoverage,
   IntegrityReport,
   TrendPoint,
 } from "../types/governance";
 import type { Project, ProjectDetail } from "../types/project";
-import type { ManagedCapability, ManagedPersona, ManagedUserStory } from "../types/taxonomy-management";
+import type { ManagedCapability, ManagedUserType, ManagedUserStory } from "../types/taxonomy-management";
 import { normalizeRepoUrl } from "../utils/url";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
@@ -190,7 +190,7 @@ export const api = {
     name: string;
     description?: string;
   }): Promise<DomainModel> {
-    return request("/api/v1/domain-models", {
+    return request("/api/v1/taxonomy/domain-models", {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -198,17 +198,17 @@ export const api = {
 
   /** List all domain models */
   listDomainModels(): Promise<DomainModel[]> {
-    return request("/api/v1/domain-models");
+    return request("/api/v1/taxonomy/domain-models");
   },
 
   /** Get a domain model with all artifacts */
   getDomainModel(id: string): Promise<DomainModelFull> {
-    return request(`/api/v1/domain-models/${id}`);
+    return request(`/api/v1/taxonomy/domain-models/${id}`);
   },
 
   /** Delete a domain model */
   deleteDomainModel(id: string): Promise<{ deleted: boolean }> {
-    return request(`/api/v1/domain-models/${id}`, { method: "DELETE" });
+    return request(`/api/v1/taxonomy/domain-models/${id}`, { method: "DELETE" });
   },
 
   /** Update a domain model */
@@ -216,7 +216,7 @@ export const api = {
     id: string,
     data: { name?: string; description?: string },
   ): Promise<{ message: string }> {
-    return request(`/api/v1/domain-models/${id}`, {
+    return request(`/api/v1/taxonomy/domain-models/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -239,7 +239,7 @@ export const api = {
       relationships?: BoundedContext["relationships"];
     },
   ): Promise<BoundedContext> {
-    return request(`/api/v1/domain-models/${modelId}/contexts`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/contexts`, {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -260,7 +260,7 @@ export const api = {
       relationships: BoundedContext["relationships"];
     }>,
   ): Promise<BoundedContext> {
-    return request(`/api/v1/domain-models/${modelId}/contexts/${contextId}`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/contexts/${contextId}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -271,7 +271,7 @@ export const api = {
     modelId: string,
     contextId: string,
   ): Promise<{ deleted: boolean }> {
-    return request(`/api/v1/domain-models/${modelId}/contexts/${contextId}`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/contexts/${contextId}`, {
       method: "DELETE",
     });
   },
@@ -295,7 +295,7 @@ export const api = {
       status?: string;
     },
   ): Promise<Aggregate> {
-    return request(`/api/v1/domain-models/${modelId}/aggregates`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/aggregates`, {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -318,7 +318,7 @@ export const api = {
       status?: string;
     },
   ): Promise<void> {
-    return request(`/api/v1/domain-models/${modelId}/aggregates/${aggregateId}`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/aggregates/${aggregateId}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -329,7 +329,7 @@ export const api = {
     modelId: string,
     aggregateId: string,
   ): Promise<void> {
-    return request(`/api/v1/domain-models/${modelId}/aggregates/${aggregateId}`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/aggregates/${aggregateId}`, {
       method: "DELETE",
     });
   },
@@ -352,7 +352,7 @@ export const api = {
       sourceFile?: string;
     },
   ): Promise<DomainEvent> {
-    return request(`/api/v1/domain-models/${modelId}/events`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/events`, {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -375,7 +375,7 @@ export const api = {
       targetCapabilityIds?: string[];
     },
   ): Promise<void> {
-    return request(`/api/v1/domain-models/${modelId}/events/${eventId}`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/events/${eventId}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -386,7 +386,7 @@ export const api = {
     modelId: string,
     eventId: string,
   ): Promise<void> {
-    return request(`/api/v1/domain-models/${modelId}/events/${eventId}`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/events/${eventId}`, {
       method: "DELETE",
     });
   },
@@ -407,7 +407,7 @@ export const api = {
       sourceFile?: string;
     },
   ): Promise<ValueObject> {
-    return request(`/api/v1/domain-models/${modelId}/value-objects`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/value-objects`, {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -427,7 +427,7 @@ export const api = {
       sourceFile?: string;
     },
   ): Promise<void> {
-    return request(`/api/v1/domain-models/${modelId}/value-objects/${valueObjectId}`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/value-objects/${valueObjectId}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -438,7 +438,7 @@ export const api = {
     modelId: string,
     valueObjectId: string,
   ): Promise<void> {
-    return request(`/api/v1/domain-models/${modelId}/value-objects/${valueObjectId}`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/value-objects/${valueObjectId}`, {
       method: "DELETE",
     });
   },
@@ -458,7 +458,7 @@ export const api = {
       source?: string;
     },
   ): Promise<GlossaryTerm> {
-    return request(`/api/v1/domain-models/${modelId}/glossary`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/glossary`, {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -466,7 +466,7 @@ export const api = {
 
   /** List glossary terms */
   listGlossaryTerms(modelId: string): Promise<GlossaryTerm[]> {
-    return request(`/api/v1/domain-models/${modelId}/glossary`);
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/glossary`);
   },
 
   /** Delete a glossary term */
@@ -474,7 +474,7 @@ export const api = {
     modelId: string,
     termId: string,
   ): Promise<void> {
-    return request(`/api/v1/domain-models/${modelId}/glossary/${termId}`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/glossary/${termId}`, {
       method: "DELETE",
     });
   },
@@ -493,7 +493,7 @@ export const api = {
       source?: string;
     },
   ): Promise<{ message: string }> {
-    return request(`/api/v1/domain-models/${modelId}/glossary/${termId}`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/glossary/${termId}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -512,7 +512,7 @@ export const api = {
       transitions?: WorkflowTransition[];
     },
   ): Promise<{ id: string; slug: string; title: string }> {
-    return request(`/api/v1/domain-models/${modelId}/workflows`, {
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/workflows`, {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -520,7 +520,7 @@ export const api = {
 
   /** List workflows */
   listWorkflows(modelId: string): Promise<DomainWorkflow[]> {
-    return request(`/api/v1/domain-models/${modelId}/workflows`);
+    return request(`/api/v1/taxonomy/domain-models/${modelId}/workflows`);
   },
 
   /** Delete a workflow */
@@ -529,7 +529,7 @@ export const api = {
     workflowId: string,
   ): Promise<{ message: string }> {
     return request(
-      `/api/v1/domain-models/${modelId}/workflows/${workflowId}`,
+      `/api/v1/taxonomy/domain-models/${modelId}/workflows/${workflowId}`,
       { method: "DELETE" },
     );
   },
@@ -548,7 +548,7 @@ export const api = {
     },
   ): Promise<{ message: string }> {
     return request(
-      `/api/v1/domain-models/${modelId}/workflows/${workflowId}`,
+      `/api/v1/taxonomy/domain-models/${modelId}/workflows/${workflowId}`,
       {
         method: "PUT",
         body: JSON.stringify(data),
@@ -560,56 +560,56 @@ export const api = {
 
   /** Get the latest governance snapshot */
   getGovernanceLatest(): Promise<GovernanceSnapshot> {
-    return request("/api/v1/governance/latest");
+    return request("/api/v1/taxonomy/governance/latest");
   },
 
   /** List all governance snapshots */
   listGovernanceSnapshots(): Promise<GovernanceSnapshot[]> {
-    return request("/api/v1/governance/snapshots");
+    return request("/api/v1/taxonomy/governance/snapshots");
   },
 
   /** Get road items with optional status filter */
   getGovernanceRoads(status?: string): Promise<RoadItemSummary[]> {
     const qs = status ? `?status=${status}` : "";
-    return request(`/api/v1/governance/roads${qs}`);
+    return request(`/api/v1/taxonomy/governance/roads${qs}`);
   },
 
   /** Get capability coverage */
   getCapabilityCoverage(): Promise<CapabilityCoverage[]> {
-    return request("/api/v1/governance/coverage/capabilities");
+    return request("/api/v1/taxonomy/governance/coverage/capabilities");
   },
 
-  /** Get persona coverage */
-  getPersonaCoverage(): Promise<PersonaCoverage[]> {
-    return request("/api/v1/governance/coverage/personas");
+  /** Get user type coverage */
+  getUserTypeCoverage(): Promise<UserTypeCoverage[]> {
+    return request("/api/v1/taxonomy/governance/coverage/user-types");
   },
 
   /** Get governance health trends */
   getGovernanceTrends(limit?: number): Promise<TrendPoint[]> {
     const qs = limit ? `?limit=${limit}` : "";
-    return request(`/api/v1/governance/trends${qs}`);
+    return request(`/api/v1/taxonomy/governance/trends${qs}`);
   },
 
   /** Get cross-reference integrity report */
   getGovernanceIntegrity(): Promise<IntegrityReport> {
-    return request("/api/v1/governance/integrity");
+    return request("/api/v1/taxonomy/governance/integrity");
   },
 
   // ── Governance Capabilities CRUD ─────────────────────────────────────────
 
   /** List all capabilities */
   listCapabilities(): Promise<ManagedCapability[]> {
-    return request("/api/v1/governance/capabilities");
+    return request("/api/v1/taxonomy/capabilities");
   },
 
   /** Get a capability by ID */
   getCapability(id: string): Promise<ManagedCapability> {
-    return request(`/api/v1/governance/capabilities/${id}`);
+    return request(`/api/v1/taxonomy/capabilities/${id}`);
   },
 
   /** Create a capability */
   createCapability(data: Omit<ManagedCapability, "roadCount" | "storyCount">): Promise<ManagedCapability> {
-    return request("/api/v1/governance/capabilities", {
+    return request("/api/v1/taxonomy/capabilities", {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -617,7 +617,7 @@ export const api = {
 
   /** Update a capability */
   updateCapability(id: string, data: Partial<Omit<ManagedCapability, "id" | "roadCount" | "storyCount">>): Promise<ManagedCapability> {
-    return request(`/api/v1/governance/capabilities/${id}`, {
+    return request(`/api/v1/taxonomy/capabilities/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -625,61 +625,61 @@ export const api = {
 
   /** Delete a capability */
   deleteCapability(id: string): Promise<{ message: string; id: string }> {
-    return request(`/api/v1/governance/capabilities/${id}`, { method: "DELETE" });
+    return request(`/api/v1/taxonomy/capabilities/${id}`, { method: "DELETE" });
   },
 
-  // ── Governance Personas CRUD ──────────────────────────────────────────────
+  // ── Governance User Types CRUD ─────────────────────────────────────────────
 
-  /** List all personas */
-  listPersonas(): Promise<ManagedPersona[]> {
-    return request("/api/v1/governance/personas");
+  /** List all user types */
+  listUserTypes(): Promise<ManagedUserType[]> {
+    return request("/api/v1/taxonomy/user-types");
   },
 
-  /** Get a persona by ID */
-  getPersona(id: string): Promise<ManagedPersona> {
-    return request(`/api/v1/governance/personas/${id}`);
+  /** Get a user type by ID */
+  getUserType(id: string): Promise<ManagedUserType> {
+    return request(`/api/v1/taxonomy/user-types/${id}`);
   },
 
-  /** Create a persona */
-  createPersona(data: Omit<ManagedPersona, "storyCount" | "capabilityCount">): Promise<ManagedPersona> {
-    return request("/api/v1/governance/personas", {
+  /** Create a user type */
+  createUserType(data: Omit<ManagedUserType, "storyCount" | "capabilityCount">): Promise<ManagedUserType> {
+    return request("/api/v1/taxonomy/user-types", {
       method: "POST",
       body: JSON.stringify(data),
     });
   },
 
-  /** Update a persona */
-  updatePersona(id: string, data: Partial<Omit<ManagedPersona, "id" | "storyCount" | "capabilityCount">>): Promise<ManagedPersona> {
-    return request(`/api/v1/governance/personas/${id}`, {
+  /** Update a user type */
+  updateUserType(id: string, data: Partial<Omit<ManagedUserType, "id" | "storyCount" | "capabilityCount">>): Promise<ManagedUserType> {
+    return request(`/api/v1/taxonomy/user-types/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
   },
 
-  /** Delete a persona */
-  deletePersona(id: string): Promise<{ message: string; id: string }> {
-    return request(`/api/v1/governance/personas/${id}`, { method: "DELETE" });
+  /** Delete a user type */
+  deleteUserType(id: string): Promise<{ message: string; id: string }> {
+    return request(`/api/v1/taxonomy/user-types/${id}`, { method: "DELETE" });
   },
 
   // ── Governance User Stories CRUD ──────────────────────────────────────────
 
   /** List all user stories with optional filters */
-  listUserStories(params?: { persona?: string; status?: string }): Promise<ManagedUserStory[]> {
+  listUserStories(params?: { userType?: string; status?: string }): Promise<ManagedUserStory[]> {
     const query = new URLSearchParams();
-    if (params?.persona) query.set("persona", params.persona);
+    if (params?.userType) query.set("userType", params.userType);
     if (params?.status) query.set("status", params.status);
     const qs = query.toString();
-    return request(`/api/v1/governance/user-stories${qs ? `?${qs}` : ""}`);
+    return request(`/api/v1/taxonomy/user-stories${qs ? `?${qs}` : ""}`);
   },
 
   /** Get a user story by ID */
   getUserStory(id: string): Promise<ManagedUserStory> {
-    return request(`/api/v1/governance/user-stories/${id}`);
+    return request(`/api/v1/taxonomy/user-stories/${id}`);
   },
 
   /** Create a user story */
   createUserStory(data: ManagedUserStory): Promise<ManagedUserStory> {
-    return request("/api/v1/governance/user-stories", {
+    return request("/api/v1/taxonomy/user-stories", {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -687,7 +687,7 @@ export const api = {
 
   /** Update a user story */
   updateUserStory(id: string, data: Partial<Omit<ManagedUserStory, "id">>): Promise<ManagedUserStory> {
-    return request(`/api/v1/governance/user-stories/${id}`, {
+    return request(`/api/v1/taxonomy/user-stories/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -695,14 +695,14 @@ export const api = {
 
   /** Delete a user story */
   deleteUserStory(id: string): Promise<{ message: string; id: string }> {
-    return request(`/api/v1/governance/user-stories/${id}`, { method: "DELETE" });
+    return request(`/api/v1/taxonomy/user-stories/${id}`, { method: "DELETE" });
   },
 
   // ── Taxonomy ──────────────────────────────────────────────────────────────
 
   /** Get the latest taxonomy snapshot */
   getTaxonomyLatest(): Promise<{ id: string; project: string; version: string; nodeCount: number; environmentCount: number; createdAt: string }> {
-    return request("/api/v1/taxonomy/latest");
+    return request("/api/v1/taxonomy/snapshots/latest");
   },
 
   // ── Projects ───────────────────────────────────────────────────────────────

@@ -47,7 +47,7 @@ extract_id() {
 # =============================================================================
 echo "─── Creating Domain Model ───"
 
-MODEL_RESP=$(post "$API/domain-models" '{
+MODEL_RESP=$(post "$API/taxonomy/domain-models" '{
   "name": "Durham Water Management",
   "description": "City of Durham NC Department of Water Management — manages water supply, treatment, distribution, sewer collection, billing, and regulatory compliance for 95,000+ connections across 1,400 miles of water lines."
 }')
@@ -60,7 +60,7 @@ echo ""
 # =============================================================================
 echo "─── Ingesting Taxonomy Snapshot ───"
 
-post "$API/taxonomy" '{
+post "$API/taxonomy/snapshots" '{
   "project": "durham-water-management",
   "version": "1.0.0",
   "generated": "2026-02-18T12:00:00Z",
@@ -542,7 +542,7 @@ echo "─── Creating Bounded Contexts ───"
 
 # --- Core Domain ---
 
-CTX_BILLING_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_BILLING_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "customer-billing",
   "title": "Customer Billing Services",
   "description": "Account management, billing cycles, tiered water rates, payment processing, disconnection/reconnection, and financial assistance programs (CAFFE).",
@@ -557,7 +557,7 @@ CTX_BILLING_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_BILLING=$(extract_id "$CTX_BILLING_RESP")
 echo "  customer-billing: $CTX_BILLING"
 
-CTX_TREATMENT_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_TREATMENT_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "water-treatment",
   "title": "Water Supply & Treatment",
   "description": "Operates Brown and Williams water treatment plants (combined 64 MGD capacity). Manages Lake Michie and Little River reservoirs, coagulation/flocculation/sedimentation processes, filtration, and chemical addition.",
@@ -572,7 +572,7 @@ CTX_TREATMENT_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_TREATMENT=$(extract_id "$CTX_TREATMENT_RESP")
 echo "  water-treatment: $CTX_TREATMENT"
 
-CTX_DISTRIBUTION_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_DISTRIBUTION_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "distribution-maintenance",
   "title": "Water Distribution Maintenance",
   "description": "Maintains 1,400 miles of water lines, manages water main break repairs, conducts planned flushing programs, oversees Automated Meter Reading (AMR) infrastructure, and manages water storage tanks/towers.",
@@ -587,7 +587,7 @@ CTX_DISTRIBUTION_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_DISTRIBUTION=$(extract_id "$CTX_DISTRIBUTION_RESP")
 echo "  distribution-maintenance: $CTX_DISTRIBUTION"
 
-CTX_DISPATCH_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_DISPATCH_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "field-dispatch",
   "title": "Field Crew Dispatch",
   "description": "Coordinates emergency and scheduled field crew dispatching for water main breaks, sewer overflows, meter issues, and service disconnections/reconnections. Operates 24/7/365.",
@@ -604,7 +604,7 @@ echo "  field-dispatch: $CTX_DISPATCH"
 
 # --- Supporting Domain ---
 
-CTX_SEWER_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_SEWER_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "sewer-collection",
   "title": "Sewer Collection System",
   "description": "Maintains sanitary sewer lines, 47 lift stations, manages sewer overflow detection and response, and conducts sewer system evaluation surveys (SSES).",
@@ -619,7 +619,7 @@ CTX_SEWER_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_SEWER=$(extract_id "$CTX_SEWER_RESP")
 echo "  sewer-collection: $CTX_SEWER"
 
-CTX_COMPLIANCE_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_COMPLIANCE_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "compliance-testing",
   "title": "Compliance & Laboratory Services",
   "description": "Operates water quality laboratory, conducts lead/copper testing (required every 3 years), monitors PFAS contaminants, manages industrial waste control program, and ensures EPA/NC DEQ regulatory compliance.",
@@ -634,7 +634,7 @@ CTX_COMPLIANCE_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_COMPLIANCE=$(extract_id "$CTX_COMPLIANCE_RESP")
 echo "  compliance-testing: $CTX_COMPLIANCE"
 
-CTX_CAPITAL_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_CAPITAL_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "capital-projects",
   "title": "Capital Improvement Engineering",
   "description": "Plans and manages capital improvement projects: waterline replacements (American Tobacco District, East Durham, NC-54), sewer improvements (Forest Hills, Southeast Farrington), lift station consolidation, and dam safety improvements.",
@@ -651,7 +651,7 @@ echo "  capital-projects: $CTX_CAPITAL"
 
 # --- Generic Domain ---
 
-CTX_PORTAL_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_PORTAL_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "customer-portal",
   "title": "Online Customer Portal",
   "description": "Self-service web portal (CivicPlus + InfoSend) enabling customers to pay bills, start/stop service, report problems, view water quality reports, and manage account settings.",
@@ -666,7 +666,7 @@ CTX_PORTAL_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_PORTAL=$(extract_id "$CTX_PORTAL_RESP")
 echo "  customer-portal: $CTX_PORTAL"
 
-CTX_EPA_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_EPA_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "epa-reporting",
   "title": "EPA Regulatory Reporting",
   "description": "External system for submitting federal regulatory compliance reports — lead/copper rule (LCRR), PFAS drinking water standards, WaterSense program, Unregulated Contaminant Monitoring Rule (UCMR5).",
@@ -680,7 +680,7 @@ CTX_EPA_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
 CTX_EPA=$(extract_id "$CTX_EPA_RESP")
 echo "  epa-reporting: $CTX_EPA"
 
-CTX_PAYMENT_RESP=$(post "$API/domain-models/$MODEL_ID/contexts" '{
+CTX_PAYMENT_RESP=$(post "$API/taxonomy/domain-models/$MODEL_ID/contexts" '{
   "slug": "payment-gateway",
   "title": "InfoSend Payment Gateway",
   "description": "Third-party payment processing system (InfoSend, replacing Paymentus as of November 2025). Handles online bill pay, AutoPay, ACH transfers, and credit card processing.",
@@ -704,7 +704,7 @@ echo ""
 echo "─── Creating Domain Events ───"
 
 # Event 1: Meter reading recorded (distribution → billing, compliance)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_DISTRIBUTION\",
   \"slug\": \"meter-reading-recorded\",
   \"title\": \"Meter Reading Recorded\",
@@ -725,7 +725,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  meter-reading-recorded"
 
 # Event 2: Bill generated (billing → portal, payment gateway)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_BILLING\",
   \"slug\": \"bill-generated\",
   \"title\": \"Bill Generated\",
@@ -748,7 +748,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  bill-generated"
 
 # Event 3: Payment received (payment gateway → billing)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_PAYMENT\",
   \"slug\": \"payment-received\",
   \"title\": \"Payment Received\",
@@ -769,7 +769,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  payment-received"
 
 # Event 4: Payment overdue (billing → dispatch, portal)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_BILLING\",
   \"slug\": \"payment-overdue\",
   \"title\": \"Payment Overdue\",
@@ -790,7 +790,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  payment-overdue"
 
 # Event 5: Service disconnected (dispatch → billing, portal)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_DISPATCH\",
   \"slug\": \"service-disconnected\",
   \"title\": \"Service Disconnected\",
@@ -811,7 +811,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  service-disconnected"
 
 # Event 6: Water main break reported (portal → dispatch, distribution)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_PORTAL\",
   \"slug\": \"water-main-break-reported\",
   \"title\": \"Water Main Break Reported\",
@@ -833,7 +833,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  water-main-break-reported"
 
 # Event 7: Emergency repair dispatched (dispatch → distribution, sewer)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_DISPATCH\",
   \"slug\": \"emergency-repair-dispatched\",
   \"title\": \"Emergency Repair Dispatched\",
@@ -855,7 +855,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  emergency-repair-dispatched"
 
 # Event 8: Repair completed (distribution → billing, compliance)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_DISTRIBUTION\",
   \"slug\": \"repair-completed\",
   \"title\": \"Repair Completed\",
@@ -877,7 +877,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  repair-completed"
 
 # Event 9: Water quality sample collected (compliance → treatment)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_COMPLIANCE\",
   \"slug\": \"water-quality-sample-collected\",
   \"title\": \"Water Quality Sample Collected\",
@@ -898,7 +898,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  water-quality-sample-collected"
 
 # Event 10: Contaminant threshold exceeded (compliance → EPA + UNKNOWN)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_COMPLIANCE\",
   \"slug\": \"contaminant-threshold-exceeded\",
   \"title\": \"Contaminant Threshold Exceeded\",
@@ -920,7 +920,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  contaminant-threshold-exceeded (→ UNKNOWN: emergency-notification-system)"
 
 # Event 11: PFAS test result published (compliance → EPA + UNKNOWN nc-deq)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_COMPLIANCE\",
   \"slug\": \"pfas-test-result-published\",
   \"title\": \"PFAS Test Result Published\",
@@ -941,7 +941,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  pfas-test-result-published (→ UNKNOWN: nc-deq-system)"
 
 # Event 12: Sewer overflow detected (sewer → dispatch, EPA, UNKNOWN nc-deq)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_SEWER\",
   \"slug\": \"sewer-overflow-detected\",
   \"title\": \"Sewer Overflow Detected\",
@@ -963,7 +963,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  sewer-overflow-detected (→ UNKNOWN: nc-deq-system)"
 
 # Event 13: Capital project approved (capital → distribution, sewer)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_CAPITAL\",
   \"slug\": \"capital-project-approved\",
   \"title\": \"Capital Project Approved\",
@@ -986,7 +986,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  capital-project-approved"
 
 # Event 14: Service line inventory updated (distribution → compliance, EPA)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_DISTRIBUTION\",
   \"slug\": \"service-line-inventory-updated\",
   \"title\": \"Service Line Inventory Updated\",
@@ -1007,7 +1007,7 @@ post "$API/domain-models/$MODEL_ID/events" "{
 echo "  service-line-inventory-updated"
 
 # Event 15: Customer service requested (portal → billing, dispatch)
-post "$API/domain-models/$MODEL_ID/events" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/events" "{
   \"contextId\": \"$CTX_PORTAL\",
   \"slug\": \"customer-service-requested\",
   \"title\": \"Customer Service Requested\",
@@ -1038,7 +1038,7 @@ echo ""
 echo "─── Creating Workflows ───"
 
 # Workflow 1: Water Main Break Response
-post "$API/domain-models/$MODEL_ID/workflows" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/workflows" "{
   \"slug\": \"water-main-break-response\",
   \"title\": \"Water Main Break Response\",
   \"description\": \"End-to-end lifecycle from citizen reporting a water main break through emergency dispatch, repair, flushing, quality verification, and customer notification.\",
@@ -1067,7 +1067,7 @@ post "$API/domain-models/$MODEL_ID/workflows" "{
 echo "  water-main-break-response (5 contexts)"
 
 # Workflow 2: Monthly Billing Cycle
-post "$API/domain-models/$MODEL_ID/workflows" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/workflows" "{
   \"slug\": \"monthly-billing-cycle\",
   \"title\": \"Monthly Billing Cycle\",
   \"description\": \"End-to-end monthly billing process from automated meter reading through bill generation, delivery, payment processing, and collections enforcement.\",
@@ -1097,7 +1097,7 @@ post "$API/domain-models/$MODEL_ID/workflows" "{
 echo "  monthly-billing-cycle (5 contexts)"
 
 # Workflow 3: Compliance Reporting Cycle
-post "$API/domain-models/$MODEL_ID/workflows" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/workflows" "{
   \"slug\": \"compliance-reporting-cycle\",
   \"title\": \"Compliance Reporting Cycle\",
   \"description\": \"Periodic water quality compliance cycle from sample collection through lab analysis, report generation, and submission to EPA/NC DEQ.\",
@@ -1134,7 +1134,7 @@ echo ""
 # =============================================================================
 echo "─── Creating Aggregates ───"
 
-post "$API/domain-models/$MODEL_ID/aggregates" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/aggregates" "{
   \"contextId\": \"$CTX_BILLING\",
   \"slug\": \"customer-account\",
   \"title\": \"Customer Account\",
@@ -1152,7 +1152,7 @@ post "$API/domain-models/$MODEL_ID/aggregates" "{
 }" > /dev/null
 echo "  customer-account (Customer Billing)"
 
-post "$API/domain-models/$MODEL_ID/aggregates" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/aggregates" "{
   \"contextId\": \"$CTX_DISTRIBUTION\",
   \"slug\": \"water-meter\",
   \"title\": \"Water Meter\",
@@ -1169,7 +1169,7 @@ post "$API/domain-models/$MODEL_ID/aggregates" "{
 }" > /dev/null
 echo "  water-meter (Distribution Maintenance)"
 
-post "$API/domain-models/$MODEL_ID/aggregates" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/aggregates" "{
   \"contextId\": \"$CTX_DISPATCH\",
   \"slug\": \"work-order\",
   \"title\": \"Work Order\",
@@ -1186,7 +1186,7 @@ post "$API/domain-models/$MODEL_ID/aggregates" "{
 }" > /dev/null
 echo "  work-order (Field Dispatch)"
 
-post "$API/domain-models/$MODEL_ID/aggregates" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/aggregates" "{
   \"contextId\": \"$CTX_COMPLIANCE\",
   \"slug\": \"water-sample\",
   \"title\": \"Water Sample\",
@@ -1204,7 +1204,7 @@ post "$API/domain-models/$MODEL_ID/aggregates" "{
 }" > /dev/null
 echo "  water-sample (Compliance & Lab)"
 
-post "$API/domain-models/$MODEL_ID/aggregates" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/aggregates" "{
   \"contextId\": \"$CTX_CAPITAL\",
   \"slug\": \"capital-project\",
   \"title\": \"Capital Project\",
@@ -1230,7 +1230,7 @@ echo ""
 # =============================================================================
 echo "─── Creating Value Objects ───"
 
-post "$API/domain-models/$MODEL_ID/value-objects" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/value-objects" "{
   \"contextId\": \"$CTX_BILLING\",
   \"slug\": \"bill-amount\",
   \"title\": \"Bill Amount\",
@@ -1247,7 +1247,7 @@ post "$API/domain-models/$MODEL_ID/value-objects" "{
 }" > /dev/null
 echo "  bill-amount"
 
-post "$API/domain-models/$MODEL_ID/value-objects" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/value-objects" "{
   \"contextId\": \"$CTX_DISTRIBUTION\",
   \"slug\": \"meter-reading\",
   \"title\": \"Meter Reading\",
@@ -1263,7 +1263,7 @@ post "$API/domain-models/$MODEL_ID/value-objects" "{
 }" > /dev/null
 echo "  meter-reading"
 
-post "$API/domain-models/$MODEL_ID/value-objects" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/value-objects" "{
   \"contextId\": \"$CTX_COMPLIANCE\",
   \"slug\": \"contaminant-result\",
   \"title\": \"Contaminant Result\",
@@ -1280,7 +1280,7 @@ post "$API/domain-models/$MODEL_ID/value-objects" "{
 }" > /dev/null
 echo "  contaminant-result"
 
-post "$API/domain-models/$MODEL_ID/value-objects" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/value-objects" "{
   \"contextId\": \"$CTX_DISPATCH\",
   \"slug\": \"service-location\",
   \"title\": \"Service Location\",
@@ -1306,7 +1306,7 @@ echo ""
 # =============================================================================
 echo "─── Creating Glossary Terms ───"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_COMPLIANCE\",
   \"term\": \"PFAS\",
   \"definition\": \"Per- and polyfluoroalkyl substances — a group of manufactured chemicals used since the 1940s. EPA set new drinking water standards in 2024 for PFOA (4 ppt), PFOS (4 ppt), and other PFAS compounds.\",
@@ -1317,7 +1317,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  PFAS"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_COMPLIANCE\",
   \"term\": \"MCL\",
   \"definition\": \"Maximum Contaminant Level — the highest level of a contaminant allowed in drinking water, set by the EPA. MCLs are enforceable standards.\",
@@ -1327,7 +1327,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  MCL"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_DISTRIBUTION\",
   \"term\": \"AMR\",
   \"definition\": \"Automated Meter Reading — electronic system that automatically collects water consumption data from meters by driving past meter locations, replacing manual reads.\",
@@ -1337,7 +1337,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  AMR"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_DISTRIBUTION\",
   \"term\": \"Flushing\",
   \"definition\": \"The controlled release of water through fire hydrants to remove sediment, restore disinfectant residual, and improve water quality in distribution system pipes.\",
@@ -1347,7 +1347,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  Flushing"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_SEWER\",
   \"term\": \"SSO\",
   \"definition\": \"Sanitary Sewer Overflow — any discharge of untreated wastewater from the sanitary sewer system before it reaches the wastewater treatment facility. Must be reported to regulators.\",
@@ -1357,7 +1357,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  SSO"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_SEWER\",
   \"term\": \"FOG\",
   \"definition\": \"Fats, Oils, and Grease — substances that accumulate in sewer lines and cause blockages and overflows. Durham provides free Fat Trapper kits to residents.\",
@@ -1367,7 +1367,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  FOG"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_BILLING\",
   \"term\": \"Tiered Water Rate\",
   \"definition\": \"Durham's conservation-based pricing structure where the per-gallon cost increases as usage rises through defined tiers, encouraging water conservation.\",
@@ -1377,7 +1377,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  Tiered Water Rate"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_TREATMENT\",
   \"term\": \"Coagulation\",
   \"definition\": \"The first step in water treatment where positively-charged chemical coagulants are added to attract and bind suspended particles (sediment, organic matter) in raw water.\",
@@ -1387,7 +1387,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  Coagulation"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_DISTRIBUTION\",
   \"term\": \"LCRR\",
   \"definition\": \"Lead and Copper Rule Revision — EPA regulation requiring water utilities to inventory service line materials, replace lead lines, and notify customers with lead or unknown service lines annually.\",
@@ -1397,7 +1397,7 @@ post "$API/domain-models/$MODEL_ID/glossary" "{
 }" > /dev/null
 echo "  LCRR"
 
-post "$API/domain-models/$MODEL_ID/glossary" "{
+post "$API/taxonomy/domain-models/$MODEL_ID/glossary" "{
   \"contextId\": \"$CTX_CAPITAL\",
   \"term\": \"Capital Facilities Fee\",
   \"definition\": \"One-time fee charged to new development connections to fund water and sewer infrastructure improvements required to serve growth.\",
@@ -1416,7 +1416,7 @@ echo ""
 # =============================================================================
 echo "─── Ingesting Governance Snapshot ───"
 
-post "$API/governance" '{
+post "$API/taxonomy/governance" '{
   "version": "1.0.0",
   "project": "durham-water-management",
   "generated": "2026-02-18T12:00:00Z",
@@ -1510,110 +1510,110 @@ post "$API/governance" '{
       "taxonomyNode": "durham-water.sewer-collection-maint.lift-station-scada"
     }
   },
-  "personas": {
-    "PER-001": {
-      "id": "PER-001",
+  "userTypes": {
+    "UT-001": {
+      "id": "UT-001",
       "name": "Durham Resident",
       "type": "human",
       "archetype": "End customer who receives water/sewer service and pays monthly utility bills",
       "typicalCapabilities": ["CAP-001", "CAP-002", "CAP-003"],
-      "tag": "PER-001"
+      "tag": "UT-001"
     },
-    "PER-002": {
-      "id": "PER-002",
+    "UT-002": {
+      "id": "UT-002",
       "name": "Field Crew Supervisor",
       "type": "human",
       "archetype": "Experienced water/sewer maintenance professional who leads repair crews and manages emergency response",
       "typicalCapabilities": ["CAP-004", "CAP-011"],
-      "tag": "PER-002"
+      "tag": "UT-002"
     },
-    "PER-003": {
-      "id": "PER-003",
+    "UT-003": {
+      "id": "UT-003",
       "name": "Lab Technician",
       "type": "human",
       "archetype": "Water quality specialist who collects samples, runs laboratory analyses, and flags regulatory exceedances",
       "typicalCapabilities": ["CAP-005", "CAP-007"],
-      "tag": "PER-003"
+      "tag": "UT-003"
     },
-    "PER-004": {
-      "id": "PER-004",
+    "UT-004": {
+      "id": "UT-004",
       "name": "Billing Agent",
       "type": "human",
       "archetype": "Customer service representative who handles billing inquiries, payment processing, adjustments, and financial assistance programs",
       "typicalCapabilities": ["CAP-001"],
-      "tag": "PER-004"
+      "tag": "UT-004"
     },
-    "PER-005": {
-      "id": "PER-005",
+    "UT-005": {
+      "id": "UT-005",
       "name": "Automated Meter Reader",
       "type": "system",
       "archetype": "AMR device mounted on city vehicles that wirelessly reads water meters while driving past customer locations",
       "typicalCapabilities": ["CAP-006"],
-      "tag": "PER-005"
+      "tag": "UT-005"
     },
-    "PER-006": {
-      "id": "PER-006",
+    "UT-006": {
+      "id": "UT-006",
       "name": "Plant Operator",
       "type": "human",
       "archetype": "Licensed water treatment plant operator monitoring SCADA systems, adjusting chemical dosing, and managing treatment processes",
       "typicalCapabilities": ["CAP-010", "CAP-005"],
-      "tag": "PER-006"
+      "tag": "UT-006"
     }
   },
   "userStories": {
     "US-001": {
       "id": "US-001",
       "title": "Pay my water bill online",
-      "persona": "PER-001",
+      "userType": "UT-001",
       "capabilities": ["CAP-001"],
       "status": "complete"
     },
     "US-002": {
       "id": "US-002",
       "title": "Report a water main break from my phone",
-      "persona": "PER-001",
+      "userType": "UT-001",
       "capabilities": ["CAP-003"],
       "status": "complete"
     },
     "US-003": {
       "id": "US-003",
       "title": "Dispatch crew to emergency water main break",
-      "persona": "PER-002",
+      "userType": "UT-002",
       "capabilities": ["CAP-004"],
       "status": "complete"
     },
     "US-004": {
       "id": "US-004",
       "title": "Submit quarterly PFAS results to EPA",
-      "persona": "PER-003",
+      "userType": "UT-003",
       "capabilities": ["CAP-005", "CAP-007"],
       "status": "implementing"
     },
     "US-005": {
       "id": "US-005",
       "title": "Review customer account for billing adjustment",
-      "persona": "PER-004",
+      "userType": "UT-004",
       "capabilities": ["CAP-001"],
       "status": "complete"
     },
     "US-006": {
       "id": "US-006",
       "title": "Detect water leak from abnormal meter reading pattern",
-      "persona": "PER-005",
+      "userType": "UT-005",
       "capabilities": ["CAP-006"],
       "status": "implementing"
     },
     "US-007": {
       "id": "US-007",
       "title": "Monitor treatment plant SCADA alarms and adjust chemical dosing",
-      "persona": "PER-006",
+      "userType": "UT-006",
       "capabilities": ["CAP-010"],
       "status": "complete"
     },
     "US-008": {
       "id": "US-008",
       "title": "Respond to lift station overflow alarm within 30 minutes",
-      "persona": "PER-002",
+      "userType": "UT-002",
       "capabilities": ["CAP-011", "CAP-004"],
       "status": "complete"
     }
@@ -1650,7 +1650,7 @@ post "$API/governance" '{
   },
   "stats": {
     "totalCapabilities": 11,
-    "totalPersonas": 6,
+    "totalUserTypes": 6,
     "totalStories": 8,
     "totalRoadItems": 4,
     "integrityStatus": "valid",
@@ -1673,16 +1673,16 @@ post "$API/governance" '{
     "CAP-010": { "stories": ["US-007"], "roads": ["ROAD-002"] },
     "CAP-011": { "stories": ["US-008"], "roads": [] }
   },
-  "byPersona": {
-    "PER-001": { "stories": ["US-001", "US-002"], "capabilities": ["CAP-001", "CAP-002", "CAP-003"] },
-    "PER-002": { "stories": ["US-003", "US-008"], "capabilities": ["CAP-004", "CAP-011"] },
-    "PER-003": { "stories": ["US-004"], "capabilities": ["CAP-005", "CAP-007"] },
-    "PER-004": { "stories": ["US-005"], "capabilities": ["CAP-001"] },
-    "PER-005": { "stories": ["US-006"], "capabilities": ["CAP-006"] },
-    "PER-006": { "stories": ["US-007"], "capabilities": ["CAP-010", "CAP-005"] }
+  "byUserType": {
+    "UT-001": { "stories": ["US-001", "US-002"], "capabilities": ["CAP-001", "CAP-002", "CAP-003"] },
+    "UT-002": { "stories": ["US-003", "US-008"], "capabilities": ["CAP-004", "CAP-011"] },
+    "UT-003": { "stories": ["US-004"], "capabilities": ["CAP-005", "CAP-007"] },
+    "UT-004": { "stories": ["US-005"], "capabilities": ["CAP-001"] },
+    "UT-005": { "stories": ["US-006"], "capabilities": ["CAP-006"] },
+    "UT-006": { "stories": ["US-007"], "capabilities": ["CAP-010", "CAP-005"] }
   }
 }' > /dev/null
-echo "  Governance snapshot ingested (9 capabilities, 5 personas, 6 user stories, 4 road items)"
+echo "  Governance snapshot ingested (9 capabilities, 6 user types, 8 user stories, 4 road items)"
 
 echo ""
 
@@ -1704,7 +1704,7 @@ echo "    -  3 workflows spanning 3-5 contexts each"
 echo "    -  5 aggregates with commands, invariants, and events"
 echo "    -  4 value objects (immutable)"
 echo "    - 10 glossary terms (PFAS, MCL, AMR, SSO, FOG, etc.)"
-echo "    -  1 governance snapshot (9 capabilities, 5 personas, 6 user stories)"
+echo "    -  1 governance snapshot (9 capabilities, 6 user types, 8 user stories)"
 echo ""
 echo "  Landscape patterns exercised:"
 echo "    - Internal → Internal event flows"
@@ -1714,7 +1714,7 @@ echo "    - Internal → Human-process event flows"
 echo "    - Internal → Unknown/Inferred system flows"
 echo "    - Multi-consumer fan-out events"
 echo "    - Workflow flow lines across 3-5 contexts"
-echo "    - Persona → Capability → User Story linkages"
+echo "    - User Type → Capability → User Story linkages"
 echo "    - Error states in workflows"
 echo ""
 echo "  View the landscape at:"

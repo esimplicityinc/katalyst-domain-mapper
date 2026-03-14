@@ -79,12 +79,12 @@ export class LandscapeLinter {
   }
 
   private computeCoverageScores(ctx: LintContext): LintCoverageScores {
-    // 1. personaToStory: % of personas with ≥1 user story
-    const personaToStory = this.pct(
-      ctx.personas.filter((p) =>
-        ctx.userStories.some((s) => s.persona === p.id),
+    // 1. userTypeToStory: % of user types with ≥1 user story
+    const userTypeToStory = this.pct(
+      ctx.userTypes.filter((p) =>
+        ctx.userStories.some((s) => s.userType === p.id),
       ).length,
-      ctx.personas.length,
+      ctx.userTypes.length,
     );
 
     // 2. storyToCapability: % of user stories with ≥1 valid capability
@@ -145,7 +145,7 @@ export class LandscapeLinter {
     );
 
     return {
-      personaToStory,
+      userTypeToStory,
       storyToCapability,
       capabilityToContext,
       contextToEvent,

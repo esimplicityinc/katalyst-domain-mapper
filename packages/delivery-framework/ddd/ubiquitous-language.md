@@ -79,14 +79,14 @@ These terms belong to the Governance context — the delivery process infrastruc
 | Term | Definition | Context(s) | Code Reference |
 |------|-----------|------------|----------------|
 | **Road Item** | A planned unit of work with governance tracking, identified by `ROAD-xxx`. Contains title, description, status, priority, linked capabilities, acceptance criteria, and estimated effort. Lives as markdown in `packages/delivery-framework/roadmap/`. | Governance | Markdown frontmatter |
-| **Capability** | A system function that delivers value to one or more personas, identified by `CAP-xxx`. Maps to road items that implement it. Lives in `packages/delivery-framework/capabilities/`. | Governance | Markdown frontmatter |
-| **Persona** | An actor archetype who interacts with the system, identified by `PER-xxx`. Has name, role, goals, and pain points. Used in user stories and BDD scenarios. Lives in `packages/delivery-framework/personas/`. | Governance | Markdown frontmatter |
-| **User Story** | A narrative describing what a persona needs and why, following "As a [persona], I want [goal], so that [benefit]" format. Embedded in road items or standalone. | Governance | Markdown content |
+| **Capability** | A system function that delivers value to one or more user types, identified by `CAP-xxx`. Maps to road items that implement it. Lives in `packages/delivery-framework/capabilities/`. | Governance | Markdown frontmatter |
+| **User Type** | An actor archetype who interacts with the system, identified by `UT-xxx`. Has name, role, goals, and pain points. Used in user stories and BDD scenarios. Lives in `packages/delivery-framework/user-types/`. | Governance | Markdown frontmatter |
+| **User Story** | A narrative describing what a user type needs and why, following "As a [user type], I want [goal], so that [benefit]" format. Embedded in road items or standalone. | Governance | Markdown content |
 | **ADR** | Architecture Decision Record identified by `ADR-xxx`. Documents context, decision, consequences, and status for a key technical decision. Provides the "why" behind architectural choices. | Governance | Markdown frontmatter |
 | **NFR** | Non-Functional Requirement identified by `NFR-xxx`. Specifies a quality attribute (performance, security, accessibility, reliability) with measurable acceptance criteria. | Governance | Markdown frontmatter |
 | **Change Entry** | A record of changes made to the system, identified by `CHANGE-xxx`. Tracks what changed, when, why, and who approved it. Provides an audit trail. | Governance | Markdown frontmatter |
 | **Governance Snapshot** | A point-in-time capture of all governance artifact states — road items, capabilities, ADRs, NFRs — for compliance auditing and progress tracking. | Governance | Planned (ROAD-002+) |
-| **Governance Artifact** | Any structured document managed by the Governance context: road items, capabilities, personas, ADRs, NFRs, change entries, user stories. All use markdown with validated frontmatter. | Governance | (collective term) |
+| **Governance Artifact** | Any structured document managed by the Governance context: road items, capabilities, user types, ADRs, NFRs, change entries, user stories. All use markdown with validated frontmatter. | Governance | (collective term) |
 
 ---
 
@@ -116,7 +116,7 @@ These terms are ambiguous, overloaded, or misaligned with the domain. Use the pr
 | health triangle | **Cognitive Triangle** | "Cognitive" emphasizes the human reasoning factor — understanding, feedback, and confidence are cognitive processes |
 | ticket, task, issue, story | **Road Item** | "Road Item" conveys the roadmap/journey metaphor and avoids tool-specific language (Jira ticket, GitHub issue) |
 | feature, module, service | **Capability** | "Capability" conveys a system function that delivers value, not an implementation artifact |
-| user type, role, actor | **Persona** | "Persona" conveys an archetype with goals and pain points, not just a permission level |
+| user type, role, actor | **User Type** | "User Type" conveys an archetype with goals and pain points, not just a permission level |
 | document, file, spec | **Governance Artifact** | "Artifact" conveys a formal, structured document with validated frontmatter and lifecycle tracking |
 | health, status | **Cycle Health** | Specifically refers to the cognitive triangle's state (`virtuous \| at-risk \| vicious`), not generic system health |
 | score, rating, grade | **Overall Score** or **Dimension Score** | Be specific — "score" alone is ambiguous. Always qualify: overall score (0–100), dimension score, subscore |

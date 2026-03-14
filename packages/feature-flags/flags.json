@@ -80,6 +80,16 @@
       },
       "defaultVariant": "langgraph",
       "flagType": "string"
+    },
+    "landscape-layout-v2": {
+      "description": "Enables v2 zoned landscape layout with trunk routing and user-facing/system-supporting tiering",
+      "disabled": false,
+      "variants": {
+        "on": true,
+        "off": false
+      },
+      "defaultVariant": "off",
+      "flagType": "boolean"
     }
   }
 }

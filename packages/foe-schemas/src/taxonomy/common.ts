@@ -13,7 +13,7 @@ export const SlugPattern = z.string().regex(/^[a-z0-9-]+$/);
 // ── Governance ID Patterns ─────────────────────────────────────────────────
 // Structured IDs used as labels on taxonomy nodes for governance lookups.
 export const CapabilityIdPattern = z.string().regex(/^CAP-\d{3,}$/);
-export const PersonaIdPattern = z.string().regex(/^PER-\d{3,}$/);
+export const UserTypeIdPattern = z.string().regex(/^UT-\d{3,}$/);
 export const UserStoryIdPattern = z.string().regex(/^US-\d{3,}$/);
 export const UseCaseIdPattern = z.string().regex(/^UC-\d{3,}$/);
 export const RoadItemIdPattern = z.string().regex(/^ROAD-\d{3,}$/);

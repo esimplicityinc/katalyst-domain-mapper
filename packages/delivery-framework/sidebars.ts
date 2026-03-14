@@ -71,20 +71,20 @@ const sidebars: SidebarsConfig = {
   ],
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 👥 DISCOVERY: Personas, User Stories
+  // 👥 DISCOVERY: User Types, User Stories
   // ──────────────────────────────────────────────────────────────────────────
   discoverySidebar: [
     {
       type: 'category',
-      label: 'Personas',
+      label: 'User Types',
       collapsed: false,
       items: [
-        { type: 'doc', id: 'personas/index', label: 'Personas Overview' },
-        { type: 'doc', id: 'personas/PER-001', label: 'PER-001: Engineering Team Lead' },
-        { type: 'doc', id: 'personas/PER-002', label: 'PER-002: Platform Engineer' },
-        { type: 'doc', id: 'personas/PER-003', label: 'PER-003: AI Agent' },
-        { type: 'doc', id: 'personas/PER-004', label: 'PER-004: Documentation Author' },
-        { type: 'doc', id: 'personas/PER-005', label: 'PER-005: Framework Adopter' },
+        { type: 'doc', id: 'user-types/index', label: 'User Types Overview' },
+        { type: 'doc', id: 'user-types/UT-001', label: 'UT-001: Engineering Team Lead' },
+        { type: 'doc', id: 'user-types/UT-002', label: 'UT-002: Platform Engineer' },
+        { type: 'doc', id: 'user-types/UT-003', label: 'UT-003: AI Agent' },
+        { type: 'doc', id: 'user-types/UT-004', label: 'UT-004: Documentation Author' },
+        { type: 'doc', id: 'user-types/UT-005', label: 'UT-005: Framework Adopter' },
       ],
     },
     {

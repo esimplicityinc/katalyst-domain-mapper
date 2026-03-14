@@ -21,7 +21,7 @@ Feature: Business Landscape Visualization E2E
 
   @smoke @landscape-ui
   Scenario: Business Landscape page loads with heading
-    Given I navigate to "/design/business-landscape/979b271f-b189-4f87-b078-7cd1d598c5af"
+    Given I navigate to "/taxonomy/landscape/979b271f-b189-4f87-b078-7cd1d598c5af"
     Then I wait for the page to load
     Then I wait for 2 seconds
     Then I should see the landscape page heading
@@ -29,7 +29,7 @@ Feature: Business Landscape Visualization E2E
 
   @landscape-ui
   Scenario: Landscape page shows domain model context count
-    Given I navigate to "/design/business-landscape/979b271f-b189-4f87-b078-7cd1d598c5af"
+    Given I navigate to "/taxonomy/landscape/979b271f-b189-4f87-b078-7cd1d598c5af"
     Then I wait for the page to load
     Then I wait for 3 seconds
     Then the landscape should not show an error
@@ -37,7 +37,7 @@ Feature: Business Landscape Visualization E2E
 
   @landscape-ui
   Scenario: Landscape page shows system count
-    Given I navigate to "/design/business-landscape/979b271f-b189-4f87-b078-7cd1d598c5af"
+    Given I navigate to "/taxonomy/landscape/979b271f-b189-4f87-b078-7cd1d598c5af"
     Then I wait for the page to load
     Then I wait for 3 seconds
     Then the landscape should not show an error
@@ -45,7 +45,7 @@ Feature: Business Landscape Visualization E2E
 
   @landscape-ui
   Scenario: Landscape page shows event count after layout completes
-    Given I navigate to "/design/business-landscape/979b271f-b189-4f87-b078-7cd1d598c5af"
+    Given I navigate to "/taxonomy/landscape/979b271f-b189-4f87-b078-7cd1d598c5af"
     Then I wait for the page to load
     Then I wait for 3 seconds
     Then the landscape should not show an error
@@ -53,7 +53,7 @@ Feature: Business Landscape Visualization E2E
 
   @landscape-ui
   Scenario: Landscape page shows capability count after layout completes
-    Given I navigate to "/design/business-landscape/979b271f-b189-4f87-b078-7cd1d598c5af"
+    Given I navigate to "/taxonomy/landscape/979b271f-b189-4f87-b078-7cd1d598c5af"
     Then I wait for the page to load
     Then I wait for 3 seconds
     Then the landscape should not show an error
@@ -61,7 +61,7 @@ Feature: Business Landscape Visualization E2E
 
   @landscape-ui
   Scenario: Unknown domain model shows error state not a crash
-    Given I navigate to "/design/business-landscape/00000000-0000-0000-0000-000000000000"
+    Given I navigate to "/taxonomy/landscape/00000000-0000-0000-0000-000000000000"
     Then I wait for the page to load
     Then I wait for 2 seconds
     Then I should see text "Error Loading Landscape"

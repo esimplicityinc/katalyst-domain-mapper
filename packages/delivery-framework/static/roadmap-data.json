@@ -1455,9 +1455,219 @@
       "depends_on": [],
       "blocked_by": [],
       "filePath": "roads/ROAD-043"
+    },
+    {
+      "id": "ROAD-044",
+      "title": "Business Landscape Visualization",
+      "status": "complete",
+      "phase": 2,
+      "priority": "medium",
+      "created": "2026-02-19T00:00:00.000Z",
+      "started": "",
+      "completed": "2026-02-19T00:00:00.000Z",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "@architecture-inspector",
+          "validated_at": "2026-02-19",
+          "compliance_check": [],
+          "ids": [
+            "ADR-018",
+            "ADR-003",
+            "ADR-012"
+          ]
+        },
+        "bdd": {
+          "status": "implementing",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0,
+          "notes": "Landscape visualization implemented; BDD scenarios to be written in subsequent sprint"
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001",
+            "NFR-A11Y-001"
+          ],
+          "status": "pass",
+          "results": {
+            "performance": "Layout computation < 500ms for 50 contexts; SVG rendering < 100ms post-layout",
+            "accessibility": "Canvas uses ARIA labels on interactive user type badges and filter controls"
+          }
+        },
+        "agent_signatures": {
+          "architecture-inspector": "pass",
+          "code-writer": "approved"
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-044"
+    },
+    {
+      "id": "ROAD-045",
+      "title": "FOE Historical Scan Data Pipeline",
+      "status": "complete",
+      "phase": 2,
+      "priority": "medium",
+      "created": "2026-02-19T00:00:00.000Z",
+      "started": "",
+      "completed": "2026-02-19T00:00:00.000Z",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "@opencode",
+          "validated_at": "2026-02-19",
+          "compliance_check": [],
+          "ids": [],
+          "notes": "No new ADR required. Data pipeline follows established scan patterns."
+        },
+        "bdd": {
+          "status": "na",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0,
+          "notes": "Data/infrastructure work. Validated by reviewing generated scan files and BDD data updates."
+        },
+        "nfrs": {
+          "applicable": [],
+          "status": "pass",
+          "results": {
+            "performance": "Batch scan runner processes one scan per month sequentially. Total runtime under 15 minutes for 9 months."
+          }
+        },
+        "agent_signatures": {
+          "code-writer": "approved"
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-045"
+    },
+    {
+      "id": "ROAD-046",
+      "title": "Taxonomy & User Type Management UI",
+      "status": "complete",
+      "phase": 2,
+      "priority": "medium",
+      "created": "2026-02-19T00:00:00.000Z",
+      "started": "",
+      "completed": "2026-02-19T00:00:00.000Z",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "@architecture-inspector",
+          "validated_at": "2026-02-19",
+          "compliance_check": [],
+          "ids": [
+            "ADR-019",
+            "ADR-003",
+            "ADR-012",
+            "ADR-011"
+          ]
+        },
+        "bdd": {
+          "status": "implementing",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0,
+          "notes": "CRUD and chat interfaces implemented; BDD scenarios to be written in subsequent sprint"
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001"
+          ],
+          "status": "pass",
+          "results": {
+            "performance": "CRUD operations < 200ms (SQLite). AI chat first token < 2s (SSE streaming)."
+          }
+        },
+        "agent_signatures": {
+          "architecture-inspector": "pass",
+          "code-writer": "approved"
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-046"
+    },
+    {
+      "id": "ROAD-047",
+      "title": "Developer Environment & Quality Gates",
+      "status": "complete",
+      "phase": 1,
+      "priority": "medium",
+      "created": "2026-02-19T00:00:00.000Z",
+      "started": "",
+      "completed": "2026-02-19T00:00:00.000Z",
+      "governance": {
+        "adrs": {
+          "validated": true,
+          "validated_by": "@opencode",
+          "validated_at": "2026-02-19",
+          "compliance_check": [],
+          "ids": [],
+          "notes": "No new ADR required. Tooling improvements follow established quality gate strategy."
+        },
+        "bdd": {
+          "status": "na",
+          "approved_by": [],
+          "test_results": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "coverage": "0%"
+          },
+          "feature_files": [],
+          "scenarios": 0,
+          "passing": 0,
+          "notes": "Developer tooling. Validated by running just dev, just dev-ready, and BDD test suite."
+        },
+        "nfrs": {
+          "applicable": [
+            "NFR-PERF-001"
+          ],
+          "status": "pass",
+          "results": {
+            "performance": "just dev-ready completes in < 3s. just dev brings both servers up in < 15s."
+          }
+        },
+        "agent_signatures": {
+          "ci-runner": "approved",
+          "code-writer": "approved"
+        }
+      },
+      "blocks": [],
+      "depends_on": [],
+      "blocked_by": [],
+      "filePath": "roads/ROAD-047"
     }
   ],
-  "generatedAt": "2026-02-19T17:12:54.292Z",
+  "generatedAt": "2026-03-14T14:30:29.038Z",
   "validStatuses": [
     "proposed",
     "adr_validated",

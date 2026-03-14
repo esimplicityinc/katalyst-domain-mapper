@@ -7,7 +7,7 @@
 
 ## Overview
 
-February 19 was one of the most productive days in the project's history: **23 commits, ~15,000+ net new lines of code**, spanning governance documentation, a full-stack Business Landscape feature, taxonomy/persona management UI, developer tooling, and quality fixes.
+February 19 was one of the most productive days in the project's history: **23 commits, ~15,000+ net new lines of code**, spanning governance documentation, a full-stack Business Landscape feature, taxonomy/user type management UI, developer tooling, and quality fixes.
 
 The day followed a disciplined arc:
 
@@ -17,7 +17,7 @@ The day followed a disciplined arc:
 13:22  Historical scan data
 14:05  Lint / quality gate clearance
 14:57  Developer experience (just recipes)
-16:22  Taxonomy & Personas management UI (capstone)
+16:22  Taxonomy & User Types management UI (capstone)
 ```
 
 ---
@@ -29,7 +29,7 @@ The following OpenCode sessions (all in `/Users/aaron.west/Documents/Projects/ka
 | Time | Session ID | Title |
 |------|-----------|-------|
 | 08:41 | `ses_389de0c5fffe4FJVsjhmPdDVx3` | Remove untracked files from folder |
-| 08:44 | `ses_389dab16bffehtGsmppLL4CkTK` | Collapse user stories by persona group |
+| 08:44 | `ses_389dab16bffehtGsmppLL4CkTK` | Collapse user stories by user type group |
 | 08:44 | `ses_389da88a0fferRc2I35MTzGe68` | Explore landscape UI codebase |
 | 08:46 | `ses_389d91a0bffeOmXk9PSuiHhgHm` | Domain model selection page fix plan |
 | 08:52 | `ses_389d3e28fffe6poiK19BunwgoY` | Katalyst domain mapper retrospective documentation |
@@ -47,7 +47,7 @@ The following OpenCode sessions (all in `/Users/aaron.west/Documents/Projects/ka
 | 10:19 | `ses_38983c42affe11ROKkbghu5QAF` | Explore current project state |
 | 10:33 | `ses_389775d6dffeUh1vxFezMbjpV0` | Explore capability model |
 | 10:42 | `ses_3896ee24cffeNUUgAhpnvfkwaK` | Read all relevant source files |
-| 10:43 | `ses_3896e2f03ffedtzDy58BETRyxn` | Analyze persona filter bugs |
+| 10:43 | `ses_3896e2f03ffedtzDy58BETRyxn` | Analyze user type filter bugs |
 | 12:11 | `ses_3891d7015ffeWEOflqt8FaNNpL` | Run CI checks |
 | 12:16 | `ses_389185b18ffeUpN4BizBPHQEV9` | Katalyst web-report on high port |
 | 14:01 | `ses_388b8deb9ffeqiTfB4nIsJrfr2` | Explore codebase structure |
@@ -59,7 +59,7 @@ The following OpenCode sessions (all in `/Users/aaron.west/Documents/Projects/ka
 | 15:16 | `ses_38873f6a8ffeac5EAWQ1NwohOb` | Explore sidebar nav and routing |
 | 16:22 | `ses_38837e10effe8YPeYVTw4RInms` | Phase 1+2: DB migration and ports/adapters |
 | 16:22 | `ses_38837a776ffeDUiq5q5qdcbsbc` | Phase 7: Create AI agents |
-| 16:26 | `ses_38834168fffewyw16iLlK1nIsK` | Phase 3: API routes for capabilities, personas, stories |
+| 16:26 | `ses_38834168fffewyw16iLlK1nIsK` | Phase 3: API routes for capabilities, user types, stories |
 | 16:27 | `ses_38832cf5dffeX7GJRHQjlSfIqg` | Phase 4+5+6: Frontend types, API client, and all new pages/components |
 | 16:38 | `ses_388295868ffe0eIFruhXQdTi2Q` | Run CI checks and fix all errors |
 | 16:42 | `ses_388257da8ffeLXXtg7tV8GtKt5` | Layer taxonomy compliance categories |
@@ -120,11 +120,11 @@ The entire backend for the landscape was built in one push (~5,000 lines across 
 - Splits event consumers into `resolvedConsumers` / `unresolvedConsumers`
 - Auto-detects unknown external systems from unresolved references
 - Infers capability IDs for workflows via transitive FQTN ancestor matching
-- Assembles personas and user stories from governance
+- Assembles user types and user stories from governance
 
 **Lint domain** (`packages/intelligence/api/domain/lint/`) — A pure-function domain layer for landscape quality analysis:
 - 3 rule sets: `referential.ts`, `semantic.ts`, `coverage.ts`
-- 7 coverage metrics computed: persona-to-story, story-to-capability, capability-to-context, context-to-event, event-to-consumer, workflow-to-context, event-to-capability
+- 7 coverage metrics computed: user-type-to-story, story-to-capability, capability-to-context, context-to-event, event-to-consumer, workflow-to-context, event-to-capability
 - `LandscapeLinter`, `LintLandscape` use case, full test suite
 
 **Port extensions:**
@@ -166,21 +166,21 @@ The entire visualization layer was built in three commits landed within 90 secon
 2. System hierarchy boxes (taxonomy-aware, color-coded by depth; external systems get red dashed borders)
 3. Event flow arrows with workflow-filter awareness and hover labels
 4. Invisible workflow chain paths (for `animateMotion` reference)
-5. Animated persona dots riding workflow event chains via `animateMotion`
+5. Animated user type dots riding workflow event chains via `animateMotion`
 6. Story-to-capability Bezier connection lines (collapse-aware)
-7. Story dots along connection lines when persona/story filter is active
+7. Story dots along connection lines when user type/story filter is active
 8. Capability nodes (port-style rounded rectangles in taxonomy mode, diamond polygons in legacy mode)
-9. Persona badges with click-to-filter, collapse/expand chevrons
+9. User Type badges with click-to-filter, collapse/expand chevrons
 10. Inferred unknown system dashed boxes
 
-**`useCollapseAnimation.ts`** — `requestAnimationFrame`-based hook animating expand/collapse transitions over 300ms with cubic easing. Independently animates persona Y positions, story box opacity/slide, collapsed group visibility, and all connection line types.
+**`useCollapseAnimation.ts`** — `requestAnimationFrame`-based hook animating expand/collapse transitions over 300ms with cubic easing. Independently animates user type Y positions, story box opacity/slide, collapsed group visibility, and all connection line types.
 
 **Three layout engines:**
 - `ElkLayoutEngine.ts` — Eclipse Layout Kernel hierarchical layered layout; taxonomy-aware grouping; builds workflow event chains for dot animation
 - `DagreLayoutEngine.ts` — Directed acyclic graph layout
 - `D3ForceLayoutEngine.ts` — Physics force-directed layout
 
-**`LandscapeView.tsx`** — Data-fetching container with toolbar: layout engine switcher, layout time display (ms), workflow filter dropdown (select-all/deselect-all), persona collapse/expand, and active filter pill with clear button.
+**`LandscapeView.tsx`** — Data-fetching container with toolbar: layout engine switcher, layout time display (ms), workflow filter dropdown (select-all/deselect-all), user type collapse/expand, and active filter pill with clear button.
 
 ---
 
@@ -189,12 +189,12 @@ The entire visualization layer was built in three commits landed within 90 secon
 **Commits:** `380a001`, `d96e9b6`  
 **Sessions:** `ses_3896e2f03ffedtzDy58BETRyxn`, `ses_3891d7015ffeWEOflqt8FaNNpL`
 
-Three bugs fixed after using the persona filter in practice (`380a001`):
-1. **Dimming vs. hiding** — Non-selected persona groups were disappearing; fixed to dim to 0.25 opacity instead
+Three bugs fixed after using the user type filter in practice (`380a001`):
+1. **Dimming vs. hiding** — Non-selected user type groups were disappearing; fixed to dim to 0.25 opacity instead
 2. **Wrong story count in collapsed labels** — Was showing capability count; fixed to count matching stories from `graph.userStories`
-3. **Stray dots/lines** — Non-selected workflow dots and connection lines were still rendering when a persona filter was active; added `activePersonaId` guards
+3. **Stray dots/lines** — Non-selected workflow dots and connection lines were still rendering when a user type filter was active; added `activeUserTypeId` guards
 
-`d96e9b6` enhanced the visual hierarchy: when a persona filter is active, the selected persona's story→capability connection lines are drawn in the persona's own color at 0.8 opacity and 2–2.5px stroke (vs. the default faint purple).
+`d96e9b6` enhanced the visual hierarchy: when a user type filter is active, the selected user type's story→capability connection lines are drawn in the user type's own color at 0.8 opacity and 2–2.5px stroke (vs. the default faint purple).
 
 ---
 
@@ -248,42 +248,42 @@ Two commits hardened the local dev and BDD workflow.
 
 ---
 
-## 10. Taxonomy & Personas Management UI — Day's Capstone (4:22 PM)
+## 10. Taxonomy & User Types Management UI — Day's Capstone (4:22 PM)
 
-**Commit:** `3c17425` — `feat(taxonomy): add Architecture and Personas & Stories management UI`  
+**Commit:** `3c17425` — `feat(taxonomy): add Architecture and User Types & Stories management UI`  
 **Sessions:** `ses_38837e10effe8YPeYVTw4RInms`, `ses_38837a776ffeDUiq5q5qdcbsbc`, `ses_38834168fffewyw16iLlK1nIsK`, `ses_38832cf5dffeX7GJRHQjlSfIqg`, `ses_3887a42c6ffes6O8xMWIhkQWd0`, `ses_3887a25e4ffeBOTXi9bvJ7ReH5`, `ses_3887410d1ffe3sF98vBQHssDRu`, `ses_38873f6a8ffeac5EAWQ1NwohOb`
 
 The largest single commit of the day (37 files, 6,709 insertions). While the morning built the *read-only* Business Landscape visualization, this commit adds full *CRUD management* for the data that feeds it.
 
 **DB migration `0009_taxonomy_management.sql`:**
-- New tables: `governance_personas`, `governance_user_stories`
+- New tables: `governance_user_types`, `governance_user_stories`
 - New columns on `governance_capabilities`: parent hierarchy support, description, category, dependsOn (all with `IF NOT EXISTS` guards)
 
 **Port & adapter (`GovernanceRepository.ts` + `GovernanceRepositorySQLite.ts`):**
-- 3 new stored entity types: `StoredPersona`, `StoredUserStory`, `StoredCapability`
-- 16 new CRUD methods — full create/read/update/delete for capabilities, personas, and user stories
+- 3 new stored entity types: `StoredUser Type`, `StoredUserStory`, `StoredCapability`
+- 16 new CRUD methods — full create/read/update/delete for capabilities, user types, and user stories
 
 **3 new API route files:**
 - `GET/POST/PUT/DELETE /api/v1/governance/capabilities`
-- `GET/POST/PUT/DELETE /api/v1/governance/personas`
+- `GET/POST/PUT/DELETE /api/v1/governance/user-types`
 - `GET/POST/PUT/DELETE /api/v1/governance/user-stories`
 
 **2 new pages:**
 - `ArchitecturePage.tsx` — Three-tab layout (Systems / Capabilities / Chat) under `/design/architecture/*`
-- `PersonasPage.tsx` — Three-tab layout (Personas / Stories / Chat) under `/design/personas/*`
+- `UserTypesPage.tsx` — Three-tab layout (User Types / Stories / Chat) under `/design/user-types/*`
 
 **5 new UI components:**
 - `CapabilityTreeView.tsx` (813 lines) — Interactive 3-level tree with add/edit/delete, status badges, taxonomy node associations
 - `TaxonomyChat.tsx` (698 lines) — SSE-streaming AI chat wired to the `taxonomy-architect` agent; pre-loads current taxonomy snapshot as context
-- `PersonaListView.tsx` (798 lines) — Card-based CRUD for personas with type icons, archetype badges, goals/pain points/behaviors/story counts
-- `UserStoryBoardView.tsx` (739 lines) — Kanban-style board grouped by story status (draft → approved → implementing → complete → deprecated) with persona linking and capability multi-select
-- `PersonaChat.tsx` (697 lines) — SSE-streaming AI chat wired to the `persona-storyteller` agent
+- `UserTypeListView.tsx` (798 lines) — Card-based CRUD for user types with type icons, archetype badges, goals/pain points/behaviors/story counts
+- `UserStoryBoardView.tsx` (739 lines) — Kanban-style board grouped by story status (draft → approved → implementing → complete → deprecated) with user type linking and capability multi-select
+- `UserTypeChat.tsx` (697 lines) — SSE-streaming AI chat wired to the `user-type-storyteller` agent
 
 **2 new AI agents:**
 - `.opencode/agents/taxonomy-architect.md` (261 lines) — Detects API port, reads capability tree and taxonomy hierarchy, helps discover/organize capabilities, auto-persists every artifact via `curl` during conversation
-- `.opencode/agents/persona-storyteller.md` (307 lines) — 6-phase conversation flow (discovery → goals/pain points → story writing → acceptance criteria in Gherkin → capability mapping → coverage review); documents persona archetypes and story anti-patterns; auto-saves artifacts during conversation
+- `.opencode/agents/user-type-storyteller.md` (307 lines) — 6-phase conversation flow (discovery → goals/pain points → story writing → acceptance criteria in Gherkin → capability mapping → coverage review); documents user type archetypes and story anti-patterns; auto-saves artifacts during conversation
 
-**Navigation:** `Layout.tsx` updated to add "Architecture" and "Personas" entries under the Design section
+**Navigation:** `Layout.tsx` updated to add "Architecture" and "User Types" entries under the Design section
 
 ---
 
@@ -296,7 +296,7 @@ The largest single commit of the day (37 files, 6,709 insertions). While the mor
 | New React components | 10 |
 | New API routes | 10 (landscape + 3 × CRUD × 3 resources) |
 | New DB migrations | 4 (0006–0009) |
-| New AI agents | 2 (taxonomy-architect, persona-storyteller) |
+| New AI agents | 2 (taxonomy-architect, user-type-storyteller) |
 | New governance artifacts | 38 (16 US + 7 CAP + 4 ADR + 10 CHANGE + 1 matrix) |
 | Layout engines introduced | 3 (ELK, Dagre, D3-Force) |
 | Coverage metrics computed by linter | 7 |

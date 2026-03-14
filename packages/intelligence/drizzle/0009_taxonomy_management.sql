@@ -3,10 +3,10 @@ ALTER TABLE governance_capabilities ADD COLUMN description TEXT;--> statement-br
 ALTER TABLE governance_capabilities ADD COLUMN category TEXT;--> statement-breakpoint
 ALTER TABLE governance_capabilities ADD COLUMN parent_capability TEXT;--> statement-breakpoint
 ALTER TABLE governance_capabilities ADD COLUMN depends_on TEXT;--> statement-breakpoint
-CREATE TABLE governance_personas (
+CREATE TABLE governance_user_types (
   id TEXT PRIMARY KEY,
   snapshot_id TEXT NOT NULL REFERENCES governance_snapshots(id) ON DELETE CASCADE,
-  persona_id TEXT NOT NULL,
+  user_type_id TEXT NOT NULL,
   name TEXT NOT NULL,
   type TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'draft',
@@ -18,7 +18,7 @@ CREATE TABLE governance_personas (
   typical_capabilities TEXT NOT NULL DEFAULT '[]',
   technical_profile TEXT,
   related_stories TEXT NOT NULL DEFAULT '[]',
-  related_personas TEXT NOT NULL DEFAULT '[]',
+  related_user_types TEXT NOT NULL DEFAULT '[]',
   story_count INTEGER NOT NULL DEFAULT 0,
   capability_count INTEGER NOT NULL DEFAULT 0
 );--> statement-breakpoint
@@ -27,7 +27,7 @@ CREATE TABLE governance_user_stories (
   snapshot_id TEXT NOT NULL REFERENCES governance_snapshots(id) ON DELETE CASCADE,
   story_id TEXT NOT NULL,
   title TEXT NOT NULL,
-  persona TEXT NOT NULL,
+  user_type TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'draft',
   capabilities TEXT NOT NULL DEFAULT '[]',
   use_cases TEXT NOT NULL DEFAULT '[]',

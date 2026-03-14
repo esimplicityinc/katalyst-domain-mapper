@@ -11,6 +11,7 @@ export const TaxonomyNodeTypeSchema = z.enum([
   "system",
   "subsystem",
   "stack",
+  "library",
   "layer",
   "user",
   "org_unit",
@@ -22,7 +23,7 @@ export const TaxonomyNodeTypeSchema = z.enum([
   "glossary_term",
   // ── Governance lifecycle ──
   "capability",
-  "persona",
+  "user_type",
   "user_story",
   "use_case",
   "road_item",
@@ -108,6 +109,10 @@ export const TaxonomyCapabilitySchema = z.object({
   description: z.string(),
   categories: z.array(z.string()).default([]),
   dependsOnCapabilities: z.array(z.string()).default([]),
+  /** Slug of the parent capability (null = root / system-level capability) */
+  parentCapability: z.string().nullable().default(null),
+  /** Optional display tag for traceability, e.g. "CAP-005" */
+  tag: z.string().nullable().default(null),
 });
 
 export type TaxonomyCapability = z.infer<typeof TaxonomyCapabilitySchema>;

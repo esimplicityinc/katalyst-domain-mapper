@@ -6,7 +6,7 @@ import { describe, it, expect } from "bun:test";
 import { runCoverageRules } from "../rules/coverage.js";
 import {
   emptyContext,
-  makePersona,
+  makeUserType,
   makeUserStory,
   makeCapability,
   makeBoundedContext,
@@ -18,41 +18,41 @@ import {
 } from "./fixtures.js";
 
 describe("coverage rules", () => {
-  describe("persona-has-stories", () => {
-    it("flags persona with no user stories", () => {
+  describe("user-type-has-stories", () => {
+    it("flags user type with no user stories", () => {
       const ctx = emptyContext({
-        personas: [makePersona({ id: "PER-001" })],
+        userTypes: [makeUserType({ id: "UT-001" })],
         userStories: [],
       });
-      const findings = runCoverageRules(ctx).filter((f) => f.rule === "persona-has-stories");
+      const findings = runCoverageRules(ctx).filter((f) => f.rule === "user-type-has-stories");
       expect(findings).toHaveLength(1);
       expect(findings[0].severity).toBe("warning");
     });
 
-    it("passes when persona has at least one story", () => {
+    it("passes when user type has at least one story", () => {
       const ctx = emptyContext({
-        personas: [makePersona({ id: "PER-001" })],
-        userStories: [makeUserStory({ persona: "PER-001" })],
+        userTypes: [makeUserType({ id: "UT-001" })],
+        userStories: [makeUserStory({ userType: "UT-001" })],
       });
-      const findings = runCoverageRules(ctx).filter((f) => f.rule === "persona-has-stories");
+      const findings = runCoverageRules(ctx).filter((f) => f.rule === "user-type-has-stories");
       expect(findings).toHaveLength(0);
     });
   });
 
-  describe("persona-has-capabilities", () => {
-    it("flags persona with empty typicalCapabilities", () => {
+  describe("user-type-has-capabilities", () => {
+    it("flags user type with empty typicalCapabilities", () => {
       const ctx = emptyContext({
-        personas: [makePersona({ typicalCapabilities: [] })],
+        userTypes: [makeUserType({ typicalCapabilities: [] })],
       });
-      const findings = runCoverageRules(ctx).filter((f) => f.rule === "persona-has-capabilities");
+      const findings = runCoverageRules(ctx).filter((f) => f.rule === "user-type-has-capabilities");
       expect(findings).toHaveLength(1);
     });
 
-    it("passes when persona has capabilities", () => {
+    it("passes when user type has capabilities", () => {
       const ctx = emptyContext({
-        personas: [makePersona({ typicalCapabilities: ["CAP-001"] })],
+        userTypes: [makeUserType({ typicalCapabilities: ["CAP-001"] })],
       });
-      const findings = runCoverageRules(ctx).filter((f) => f.rule === "persona-has-capabilities");
+      const findings = runCoverageRules(ctx).filter((f) => f.rule === "user-type-has-capabilities");
       expect(findings).toHaveLength(0);
     });
   });

@@ -47,10 +47,10 @@ const NAV_ITEMS = [
         description: "Taxonomy system hierarchy"
       },
       {
-        to: "/design/personas",
-        label: "Personas & Stories",
+        to: "/design/user-types",
+        label: "User Types & Stories",
         icon: Users,
-        description: "Personas, user stories & coverage"
+        description: "User types, user stories & coverage"
       }
     ]
   },

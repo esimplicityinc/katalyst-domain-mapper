@@ -108,21 +108,21 @@ export interface WorkflowTransition {
   trigger?: string; // Event that triggers this transition
 }
 
-// ── Personas & User Stories ────────────────────────────────────────────────
+// ── User Types & User Stories ────────────────────────────────────────────────
 
-export interface LandscapePersona {
-  id: string; // PER-xxx
+export interface LandscapeUserType {
+  id: string; // UT-xxx
   name: string;
   type: "human" | "bot" | "system" | "external_api";
   archetype?: string;
   typicalCapabilities?: string[]; // Capability IDs
-  tag: string; // @PER-xxx
+  tag: string; // @UT-xxx
 }
 
 export interface LandscapeUserStory {
   id: string; // US-xxx
   title: string;
-  persona: string; // PER-xxx
+  userType: string; // UT-xxx
   capabilities: string[]; // CAP-xxx IDs (min 1)
   status: "draft" | "approved" | "implementing" | "complete" | "deprecated";
 }
@@ -169,7 +169,7 @@ export interface LandscapeGraph {
   capabilityTree: LandscapeCapabilityNode[];
 
   // Governance entities
-  personas: LandscapePersona[];
+  userTypes: LandscapeUserType[];
   userStories: LandscapeUserStory[];
 
   // Inferred entities

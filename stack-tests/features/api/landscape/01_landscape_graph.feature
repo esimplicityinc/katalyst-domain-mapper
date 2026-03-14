@@ -2,11 +2,11 @@
 Feature: Business Landscape Graph API
   As a Domain Architect
   I want to retrieve a complete business landscape graph for a domain model
-  So that I can visualize bounded contexts, capabilities, personas, and domain events in a unified view
+  So that I can visualize bounded contexts, capabilities, user types, and domain events in a unified view
 
   Background:
     # Create a domain model with representative artifacts for each scenario
-    When I POST "/api/v1/domain-models" with JSON body:
+    When I POST "/api/v1/taxonomy/domain-models" with JSON body:
       """
       {
         "name": "BDD Landscape Test Model",
@@ -15,10 +15,10 @@ Feature: Business Landscape Graph API
       """
     Then the response status should be 200
     And I store the value at "id" as "domainModelId"
-    Given I register cleanup DELETE "/api/v1/domain-models/{domainModelId}"
+    Given I register cleanup DELETE "/api/v1/taxonomy/domain-models/{domainModelId}"
 
     # Add a bounded context
-    When I POST "/api/v1/domain-models/{domainModelId}/contexts" with JSON body:
+    When I POST "/api/v1/taxonomy/domain-models/{domainModelId}/contexts" with JSON body:
       """
       {
         "slug": "scanning",
@@ -30,7 +30,7 @@ Feature: Business Landscape Graph API
     And I store the value at "id" as "contextId"
 
     # Add a domain event
-    When I POST "/api/v1/domain-models/{domainModelId}/events" with JSON body:
+    When I POST "/api/v1/taxonomy/domain-models/{domainModelId}/events" with JSON body:
       """
       {
         "contextId": "{contextId}",
@@ -43,7 +43,7 @@ Feature: Business Landscape Graph API
     And I store the value at "id" as "eventId"
 
     # Add a workflow
-    When I POST "/api/v1/domain-models/{domainModelId}/workflows" with JSON body:
+    When I POST "/api/v1/taxonomy/domain-models/{domainModelId}/workflows" with JSON body:
       """
       {
         "slug": "scan-lifecycle",
@@ -62,7 +62,7 @@ Feature: Business Landscape Graph API
     And I store the value at "id" as "workflowId"
 
     # Ingest a governance snapshot with a capability so capabilities[] is non-empty
-    When I POST "/api/v1/governance" with JSON body:
+    When I POST "/api/v1/taxonomy/governance" with JSON body:
       """
       {
         "version": "1.0.0",
@@ -71,14 +71,14 @@ Feature: Business Landscape Graph API
         "capabilities": {
           "CAP-BDD-LG-001": { "id": "CAP-BDD-LG-001", "title": "BDD Landscape Graph Capability", "status": "stable" }
         },
-        "personas": {},
+        "userTypes": {},
         "roadItems": {},
-        "stats": { "capabilities": 1, "personas": 0, "userStories": 0, "roadItems": 0, "integrityStatus": "pass", "integrityErrors": 0 }
+        "stats": { "capabilities": 1, "userTypes": 0, "userStories": 0, "roadItems": 0, "integrityStatus": "pass", "integrityErrors": 0 }
       }
       """
     Then the response status should be 200
     And I store the value at "id" as "govSnapshotId"
-    Given I register cleanup DELETE "/api/v1/governance/{govSnapshotId}"
+    Given I register cleanup DELETE "/api/v1/taxonomy/governance/{govSnapshotId}"
 
   @smoke @landscape-graph
   Scenario: Retrieve landscape graph for a known domain model

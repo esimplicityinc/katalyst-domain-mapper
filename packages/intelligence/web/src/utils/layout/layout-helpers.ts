@@ -14,10 +14,10 @@ import type {
   SystemBounds,
   ResolvedContext,
   TaxonomySystemNode,
-  PersonaWorkflowDot,
-  PersonaStoryLine,
+  UserTypeWorkflowDot,
+  UserTypeStoryLine,
   UserStoryBox,
-  CollapsedPersonaGroup,
+  CollapsedUserTypeGroup,
 } from "../../types/landscape.js";
 
 /* ── constants ──────────────────────────────────────────────────────── */
@@ -28,7 +28,7 @@ export const CTX_H = 100;
 export const INFERRED_W = 160;
 export const INFERRED_H = 70;
 export const CAP_SIZE = 30;
-export const PERSONA_SIZE = 40;
+export const USER_TYPE_SIZE = 40;
 
 /* ── legacy grouping (used by Dagre / D3-Force) ─────────────────────── */
 
@@ -187,9 +187,9 @@ export function routedPath(
 /* ── barycenter ordering for subsystem layout ──────────────────────── */
 
 /**
- * Compute the barycenter order of subsystems based on persona connectivity.
- * User-facing subsystems (those with capabilities connected to personas) are
- * sorted by the average persona index of their connected personas.
+ * Compute the barycenter order of subsystems based on user type connectivity.
+ * User-facing subsystems (those with capabilities connected to user types) are
+ * sorted by the average user type index of their connected user types.
  * Non-user-facing subsystems are placed after them.
  *
  * Returns { userFacing: TaxonomySystemNode[], nonUserFacing: TaxonomySystemNode[] }
@@ -200,25 +200,25 @@ export function computeBarycenterOrder(
   graph: LandscapeGraph,
   allFqtns: Set<string>,
 ): { userFacing: TaxonomySystemNode[]; nonUserFacing: TaxonomySystemNode[] } {
-  // Build map: capabilityId → persona indices that connect to it
-  const capToPersonaIndices = new Map<string, number[]>();
-  const personaIndex = new Map<string, number>();
-  graph.personas.forEach((p, i) => personaIndex.set(p.id, i));
+  // Build map: capabilityId → user type indices that connect to it
+  const capToUserTypeIndices = new Map<string, number[]>();
+  const userTypeIndex = new Map<string, number>();
+  graph.userTypes.forEach((p, i) => userTypeIndex.set(p.id, i));
 
-  // Gather capabilities connected to stories (via persona)
-  const storiesByPersona = new Map<string, typeof graph.userStories>();
+  // Gather capabilities connected to stories (via user type)
+  const storiesByUserType = new Map<string, typeof graph.userStories>();
   for (const story of graph.userStories) {
-    if (!storiesByPersona.has(story.persona)) storiesByPersona.set(story.persona, []);
-    storiesByPersona.get(story.persona)!.push(story);
+    if (!storiesByUserType.has(story.userType)) storiesByUserType.set(story.userType, []);
+    storiesByUserType.get(story.userType)!.push(story);
   }
 
-  for (const persona of graph.personas) {
-    const pIdx = personaIndex.get(persona.id) ?? 0;
-    const stories = storiesByPersona.get(persona.id) || [];
+  for (const ut of graph.userTypes) {
+    const pIdx = userTypeIndex.get(ut.id) ?? 0;
+    const stories = storiesByUserType.get(ut.id) || [];
     for (const story of stories) {
       for (const capId of story.capabilities) {
-        if (!capToPersonaIndices.has(capId)) capToPersonaIndices.set(capId, []);
-        capToPersonaIndices.get(capId)!.push(pIdx);
+        if (!capToUserTypeIndices.has(capId)) capToUserTypeIndices.set(capId, []);
+        capToUserTypeIndices.get(capId)!.push(pIdx);
       }
     }
   }
@@ -242,7 +242,7 @@ export function computeBarycenterOrder(
     }
   }
 
-  // For each subsystem, compute average persona index
+  // For each subsystem, compute average user type index
   const systemBarycenter = new Map<string, number>();
   const systemIsUserFacing = new Set<string>();
 
@@ -257,18 +257,18 @@ export function computeBarycenterOrder(
 
   for (const sys of systems) {
     const sysFqtns = new Set(collectFqtns(sys));
-    const allPersonaIndices: number[] = [];
+    const allUserTypeIndices: number[] = [];
 
     for (const [capId, fqtn] of capFqtn) {
       if (sysFqtns.has(fqtn)) {
-        const indices = capToPersonaIndices.get(capId) || [];
-        allPersonaIndices.push(...indices);
+        const indices = capToUserTypeIndices.get(capId) || [];
+        allUserTypeIndices.push(...indices);
       }
     }
 
-    if (allPersonaIndices.length > 0) {
+    if (allUserTypeIndices.length > 0) {
       systemIsUserFacing.add(sys.fqtn);
-      const avg = allPersonaIndices.reduce((a, b) => a + b, 0) / allPersonaIndices.length;
+      const avg = allUserTypeIndices.reduce((a, b) => a + b, 0) / allUserTypeIndices.length;
       systemBarycenter.set(sys.fqtn, avg);
     }
   }
@@ -287,41 +287,41 @@ export function computeBarycenterOrder(
 /* ── positions assembly ─────────────────────────────────────────────── */
 
 /**
- * Compute persona-workflow dots:
- * For each workflow, find personas whose typicalCapabilities overlap
+ * Compute user-type-workflow dots:
+ * For each workflow, find user types whose typicalCapabilities overlap
  * with the workflow's capabilityIds. Each overlap = one animated dot.
  */
-export function computePersonaWorkflowDots(
+export function computeUserTypeWorkflowDots(
   graph: LandscapeGraph,
-): PersonaWorkflowDot[] {
-  const dots: PersonaWorkflowDot[] = [];
+): UserTypeWorkflowDot[] {
+  const dots: UserTypeWorkflowDot[] = [];
 
   for (const wf of graph.workflows) {
     const wfCaps = new Set(wf.capabilityIds || []);
     if (wfCaps.size === 0) continue;
 
-    // Collect personas that interact with this workflow
-    const matchingPersonas: Array<{ persona: typeof graph.personas[0]; pIdx: number }> = [];
-    for (let pIdx = 0; pIdx < graph.personas.length; pIdx++) {
-      const persona = graph.personas[pIdx];
-      const pCaps = persona.typicalCapabilities || [];
+    // Collect user types that interact with this workflow
+    const matchingUserTypes: Array<{ ut: typeof graph.userTypes[0]; pIdx: number }> = [];
+    for (let pIdx = 0; pIdx < graph.userTypes.length; pIdx++) {
+      const ut = graph.userTypes[pIdx];
+      const pCaps = ut.typicalCapabilities || [];
       const hasOverlap = pCaps.some((capId) => wfCaps.has(capId));
       if (hasOverlap) {
-        matchingPersonas.push({ persona, pIdx });
+        matchingUserTypes.push({ ut, pIdx });
       }
     }
 
     // Create dots with stagger info
-    for (let si = 0; si < matchingPersonas.length; si++) {
-      const { persona, pIdx } = matchingPersonas[si];
+    for (let si = 0; si < matchingUserTypes.length; si++) {
+      const { ut, pIdx } = matchingUserTypes[si];
       dots.push({
-        personaId: persona.id,
-        personaName: persona.name,
-        personaIndex: pIdx,
+        userTypeId: ut.id,
+        userTypeName: ut.name,
+        userTypeIndex: pIdx,
         workflowId: wf.id,
         workflowSlug: wf.slug,
         staggerIndex: si,
-        totalOnWorkflow: matchingPersonas.length,
+        totalOnWorkflow: matchingUserTypes.length,
       });
     }
   }
@@ -380,12 +380,12 @@ function buildWorkflowEventChains(
   graph: LandscapeGraph,
   eventPaths: Map<string, PathData>,
   eventWorkflowMap: Map<string, string[]>,
-  storyLines: PersonaStoryLine[],
+  storyLines: UserTypeStoryLine[],
 ): Map<string, PathData> {
   const chains = new Map<string, PathData>();
 
   // Build lookup: capabilityId → story lines that target it
-  const storyLinesByCap = new Map<string, PersonaStoryLine[]>();
+  const storyLinesByCap = new Map<string, UserTypeStoryLine[]>();
   for (const sl of storyLines) {
     if (sl.userStoryStatus === "implementing") continue; // skip WIP
     if (!storyLinesByCap.has(sl.capabilityId)) storyLinesByCap.set(sl.capabilityId, []);
@@ -416,7 +416,7 @@ function buildWorkflowEventChains(
     // Find story lines that lead into the chain.
     // A story line qualifies if its target capability position matches
     // the source position of ANY event edge in this workflow,
-    // and the story's persona interacts with this workflow.
+    // and the story's user type interacts with this workflow.
     const wfCaps = new Set(wf.capabilityIds || []);
     const storyPrefixes: PathData[] = [];
     const addedStories = new Set<string>(); // Dedupe by story+cap
@@ -438,10 +438,10 @@ function buildWorkflowEventChains(
       for (const sl of sls) {
         const dedupeKey = `${sl.userStoryId}-${sl.capabilityId}`;
         if (addedStories.has(dedupeKey)) continue;
-        // Check if this persona interacts with this workflow
-        const persona = graph.personas.find(p => p.id === sl.personaId);
-        if (!persona) continue;
-        const pCaps = persona.typicalCapabilities || [];
+        // Check if this user type interacts with this workflow
+        const ut = graph.userTypes.find(p => p.id === sl.userTypeId);
+        if (!ut) continue;
+        const pCaps = ut.typicalCapabilities || [];
         if (pCaps.some(c => wfCaps.has(c))) {
           storyPrefixes.push(sl.path);
           addedStories.add(dedupeKey);
@@ -516,40 +516,40 @@ function computeContextOverlays(
 }
 
 /**
- * Compute user story boxes and persona→story→capability lines.
- * Story boxes are positioned to the right of their persona.
+ * Compute user story boxes and userType→story→capability lines.
+ * Story boxes are positioned to the right of their user type.
  * Lines route from the story box right edge to capability positions.
  */
-function computePersonaStoryData(
+function computeUserTypeStoryData(
   graph: LandscapeGraph,
-  personaPositions: Map<string, Position>,
+  userTypePositions: Map<string, Position>,
   capabilityPositions: Map<string, Position>,
-): { lines: PersonaStoryLine[]; boxes: UserStoryBox[] } {
-  const STORY_BOX_X = 200;   // Story box left edge (room for persona names to the left)
+): { lines: UserTypeStoryLine[]; boxes: UserStoryBox[] } {
+  const STORY_BOX_X = 200;   // Story box left edge (room for user type names to the left)
   const STORY_BOX_W = 220;   // Story box width
   const STORY_BOX_H = 28;    // Story box height
   const STORY_GAP = 6;       // Vertical gap between story boxes
 
-  const lines: PersonaStoryLine[] = [];
+  const lines: UserTypeStoryLine[] = [];
   const boxes: UserStoryBox[] = [];
-  const personaIndex = new Map<string, number>();
-  graph.personas.forEach((p, i) => personaIndex.set(p.id, i));
+  const userTypeIndex = new Map<string, number>();
+  graph.userTypes.forEach((p, i) => userTypeIndex.set(p.id, i));
 
-  // Group stories by persona
-  const storiesByPersona = new Map<string, typeof graph.userStories>();
+  // Group stories by user type
+  const storiesByUserType = new Map<string, typeof graph.userStories>();
   for (const story of graph.userStories) {
-    if (!storiesByPersona.has(story.persona)) storiesByPersona.set(story.persona, []);
-    storiesByPersona.get(story.persona)!.push(story);
+    if (!storiesByUserType.has(story.userType)) storiesByUserType.set(story.userType, []);
+    storiesByUserType.get(story.userType)!.push(story);
   }
 
-  for (const persona of graph.personas) {
-    const pPos = personaPositions.get(persona.id);
+  for (const ut of graph.userTypes) {
+    const pPos = userTypePositions.get(ut.id);
     if (!pPos) continue;
 
-    const pIdx = personaIndex.get(persona.id) ?? 0;
-    const stories = storiesByPersona.get(persona.id) || [];
+    const pIdx = userTypeIndex.get(ut.id) ?? 0;
+    const stories = storiesByUserType.get(ut.id) || [];
 
-    // Stack stories vertically centered on persona Y
+    // Stack stories vertically centered on user type Y
     const groupHeight = stories.length * (STORY_BOX_H + STORY_GAP) - STORY_GAP;
     const startY = pPos.y - groupHeight / 2;
 
@@ -561,8 +561,8 @@ function computePersonaStoryData(
       boxes.push({
         id: story.id,
         title: story.title,
-        personaId: persona.id,
-        personaIndex: pIdx,
+        userTypeId: ut.id,
+        userTypeIndex: pIdx,
         capabilities: story.capabilities,
         status: story.status,
         x: STORY_BOX_X,
@@ -573,7 +573,7 @@ function computePersonaStoryData(
 
       // Create a curved line from story box right edge to each capability.
       // Uses routedPath to create a smooth right-angle bend (horizontal→vertical)
-      // that works well with the top-down layout where personas are above systems.
+      // that works well with the top-down layout where user types are above systems.
       for (let ci = 0; ci < story.capabilities.length; ci++) {
         const capId = story.capabilities[ci];
         const cPos = capabilityPositions.get(capId);
@@ -584,8 +584,8 @@ function computePersonaStoryData(
         const bendFactor = (pIdx * 3) + (si * 2) + (ci * 4);
 
         lines.push({
-          personaId: persona.id,
-          personaIndex: pIdx,
+          userTypeId: ut.id,
+          userTypeIndex: pIdx,
           userStoryId: story.id,
           userStoryTitle: story.title,
           userStoryStatus: story.status,
@@ -603,62 +603,62 @@ function computePersonaStoryData(
   return { lines, boxes };
 }
 
-/* ── Collapsed persona group computation ──────────────────────────── */
+/* ── Collapsed user type group computation ─────────────────────────── */
 
 /** Height of a collapsed group box */
 export const COLLAPSED_GROUP_H = 36;
-/** Vertical gap between collapsed persona groups */
-export const COLLAPSED_PERSONA_GAP = 20;
+/** Vertical gap between collapsed user type groups */
+export const COLLAPSED_USER_TYPE_GAP = 20;
 
 /**
- * Compute collapsed persona groups, their connection lines to capabilities,
- * and the tighter persona positions used in collapsed mode.
+ * Compute collapsed user type groups, their connection lines to capabilities,
+ * and the tighter user type positions used in collapsed mode.
  *
- * Each persona gets a single group box. Lines go from the group box
- * right edge to each unique capability across all the persona's stories.
+ * Each user type gets a single group box. Lines go from the group box
+ * right edge to each unique capability across all the user type's stories.
  */
-function computeCollapsedPersonaData(
+function computeCollapsedUserTypeData(
   graph: LandscapeGraph,
-  collapsedPersonaPositions: Map<string, Position>,
+  collapsedUserTypePositions: Map<string, Position>,
   capabilityPositions: Map<string, Position>,
 ): {
-  groups: CollapsedPersonaGroup[];
-  lines: PersonaStoryLine[];
+  groups: CollapsedUserTypeGroup[];
+  lines: UserTypeStoryLine[];
   boxes: UserStoryBox[];
 } {
   const STORY_BOX_X = 200;
   const STORY_BOX_W = 220;
 
-  const groups: CollapsedPersonaGroup[] = [];
-  const lines: PersonaStoryLine[] = [];
+  const groups: CollapsedUserTypeGroup[] = [];
+  const lines: UserTypeStoryLine[] = [];
   const boxes: UserStoryBox[] = [];
-  const personaIndex = new Map<string, number>();
-  graph.personas.forEach((p, i) => personaIndex.set(p.id, i));
+  const userTypeIndex = new Map<string, number>();
+  graph.userTypes.forEach((p, i) => userTypeIndex.set(p.id, i));
 
-  // Group stories by persona
-  const storiesByPersona = new Map<string, typeof graph.userStories>();
+  // Group stories by user type
+  const storiesByUserType = new Map<string, typeof graph.userStories>();
   for (const story of graph.userStories) {
-    if (!storiesByPersona.has(story.persona)) storiesByPersona.set(story.persona, []);
-    storiesByPersona.get(story.persona)!.push(story);
+    if (!storiesByUserType.has(story.userType)) storiesByUserType.set(story.userType, []);
+    storiesByUserType.get(story.userType)!.push(story);
   }
 
-  for (const persona of graph.personas) {
-    const pPos = collapsedPersonaPositions.get(persona.id);
+  for (const ut of graph.userTypes) {
+    const pPos = collapsedUserTypePositions.get(ut.id);
     if (!pPos) continue;
 
-    const pIdx = personaIndex.get(persona.id) ?? 0;
-    const stories = storiesByPersona.get(persona.id) || [];
+    const pIdx = userTypeIndex.get(ut.id) ?? 0;
+    const stories = storiesByUserType.get(ut.id) || [];
 
-    // Collect unique capabilities across all this persona's stories
+    // Collect unique capabilities across all this user type's stories
     const uniqueCaps = [...new Set(stories.flatMap((s) => s.capabilities))];
 
     const groupX = STORY_BOX_X;
     const groupY = pPos.y - COLLAPSED_GROUP_H / 2;
 
     groups.push({
-      personaId: persona.id,
-      personaIndex: pIdx,
-      personaName: persona.name,
+      userTypeId: ut.id,
+      userTypeIndex: pIdx,
+      userTypeName: ut.name,
       storyCount: stories.length,
       uniqueCapabilities: uniqueCaps,
       x: groupX,
@@ -669,10 +669,10 @@ function computeCollapsedPersonaData(
 
     // Also produce a single UserStoryBox so we can reference collapsed box position
     boxes.push({
-      id: `collapsed-${persona.id}`,
+      id: `collapsed-${ut.id}`,
       title: `${stories.length} ${stories.length === 1 ? "story" : "stories"}`,
-      personaId: persona.id,
-      personaIndex: pIdx,
+      userTypeId: ut.id,
+      userTypeIndex: pIdx,
       capabilities: uniqueCaps,
       status: "approved",
       x: groupX,
@@ -694,9 +694,9 @@ function computeCollapsedPersonaData(
       const bendFactor = (pIdx * 3) + (ci * 4);
 
       lines.push({
-        personaId: persona.id,
-        personaIndex: pIdx,
-        userStoryId: `collapsed-${persona.id}`,
+        userTypeId: ut.id,
+        userTypeIndex: pIdx,
+        userStoryId: `collapsed-${ut.id}`,
         userStoryTitle: `${stories.length} stories`,
         userStoryStatus: "approved",
         capabilityId: capId,
@@ -713,29 +713,29 @@ function computeCollapsedPersonaData(
 }
 
 /**
- * Compute collapsed persona positions (tighter vertical spacing).
- * Each persona takes COLLAPSED_GROUP_H + COLLAPSED_PERSONA_GAP instead
+ * Compute collapsed user type positions (tighter vertical spacing).
+ * Each user type takes COLLAPSED_GROUP_H + COLLAPSED_USER_TYPE_GAP instead
  * of the full stacked story height.
  */
-export function computeCollapsedPersonaPositions(
+export function computeCollapsedUserTypePositions(
   graph: LandscapeGraph,
-  personaX: number,
+  userTypeX: number,
 ): Map<string, Position> {
   const positions = new Map<string, Position>();
   let cursorY = 50;
 
-  for (const persona of graph.personas) {
+  for (const ut of graph.userTypes) {
     const centerY = cursorY + COLLAPSED_GROUP_H / 2;
-    positions.set(persona.id, { x: personaX, y: centerY });
-    cursorY += COLLAPSED_GROUP_H + COLLAPSED_PERSONA_GAP;
+    positions.set(ut.id, { x: userTypeX, y: centerY });
+    cursorY += COLLAPSED_GROUP_H + COLLAPSED_USER_TYPE_GAP;
   }
 
   return positions;
 }
 
 /**
- * Given raw context/inferred/capability/persona positions,
- * compute the derived paths (events, workflows, personas)
+ * Given raw context/inferred/capability/user type positions,
+ * compute the derived paths (events, workflows, user types)
  * and assemble the complete LandscapePositions.
  */
 export function assemblePositions(
@@ -744,11 +744,11 @@ export function assemblePositions(
   groupBoxes: GroupBox[],
   inferredPositions: Map<string, Position>,
   capabilityPositions: Map<string, Position>,
-  personaPositions: Map<string, Position>,
+  userTypePositions: Map<string, Position>,
   canvasWidth: number,
   canvasHeight: number,
   systemBounds?: Map<string, SystemBounds>,
-  collapsedPersonaPos?: Map<string, Position>,
+  collapsedUserTypePos?: Map<string, Position>,
 ): LandscapePositions {
   // Event paths — STRICTLY CAP-TO-CAP
   // Events only render when both source and target capabilities are mapped.
@@ -888,31 +888,31 @@ export function assemblePositions(
   // Event → Workflow membership map
   const eventWorkflowMap = computeEventWorkflowMap(graph);
 
-  // Compute persona → user story → capability lines and story boxes
+  // Compute user type → user story → capability lines and story boxes
   // (must be before buildWorkflowEventChains so story lines can be prepended to chains)
-  const { lines: personaStoryLines, boxes: userStoryBoxes } = computePersonaStoryData(
-    graph, personaPositions, capabilityPositions,
+  const { lines: userTypeStoryLines, boxes: userStoryBoxes } = computeUserTypeStoryData(
+    graph, userTypePositions, capabilityPositions,
   );
 
   // Chained event paths per workflow for dot animation
   // (includes story→cap segments so dots start from user stories)
   const workflowEventChains = buildWorkflowEventChains(
-    graph, eventPaths, eventWorkflowMap, personaStoryLines,
+    graph, eventPaths, eventWorkflowMap, userTypeStoryLines,
   );
 
-  // Persona-workflow animated dots
-  const personaFlowDots = computePersonaWorkflowDots(graph);
+  // User-type-workflow animated dots
+  const userTypeFlowDots = computeUserTypeWorkflowDots(graph);
 
   // Compute context overlays
   const contextOverlays = computeContextOverlays(graph, systemBounds ?? new Map());
 
-  // Compute collapsed persona data
-  const resolvedCollapsedPos = collapsedPersonaPos ?? computeCollapsedPersonaPositions(graph, 40);
+  // Compute collapsed user type data
+  const resolvedCollapsedPos = collapsedUserTypePos ?? computeCollapsedUserTypePositions(graph, 40);
   const {
-    groups: collapsedPersonaGroups,
-    lines: collapsedPersonaLines,
+    groups: collapsedUserTypeGroups,
+    lines: collapsedUserTypeLines,
     boxes: collapsedUserStoryBoxes,
-  } = computeCollapsedPersonaData(graph, resolvedCollapsedPos, capabilityPositions);
+  } = computeCollapsedUserTypeData(graph, resolvedCollapsedPos, capabilityPositions);
 
   return {
     contextPositions,
@@ -921,19 +921,19 @@ export function assemblePositions(
     inferredPositions,
     systemBounds: systemBounds ?? new Map(),
     capabilityPositions,
-    personaPositions,
+    userTypePositions,
     userStoryBoxes,
     eventPaths,
     eventLabels,
     workflowPaths,
-    personaStoryLines,
-    personaFlowDots,
+    userTypeStoryLines,
+    userTypeFlowDots,
     eventWorkflowMap,
     workflowEventChains,
-    collapsedPersonaGroups,
-    collapsedPersonaLines,
+    collapsedUserTypeGroups,
+    collapsedUserTypeLines,
     collapsedUserStoryBoxes,
-    collapsedPersonaPositions: resolvedCollapsedPos,
+    collapsedUserTypePositions: resolvedCollapsedPos,
     contextRadius: CTX_R,
     canvasWidth: Math.max(canvasWidth, 1000),
     canvasHeight: Math.max(canvasHeight, 700),

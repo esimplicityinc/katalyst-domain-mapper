@@ -3,7 +3,7 @@
  * 
  * Types for the Business Landscape visualization that merges:
  * - Taxonomy (system hierarchy)
- * - Governance (capabilities, personas, user stories)
+ * - Governance (capabilities, user types, user stories)
  * - Domain Model (contexts, events, workflows, aggregates)
  */
 
@@ -121,31 +121,31 @@ export interface WorkflowTransition {
   trigger?: string; // Event that triggers this transition
 }
 
-// ── Personas & User Stories ────────────────────────────────────────────────
+// ── User Types & User Stories ──────────────────────────────────────────────
 
-export interface LandscapePersona {
-  id: string; // PER-xxx
+export interface LandscapeUserType {
+  id: string; // UT-xxx
   name: string;
   type: "human" | "bot" | "system" | "external_api";
   archetype?: string;
   typicalCapabilities?: string[]; // Capability IDs
-  tag: string; // @PER-xxx
+  tag: string; // @UT-xxx
 }
 
 export interface LandscapeUserStory {
   id: string; // US-xxx
   title: string;
-  persona: string; // PER-xxx
+  userType: string; // UT-xxx
   capabilities: string[]; // CAP-xxx IDs (min 1)
   status: "draft" | "approved" | "implementing" | "complete" | "deprecated";
 }
 
-// ── Persona → User Story → Capability Lines ────────────────────────────────
+// ── User Type → User Story → Capability Lines ──────────────────────────────
 
 /** A line from a user story box to a capability */
-export interface PersonaStoryLine {
-  personaId: string;
-  personaIndex: number;
+export interface UserTypeStoryLine {
+  userTypeId: string;
+  userTypeIndex: number;
   userStoryId: string;
   userStoryTitle: string;
   userStoryStatus: string;
@@ -160,8 +160,8 @@ export interface PersonaStoryLine {
 export interface UserStoryBox {
   id: string;
   title: string;
-  personaId: string;
-  personaIndex: number;
+  userTypeId: string;
+  userTypeIndex: number;
   capabilities: string[];
   status: string;
   x: number;
@@ -170,15 +170,15 @@ export interface UserStoryBox {
   height: number;
 }
 
-// ── Collapsed Persona Groups ───────────────────────────────────────────────
+// ── Collapsed User Type Groups ─────────────────────────────────────────────
 
-/** A collapsed group box representing all stories for a persona */
-export interface CollapsedPersonaGroup {
-  personaId: string;
-  personaIndex: number;
-  personaName: string;
+/** A collapsed group box representing all stories for a user type */
+export interface CollapsedUserTypeGroup {
+  userTypeId: string;
+  userTypeIndex: number;
+  userTypeName: string;
   storyCount: number;
-  /** Union of all capability IDs across this persona's stories */
+  /** Union of all capability IDs across this user type's stories */
   uniqueCapabilities: string[];
   x: number;
   y: number;
@@ -186,13 +186,13 @@ export interface CollapsedPersonaGroup {
   height: number;
 }
 
-// ── Animated Persona Dots (Phase C) ────────────────────────────────────────
+// ── Animated User Type Dots (Phase C) ──────────────────────────────────────
 
-/** A single animated dot representing a persona interacting with a workflow */
-export interface PersonaWorkflowDot {
-  personaId: string;
-  personaName: string;
-  personaIndex: number; // For deterministic color assignment
+/** A single animated dot representing a user type interacting with a workflow */
+export interface UserTypeWorkflowDot {
+  userTypeId: string;
+  userTypeName: string;
+  userTypeIndex: number; // For deterministic color assignment
   workflowId: string;
   workflowSlug: string;
   /** Stagger offset (0-based) among dots on the same workflow */
@@ -230,7 +230,7 @@ export interface LandscapeGraph {
   capabilityTree: LandscapeCapabilityNode[];
 
   // Governance entities
-  personas: LandscapePersona[];
+  userTypes: LandscapeUserType[];
   userStories: LandscapeUserStory[];
 
   // Inferred entities
@@ -275,8 +275,8 @@ export interface LandscapePositions {
   /** Capability port-node positions keyed by capability ID */
   capabilityPositions: Map<string, Position>;
 
-  /** Persona badge positions keyed by persona ID */
-  personaPositions: Map<string, Position>;
+  /** User type badge positions keyed by user type ID */
+  userTypePositions: Map<string, Position>;
 
   /** User story boxes positioned in left column */
   userStoryBoxes: UserStoryBox[];
@@ -287,11 +287,11 @@ export interface LandscapePositions {
   /** Pre-computed workflow flow paths (invisible, used for dot animation) */
   workflowPaths: Map<string, PathData>;
 
-  /** Persona → User Story → Capability connection lines */
-  personaStoryLines: PersonaStoryLine[];
+  /** User Type → User Story → Capability connection lines */
+  userTypeStoryLines: UserTypeStoryLine[];
 
-  /** Animated persona dots riding on workflow event chains */
-  personaFlowDots: PersonaWorkflowDot[];
+  /** Animated user type dots riding on workflow event chains */
+  userTypeFlowDots: UserTypeWorkflowDot[];
 
   /** Event edge key → human-readable event name for labels */
   eventLabels: Map<string, string>;
@@ -302,16 +302,16 @@ export interface LandscapePositions {
   /** Chained event-edge SVG paths per workflow (concatenated for dot animation) */
   workflowEventChains: Map<string, PathData>;
 
-  // ── Collapsed persona group data ────────────────────────────────────
+  // ── Collapsed user type group data ────────────────────────────────────
 
-  /** Collapsed group boxes (one per persona) */
-  collapsedPersonaGroups: CollapsedPersonaGroup[];
+  /** Collapsed group boxes (one per user type) */
+  collapsedUserTypeGroups: CollapsedUserTypeGroup[];
 
-  /** Connection lines from collapsed groups to capabilities (one per unique cap per persona) */
-  collapsedPersonaLines: PersonaStoryLine[];
+  /** Connection lines from collapsed groups to capabilities (one per unique cap per user type) */
+  collapsedUserTypeLines: UserTypeStoryLine[];
 
-  /** Persona badge positions when all groups are collapsed (tighter vertical spacing) */
-  collapsedPersonaPositions: Map<string, Position>;
+  /** User type badge positions when all groups are collapsed (tighter vertical spacing) */
+  collapsedUserTypePositions: Map<string, Position>;
 
   /** User story boxes positioned for collapsed layout (used for animation targets) */
   collapsedUserStoryBoxes: UserStoryBox[];
@@ -322,6 +322,17 @@ export interface LandscapePositions {
   /** Canvas dimensions */
   canvasWidth: number;
   canvasHeight: number;
+
+  // ── V2 layout metadata ──────────────────────────────────────────────
+
+  /** Layout version: 1 = legacy routing, 2 = trunk routing. Defaults to 1 if omitted. */
+  layoutVersion?: 1 | 2;
+
+  /** Trunk line X coordinate for v2 routing (undefined = v1 layout) */
+  trunkX?: number;
+
+  /** Trunk line Y coordinate for top-down v2 routing (horizontal convergence zone) */
+  trunkY?: number;
 }
 
 export interface SystemBounds {

@@ -1,5 +1,5 @@
 export { parseCapabilityFile } from "./capability.js";
-export { parsePersonaFile } from "./persona.js";
+export { parseUserTypeFile } from "./user-type.js";
 export { parseUserStoryFile } from "./user-story.js";
 export { parseUseCaseFile } from "./use-case.js";
 export { parseRoadItemFile } from "./road-item.js";

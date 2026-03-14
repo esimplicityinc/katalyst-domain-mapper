@@ -384,12 +384,12 @@ export const governanceContexts = sqliteTable("governance_contexts", {
   eventCount: integer("event_count").notNull().default(0),
 });
 
-export const governancePersonas = sqliteTable("governance_personas", {
-  id: text("id").primaryKey(), // composite: snapshotId:PER-XXX
+export const governanceUserTypes = sqliteTable("governance_user_types", {
+  id: text("id").primaryKey(), // composite: snapshotId:UT-XXX
   snapshotId: text("snapshot_id")
     .notNull()
     .references(() => governanceSnapshots.id, { onDelete: "cascade" }),
-  personaId: text("persona_id").notNull(), // e.g. PER-001
+  userTypeId: text("user_type_id").notNull(), // e.g. UT-001
   name: text("name").notNull(),
   type: text("type").notNull(), // human | bot | system | external_api
   status: text("status").notNull().default("draft"),
@@ -405,7 +405,7 @@ export const governancePersonas = sqliteTable("governance_personas", {
     frequency?: string;
   } | null>(),
   relatedStories: text("related_stories", { mode: "json" }).$type<string[]>().default([]),
-  relatedPersonas: text("related_personas", { mode: "json" }).$type<string[]>().default([]),
+  relatedUserTypes: text("related_user_types", { mode: "json" }).$type<string[]>().default([]),
   storyCount: integer("story_count").notNull().default(0),
   capabilityCount: integer("capability_count").notNull().default(0),
 });
@@ -417,7 +417,7 @@ export const governanceUserStories = sqliteTable("governance_user_stories", {
     .references(() => governanceSnapshots.id, { onDelete: "cascade" }),
   storyId: text("story_id").notNull(), // e.g. US-001
   title: text("title").notNull(),
-  persona: text("persona").notNull(), // PER-XXX reference
+  userType: text("user_type").notNull(), // UT-XXX reference
   status: text("status").notNull().default("draft"), // draft | approved | implementing | complete | deprecated
   capabilities: text("capabilities", { mode: "json" }).$type<string[]>().default([]), // CAP-XXX[]
   useCases: text("use_cases", { mode: "json" }).$type<string[]>().default([]), // UC-XXX[]

@@ -4,7 +4,7 @@ export interface GovernanceIndex {
   project: string;
   roadItems: Record<string, any>;
   capabilities: Record<string, any>;
-  personas: Record<string, any>;
+  userTypes: Record<string, any>;
   contexts?: Record<string, any>;
   stats?: any;
 }

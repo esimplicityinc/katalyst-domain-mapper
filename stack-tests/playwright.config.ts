@@ -20,11 +20,12 @@ if (fs.existsSync(localEnvPath)) {
   dotenv.config({ path: localEnvPath });
 }
 
-// Build URLs from explicit FRONTEND_URL/API_BASE_URL or fall back to root .env ports
+// Build URLs from explicit FRONTEND_URL/API_BASE_URL or fall back to root .env ports.
+// Use 127.0.0.1 (not localhost) to avoid IPv6 ::1 resolution failures with Docker.
 const apiPort = process.env.API_PORT || '3001';
 const frontendPort = process.env.FRONTEND_PORT || '3000';
-const API_BASE_URL = process.env.API_BASE_URL || `http://localhost:${apiPort}`;
-const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${frontendPort}`;
+const API_BASE_URL = process.env.API_BASE_URL || `http://127.0.0.1:${apiPort}`;
+const FRONTEND_URL = process.env.FRONTEND_URL || `http://127.0.0.1:${frontendPort}`;
 
 const apiBdd = defineBddProject({
   name: 'api',

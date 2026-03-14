@@ -29,21 +29,34 @@ export const ContextTypeSchema = z.enum([
 export type ContextType = z.infer<typeof ContextTypeSchema>;
 
 // ── Context Relationship ───────────────────────────────────────────────────
-// Describes a relationship between two bounded contexts (from the UUID-based
-// DDD model). In the taxonomy each context is a node; relationships are
-// expressed via this embedded object OR via dependsOn on the base node.
-export const ContextRelationshipSchema = z.object({
-  targetContext: z.string(),
-  type: z.enum([
-    "upstream",
-    "downstream",
-    "partnership",
-    "shared-kernel",
-    "separate-ways",
-  ]),
-  communicationPattern: CommunicationPatternSchema.optional(),
-  description: z.string().optional(),
-});
+// Describes a relationship between two bounded contexts. Accepts both
+// `targetContext` (slug-based) and `targetContextId` (UUID-based, web UI
+// convention). After parsing, both fields are present and normalized.
+export const ContextRelationshipSchema = z
+  .object({
+    targetContext: z.string().optional(),
+    targetContextId: z.string().optional(),
+    type: z.enum([
+      "upstream",
+      "downstream",
+      "partnership",
+      "shared-kernel",
+      "separate-ways",
+      "conformist",
+      "anticorruption-layer",
+      "customer-supplier",
+      "published-language",
+    ]),
+    communicationPattern: CommunicationPatternSchema.optional(),
+    description: z.string().optional(),
+  })
+  .transform((val) => ({
+    targetContext: val.targetContext ?? val.targetContextId ?? "",
+    targetContextId: val.targetContextId ?? val.targetContext ?? "",
+    type: val.type,
+    communicationPattern: val.communicationPattern,
+    description: val.description,
+  }));
 
 export type ContextRelationship = z.infer<typeof ContextRelationshipSchema>;
 

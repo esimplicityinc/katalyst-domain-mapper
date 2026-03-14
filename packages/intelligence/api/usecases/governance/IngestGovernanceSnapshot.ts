@@ -1,26 +1,26 @@
 import type {
-  GovernanceRepository,
-  StoredSnapshot,
-} from "../../ports/GovernanceRepository.js";
+  TaxonomyRepository,
+  StoredGovernanceSnapshot,
+} from "../../ports/TaxonomyRepository.js";
 import type { Logger } from "../../ports/Logger.js";
 import { GovernanceValidationError } from "../../domain/governance/GovernanceErrors.js";
 import { validateSnapshotData } from "../../domain/governance/validateSnapshotData.js";
 
 export class IngestGovernanceSnapshot {
   constructor(
-    private governanceRepo: GovernanceRepository,
+    private governanceRepo: TaxonomyRepository,
     private logger: Logger,
   ) {}
 
-  async execute(rawData: unknown): Promise<StoredSnapshot> {
+  async execute(rawData: unknown): Promise<StoredGovernanceSnapshot> {
     this.logger.info("Ingesting governance snapshot");
 
     // Domain-level validation
     const validated = validateSnapshotData(rawData);
 
-    let snapshot: StoredSnapshot;
+    let snapshot: StoredGovernanceSnapshot;
     try {
-      snapshot = await this.governanceRepo.saveSnapshot(validated);
+      snapshot = await this.governanceRepo.saveGovernanceSnapshot(validated);
     } catch (err) {
       if (err instanceof GovernanceValidationError) {
         throw err;

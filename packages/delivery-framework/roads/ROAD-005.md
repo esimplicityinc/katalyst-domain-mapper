@@ -102,7 +102,7 @@ routes/governance.ts → use-cases/ → ports/GovernanceRepository.ts
 | GET | `/api/v1/governance/roads` | List all road items with status |
 | GET | `/api/v1/governance/roads/:id` | Get specific road item detail |
 | GET | `/api/v1/governance/coverage/capabilities` | Capability coverage matrix |
-| GET | `/api/v1/governance/coverage/personas` | Persona coverage report |
+| GET | `/api/v1/governance/coverage/user types` | User Type coverage report |
 | GET | `/api/v1/governance/trends` | Governance health over time |
 | GET | `/api/v1/governance/integrity` | Cross-reference integrity report |
 

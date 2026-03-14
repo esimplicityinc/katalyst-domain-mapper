@@ -14,7 +14,7 @@ import {
 import { LayerHealthSchema } from "./layer-health.js";
 import {
   CapabilityIdPattern,
-  PersonaIdPattern,
+  UserTypeIdPattern,
   UserStoryIdPattern,
   UseCaseIdPattern,
   RoadItemIdPattern,
@@ -30,7 +30,7 @@ import { ValueObjectExtSchema } from "./extensions/value-object.js";
 import { DomainEventExtSchema } from "./extensions/domain-event.js";
 import { GlossaryTermExtSchema } from "./extensions/glossary-term.js";
 import { CapabilityExtSchema } from "./extensions/capability.js";
-import { PersonaExtSchema } from "./extensions/persona.js";
+import { UserTypeExtSchema } from "./extensions/user-type.js";
 import { UserStoryExtSchema } from "./extensions/user-story.js";
 import { UseCaseExtSchema } from "./extensions/use-case.js";
 import { RoadItemExtSchema } from "./extensions/road-item.js";
@@ -48,7 +48,7 @@ export const NodeExtensionsSchema = z.object({
   domainEvents: z.record(DomainEventExtSchema).default({}),
   glossaryTerms: z.record(GlossaryTermExtSchema).default({}),
   capabilities: z.record(CapabilityExtSchema).default({}),
-  personas: z.record(PersonaExtSchema).default({}),
+  userTypes: z.record(UserTypeExtSchema).default({}),
   userStories: z.record(UserStoryExtSchema).default({}),
   useCases: z.record(UseCaseExtSchema).default({}),
   roadItems: z.record(RoadItemExtSchema).default({}),
@@ -80,13 +80,13 @@ export const ReverseIndicesSchema = z.object({
   byCapability: z
     .record(
       z.object({
-        personas: z.array(PersonaIdPattern),
+        userTypes: z.array(UserTypeIdPattern),
         stories: z.array(UserStoryIdPattern),
         roads: z.array(RoadItemIdPattern),
       }),
     )
     .default({}),
-  byPersona: z
+  byUserType: z
     .record(
       z.object({
         stories: z.array(UserStoryIdPattern),
@@ -132,7 +132,7 @@ export const TaxonomyStatsSchema = z.object({
   totalNodes: z.number().int().nonnegative().default(0),
   totalEnvironments: z.number().int().nonnegative().default(0),
   totalCapabilities: z.number().int().default(0),
-  totalPersonas: z.number().int().default(0),
+  totalUserTypes: z.number().int().default(0),
   totalStories: z.number().int().default(0),
   totalUseCases: z.number().int().default(0),
   totalRoadItems: z.number().int().default(0),
@@ -204,12 +204,12 @@ export function getRoadsByCapability(
   return snapshot.reverseIndices.byCapability[capId]?.roads ?? [];
 }
 
-/** Get persona node names by capability ID via reverse indices. */
-export function getPersonasByCapability(
+/** Get user type node names by capability ID via reverse indices. */
+export function getUserTypesByCapability(
   snapshot: TaxonomySnapshot,
   capId: string,
 ): string[] {
-  return snapshot.reverseIndices.byCapability[capId]?.personas ?? [];
+  return snapshot.reverseIndices.byCapability[capId]?.userTypes ?? [];
 }
 
 /** Get capability coverage (number of roads per capability). */

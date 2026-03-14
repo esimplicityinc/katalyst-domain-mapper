@@ -88,9 +88,9 @@ CAP-001 --[supports]--> web-ui.intelligence.katalyst
 - `ai-agents.intelligence.katalyst` (for scanner agents)
 - `field-guide-tools.intelligence.katalyst` (for method/observation indices)
 
-**Personas Using**:
-- PER-001: Engineering Team Lead
-- PER-002: Platform Engineer
+**User Types Using**:
+- UT-001: Engineering Team Lead
+- UT-002: Platform Engineer
 
 **User Stories**:
 - US-001: View FOE Scan Report
@@ -117,10 +117,10 @@ CAP-002 --[supports]--> api-gateway.platform.katalyst
 - `@foe/schemas` package (Zod schemas)
 - Markdown parsers for frontmatter validation
 
-**Personas Using**:
-- PER-002: Platform Engineer
-- PER-003: AI Agent
-- PER-004: Documentation Author
+**User Types Using**:
+- UT-002: Platform Engineer
+- UT-003: AI Agent
+- UT-004: Documentation Author
 
 **User Stories**:
 - US-002: Track Governance Health
@@ -150,9 +150,9 @@ CAP-003 --[enables]--> scanner.intelligence.katalyst
 - Markdown parsers (frontmatter extraction)
 - JSON builders (indices generation)
 
-**Personas Using**:
-- PER-002: Platform Engineer
-- PER-005: Framework Adopter
+**User Types Using**:
+- UT-002: Platform Engineer
+- UT-005: Framework Adopter
 
 **User Stories**:
 - US-004: Build Governance Index
@@ -182,9 +182,9 @@ CAP-004 --[depends-on]--> field-guide-tools.intelligence.katalyst
 - OpenCode CLI
 - Claude Sonnet 4.5 API
 
-**Personas Using**:
-- PER-001: Engineering Team Lead
-- PER-002: Platform Engineer
+**User Types Using**:
+- UT-001: Engineering Team Lead
+- UT-002: Platform Engineer
 
 **User Stories**:
 - US-006: Scanner Docker Build
@@ -211,9 +211,9 @@ CAP-005 --[supports]--> governance.delivery-framework.katalyst
 - Jira REST API
 - OAuth 2.0 authentication
 
-**Personas Using**:
-- PER-001: Engineering Team Lead
-- PER-005: Framework Adopter
+**User Types Using**:
+- UT-001: Engineering Team Lead
+- UT-005: Framework Adopter
 
 **User Stories**:
 - To be defined
@@ -241,9 +241,9 @@ CAP-006 --[supports]--> documentation.delivery-framework.katalyst
 - OAuth 2.0 authentication
 - Markdown to Confluence markup conversion
 
-**Personas Using**:
-- PER-004: Documentation Author
-- PER-005: Framework Adopter
+**User Types Using**:
+- UT-004: Documentation Author
+- UT-005: Framework Adopter
 
 **User Stories**:
 - To be defined
@@ -272,9 +272,9 @@ CAP-007 --[supports]--> governance.delivery-framework.katalyst
 - GitHub REST API
 - GitHub App authentication
 
-**Personas Using**:
-- PER-002: Platform Engineer
-- PER-005: Framework Adopter
+**User Types Using**:
+- UT-002: Platform Engineer
+- UT-005: Framework Adopter
 
 **User Stories**:
 - To be defined
@@ -299,9 +299,9 @@ CAP-008 --[implements]--> api-gateway.platform.katalyst
 - Server-Sent Events (SSE)
 - WebSocket support (alternative)
 
-**Personas Using**:
-- PER-001: Engineering Team Lead (consumes streams)
-- PER-002: Platform Engineer (implements streams)
+**User Types Using**:
+- UT-001: Engineering Team Lead (consumes streams)
+- UT-002: Platform Engineer (implements streams)
 
 **User Stories**:
 - To be defined (scanner progress streaming)
@@ -329,10 +329,10 @@ CAP-009 --[supports]--> governance.delivery-framework.katalyst
 - PostgreSQL (persistence)
 - Drizzle ORM
 
-**Personas Using**:
-- PER-001: Engineering Team Lead
-- PER-002: Platform Engineer
-- PER-004: Documentation Author
+**User Types Using**:
+- UT-001: Engineering Team Lead
+- UT-002: Platform Engineer
+- UT-004: Documentation Author
 
 **User Stories**:
 - US-007: DDD Artifact Schemas
@@ -373,9 +373,9 @@ CAP-010 --[depends-on]--> api-gateway.platform.katalyst
 - `@xyflow/react` (React Flow)
 - DDD API (CAP-009)
 
-**Personas Using**:
-- PER-001: Engineering Team Lead
-- PER-004: Documentation Author
+**User Types Using**:
+- UT-001: Engineering Team Lead
+- UT-004: Documentation Author
 
 **User Stories**:
 - US-029: View Domain Model in UI
@@ -409,9 +409,9 @@ CAP-011 --[depends-on]--> ai-agents.intelligence.katalyst
 - Claude Sonnet 4.5 API
 - DDD subdomain classification rules
 
-**Personas Using**:
-- PER-001: Engineering Team Lead
-- PER-002: Platform Engineer
+**User Types Using**:
+- UT-001: Engineering Team Lead
+- UT-002: Platform Engineer
 
 **User Stories**:
 - To be defined
@@ -439,9 +439,9 @@ CAP-012 --[supports]--> documentation.delivery-framework.katalyst
 - Markdown generation
 - Mermaid diagram generation
 
-**Personas Using**:
-- PER-004: Documentation Author
-- PER-005: Framework Adopter
+**User Types Using**:
+- UT-004: Documentation Author
+- UT-005: Framework Adopter
 
 **User Stories**:
 - To be defined
@@ -516,7 +516,7 @@ When adding a new capability:
 - [ ] Identify supporting systems (FQTNs)
 - [ ] Define relationships (implements, supports, depends-on, enables)
 - [ ] List dependencies (APIs, libraries, external services)
-- [ ] Map to personas (PER-XXX)
+- [ ] Map to user types (UT-XXX)
 - [ ] Map to user stories (US-XXX)
 - [ ] Update capability mapping matrix
 - [ ] Update dependency graph

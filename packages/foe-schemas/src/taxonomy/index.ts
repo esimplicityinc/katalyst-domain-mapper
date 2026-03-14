@@ -12,3 +12,6 @@ export * from "./taxonomy-snapshot.js";
 
 // Layer health measurement
 export * from "./layer-health.js";
+
+// Stored/CRUD types for API ports and web UI
+export * from "./stored/index.js";

@@ -19,3 +19,16 @@ Then('the response status should be one of:', async ({ world }, dataTable) => {
 Then('I wait for {int} seconds', async ({}, seconds: number) => {
   await new Promise(resolve => setTimeout(resolve, seconds * 1000));
 });
+
+// Custom step for verifying Domain Models page is visible
+Then('I should see the Domain Models page', async ({ page }) => {
+  await page.waitForURL(/\/taxonomy\/domain-models/, { timeout: 10_000 });
+});
+
+// Custom step for verifying page loaded with redirect
+Then(
+  'the page should load successfully \\(with redirect to \\/taxonomy\\/domain-models)',
+  async ({ page }) => {
+    await page.waitForURL(/\/taxonomy\/domain-models/, { timeout: 10_000 });
+  },
+);

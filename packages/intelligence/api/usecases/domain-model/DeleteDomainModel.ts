@@ -1,15 +1,15 @@
-import type { DomainModelRepository } from "../../ports/DomainModelRepository.js";
+import type { TaxonomyRepository } from "../../ports/TaxonomyRepository.js";
 import { DomainModelNotFoundError } from "../../domain/domain-model/DomainModelErrors.js";
 
 export class DeleteDomainModel {
-  constructor(private repo: DomainModelRepository) {}
+  constructor(private repo: TaxonomyRepository) {}
 
   async execute(id: string): Promise<{ message: string }> {
-    const exists = await this.repo.exists(id);
+    const exists = await this.repo.domainModelExists(id);
     if (!exists) {
       throw new DomainModelNotFoundError(id);
     }
-    await this.repo.delete(id);
+    await this.repo.deleteDomainModel(id);
     return { message: "Deleted" };
   }
 }

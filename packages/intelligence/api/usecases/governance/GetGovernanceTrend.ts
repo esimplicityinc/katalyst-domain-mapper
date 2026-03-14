@@ -1,10 +1,10 @@
 import type {
-  GovernanceRepository,
+  TaxonomyRepository,
   TrendPoint,
-} from "../../ports/GovernanceRepository.js";
+} from "../../ports/TaxonomyRepository.js";
 
 export class GetGovernanceTrend {
-  constructor(private governanceRepo: GovernanceRepository) {}
+  constructor(private governanceRepo: TaxonomyRepository) {}
 
   async execute(limit?: number): Promise<TrendPoint[]> {
     return this.governanceRepo.getTrends(limit);

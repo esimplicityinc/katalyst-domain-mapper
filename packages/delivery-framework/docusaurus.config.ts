@@ -30,7 +30,7 @@ const config: Config = {
           routeBasePath: 'docs',
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/esimplicity/katalyst-domain-mapper/tree/main/packages/delivery-framework/',
-          include: ['ddd/**/*.md', 'ddd/**/*.mdx', 'bdd/**/*.md', 'bdd/**/*.mdx', 'plans/**/*.md', 'plans/**/*.mdx', 'roads/**/*.md', 'roads/**/*.mdx', 'changes/**/*.md', 'changes/**/*.mdx', 'agents/**/*.md', 'agents/**/*.mdx', 'adr/**/*.md', 'adr/**/*.mdx', 'nfr/**/*.md', 'nfr/**/*.mdx', 'personas/**/*.md', 'personas/**/*.mdx', 'capabilities/**/*.md', 'capabilities/**/*.mdx', 'user-stories/**/*.md', 'user-stories/**/*.mdx', 'taxonomy/**/*.md', 'taxonomy/**/*.mdx', 'index.md', 'index.mdx'],
+          include: ['ddd/**/*.md', 'ddd/**/*.mdx', 'bdd/**/*.md', 'bdd/**/*.mdx', 'plans/**/*.md', 'plans/**/*.mdx', 'roads/**/*.md', 'roads/**/*.mdx', 'changes/**/*.md', 'changes/**/*.mdx', 'agents/**/*.md', 'agents/**/*.mdx', 'adr/**/*.md', 'adr/**/*.mdx', 'nfr/**/*.md', 'nfr/**/*.mdx', 'user-types/**/*.md', 'user-types/**/*.mdx', 'capabilities/**/*.md', 'capabilities/**/*.mdx', 'user-stories/**/*.md', 'user-stories/**/*.mdx', 'taxonomy/**/*.md', 'taxonomy/**/*.mdx', 'index.md', 'index.mdx'],
         },
         blog: false,
         theme: {
@@ -87,7 +87,7 @@ const config: Config = {
             {
               type: 'docSidebar',
               sidebarId: 'discoverySidebar',
-              label: 'Personas & Stories',
+              label: 'User Types & Stories',
             },
           ],
         },

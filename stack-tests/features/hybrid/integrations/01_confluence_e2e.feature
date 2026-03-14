@@ -62,7 +62,7 @@ Feature: Confluence Integration End-to-End
     Given I register cleanup DELETE "/api/v1/integrations/confluence/pages/{pageId}"
 
     # UI: Verify the integration status shows in the governance dashboard
-    Given I navigate to "/governance/integrations"
+    Given I navigate to "/taxonomy/governance/integrations"
     Then I should see text "Confluence"
     And I should see text "Last published"
     And I should see text "KDM"

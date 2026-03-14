@@ -13,12 +13,12 @@
     {
       "changeId": "CHANGE-043",
       "roadId": "ROAD-046",
-      "title": "Taxonomy & Persona Management UI with AI Discovery Agents",
+      "title": "Taxonomy & User Type Management UI with AI Discovery Agents",
       "date": "2026-02-19",
-      "total": 26,
-      "passed": 26,
+      "total": 0,
+      "passed": 0,
       "failed": 0,
-      "status": "pass"
+      "status": "na"
     },
     {
       "changeId": "CHANGE-042",
@@ -35,10 +35,10 @@
       "roadId": "ROAD-044",
       "title": "Business Landscape Visualization with Multi-Engine Layout",
       "date": "2026-02-19",
-      "total": 20,
-      "passed": 20,
+      "total": 0,
+      "passed": 0,
       "failed": 0,
-      "status": "pass"
+      "status": "na"
     },
     {
       "changeId": "CHANGE-040",
@@ -211,5 +211,5 @@
       "status": "pass"
     }
   ],
-  "generatedAt": "2026-02-20T16:51:00.000Z"
+  "generatedAt": "2026-03-14T14:30:29.019Z"
 }

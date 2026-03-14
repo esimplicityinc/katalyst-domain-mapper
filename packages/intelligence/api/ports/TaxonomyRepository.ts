@@ -1,6 +1,53 @@
-import type { ValidatedTaxonomyData } from "../domain/taxonomy/validateTaxonomyData.js";
+// ── Unified Taxonomy Repository Port ────────────────────────────────────────
+// Merges the former TaxonomyRepository, GovernanceRepository, and
+// DomainModelRepository into a single port interface. All types are imported
+// from @foe/schemas (single source of truth).
 
-// ── Stored Snapshot (returned from queries) ────────────────────────────────
+import type { ValidatedTaxonomyData } from "../domain/taxonomy/validateTaxonomyData.js";
+import { taxonomy } from "@foe/schemas";
+
+// ── Re-exports from @foe/schemas ───────────────────────────────────────────
+
+export type TaxonomyPluginSummary = taxonomy.TaxonomyPluginSummary;
+
+// Governance types
+export type StoredGovernanceSnapshot = taxonomy.StoredGovernanceSnapshot;
+export type CapabilityCoverage = taxonomy.CapabilityCoverage;
+export type UserTypeCoverage = taxonomy.UserTypeCoverage;
+export type RoadItemSummary = taxonomy.RoadItemSummary;
+export type IntegrityReport = taxonomy.IntegrityReport;
+export type TrendPoint = taxonomy.TrendPoint;
+export type StoredUserType = taxonomy.StoredUserType;
+export type StoredUserStory = taxonomy.StoredUserStory;
+export type StoredCapability = taxonomy.StoredCapability;
+export type GovernanceSnapshotInput = taxonomy.GovernanceSnapshotInput;
+
+// Domain model types
+export type StoredDomainModel = taxonomy.StoredDomainModel;
+export type StoredBoundedContext = taxonomy.StoredBoundedContext;
+export type StoredAggregate = taxonomy.StoredAggregate;
+export type StoredDomainEvent = taxonomy.StoredDomainEvent;
+export type StoredValueObject = taxonomy.StoredValueObject;
+export type StoredGlossaryTerm = taxonomy.StoredGlossaryTerm;
+export type StoredWorkflow = taxonomy.StoredWorkflow;
+export type DomainModelWithArtifacts = taxonomy.DomainModelWithArtifacts;
+
+export type CreateDomainModelInput = taxonomy.CreateDomainModelInput;
+export type UpdateDomainModelInput = taxonomy.UpdateDomainModelInput;
+export type CreateBoundedContextInput = taxonomy.CreateBoundedContextInput;
+export type UpdateBoundedContextInput = taxonomy.UpdateBoundedContextInput;
+export type CreateAggregateInput = taxonomy.CreateAggregateInput;
+export type UpdateAggregateInput = taxonomy.UpdateAggregateInput;
+export type CreateDomainEventInput = taxonomy.CreateDomainEventInput;
+export type UpdateDomainEventInput = taxonomy.UpdateDomainEventInput;
+export type CreateValueObjectInput = taxonomy.CreateValueObjectInput;
+export type UpdateValueObjectInput = taxonomy.UpdateValueObjectInput;
+export type CreateGlossaryTermInput = taxonomy.CreateGlossaryTermInput;
+export type UpdateGlossaryTermInput = taxonomy.UpdateGlossaryTermInput;
+export type CreateWorkflowInput = taxonomy.CreateWorkflowInput;
+export type UpdateWorkflowInput = taxonomy.UpdateWorkflowInput;
+
+// ── Stored Taxonomy Snapshot ───────────────────────────────────────────────
 
 export interface StoredTaxonomySnapshot {
   id: string;
@@ -13,18 +60,7 @@ export interface StoredTaxonomySnapshot {
   createdAt: string;
 }
 
-export interface TaxonomyPluginSummary {
-  layerTypes: number;
-  capabilities: number;
-  capabilityRels: number;
-  actions: number;
-  stages: number;
-  tools: number;
-  teams: number;
-  persons: number;
-}
-
-// ── Query Result Types ─────────────────────────────────────────────────────
+// ── Taxonomy Query Result Types ────────────────────────────────────────────
 
 export interface TaxonomyNodeSummary {
   name: string;
@@ -58,7 +94,7 @@ export interface TaxonomyTeamMemberSummary {
   personName: string;
   displayName: string;
   email: string | null;
-  role: string; // role within this team
+  role: string;
 }
 
 export interface TaxonomyTeamDetail extends TaxonomyTeamSummary {
@@ -88,104 +124,263 @@ export interface TaxonomyHierarchy {
 
 // ── Capability Tree ────────────────────────────────────────────────────────
 
-/**
- * A single node in the capability hierarchy tree.
- *
- * Capabilities are organised in up to 3 levels following the taxonomy node
- * structure:
- *   system capability  (e.g. "regulatory-compliance")
- *     └─ subsystem capability  (e.g. "water-quality-monitoring")
- *          └─ stack capability  (e.g. "lims-sample-analysis")
- *
- * Status is always derived from children using "worst-child-wins":
- *   planned  <  stable  <  deprecated
- * Leaf nodes carry the status declared in the taxonomy snapshot.
- */
 export interface CapabilityNode {
-  /** Slug — the stable identifier used everywhere (replaces CAP-XXX in references) */
   name: string;
-  /** Human-readable title */
   description: string;
-  /** Optional display tag, e.g. "CAP-005", retained for traceability */
   tag: string | null;
-  /** Explicit declared status on this node (only meaningful on leaf nodes) */
   declaredStatus: "planned" | "stable" | "deprecated";
-  /**
-   * Derived status — computed bottom-up using worst-child-wins.
-   * For leaf nodes this equals declaredStatus.
-   * planned < stable < deprecated
-   */
   derivedStatus: "planned" | "stable" | "deprecated";
-  /** Taxonomy node(s) this capability is implemented/supported by */
   taxonomyNodes: string[];
-  /** Capability dependency slugs (peer dependencies, not hierarchy) */
   dependsOn: string[];
-  /** Categories for grouping / filtering */
   categories: string[];
-  /** Child capabilities (sub-capabilities) — empty for leaves */
   children: CapabilityNode[];
 }
 
 export interface CapabilityTree {
-  /** Root capabilities (parentCapability = null) */
   roots: CapabilityNode[];
-  /** Flat map for O(1) lookup by slug */
   byName: Map<string, CapabilityNode>;
 }
 
-// ── Repository Interface ───────────────────────────────────────────────────
+// ── Unified Repository Interface ───────────────────────────────────────────
 
 export interface TaxonomyRepository {
+  // ══════════════════════════════════════════════════════════════════════════
+  // TAXONOMY SNAPSHOTS (was TaxonomyRepository)
+  // ══════════════════════════════════════════════════════════════════════════
+
   /** Store a taxonomy snapshot, denormalizing into tables */
-  saveSnapshot(data: ValidatedTaxonomyData): Promise<StoredTaxonomySnapshot>;
-
-  /** Get the most recently ingested snapshot */
-  getLatestSnapshot(): Promise<StoredTaxonomySnapshot | null>;
-
-  /** Get the most recently ingested snapshot for a specific project */
-  getLatestSnapshotByProject(project: string): Promise<StoredTaxonomySnapshot | null>;
-
-  /** Get a snapshot by its ID */
-  getSnapshotById(id: string): Promise<StoredTaxonomySnapshot | null>;
-
-  /** List all snapshots, most recent first */
-  listSnapshots(limit?: number): Promise<StoredTaxonomySnapshot[]>;
-
-  /** Delete a snapshot and all denormalized data (FK cascade) */
-  deleteSnapshot(id: string): Promise<boolean>;
+  saveTaxonomySnapshot(data: ValidatedTaxonomyData): Promise<StoredTaxonomySnapshot>;
+  /** Get the most recently ingested taxonomy snapshot */
+  getLatestTaxonomySnapshot(): Promise<StoredTaxonomySnapshot | null>;
+  /** Get the most recently ingested taxonomy snapshot for a specific project */
+  getLatestTaxonomySnapshotByProject(project: string): Promise<StoredTaxonomySnapshot | null>;
+  /** Get a taxonomy snapshot by its ID */
+  getTaxonomySnapshotById(id: string): Promise<StoredTaxonomySnapshot | null>;
+  /** List all taxonomy snapshots, most recent first */
+  listTaxonomySnapshots(limit?: number): Promise<StoredTaxonomySnapshot[]>;
+  /** Delete a taxonomy snapshot and all denormalized data (FK cascade) */
+  deleteTaxonomySnapshot(id: string): Promise<boolean>;
 
   /** Get taxonomy nodes from the latest snapshot, with optional type filter */
   getNodes(nodeType?: string): Promise<TaxonomyNodeSummary[]>;
-
   /** Get the full hierarchy tree from the latest snapshot */
   getHierarchy(): Promise<TaxonomyHierarchy>;
-
   /** Get environments from the latest snapshot */
   getEnvironments(): Promise<TaxonomyEnvironmentSummary[]>;
-
   /** Get plugin counts from the latest snapshot */
   getPluginSummary(): Promise<TaxonomyPluginSummary>;
-
   /** Get capabilities mapped to a specific taxonomy node */
   getCapabilitiesByNode(nodeName: string): Promise<string[]>;
-
-  /**
-   * Get the full capability hierarchy tree for the latest snapshot.
-   * Status is derived bottom-up (worst-child-wins) on every internal node.
-   */
+  /** Get the full capability hierarchy tree for the latest snapshot */
   getCapabilityTree(): Promise<CapabilityTree>;
-
-  /**
-   * Get the full capability hierarchy tree for a specific snapshot.
-   */
+  /** Get the full capability hierarchy tree for a specific snapshot */
   getCapabilityTreeBySnapshotId(snapshotId: string): Promise<CapabilityTree>;
-
   /** Get all teams from the latest snapshot */
   getTeams(): Promise<TaxonomyTeamSummary[]>;
-
   /** Get a team by name with full member details from the latest snapshot */
   getTeamByName(name: string): Promise<TaxonomyTeamDetail | null>;
-
   /** Get all persons from the latest snapshot with their team memberships */
   getPersons(): Promise<TaxonomyPersonSummary[]>;
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // GOVERNANCE (was GovernanceRepository)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  /** Store a governance index snapshot, denormalizing into tables */
+  saveGovernanceSnapshot(data: GovernanceSnapshotInput): Promise<StoredGovernanceSnapshot>;
+  /** Get the most recently ingested governance snapshot */
+  getLatestGovernanceSnapshot(): Promise<StoredGovernanceSnapshot | null>;
+  /** Get the most recently ingested governance snapshot for a specific project */
+  getLatestGovernanceSnapshotByProject(project: string): Promise<StoredGovernanceSnapshot | null>;
+  /** Get a governance snapshot by its ID */
+  getGovernanceSnapshotById(id: string): Promise<StoredGovernanceSnapshot | null>;
+  /** List all governance snapshots, most recent first */
+  listGovernanceSnapshots(limit?: number): Promise<StoredGovernanceSnapshot[]>;
+  /** Delete a governance snapshot and all denormalized data (FK cascade) */
+  deleteGovernanceSnapshot(id: string): Promise<boolean>;
+
+  /** Get capability coverage from the latest governance snapshot */
+  getCapabilityCoverage(): Promise<CapabilityCoverage[]>;
+  /** Get user type coverage from the latest governance snapshot */
+  getUserTypeCoverage(): Promise<UserTypeCoverage[]>;
+  /** Get road items from the latest governance snapshot, with optional status filter */
+  getRoadItems(statusFilter?: string): Promise<RoadItemSummary[]>;
+  /** Get cross-reference integrity from the latest governance snapshot */
+  getIntegrity(): Promise<IntegrityReport>;
+  /** Get health trends across all governance snapshots */
+  getTrends(limit?: number): Promise<TrendPoint[]>;
+
+  // Governance Capability CRUD
+  listGovernanceCapabilities(): Promise<StoredCapability[]>;
+  getGovernanceCapabilityById(id: string): Promise<StoredCapability | null>;
+  createGovernanceCapability(
+    data: Omit<StoredCapability, "roadCount" | "storyCount">,
+  ): Promise<StoredCapability>;
+  updateGovernanceCapability(
+    id: string,
+    data: Partial<Omit<StoredCapability, "id" | "roadCount" | "storyCount">>,
+  ): Promise<StoredCapability | null>;
+  deleteGovernanceCapability(id: string): Promise<boolean>;
+
+  // Governance User Type CRUD
+  listUserTypes(): Promise<StoredUserType[]>;
+  getUserTypeById(id: string): Promise<StoredUserType | null>;
+  createUserType(
+    data: Omit<StoredUserType, "storyCount" | "capabilityCount">,
+  ): Promise<StoredUserType>;
+  updateUserType(
+    id: string,
+    data: Partial<Omit<StoredUserType, "id" | "storyCount" | "capabilityCount">>,
+  ): Promise<StoredUserType | null>;
+  deleteUserType(id: string): Promise<boolean>;
+
+  // Governance User Story CRUD
+  listUserStories(): Promise<StoredUserStory[]>;
+  getUserStoryById(id: string): Promise<StoredUserStory | null>;
+  createUserStory(data: StoredUserStory): Promise<StoredUserStory>;
+  updateUserStory(
+    id: string,
+    data: Partial<Omit<StoredUserStory, "id">>,
+  ): Promise<StoredUserStory | null>;
+  deleteUserStory(id: string): Promise<boolean>;
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // DOMAIN MODELS (was DomainModelRepository)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  // Domain Model CRUD
+  createDomainModel(input: CreateDomainModelInput): Promise<StoredDomainModel>;
+  updateDomainModel(id: string, input: UpdateDomainModelInput): Promise<void>;
+  listDomainModels(): Promise<StoredDomainModel[]>;
+  getDomainModelById(id: string): Promise<DomainModelWithArtifacts | null>;
+  deleteDomainModel(id: string): Promise<boolean>;
+  domainModelExists(id: string): Promise<boolean>;
+
+  // Bounded Contexts
+  addBoundedContext(
+    modelId: string,
+    input: CreateBoundedContextInput,
+  ): Promise<StoredBoundedContext>;
+  updateBoundedContext(
+    ctxId: string,
+    input: UpdateBoundedContextInput,
+  ): Promise<void>;
+  deleteBoundedContext(ctxId: string): Promise<void>;
+
+  // Aggregates
+  addAggregate(
+    modelId: string,
+    input: CreateAggregateInput,
+  ): Promise<StoredAggregate>;
+  updateAggregate(aggId: string, input: UpdateAggregateInput): Promise<void>;
+  deleteAggregate(aggId: string): Promise<void>;
+
+  // Domain Events
+  addDomainEvent(
+    modelId: string,
+    input: CreateDomainEventInput,
+  ): Promise<StoredDomainEvent>;
+  updateDomainEvent(
+    eventId: string,
+    input: UpdateDomainEventInput,
+  ): Promise<void>;
+  deleteDomainEvent(eventId: string): Promise<void>;
+
+  // Value Objects
+  addValueObject(
+    modelId: string,
+    input: CreateValueObjectInput,
+  ): Promise<StoredValueObject>;
+  updateValueObject(
+    voId: string,
+    input: UpdateValueObjectInput,
+  ): Promise<void>;
+  deleteValueObject(voId: string): Promise<void>;
+
+  // Glossary
+  addGlossaryTerm(
+    modelId: string,
+    input: CreateGlossaryTermInput,
+  ): Promise<StoredGlossaryTerm>;
+  updateGlossaryTerm(
+    termId: string,
+    input: UpdateGlossaryTermInput,
+  ): Promise<void>;
+  listGlossaryTerms(modelId: string): Promise<StoredGlossaryTerm[]>;
+  deleteGlossaryTerm(termId: string): Promise<void>;
+
+  // Workflows
+  addWorkflow(
+    modelId: string,
+    input: CreateWorkflowInput,
+  ): Promise<StoredWorkflow>;
+  updateWorkflow(wfId: string, input: UpdateWorkflowInput): Promise<void>;
+  listWorkflows(modelId: string): Promise<StoredWorkflow[]>;
+  deleteWorkflow(wfId: string): Promise<void>;
 }
+
+// ── Backward-compatible aliases ────────────────────────────────────────────
+// These allow a gradual migration of consumers that still import the old
+// interface names. They can be removed once all consumers are updated.
+
+/** @deprecated Use TaxonomyRepository instead */
+export type GovernanceRepository = Pick<
+  TaxonomyRepository,
+  | "saveGovernanceSnapshot"
+  | "getLatestGovernanceSnapshot"
+  | "getLatestGovernanceSnapshotByProject"
+  | "getGovernanceSnapshotById"
+  | "listGovernanceSnapshots"
+  | "deleteGovernanceSnapshot"
+  | "getCapabilityCoverage"
+  | "getUserTypeCoverage"
+  | "getRoadItems"
+  | "getIntegrity"
+  | "getTrends"
+  | "listGovernanceCapabilities"
+  | "getGovernanceCapabilityById"
+  | "createGovernanceCapability"
+  | "updateGovernanceCapability"
+  | "deleteGovernanceCapability"
+  | "listUserTypes"
+  | "getUserTypeById"
+  | "createUserType"
+  | "updateUserType"
+  | "deleteUserType"
+  | "listUserStories"
+  | "getUserStoryById"
+  | "createUserStory"
+  | "updateUserStory"
+  | "deleteUserStory"
+>;
+
+/** @deprecated Use TaxonomyRepository instead */
+export type DomainModelRepository = Pick<
+  TaxonomyRepository,
+  | "createDomainModel"
+  | "updateDomainModel"
+  | "listDomainModels"
+  | "getDomainModelById"
+  | "deleteDomainModel"
+  | "domainModelExists"
+  | "addBoundedContext"
+  | "updateBoundedContext"
+  | "deleteBoundedContext"
+  | "addAggregate"
+  | "updateAggregate"
+  | "deleteAggregate"
+  | "addDomainEvent"
+  | "updateDomainEvent"
+  | "deleteDomainEvent"
+  | "addValueObject"
+  | "updateValueObject"
+  | "deleteValueObject"
+  | "addGlossaryTerm"
+  | "updateGlossaryTerm"
+  | "listGlossaryTerms"
+  | "deleteGlossaryTerm"
+  | "addWorkflow"
+  | "updateWorkflow"
+  | "listWorkflows"
+  | "deleteWorkflow"
+>;

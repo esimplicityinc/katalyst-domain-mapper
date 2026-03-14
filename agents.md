@@ -33,7 +33,7 @@ katalyst-domain-mapper/
 **Key Components:**
 - `scan/` - FOE report schemas (dimensions, findings, gaps, recommendations, triangle diagnosis)
 - `field-guide/` - Method and observation schemas with maturity levels
-- `taxonomy/` - Taxonomy extensions (13 schemas: aggregate, bounded-context, capability, change-record, domain-event, glossary-term, governance-snapshot, non-functional-requirement, persona, road-item, taxonomy-snapshot, user-story, value-object)
+- `taxonomy/` - Taxonomy extensions (13 schemas: aggregate, bounded-context, capability, change-record, domain-event, glossary-term, governance-snapshot, non-functional-requirement, user-type, road-item, taxonomy-snapshot, user-story, value-object)
 - `graph/` - Neo4j node/relationship types (optional knowledge graph)
 
 **Build Output:** 174KB bundled

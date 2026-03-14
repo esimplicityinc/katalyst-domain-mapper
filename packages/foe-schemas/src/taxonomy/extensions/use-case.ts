@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PersonaIdPattern } from "../common.js";
+import { UserTypeIdPattern } from "../common.js";
 
 // ── Use Case Extension ─────────────────────────────────────────────────────
 // Carries governance lifecycle fields for taxonomy nodes with nodeType:
@@ -7,7 +7,7 @@ import { PersonaIdPattern } from "../common.js";
 // labels (including governance-id e.g. "UC-001"), dependsOn, etc.
 export const UseCaseExtSchema = z.object({
   title: z.string(),
-  actors: z.array(PersonaIdPattern).default([]),
+  actors: z.array(UserTypeIdPattern).default([]),
   preconditions: z.array(z.string()).default([]),
   postconditions: z.array(z.string()).default([]),
   mainFlow: z.array(z.string()).default([]),

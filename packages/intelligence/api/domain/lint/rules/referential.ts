@@ -7,38 +7,38 @@
 
 import type { LintContext, LintFinding } from "../LintReport.js";
 
-// ── Rule: story-persona-exists ────────────────────────────────────────────────
+// ── Rule: story-user-type-exists ──────────────────────────────────────────────
 
 /**
- * Every userStory.persona (PER-xxx) must exist in the personas collection.
+ * Every userStory.userType (UT-xxx) must exist in the userTypes collection.
  */
-export function checkStoryPersonaExists(ctx: LintContext): LintFinding[] {
+export function checkStoryUserTypeExists(ctx: LintContext): LintFinding[] {
   const findings: LintFinding[] = [];
-  const personaIds = new Set(ctx.personas.map((p) => p.id));
+  const userTypeIds = new Set(ctx.userTypes.map((p) => p.id));
 
   for (const story of ctx.userStories) {
-    if (!story.persona) {
+    if (!story.userType) {
       findings.push({
-        rule: "story-persona-exists",
+        rule: "story-user-type-exists",
         severity: "error",
         category: "broken-reference",
-        message: `User story "${story.title}" has no persona assigned.`,
+        message: `User story "${story.title}" has no user type assigned.`,
         entityType: "userStory",
         entityId: story.id,
         entityName: story.title,
-        suggestion: `Assign a valid persona ID (e.g. "PER-001") to the persona field of user story ${story.id}.`,
+        suggestion: `Assign a valid user type ID (e.g. "UT-001") to the userType field of user story ${story.id}.`,
       });
-    } else if (!personaIds.has(story.persona)) {
+    } else if (!userTypeIds.has(story.userType)) {
       findings.push({
-        rule: "story-persona-exists",
+        rule: "story-user-type-exists",
         severity: "error",
         category: "broken-reference",
-        message: `User story "${story.title}" references persona "${story.persona}" which does not exist.`,
+        message: `User story "${story.title}" references user type "${story.userType}" which does not exist.`,
         entityType: "userStory",
         entityId: story.id,
         entityName: story.title,
-        relatedEntities: [{ type: "persona", id: story.persona }],
-        suggestion: `Create persona "${story.persona}" or update the story to reference an existing persona.`,
+        relatedEntities: [{ type: "user-type", id: story.userType }],
+        suggestion: `Create user type "${story.userType}" or update the story to reference an existing user type.`,
       });
     }
   }
@@ -76,28 +76,28 @@ export function checkStoryCapabilityExists(ctx: LintContext): LintFinding[] {
   return findings;
 }
 
-// ── Rule: persona-capability-exists ───────────────────────────────────────────
+// ── Rule: user-type-capability-exists ─────────────────────────────────────────
 
 /**
- * Every capability ID in persona.typicalCapabilities[] must exist.
+ * Every capability ID in userType.typicalCapabilities[] must exist.
  */
-export function checkPersonaCapabilityExists(ctx: LintContext): LintFinding[] {
+export function checkUserTypeCapabilityExists(ctx: LintContext): LintFinding[] {
   const findings: LintFinding[] = [];
   const capabilityIds = new Set(ctx.capabilities.map((c) => c.id));
 
-  for (const persona of ctx.personas) {
-    for (const capId of persona.typicalCapabilities ?? []) {
+  for (const userType of ctx.userTypes) {
+    for (const capId of userType.typicalCapabilities ?? []) {
       if (!capabilityIds.has(capId)) {
         findings.push({
-          rule: "persona-capability-exists",
+          rule: "user-type-capability-exists",
           severity: "error",
           category: "broken-reference",
-          message: `Persona "${persona.name}" references capability "${capId}" which does not exist.`,
-          entityType: "persona",
-          entityId: persona.id,
-          entityName: persona.name,
+          message: `User type "${userType.name}" references capability "${capId}" which does not exist.`,
+          entityType: "user-type",
+          entityId: userType.id,
+          entityName: userType.name,
           relatedEntities: [{ type: "capability", id: capId }],
-          suggestion: `Create capability "${capId}" or remove it from persona ${persona.id}.typicalCapabilities.`,
+          suggestion: `Create capability "${capId}" or remove it from user type ${userType.id}.typicalCapabilities.`,
         });
       }
     }
@@ -387,9 +387,9 @@ export function checkCapabilityTaxonomyNodeExists(ctx: LintContext): LintFinding
 
 export function runReferentialRules(ctx: LintContext): LintFinding[] {
   return [
-    ...checkStoryPersonaExists(ctx),
+    ...checkStoryUserTypeExists(ctx),
     ...checkStoryCapabilityExists(ctx),
-    ...checkPersonaCapabilityExists(ctx),
+    ...checkUserTypeCapabilityExists(ctx),
     ...checkEventContextExists(ctx),
     ...checkEventAggregateExists(ctx),
     ...checkEventSourceCapabilityExists(ctx),

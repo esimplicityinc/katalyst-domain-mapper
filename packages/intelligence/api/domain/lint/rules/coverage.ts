@@ -2,33 +2,33 @@
  * Coverage & Orphan Lint Rules
  *
  * These rules detect gaps where entities exist but lack expected connections:
- * orphaned personas, uncovered capabilities, contexts without events, etc.
+ * orphaned user types, uncovered capabilities, contexts without events, etc.
  * Violations are `warning` severity unless otherwise noted.
  */
 
 import type { LintContext, LintFinding } from "../LintReport.js";
 
-// ── Rule: persona-has-stories ─────────────────────────────────────────────────
+// ── Rule: user-type-has-stories ───────────────────────────────────────────────
 
 /**
- * Every persona should be referenced by at least one user story.
- * A persona with zero stories may be stale or not yet translated into requirements.
+ * Every user type should be referenced by at least one user story.
+ * A user type with zero stories may be stale or not yet translated into requirements.
  */
-export function checkPersonaHasStories(ctx: LintContext): LintFinding[] {
+export function checkUserTypeHasStories(ctx: LintContext): LintFinding[] {
   const findings: LintFinding[] = [];
-  const personasWithStories = new Set(ctx.userStories.map((s) => s.persona));
+  const userTypesWithStories = new Set(ctx.userStories.map((s) => s.userType));
 
-  for (const persona of ctx.personas) {
-    if (!personasWithStories.has(persona.id)) {
+  for (const userType of ctx.userTypes) {
+    if (!userTypesWithStories.has(userType.id)) {
       findings.push({
-        rule: "persona-has-stories",
+        rule: "user-type-has-stories",
         severity: "warning",
         category: "incomplete-coverage",
-        message: `Persona "${persona.name}" has no user stories.`,
-        entityType: "persona",
-        entityId: persona.id,
-        entityName: persona.name,
-        suggestion: `Write at least one user story that maps persona ${persona.id} to a capability they need.`,
+        message: `User type "${userType.name}" has no user stories.`,
+        entityType: "user-type",
+        entityId: userType.id,
+        entityName: userType.name,
+        suggestion: `Write at least one user story that maps user type ${userType.id} to a capability they need.`,
       });
     }
   }
@@ -36,26 +36,26 @@ export function checkPersonaHasStories(ctx: LintContext): LintFinding[] {
   return findings;
 }
 
-// ── Rule: persona-has-capabilities ────────────────────────────────────────────
+// ── Rule: user-type-has-capabilities ──────────────────────────────────────────
 
 /**
- * Every persona should list at least one typical capability.
- * An empty typicalCapabilities array means the persona's scope is unclear.
+ * Every user type should list at least one typical capability.
+ * An empty typicalCapabilities array means the user type's scope is unclear.
  */
-export function checkPersonaHasCapabilities(ctx: LintContext): LintFinding[] {
+export function checkUserTypeHasCapabilities(ctx: LintContext): LintFinding[] {
   const findings: LintFinding[] = [];
 
-  for (const persona of ctx.personas) {
-    if (!persona.typicalCapabilities || persona.typicalCapabilities.length === 0) {
+  for (const userType of ctx.userTypes) {
+    if (!userType.typicalCapabilities || userType.typicalCapabilities.length === 0) {
       findings.push({
-        rule: "persona-has-capabilities",
+        rule: "user-type-has-capabilities",
         severity: "warning",
         category: "incomplete-coverage",
-        message: `Persona "${persona.name}" has no typical capabilities defined.`,
-        entityType: "persona",
-        entityId: persona.id,
-        entityName: persona.name,
-        suggestion: `Add at least one capability ID to persona ${persona.id}.typicalCapabilities to clarify the persona's scope.`,
+        message: `User type "${userType.name}" has no typical capabilities defined.`,
+        entityType: "user-type",
+        entityId: userType.id,
+        entityName: userType.name,
+        suggestion: `Add at least one capability ID to user type ${userType.id}.typicalCapabilities to clarify the user type's scope.`,
       });
     }
   }
@@ -494,8 +494,8 @@ export function checkTaxonomyCapabilityHasNode(ctx: LintContext): LintFinding[] 
 
 export function runCoverageRules(ctx: LintContext): LintFinding[] {
   return [
-    ...checkPersonaHasStories(ctx),
-    ...checkPersonaHasCapabilities(ctx),
+    ...checkUserTypeHasStories(ctx),
+    ...checkUserTypeHasCapabilities(ctx),
     ...checkCapabilityHasStories(ctx),
     ...checkCapabilityHasContext(ctx),
     ...checkContextHasEvents(ctx),

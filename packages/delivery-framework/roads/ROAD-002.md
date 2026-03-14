@@ -38,12 +38,12 @@ Create Zod validation schemas for all 7 governance artifact types in `@foe/schem
 
 ## Business Value
 
-Eliminates divergence between TypeScript types and runtime validation. Every governance artifact (capabilities, personas, user stories, use cases, road items, ADRs, NFRs, change entries) gets validated at ingest boundaries, preventing corrupt data from propagating through the system.
+Eliminates divergence between TypeScript types and runtime validation. Every governance artifact (capabilities, user types, user stories, use cases, road items, ADRs, NFRs, change entries) gets validated at ingest boundaries, preventing corrupt data from propagating through the system.
 
 ## Acceptance Criteria
 
 1. 10 new schema files in `packages/foe-schemas/src/governance/`
-2. `CapabilitySchema`, `PersonaSchema`, `UserStorySchema`, `UseCaseSchema` with cross-reference validation
+2. `CapabilitySchema`, `UserTypeSchema`, `UserStorySchema`, `UseCaseSchema` with cross-reference validation
 3. `RoadItemSchema` with 8-state governance workflow encoded as Zod enum
 4. `AdrSchema`, `NfrSchema`, `ChangeEntrySchema` with compliance section validation
 5. `GovernanceIndexSchema` with reverse indices and referential integrity stats
@@ -60,7 +60,7 @@ packages/foe-schemas/src/governance/
 ├── index.ts                    # Re-exports
 ├── common.ts                   # Shared enums (GovernanceStatus, Priority, etc.)
 ├── capability.ts               # CAP-XXX schema
-├── persona.ts                  # PER-XXX schema
+├── user-type.ts                # UT-XXX schema
 ├── user-story.ts               # US-XXX schema
 ├── use-case.ts                 # UC-XXX schema
 ├── road-item.ts                # ROAD-XXX schema (8-state machine)

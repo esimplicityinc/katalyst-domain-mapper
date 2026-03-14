@@ -47,13 +47,13 @@ const VALID_USE_CASE_IDS = [
   'UC-012', 'UC-013', 'UC-014', 'UC-020', 'UC-021'
 ];
 
-const VALID_PERSONA_IDS = [
-  'PER-001', 'PER-002', 'PER-003', 'PER-004', 'PER-005'
+const VALID_USER_TYPE_IDS = [
+  'UT-001', 'UT-002', 'UT-003', 'UT-004', 'UT-005'
 ];
 
-const VALID_PERSONA_TYPES = ['human', 'bot', 'system', 'external_api'];
-const VALID_PERSONA_STATUSES = ['draft', 'approved', 'deprecated'];
-const VALID_PERSONA_ARCHETYPES = ['creator', 'operator', 'administrator', 'consumer', 'integrator'];
+const VALID_USER_TYPE_TYPES = ['human', 'bot', 'system', 'external_api'];
+const VALID_USER_TYPE_STATUSES = ['draft', 'approved', 'deprecated'];
+const VALID_USER_TYPE_ARCHETYPES = ['creator', 'operator', 'administrator', 'consumer', 'integrator'];
 
 const STATE_MACHINE_TRANSITIONS = {
   'proposed': ['adr_validated'],
@@ -83,10 +83,10 @@ const checkAdrs = args.includes('--adrs');
 const targetRoad = args.find(arg => arg.startsWith('ROAD-'));
 const targetCapability = args.find(arg => arg.startsWith('CAP-'));
 const targetUserStory = args.find(arg => arg.startsWith('US-'));
-const targetPersona = args.find(arg => arg.startsWith('PER-'));
+const targetUserType = args.find(arg => arg.startsWith('UT-'));
 const checkCapabilities = args.includes('--capabilities');
 const checkUserStories = args.includes('--user-stories');
-const checkPersonas = args.includes('--personas');
+const checkUserTypes = args.includes('--user-types');
 
 /**
  * Extract front matter from markdown content
@@ -445,14 +445,14 @@ function validateCapabilityFrontMatter(filePath, frontMatter) {
 }
 
 /**
- * Find PER-XXX persona file
+ * Find UT-XXX user type file
  */
-function findPersonaFile(personaId) {
-  const files = glob.sync(path.join(DOCS_DIR, 'personas/PER-*.md'));
+function findUserTypeFile(userTypeId) {
+  const files = glob.sync(path.join(DOCS_DIR, 'user-types/UT-*.md'));
   for (const file of files) {
     const content = fs.readFileSync(file, 'utf8');
     const fm = extractFrontMatter(content);
-    if (fm && fm.id === personaId) {
+    if (fm && fm.id === userTypeId) {
       return file;
     }
   }
@@ -460,9 +460,9 @@ function findPersonaFile(personaId) {
 }
 
 /**
- * Validate PER-XXX persona file front matter
+ * Validate UT-XXX user type file front matter
  */
-function validatePersonaFrontMatter(filePath, frontMatter) {
+function validateUserTypeFrontMatter(filePath, frontMatter) {
   const errors = [];
   const warnings = [];
 
@@ -475,28 +475,28 @@ function validatePersonaFrontMatter(filePath, frontMatter) {
   if (!frontMatter.archetype) errors.push('Missing required field: archetype');
 
   // Validate ID format
-  if (frontMatter.id && !frontMatter.id.match(/^PER-\d+$/)) {
-    errors.push(`Invalid id format: ${frontMatter.id} (expected PER-XXX)`);
+  if (frontMatter.id && !frontMatter.id.match(/^UT-\d+$/)) {
+    errors.push(`Invalid id format: ${frontMatter.id} (expected UT-XXX)`);
   }
 
   // Validate tag format
-  if (frontMatter.tag && !frontMatter.tag.match(/^@PER-\d+$/)) {
-    errors.push(`Invalid tag format: ${frontMatter.tag} (expected @PER-XXX)`);
+  if (frontMatter.tag && !frontMatter.tag.match(/^@UT-\d+$/)) {
+    errors.push(`Invalid tag format: ${frontMatter.tag} (expected @UT-XXX)`);
   }
 
   // Validate type
-  if (frontMatter.type && !VALID_PERSONA_TYPES.includes(frontMatter.type)) {
-    errors.push(`Invalid type: ${frontMatter.type} (expected: ${VALID_PERSONA_TYPES.join(', ')})`);
+  if (frontMatter.type && !VALID_USER_TYPE_TYPES.includes(frontMatter.type)) {
+    errors.push(`Invalid type: ${frontMatter.type} (expected: ${VALID_USER_TYPE_TYPES.join(', ')})`);
   }
 
   // Validate status
-  if (frontMatter.status && !VALID_PERSONA_STATUSES.includes(frontMatter.status)) {
-    errors.push(`Invalid status: ${frontMatter.status} (expected: ${VALID_PERSONA_STATUSES.join(', ')})`);
+  if (frontMatter.status && !VALID_USER_TYPE_STATUSES.includes(frontMatter.status)) {
+    errors.push(`Invalid status: ${frontMatter.status} (expected: ${VALID_USER_TYPE_STATUSES.join(', ')})`);
   }
 
   // Validate archetype
-  if (frontMatter.archetype && !VALID_PERSONA_ARCHETYPES.includes(frontMatter.archetype)) {
-    errors.push(`Invalid archetype: ${frontMatter.archetype} (expected: ${VALID_PERSONA_ARCHETYPES.join(', ')})`);
+  if (frontMatter.archetype && !VALID_USER_TYPE_ARCHETYPES.includes(frontMatter.archetype)) {
+    errors.push(`Invalid archetype: ${frontMatter.archetype} (expected: ${VALID_USER_TYPE_ARCHETYPES.join(', ')})`);
   }
 
   // Validate typical_capabilities if present
@@ -526,15 +526,15 @@ function validatePersonaFrontMatter(filePath, frontMatter) {
     }
   }
 
-  // Validate related_personas if present
-  if (frontMatter.related_personas) {
-    if (!Array.isArray(frontMatter.related_personas)) {
-      errors.push('related_personas must be an array');
+  // Validate related_user_types if present
+  if (frontMatter.related_user_types) {
+    if (!Array.isArray(frontMatter.related_user_types)) {
+      errors.push('related_user_types must be an array');
     } else {
-      for (const persona of frontMatter.related_personas) {
-        const personaStr = String(persona);
-        if (!personaStr.match(/^PER-\d+$/)) {
-          errors.push(`Invalid persona reference: ${personaStr}`);
+      for (const userType of frontMatter.related_user_types) {
+        const userTypeStr = String(userType);
+        if (!userTypeStr.match(/^UT-\d+$/)) {
+          errors.push(`Invalid user type reference: ${userTypeStr}`);
         }
       }
     }
@@ -553,7 +553,7 @@ function validateUserStoryFrontMatter(filePath, frontMatter) {
   // Required fields
   if (!frontMatter.id) errors.push('Missing required field: id');
   if (!frontMatter.title) errors.push('Missing required field: title');
-  if (!frontMatter.persona) errors.push('Missing required field: persona');
+  if (!frontMatter.user_type) errors.push('Missing required field: user_type');
   if (!frontMatter.status) errors.push('Missing required field: status');
   if (!frontMatter.capabilities) errors.push('Missing required field: capabilities');
 
@@ -562,22 +562,22 @@ function validateUserStoryFrontMatter(filePath, frontMatter) {
     errors.push(`Invalid id format: ${frontMatter.id} (expected US-XXX)`);
   }
 
-  // Validate persona reference
-  if (frontMatter.persona) {
-    if (!frontMatter.persona.match(/^PER-\d+$/)) {
-      errors.push(`Invalid persona format: ${frontMatter.persona} (expected PER-XXX)`);
-    } else if (!VALID_PERSONA_IDS.includes(frontMatter.persona)) {
-      errors.push(`Unknown persona: ${frontMatter.persona}`);
+  // Validate user_type reference
+  if (frontMatter.user_type) {
+    if (!frontMatter.user_type.match(/^UT-\d+$/)) {
+      errors.push(`Invalid user_type format: ${frontMatter.user_type} (expected UT-XXX)`);
+    } else if (!VALID_USER_TYPE_IDS.includes(frontMatter.user_type)) {
+      errors.push(`Unknown user_type: ${frontMatter.user_type}`);
     } else {
-      // Check persona file exists and is not deprecated
-      const personaFile = findPersonaFile(frontMatter.persona);
-      if (!personaFile) {
-        errors.push(`Referenced persona file not found: ${frontMatter.persona}`);
+      // Check user type file exists and is not deprecated
+      const userTypeFile = findUserTypeFile(frontMatter.user_type);
+      if (!userTypeFile) {
+        errors.push(`Referenced user type file not found: ${frontMatter.user_type}`);
       } else {
-        const personaContent = fs.readFileSync(personaFile, 'utf8');
-        const personaFm = extractFrontMatter(personaContent);
-        if (personaFm && personaFm.status === 'deprecated') {
-          warnings.push(`Referenced persona is deprecated: ${frontMatter.persona}`);
+        const userTypeContent = fs.readFileSync(userTypeFile, 'utf8');
+        const userTypeFm = extractFrontMatter(userTypeContent);
+        if (userTypeFm && userTypeFm.status === 'deprecated') {
+          warnings.push(`Referenced user type is deprecated: ${frontMatter.user_type}`);
         }
       }
     }
@@ -992,12 +992,12 @@ function lintUserStories() {
 }
 
 /**
- * Lint all persona files
+ * Lint all user type files
  */
-function lintPersonas() {
-  const personaFiles = glob.sync(path.join(DOCS_DIR, 'personas/PER-*.md'));
+function lintUserTypes() {
+  const userTypeFiles = glob.sync(path.join(DOCS_DIR, 'user-types/UT-*.md'));
 
-  for (const file of personaFiles) {
+  for (const file of userTypeFiles) {
     if (path.basename(file) === 'index.md') continue;
 
     const content = fs.readFileSync(file, 'utf8');
@@ -1021,12 +1021,12 @@ function lintPersonas() {
 
     results.total++;
 
-    const validation = validatePersonaFrontMatter(file, frontMatter);
+    const validation = validateUserTypeFrontMatter(file, frontMatter);
 
     for (const error of validation.errors) {
       results.errors.push({
         file,
-        personaId: frontMatter.id,
+        userTypeId: frontMatter.id,
         message: error,
         severity: 'error'
       });
@@ -1035,7 +1035,7 @@ function lintPersonas() {
     for (const warning of validation.warnings) {
       results.warnings.push({
         file,
-        personaId: frontMatter.id,
+        userTypeId: frontMatter.id,
         message: warning,
         severity: 'warning'
       });
@@ -1044,7 +1044,7 @@ function lintPersonas() {
     if (validation.errors.length === 0) {
       results.passed.push({
         file,
-        personaId: frontMatter.id,
+        userTypeId: frontMatter.id,
         message: 'All validations passed'
       });
     }
@@ -1052,20 +1052,20 @@ function lintPersonas() {
 }
 
 /**
- * Generate personas index.md
+ * Generate user-types index.md
  */
-function generatePersonaIndex() {
-  const personaFiles = glob.sync(path.join(DOCS_DIR, 'personas/PER-*.md'));
-  const personas = [];
+function generateUserTypeIndex() {
+  const userTypeFiles = glob.sync(path.join(DOCS_DIR, 'user-types/UT-*.md'));
+  const userTypes = [];
 
-  for (const file of personaFiles) {
+  for (const file of userTypeFiles) {
     if (path.basename(file) === 'index.md') continue;
 
     const content = fs.readFileSync(file, 'utf8');
     const frontMatter = extractFrontMatter(content);
 
     if (frontMatter && frontMatter.id) {
-      personas.push({
+      userTypes.push({
         id: frontMatter.id,
         name: frontMatter.name || 'Unknown',
         type: frontMatter.type || 'unknown',
@@ -1082,33 +1082,33 @@ function generatePersonaIndex() {
 
   // Generate index content
   const generatedAt = new Date().toISOString().split('T')[0];
-  const approvedCount = personas.filter(p => p.status === 'approved').length;
-  const draftCount = personas.filter(p => p.status === 'draft').length;
-  const deprecatedCount = personas.filter(p => p.status === 'deprecated').length;
-  const totalStories = personas.reduce((sum, p) => sum + (p.related_stories ? p.related_stories.length : 0), 0);
+  const approvedCount = userTypes.filter(p => p.status === 'approved').length;
+  const draftCount = userTypes.filter(p => p.status === 'draft').length;
+  const deprecatedCount = userTypes.filter(p => p.status === 'deprecated').length;
+  const totalStories = userTypes.reduce((sum, p) => sum + (p.related_stories ? p.related_stories.length : 0), 0);
 
   let indexContent = `---
-title: Personas Overview
+title: User Types Overview
 generated: true
 generated_at: "${generatedAt}"
 ---
 
-# Personas
+# User Types
 
-Personas represent the different user types who interact with the ClawMarket platform. Each persona has distinct goals, pain points, and behaviors that inform user story development.
+User types represent the different user types who interact with the ClawMarket platform. Each user type has distinct goals, pain points, and behaviors that inform user story development.
 
-## Persona Matrix
+## User Type Matrix
 
 ### By Type
 
-| Persona | Name | Type | Archetype | Status | Stories |
-|---------|------|------|-----------|--------|---------|
+| User Type | Name | Type | Archetype | Status | Stories |
+|-----------|------|------|-----------|--------|---------|
 `;
 
-  // Sort personas by ID
-  personas.sort((a, b) => a.id.localeCompare(b.id));
+  // Sort user types by ID
+  userTypes.sort((a, b) => a.id.localeCompare(b.id));
 
-  for (const p of personas) {
+  for (const p of userTypes) {
     const storyCount = p.related_stories ? p.related_stories.length : 0;
     indexContent += `| ${p.id} | [${p.name}](./${p.file}) | ${p.type} | ${p.archetype} | ${p.status} | ${storyCount} |\n`;
   }
@@ -1120,7 +1120,7 @@ Personas represent the different user types who interact with the ClawMarket pla
 
   // Group by archetype
   const byArchetype = {};
-  for (const p of personas) {
+  for (const p of userTypes) {
     if (!byArchetype[p.archetype]) byArchetype[p.archetype] = [];
     byArchetype[p.archetype].push(p);
   }
@@ -1135,25 +1135,25 @@ Personas represent the different user types who interact with the ClawMarket pla
 
   indexContent += `## Summary Statistics
 
-- **Total Personas**: ${personas.length}
+- **Total User Types**: ${userTypes.length}
 - **Approved**: ${approvedCount}
 - **Draft**: ${draftCount}
 - **Deprecated**: ${deprecatedCount}
 - **Total Story References**: ${totalStories}
 
-## Persona Relationships
+## User Type Relationships
 
 \`\`\`mermaid
 graph TB
 `;
 
-  // Add persona nodes
-  for (const p of personas) {
+  // Add user type nodes
+  for (const p of userTypes) {
     indexContent += `    ${p.id.replace('-', '')}[${p.id}: ${p.name}]\n`;
   }
 
   // Add relationships
-  for (const p of personas) {
+  for (const p of userTypes) {
     if (p.related_stories && p.related_stories.length > 0) {
       // Could add story relationships here if needed
     }
@@ -1161,11 +1161,11 @@ graph TB
 
   indexContent += `\`\`\`
 
-## Story Coverage by Persona
+## Story Coverage by User Type
 
 `;
 
-  for (const p of personas) {
+  for (const p of userTypes) {
     indexContent += `### ${p.id}: ${p.name}\n`;
     if (p.related_stories && p.related_stories.length > 0) {
       for (const story of p.related_stories) {
@@ -1177,13 +1177,13 @@ graph TB
     indexContent += '\n';
   }
 
-  indexContent += `## Capability Usage by Persona
+  indexContent += `## Capability Usage by User Type
 
-| Persona | Primary Capabilities |
+| User Type | Primary Capabilities |
 |---------|---------------------|
 `;
 
-  for (const p of personas) {
+  for (const p of userTypes) {
     const caps = p.typical_capabilities ? p.typical_capabilities.join(', ') : 'None';
     indexContent += `| ${p.id} | ${caps} |\n`;
   }
@@ -1191,10 +1191,10 @@ graph TB
   indexContent += `
 ## BDD Tags
 
-Use persona tags in BDD scenarios:
+Use user type tags in BDD scenarios:
 
 \`\`\`gherkin
-@PER-001 @US-001 @CAP-001
+@UT-001 @US-001 @CAP-001
 Feature: Bot Registration
   As a bot developer
   I want to register my bot
@@ -1204,19 +1204,19 @@ Feature: Bot Registration
 **Available Tags:**
 `;
 
-  for (const p of personas) {
+  for (const p of userTypes) {
     indexContent += `- \`${p.tag}\` - ${p.name}\n`;
   }
 
   indexContent += `
-## Creating New Personas
+## Creating New User Types
 
-To create a new persona:
+To create a new user type:
 
-1. Create file: \`docs/personas/PER-XXX-name.md\`
-2. Use the persona front matter schema
+1. Create file: \`docs/user-types/UT-XXX-name.md\`
+2. Use the user type front matter schema
 3. Set status to \`draft\` initially
-4. Define related stories and personas
+4. Define related stories and user types
 5. Run governance linter to validate
 6. Update status to \`approved\` when ready
 
@@ -1224,9 +1224,9 @@ To create a new persona:
 
 \`\`\`yaml
 ---
-id: PER-XXX
-name: "Persona Name"
-tag: "@PER-XXX"
+id: UT-XXX
+name: "User Type Name"
+tag: "@UT-XXX"
 type: human|bot|system|external_api
 status: draft|approved|deprecated
 archetype: creator|operator|administrator|consumer|integrator
@@ -1245,8 +1245,8 @@ technical_profile:
   frequency: daily|weekly|occasional
 related_stories:
   - US-XXX
-related_personas:
-  - PER-XXX
+related_user_types:
+  - UT-XXX
 created: "YYYY-MM-DD"
 updated: "YYYY-MM-DD"
 validated_by: "@agent-name"
@@ -1256,17 +1256,17 @@ validated_by: "@agent-name"
 ## Verification
 
 \`\`\`bash
-# Lint all personas
-./scripts/governance-linter.js --personas
+# Lint all user types
+./scripts/governance-linter.js --user-types
 
-# Lint specific persona
-./scripts/governance-linter.js PER-001
+# Lint specific user type
+./scripts/governance-linter.js UT-001
 
 # Generate coverage report
-./scripts/persona-coverage-report.js
+./scripts/user-type-coverage-report.js
 
-# Run BDD tests for persona
-just bdd-tag @PER-001
+# Run BDD tests for user type
+just bdd-tag @UT-001
 \`\`\`
 
 ---
@@ -1276,8 +1276,8 @@ just bdd-tag @PER-001
 **Related**: [User Stories](../user-stories/index) • [Capabilities](../capabilities/index) • [Governance Linter](../../scripts/governance-linter.js)
 `;
 
-  fs.writeFileSync(path.join(DOCS_DIR, 'personas/index.md'), indexContent);
-  console.log(`✅ Generated personas/index.md with ${personas.length} personas`);
+  fs.writeFileSync(path.join(DOCS_DIR, 'user-types/index.md'), indexContent);
+  console.log(`✅ Generated user-types/index.md with ${userTypes.length} user types`);
 }
 
 /**
@@ -1292,7 +1292,7 @@ function outputHuman() {
     console.log('───────────────────────────────────────────');
     for (const error of results.errors) {
       const file = error.file ? path.relative(process.cwd(), error.file) : 'N/A';
-      const id = error.roadId || error.changeId || error.adrId || error.capId || error.usId || error.personaId || '';
+      const id = error.roadId || error.changeId || error.adrId || error.capId || error.usId || error.userTypeId || '';
       console.log(`\n${id ? `[${id}] ` : ''}${file}`);
       console.log(`  ${error.message}`);
     }
@@ -1304,7 +1304,7 @@ function outputHuman() {
     console.log('───────────────────────────────────────────');
     for (const warning of results.warnings) {
       const file = warning.file ? path.relative(process.cwd(), warning.file) : 'N/A';
-      const id = warning.roadId || warning.changeId || warning.adrId || warning.capId || warning.usId || warning.personaId || '';
+      const id = warning.roadId || warning.changeId || warning.adrId || warning.capId || warning.usId || warning.userTypeId || '';
       console.log(`\n${id ? `[${id}] ` : ''}${file}`);
       console.log(`  ${warning.message}`);
     }
@@ -1316,7 +1316,7 @@ function outputHuman() {
     console.log('───────────────────────────────────────────');
     for (const pass of results.passed) {
       const file = pass.file ? path.relative(process.cwd(), pass.file) : 'N/A';
-      const id = pass.roadId || pass.changeId || pass.adrId || pass.capId || pass.usId || pass.personaId || '';
+      const id = pass.roadId || pass.changeId || pass.adrId || pass.capId || pass.usId || pass.userTypeId || '';
       console.log(`  ${id ? `[${id}] ` : ''}${file}`);
     }
     console.log('');
@@ -1357,18 +1357,18 @@ function main() {
     } else if (targetUserStory) {
       console.log(`Linting ${targetUserStory}...`);
       lintUserStories();
-    } else if (targetPersona) {
-      console.log(`Linting ${targetPersona}...`);
-      lintPersonas();
+    } else if (targetUserType) {
+      console.log(`Linting ${targetUserType}...`);
+      lintUserTypes();
     } else if (allRoads) {
       lintAllRoads();
     } else if (checkCapabilities) {
       lintCapabilities();
     } else if (checkUserStories) {
       lintUserStories();
-    } else if (checkPersonas) {
-      lintPersonas();
-      generatePersonaIndex();
+    } else if (checkUserTypes) {
+      lintUserTypes();
+      generateUserTypeIndex();
     } else if (checkChanges) {
       lintChangeFiles();
     } else if (checkAdrs) {
@@ -1378,7 +1378,7 @@ function main() {
       lintAllRoads();
       lintCapabilities();
       lintUserStories();
-      lintPersonas();
+      lintUserTypes();
       lintChangeFiles();
       lintAdrs();
     } else {
@@ -1386,11 +1386,11 @@ function main() {
       console.log('  ./scripts/governance-linter.js ROAD-005');
       console.log('  ./scripts/governance-linter.js CAP-001');
       console.log('  ./scripts/governance-linter.js US-001');
-      console.log('  ./scripts/governance-linter.js PER-001');
+      console.log('  ./scripts/governance-linter.js UT-001');
       console.log('  ./scripts/governance-linter.js --all-roads');
       console.log('  ./scripts/governance-linter.js --capabilities');
       console.log('  ./scripts/governance-linter.js --user-stories');
-      console.log('  ./scripts/governance-linter.js --personas');
+      console.log('  ./scripts/governance-linter.js --user-types');
       console.log('  ./scripts/governance-linter.js --changes');
       console.log('  ./scripts/governance-linter.js --adrs');
       console.log('  ./scripts/governance-linter.js --ci');

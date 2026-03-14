@@ -111,7 +111,7 @@ erDiagram
     UserStory {
         string id "PK - US-ddd pattern"
         string title
-        string persona "FK - PER-ddd ref"
+        string userType "FK - UT-ddd ref"
         USStatus status "draft|approved|implementing|complete|deprecated"
         string_arr capabilities "CAP-ddd refs - min 1"
         string_arr useCases "UC-ddd refs - default empty"
@@ -119,12 +119,12 @@ erDiagram
         string path "auto-generated"
     }
 
-    Persona {
-        string id "PK - PER-ddd pattern"
+    UserType {
+        string id "PK - UT-ddd pattern"
         string name
-        string tag "at-PER-ddd pattern"
-        PersonaType type "human|bot|system|external_api"
-        PersonaStatus status "draft|approved|deprecated"
+        string tag "at-UT-ddd pattern"
+        UserTypeType type "human|bot|system|external_api"
+        UserTypeStatus status "draft|approved|deprecated"
         Archetype archetype "creator|operator|administrator|consumer|integrator"
         string description "optional"
         string_arr goals "default empty"
@@ -132,7 +132,7 @@ erDiagram
         string_arr behaviors "default empty"
         string_arr typicalCapabilities "CAP-ddd refs"
         string_arr relatedStories "US-ddd refs"
-        string_arr relatedPersonas "PER-ddd refs"
+        string_arr relatedUserTypes "UT-ddd refs"
         string created "optional date"
         string updated "optional date"
         string validatedBy "optional"
@@ -149,7 +149,7 @@ erDiagram
         string id "PK - UC-ddd pattern"
         string title
         string description "optional"
-        string_arr actors "PER-ddd refs"
+        string_arr actors "UT-ddd refs"
         string_arr preconditions "default empty"
         string_arr postconditions "default empty"
         string_arr mainFlow "default empty"
@@ -712,17 +712,17 @@ erDiagram
     ChangeEntry ||--o{ AgentSignature : "signatures[]"
 
     %% ============================================================
-    %% RELATIONSHIPS - Domain Mapper: UserStory / Persona / Capability
+    %% RELATIONSHIPS - Domain Mapper: UserStory / User Type / Capability
     %% ============================================================
 
-    UserStory }o--|| Persona : "persona"
+    UserStory }o--|| UserType : "userType"
     UserStory }o--|{ Capability : "capabilities[] (min 1)"
     UserStory }o--o{ UseCase : "useCases[]"
-    Persona }o--o{ Capability : "typicalCapabilities[]"
-    Persona }o--o{ UserStory : "relatedStories[]"
-    Persona }o--o{ Persona : "relatedPersonas[]"
-    Persona ||--o| TechnicalProfile : "technicalProfile"
-    UseCase }o--o{ Persona : "actors[]"
+    UserType }o--o{ Capability : "typicalCapabilities[]"
+    UserType }o--o{ UserStory : "relatedStories[]"
+    UserType }o--o{ UserType : "relatedUserTypes[]"
+    UserType ||--o| TechnicalProfile : "technicalProfile"
+    UseCase }o--o{ UserType : "actors[]"
 
     %% ============================================================
     %% RELATIONSHIPS - Domain Mapper: DDD Artifacts
@@ -886,7 +886,7 @@ Governance artifacts are now part of the taxonomy module. Cross-references betwe
 | NFR | `NFR-[A-Z0-9]+-\d{3,}` | 7 | `delivery-framework/nfr/` |
 | Capability | `CAP-\d{3,}` | 12 | `delivery-framework/capabilities/` |
 | User Story | `US-\d{3,}` | 40 | `delivery-framework/user-stories/` |
-| Persona | `PER-\d{3,}` | 9 | `delivery-framework/personas/` |
+| UserType | `UT-\d{3,}` | 9 | `delivery-framework/user-types/` |
 | Use Case | `UC-\d{3,}` | 0 | `delivery-framework/use-cases/` (not created) |
 | Change Entry | `CHANGE-\d{3,}` | 2 | `delivery-framework/changes/` |
 | BoundedContext | slug | 0 | `delivery-framework/ddd/contexts/` (not created) |
@@ -941,7 +941,7 @@ All taxonomy resources follow Kubernetes-style document format: `apiVersion + ki
 | `packages/foe-schemas/src/taxonomy/extensions/domain-event.ts` | DomainEventExtSchema |
 | `packages/foe-schemas/src/taxonomy/extensions/glossary-term.ts` | GlossaryTermExtSchema |
 | `packages/foe-schemas/src/taxonomy/extensions/capability.ts` | CapabilityExtSchema |
-| `packages/foe-schemas/src/taxonomy/extensions/persona.ts` | PersonaExtSchema |
+| `packages/foe-schemas/src/taxonomy/extensions/user-type.ts` | UserTypeExtSchema |
 | `packages/foe-schemas/src/taxonomy/extensions/user-story.ts` | UserStoryExtSchema |
 | `packages/foe-schemas/src/taxonomy/extensions/use-case.ts` | UseCaseExtSchema |
 | `packages/foe-schemas/src/taxonomy/extensions/road-item.ts` | RoadItemExtSchema + state machine |

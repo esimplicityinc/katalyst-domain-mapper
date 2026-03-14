@@ -1,19 +1,19 @@
 import type {
-  DomainModelRepository,
+  TaxonomyRepository,
   StoredWorkflow,
   CreateWorkflowInput,
   UpdateWorkflowInput,
-} from "../../ports/DomainModelRepository.js";
+} from "../../ports/TaxonomyRepository.js";
 import { DomainModelNotFoundError } from "../../domain/domain-model/DomainModelErrors.js";
 
 export class ManageWorkflows {
-  constructor(private repo: DomainModelRepository) {}
+  constructor(private repo: TaxonomyRepository) {}
 
   async add(
     modelId: string,
     input: CreateWorkflowInput,
   ): Promise<{ id: string; slug: string; title: string }> {
-    const exists = await this.repo.exists(modelId);
+    const exists = await this.repo.domainModelExists(modelId);
     if (!exists) {
       throw new DomainModelNotFoundError(modelId);
     }

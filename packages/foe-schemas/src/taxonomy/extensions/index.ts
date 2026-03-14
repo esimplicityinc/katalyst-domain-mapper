@@ -7,7 +7,7 @@ export * from "./glossary-term.js";
 
 // Governance extensions
 export * from "./capability.js";
-export * from "./persona.js";
+export * from "./user-type.js";
 export * from "./user-story.js";
 export * from "./use-case.js";
 export * from "./road-item.js";

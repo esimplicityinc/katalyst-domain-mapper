@@ -67,7 +67,7 @@ Reorganized the Katalyst Delivery Framework documentation from 11 flat navigatio
 - **Before**: 11 flat navbar items causing cognitive overload
 - **After**: 7 lifecycle-oriented dropdowns with intuitive organization
   - 🎯 **Strategy**: Roadmap & Taxonomy
-  - 👥 **Discovery**: Personas & Stories
+  - 👥 **Discovery**: User Types & Stories
   - 📋 **Planning**: Plans & Capabilities
   - 🏗️ **Design**: DDD & ADRs
   - 🧪 **Testing**: BDD & NFRs

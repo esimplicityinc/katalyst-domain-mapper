@@ -23,14 +23,14 @@ import {
   INFERRED_W,
   INFERRED_H,
   CAP_SIZE,
-  PERSONA_SIZE,
+  USER_TYPE_SIZE,
   GROUP_META,
   groupContexts,
   collectAllFqtns,
   resolveContextToSystemFqtn,
   buildSystemBoundsTree,
   assemblePositions,
-  computeCollapsedPersonaPositions,
+  computeCollapsedUserTypePositions,
 } from "./layout-helpers.js";
 
 /* ══════════════════════════════════════════════════════════════════════ */
@@ -343,27 +343,27 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
   /**
    * Convert ELK output into LandscapePositions with nested SystemBounds.
    *
-   * Layout: personas on the LEFT in a column, system hierarchy to the RIGHT,
+   * Layout: user types on the LEFT in a column, system hierarchy to the RIGHT,
    * external systems and inferred unknowns along the bottom.
-   * Story→capability lines route horizontally from the persona column into
+   * Story→capability lines route horizontally from the user type column into
    * the system area.
    */
   private convertTaxonomyPositions(elk: ElkNode, graph: LandscapeGraph): LandscapePositions {
     const nodeMap = new Map<string, { x: number; y: number; w: number; h: number }>();
     this.walkNodes(elk, 0, 0, nodeMap);
 
-    // ── Persona column constants (left side) ──────────────────────
-    const PERSONA_X = 160;        // Persona circle center X
+    // ── User type column constants (left side) ───────────────────
+    const USER_TYPE_X = 160;       // User type circle center X
     const STORY_BOX_X = 200;      // Story box left edge
     const STORY_BOX_W = 220;      // Story box width
-    const PERSONA_COL_RIGHT = STORY_BOX_X + STORY_BOX_W + 60; // Right edge of persona column
+    const USER_TYPE_COL_RIGHT = STORY_BOX_X + STORY_BOX_W + 60; // Right edge of user type column
     const STORY_BOX_H = 28;
     const STORY_GAP = 6;
-    const PERSONA_GAP = 20;
+    const USER_TYPE_GAP = 20;
 
-    // ── Place the system area to the RIGHT of the persona column ──
-    const SYSTEM_AREA_LEFT = PERSONA_COL_RIGHT;
-    const SYSTEM_AREA_TOP = 50; // Aligned with top of persona column
+    // ── Place the system area to the RIGHT of the user type column ──
+    const SYSTEM_AREA_LEFT = USER_TYPE_COL_RIGHT;
+    const SYSTEM_AREA_TOP = 50; // Aligned with top of user type column
 
     const shiftedMap = new Map<string, { x: number; y: number; w: number; h: number }>();
     for (const [key, val] of nodeMap) {
@@ -423,38 +423,38 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       maxELKBottom = Math.max(maxELKBottom, val.y + val.h);
     }
 
-    // ── Compute persona positions, vertically centered on system area ──
-    const storiesByPersona = new Map<string, typeof graph.userStories>();
+    // ── Compute user type positions, vertically centered on system area ──
+    const storiesByUserType = new Map<string, typeof graph.userStories>();
     for (const story of graph.userStories) {
-      if (!storiesByPersona.has(story.persona)) storiesByPersona.set(story.persona, []);
-      storiesByPersona.get(story.persona)!.push(story);
+      if (!storiesByUserType.has(story.userType)) storiesByUserType.set(story.userType, []);
+      storiesByUserType.get(story.userType)!.push(story);
     }
 
-    // First pass: compute total persona column height
-    let totalPersonaHeight = 0;
-    for (const persona of graph.personas) {
-      const stories = storiesByPersona.get(persona.id) || [];
+    // First pass: compute total user type column height
+    let totalUserTypeHeight = 0;
+    for (const ut of graph.userTypes) {
+      const stories = storiesByUserType.get(ut.id) || [];
       const groupHeight = Math.max(1, stories.length) * (STORY_BOX_H + STORY_GAP) - STORY_GAP;
-      totalPersonaHeight += groupHeight + PERSONA_GAP;
+      totalUserTypeHeight += groupHeight + USER_TYPE_GAP;
     }
-    totalPersonaHeight -= PERSONA_GAP; // Remove trailing gap
+    totalUserTypeHeight -= USER_TYPE_GAP; // Remove trailing gap
 
-    // Vertically center the persona column relative to the system area
+    // Vertically center the user type column relative to the system area
     const systemAreaMidY = SYSTEM_AREA_TOP + (maxELKBottom - SYSTEM_AREA_TOP) / 2;
-    let personaCursorY = Math.max(SYSTEM_AREA_TOP, systemAreaMidY - totalPersonaHeight / 2);
+    let utCursorY = Math.max(SYSTEM_AREA_TOP, systemAreaMidY - totalUserTypeHeight / 2);
 
-    const personaPositions = new Map<string, Position>();
-    for (let pi = 0; pi < graph.personas.length; pi++) {
-      const persona = graph.personas[pi];
-      const stories = storiesByPersona.get(persona.id) || [];
+    const utPositions = new Map<string, Position>();
+    for (let pi = 0; pi < graph.userTypes.length; pi++) {
+      const ut = graph.userTypes[pi];
+      const stories = storiesByUserType.get(ut.id) || [];
       const groupHeight = Math.max(1, stories.length) * (STORY_BOX_H + STORY_GAP) - STORY_GAP;
-      const personaCenterY = personaCursorY + groupHeight / 2;
-      personaPositions.set(persona.id, { x: PERSONA_X, y: personaCenterY });
-      personaCursorY += groupHeight + PERSONA_GAP;
+      const utCenterY = utCursorY + groupHeight / 2;
+      utPositions.set(ut.id, { x: USER_TYPE_X, y: utCenterY });
+      utCursorY += groupHeight + USER_TYPE_GAP;
     }
 
     // ── Bottom area: external systems + inferred unknowns ─────────
-    const overallBottom = Math.max(maxELKBottom, personaCursorY);
+    const overallBottom = Math.max(maxELKBottom, utCursorY);
     const EXTERNAL_AREA_TOP = overallBottom + 50;
     const EXTERNAL_COL_W = 240;
     const EXTERNAL_COL_GAP = 30;
@@ -531,8 +531,8 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       }
     }
 
-    // ── Collapsed persona positions ──────────────────────────────
-    const collapsedPersonaPos = computeCollapsedPersonaPositions(graph, PERSONA_X);
+    // ── Collapsed user type positions ─────────────────────────────
+    const collapsedUtPos = computeCollapsedUserTypePositions(graph, USER_TYPE_X);
 
     // ── Canvas dimensions ─────────────────────────────────────────
     const canvasWidth = Math.max(
@@ -551,11 +551,11 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       groupBoxes,
       inferredPositions,
       capabilityPositions,
-      personaPositions,
+      utPositions,
       canvasWidth,
       canvasHeight,
       systemBoundsMap,
-      collapsedPersonaPos,
+      collapsedUtPos,
     );
   }
 
@@ -611,12 +611,12 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       });
     }
 
-    for (const persona of graph.personas) {
+    for (const ut of graph.userTypes) {
       children.push({
-        id: `persona-${persona.id}`,
-        width: PERSONA_SIZE,
-        height: PERSONA_SIZE,
-        labels: [{ text: persona.name }],
+        id: `ut-${ut.id}`,
+        width: USER_TYPE_SIZE,
+        height: USER_TYPE_SIZE,
+        labels: [{ text: ut.name }],
       });
     }
 
@@ -704,10 +704,10 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       if (n) capabilityPositions.set(cap.id, { x: n.x + n.w / 2, y: n.y + n.h / 2 });
     }
 
-    const personaPositions = new Map<string, Position>();
-    for (const p of graph.personas) {
-      const n = nodeMap.get(`persona-${p.id}`);
-      if (n) personaPositions.set(p.id, { x: n.x + n.w / 2, y: n.y + n.h / 2 });
+    const utPositions = new Map<string, Position>();
+    for (const p of graph.userTypes) {
+      const n = nodeMap.get(`ut-${p.id}`);
+      if (n) utPositions.set(p.id, { x: n.x + n.w / 2, y: n.y + n.h / 2 });
     }
 
     const canvasWidth = (elk.width ?? 0) + 100;
@@ -719,7 +719,7 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       groupBoxes,
       inferredPositions,
       capabilityPositions,
-      personaPositions,
+      utPositions,
       canvasWidth,
       canvasHeight,
     );
@@ -797,14 +797,14 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       capabilityPositions.set(cap.id, { x: PADDING + 60 + i * 120, y: capY + 20 });
     });
 
-    const personaY = capY + (graph.capabilities.length > 0 ? 80 : 0);
-    const personaPositions = new Map<string, Position>();
-    graph.personas.forEach((p, i) => {
-      personaPositions.set(p.id, { x: PADDING + 60 + i * 140, y: personaY + 40 });
+    const utY = capY + (graph.capabilities.length > 0 ? 80 : 0);
+    const utPositions = new Map<string, Position>();
+    graph.userTypes.forEach((p, i) => {
+      utPositions.set(p.id, { x: PADDING + 60 + i * 140, y: utY + 40 });
     });
 
     const canvasW = Math.max(inferredX + 220, gx + 100);
-    const canvasH = Math.max(personaY + 120, capY + 160);
+    const canvasH = Math.max(utY + 120, capY + 160);
 
     return assemblePositions(
       graph,
@@ -812,7 +812,7 @@ export class ElkLayoutEngine implements LandscapeLayoutEngine {
       groupBoxes,
       inferredPositions,
       capabilityPositions,
-      personaPositions,
+      utPositions,
       canvasW,
       canvasH,
     );

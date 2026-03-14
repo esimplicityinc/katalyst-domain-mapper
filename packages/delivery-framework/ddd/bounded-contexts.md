@@ -247,14 +247,14 @@ Persist FOE reports into normalized SQLite tables, serve them via a REST API (El
 
 ### Responsibility
 
-Track road items, capabilities, personas, user stories, ADRs, NFRs, and change entries. Validate governance artifacts via structured markdown frontmatter. Provide the infrastructure for governing domain modeling decisions and tracking the delivery process itself. This is generic delivery infrastructure whose *content* is specific to Katalyst Domain Mapper.
+Track road items, capabilities, user types, user stories, ADRs, NFRs, and change entries. Validate governance artifacts via structured markdown frontmatter. Provide the infrastructure for governing domain modeling decisions and tracking the delivery process itself. This is generic delivery infrastructure whose *content* is specific to Katalyst Domain Mapper.
 
 ### Core Concepts
 
 - **RoadItem** — A planned unit of work identified by `ROAD-xxx`. Contains title, status, priority, linked capabilities, acceptance criteria. Lives as markdown files in `packages/delivery-framework/roadmap/`.
 - **Capability** — A system function that delivers value, identified by `CAP-xxx`. Maps to one or more road items. Lives in `packages/delivery-framework/capabilities/`.
-- **Persona** — An actor archetype who interacts with the system, identified by `PER-xxx`. Used in user stories and BDD scenarios. Lives in `packages/delivery-framework/personas/`.
-- **UserStory** — A narrative describing a persona's need and expected outcome. Embedded in road items or standalone.
+- **User Type** — An actor archetype who interacts with the system, identified by `UT-xxx`. Used in user stories and BDD scenarios. Lives in `packages/delivery-framework/user-types/`.
+- **UserStory** — A narrative describing a user type's need and expected outcome. Embedded in road items or standalone.
 - **ADR** — Architecture Decision Record identified by `ADR-xxx`. Documents a key technical decision with context, decision, and consequences.
 - **NFR** — Non-Functional Requirement identified by `NFR-xxx`. Specifies quality attributes (performance, security, accessibility).
 - **ChangeEntry** — A record of changes made to the system, identified by `CHANGE-xxx`. Tracks what changed, when, and why.

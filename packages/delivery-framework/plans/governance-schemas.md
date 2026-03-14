@@ -31,7 +31,7 @@ Shared enums and patterns used across governance artifacts.
 ```typescript
 // ID pattern validators (regex-based)
 export const CapabilityIdPattern = z.string().regex(/^CAP-\d{3,}$/);
-export const PersonaIdPattern = z.string().regex(/^PER-\d{3,}$/);
+export const UserTypeIdPattern = z.string().regex(/^UT-\d{3,}$/);
 export const UserStoryIdPattern = z.string().regex(/^US-\d{3,}$/);
 export const UseCaseIdPattern = z.string().regex(/^UC-\d{3,}$/);
 export const RoadItemIdPattern = z.string().regex(/^ROAD-\d{3,}$/);
@@ -62,15 +62,15 @@ export const CapabilitySchema = z.object({
 });
 ```
 
-### `packages/foe-schemas/src/governance/persona.ts`
+### `packages/foe-schemas/src/governance/user-type.ts`
 
-Maps to prima's PER-XXX frontmatter (from governance-linter.js lines 50-56):
+Maps to prima's UT-XXX frontmatter (from governance-linter.js lines 50-56):
 
 ```typescript
-export const PersonaSchema = z.object({
-  id: PersonaIdPattern,               // "PER-001"
+export const UserTypeSchema = z.object({
+  id: UserTypeIdPattern,               // "UT-001"
   name: z.string(),
-  tag: z.string().regex(/^@PER-\d+$/),
+  tag: z.string().regex(/^@UT-\d+$/),
   type: z.enum(['human', 'bot', 'system', 'external_api']),
   status: z.enum(['draft', 'approved', 'deprecated']),
   archetype: z.enum([
@@ -87,7 +87,7 @@ export const PersonaSchema = z.object({
     frequency: z.enum(['daily', 'weekly', 'occasional']),
   }).optional(),
   relatedStories: z.array(UserStoryIdPattern).default([]),
-  relatedPersonas: z.array(PersonaIdPattern).default([]),
+  relatedUserTypes: z.array(UserTypeIdPattern).default([]),
   created: z.string().optional(),     // ISO 8601 date
   updated: z.string().optional(),
   validatedBy: z.string().optional(), // "@agent-name"
@@ -101,7 +101,7 @@ export const PersonaSchema = z.object({
 export const UserStorySchema = z.object({
   id: UserStoryIdPattern,             // "US-001"
   title: z.string(),
-  persona: PersonaIdPattern,          // "PER-001" — cross-ref validated at index build
+  userType: UserTypeIdPattern,          // "UT-001" — cross-ref validated at index build
   status: z.enum(['draft', 'approved', 'implementing', 'complete', 'deprecated']),
   capabilities: z.array(CapabilityIdPattern).min(1),
   useCases: z.array(UseCaseIdPattern).default([]),
@@ -117,7 +117,7 @@ export const UseCaseSchema = z.object({
   id: UseCaseIdPattern,               // "UC-001"
   title: z.string(),
   description: z.string().optional(),
-  actors: z.array(PersonaIdPattern).default([]),
+  actors: z.array(UserTypeIdPattern).default([]),
   preconditions: z.array(z.string()).default([]),
   postconditions: z.array(z.string()).default([]),
   mainFlow: z.array(z.string()).default([]),
@@ -337,7 +337,7 @@ export const GovernanceIndexSchema = z.object({
 
   // Primary artifact collections (keyed by ID)
   capabilities: z.record(CapabilitySchema),
-  personas: z.record(PersonaSchema),
+  userTypes: z.record(UserTypeSchema),
   userStories: z.record(UserStorySchema),
   useCases: z.record(UseCaseSchema),
   roadItems: z.record(RoadItemSchema),
@@ -347,11 +347,11 @@ export const GovernanceIndexSchema = z.object({
 
   // Reverse indices for fast lookups
   byCapability: z.record(z.object({
-    personas: z.array(PersonaIdPattern),
+    userTypes: z.array(UserTypeIdPattern),
     stories: z.array(UserStoryIdPattern),
     roads: z.array(RoadItemIdPattern),
   })),
-  byPersona: z.record(z.object({
+  byUserType: z.record(z.object({
     stories: z.array(UserStoryIdPattern),
     capabilities: z.array(CapabilityIdPattern),
   })),
@@ -365,7 +365,7 @@ export const GovernanceIndexSchema = z.object({
   // Statistics
   stats: z.object({
     totalCapabilities: z.number().int(),
-    totalPersonas: z.number().int(),
+    totalUserTypes: z.number().int(),
     totalStories: z.number().int(),
     totalUseCases: z.number().int(),
     totalRoadItems: z.number().int(),
@@ -385,7 +385,7 @@ export type GovernanceIndex = z.infer<typeof GovernanceIndexSchema>;
 
 // Helper functions
 export function getRoadsByCapability(index: GovernanceIndex, capId: string): string[] { ... }
-export function getPersonasByCapability(index: GovernanceIndex, capId: string): string[] { ... }
+export function getUserTypesByCapability(index: GovernanceIndex, capId: string): string[] { ... }
 export function getCapabilityCoverage(index: GovernanceIndex): Record<string, number> { ... }
 ```
 
@@ -396,7 +396,7 @@ Barrel export:
 ```typescript
 export * from './common.js';
 export * from './capability.js';
-export * from './persona.js';
+export * from './user-type.js';
 export * from './user-story.js';
 export * from './use-case.js';
 export * from './road-item.js';
@@ -436,8 +436,8 @@ These rules from `governance-linter.js` are now encoded in Zod schemas:
 | `VALID_ROAD_STATUSES` array (line 22-31) | `RoadStatusSchema` enum |
 | `VALID_ADR_STATUSES` array (line 33) | `AdrStatusSchema` enum |
 | `STATE_MACHINE_TRANSITIONS` object (line 58-66) | `STATE_MACHINE_TRANSITIONS` + `validateTransition()` |
-| `VALID_PERSONA_TYPES` array (line 54) | `PersonaSchema.type` enum |
-| `VALID_PERSONA_ARCHETYPES` array (line 56) | `PersonaSchema.archetype` enum |
+| `VALID_USER_TYPE_TYPES` array (line 54) | `UserTypeSchema.type` enum |
+| `VALID_USER_TYPE_ARCHETYPES` array (line 56) | `UserTypeSchema.archetype` enum |
 | Regex ID validation (e.g., `/^ROAD-\d+$/`) | `RoadItemIdPattern` regex |
 | Conditional governance fields by status (lines 108-200) | Handled by parser-level validation (see Phase 3) |
 

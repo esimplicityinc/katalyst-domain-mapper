@@ -112,7 +112,7 @@ packages/delivery-framework/
   dddSidebar: [...],
   bddSidebar: [...],
   agentsSidebar: [...],
-  personasSidebar: [...],
+  user typesSidebar: [...],
   capabilitiesSidebar: [...],
   storiesSidebar: [...],
   roadsSidebar: [...],
@@ -131,8 +131,8 @@ packages/delivery-framework/
     { type: 'category', label: 'System Taxonomy', items: [NEW taxonomy docs...] },
   ],
   discoverySidebar: [
-    { type: 'category', label: 'Personas', items: [PER-001...PER-005] },
-    { type: 'category', label: 'User Stories', items: [US-001...US-032 grouped by persona] },
+    { type: 'category', label: 'User Types', items: [UT-001...UT-005] },
+    { type: 'category', label: 'User Stories', items: [US-001...US-032 grouped by user type] },
   ],
   planningSidebar: [
     { type: 'category', label: 'Implementation Plans', items: [plans...] },
@@ -182,7 +182,7 @@ items: [
     type: 'dropdown',
     label: '👥 Discovery',
     items: [
-      { to: '/docs/personas', label: 'Personas' },
+      { to: '/docs/user types', label: 'User Types' },
       { to: '/docs/user-stories', label: 'User Stories' },
     ],
   },
@@ -244,7 +244,7 @@ include: [
 | `Planning` navbar → `planningSidebar` | `📋 Planning` → `Implementation Plans` | Planning |
 | `BDD` navbar → `bddSidebar` | `🧪 Testing` → `BDD Tests` | Testing |
 | `Agents` navbar → `agentsSidebar` | `🤖 Automation` → `AI Agents` | Automation |
-| `Personas` navbar → `personasSidebar` | `👥 Discovery` → `Personas` | Discovery |
+| `User Types` navbar → `user typesSidebar` | `👥 Discovery` → `User Types` | Discovery |
 | `Capabilities` navbar → `capabilitiesSidebar` | `📋 Planning` → `System Capabilities` | Planning |
 | `Stories` navbar → `storiesSidebar` | `👥 Discovery` → `User Stories` | Discovery |
 | `Roadmap` navbar → `roadsSidebar` | `🎯 Strategy` → `Roadmap` | Strategy |
@@ -470,7 +470,7 @@ redirects: [
 
 Software delivery teams naturally think in lifecycle stages:
 1. **Strategy**: What should we build? (Roadmap, system design)
-2. **Discovery**: Who are we building for? (Personas, stories)
+2. **Discovery**: Who are we building for? (User Types, stories)
 3. **Planning**: How will we build it? (Plans, capabilities)
 4. **Design**: What's the architecture? (DDD, ADRs)
 5. **Testing**: How do we validate quality? (BDD, NFRs)
@@ -488,7 +488,7 @@ This maps to mental models from:
    - ❌ Too technical for non-technical leaders
    - ❌ Doesn't match delivery workflow
 
-2. **Role-Based Navigation** - Group by persona (team lead, platform engineer, AI agent)
+2. **Role-Based Navigation** - Group by user type (team lead, platform engineer, AI agent)
    - ❌ Content duplication (same doc relevant to multiple roles)
    - ❌ Users wear multiple hats
 

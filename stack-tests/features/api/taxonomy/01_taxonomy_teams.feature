@@ -6,7 +6,7 @@ Feature: Taxonomy Teams and Persons API
 
   @smoke @ingest
   Scenario: Ingest taxonomy snapshot with teams and persons
-    When I POST "/api/v1/taxonomy" with JSON body:
+    When I POST "/api/v1/taxonomy/snapshots" with JSON body:
       """
       {
         "project": "test-project",
@@ -66,12 +66,12 @@ Feature: Taxonomy Teams and Persons API
     And the response should be a JSON object
     And I store the value at "id" as "snapshotId"
     And the value at "project" should equal "test-project"
-    Given I register cleanup DELETE "/api/v1/taxonomy/{snapshotId}"
+    Given I register cleanup DELETE "/api/v1/taxonomy/snapshots/{snapshotId}"
 
   @list
   Scenario: List all teams from latest snapshot
     # Seed a taxonomy snapshot
-    When I POST "/api/v1/taxonomy" with JSON body:
+    When I POST "/api/v1/taxonomy/snapshots" with JSON body:
       """
       {
         "project": "test-project",
@@ -121,7 +121,7 @@ Feature: Taxonomy Teams and Persons API
       """
     Then the response status should be 200
     And I store the value at "id" as "snapshotId"
-    Given I register cleanup DELETE "/api/v1/taxonomy/{snapshotId}"
+    Given I register cleanup DELETE "/api/v1/taxonomy/snapshots/{snapshotId}"
 
     # List all teams
     When I GET "/api/v1/taxonomy/teams"
@@ -131,7 +131,7 @@ Feature: Taxonomy Teams and Persons API
   @detail
   Scenario: Get team by name with members
     # Seed a taxonomy snapshot
-    When I POST "/api/v1/taxonomy" with JSON body:
+    When I POST "/api/v1/taxonomy/snapshots" with JSON body:
       """
       {
         "project": "test-project",
@@ -170,7 +170,7 @@ Feature: Taxonomy Teams and Persons API
       """
     Then the response status should be 200
     And I store the value at "id" as "snapshotId"
-    Given I register cleanup DELETE "/api/v1/taxonomy/{snapshotId}"
+    Given I register cleanup DELETE "/api/v1/taxonomy/snapshots/{snapshotId}"
 
     # Get team by name
     When I GET "/api/v1/taxonomy/teams/platform-team"
@@ -189,7 +189,7 @@ Feature: Taxonomy Teams and Persons API
   @list
   Scenario: List all persons with team memberships
     # Seed a taxonomy snapshot
-    When I POST "/api/v1/taxonomy" with JSON body:
+    When I POST "/api/v1/taxonomy/snapshots" with JSON body:
       """
       {
         "project": "test-project",
@@ -227,7 +227,7 @@ Feature: Taxonomy Teams and Persons API
       """
     Then the response status should be 200
     And I store the value at "id" as "snapshotId"
-    Given I register cleanup DELETE "/api/v1/taxonomy/{snapshotId}"
+    Given I register cleanup DELETE "/api/v1/taxonomy/snapshots/{snapshotId}"
 
     # List all persons
     When I GET "/api/v1/taxonomy/persons"
@@ -237,7 +237,7 @@ Feature: Taxonomy Teams and Persons API
   @detail @multi-team
   Scenario: Person in multiple teams shows all team memberships
     # Seed a taxonomy snapshot where jane-doe is in both teams
-    When I POST "/api/v1/taxonomy" with JSON body:
+    When I POST "/api/v1/taxonomy/snapshots" with JSON body:
       """
       {
         "project": "test-project",
@@ -281,7 +281,7 @@ Feature: Taxonomy Teams and Persons API
       """
     Then the response status should be 200
     And I store the value at "id" as "snapshotId"
-    Given I register cleanup DELETE "/api/v1/taxonomy/{snapshotId}"
+    Given I register cleanup DELETE "/api/v1/taxonomy/snapshots/{snapshotId}"
 
     # Verify jane-doe has memberships in both teams
     When I GET "/api/v1/taxonomy/persons"

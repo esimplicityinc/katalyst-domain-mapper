@@ -1,12 +1,12 @@
 @hybrid @ddd-modeling @ROAD-016
 Feature: Interactive Context Map Diagram
-  As a Domain Architect (@PER-007)
+  As a Domain Architect (@UT-007)
   I want to see bounded contexts as an interactive SVG diagram
   So that I can visualize system topology and relationships at a glance
 
   Background:
     # Create test domain model via API
-    Given I POST "/api/v1/domain-models" with JSON body:
+    Given I POST "/api/v1/taxonomy/domain-models" with JSON body:
       """
       {
         "name": "Context Map Test Domain",
@@ -15,10 +15,10 @@ Feature: Interactive Context Map Diagram
       """
     Then the response status should be 200
     And I store the value at "id" as "modelId"
-    And I register cleanup DELETE "/api/v1/domain-models/{modelId}"
+    And I register cleanup DELETE "/api/v1/taxonomy/domain-models/{modelId}"
 
     # Create bounded contexts with different subdomain types
-    When I POST "/api/v1/domain-models/{modelId}/contexts" with JSON body:
+    When I POST "/api/v1/taxonomy/domain-models/{modelId}/contexts" with JSON body:
       """
       {
         "slug": "order-management",
@@ -29,7 +29,7 @@ Feature: Interactive Context Map Diagram
       """
     Then the response status should be 200
 
-    When I POST "/api/v1/domain-models/{modelId}/contexts" with JSON body:
+    When I POST "/api/v1/taxonomy/domain-models/{modelId}/contexts" with JSON body:
       """
       {
         "slug": "inventory",
@@ -40,7 +40,7 @@ Feature: Interactive Context Map Diagram
       """
     Then the response status should be 200
 
-    When I POST "/api/v1/domain-models/{modelId}/contexts" with JSON body:
+    When I POST "/api/v1/taxonomy/domain-models/{modelId}/contexts" with JSON body:
       """
       {
         "slug": "notifications",
@@ -52,7 +52,7 @@ Feature: Interactive Context Map Diagram
     Then the response status should be 200
 
     # Navigate to the context map page
-    When I navigate to "/mapper/contexts"
+    When I navigate to "/taxonomy/domain-models/contexts"
     Then I wait for the page to load
 
   @smoke

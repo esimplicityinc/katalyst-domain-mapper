@@ -1,22 +1,22 @@
 import Elysia, { t } from "elysia";
-import type { GovernanceRepository, StoredUserStory } from "../../../ports/GovernanceRepository.js";
+import type { TaxonomyRepository, StoredUserStory } from "../../../ports/TaxonomyRepository.js";
 
 type UpdateUserStoryBody = Partial<Omit<StoredUserStory, 'id'>>;
 
 export function createGovernanceUserStoryRoutes(deps: {
-  governanceRepo: GovernanceRepository;
+  governanceRepo: TaxonomyRepository;
 }) {
   return (
-    new Elysia({ prefix: "/governance/user-stories" })
+    new Elysia({ prefix: "/taxonomy/user-stories" })
 
       // GET / — List all user stories
       .get(
         "/",
         async ({ query }) => {
           const stories = await deps.governanceRepo.listUserStories();
-          // Optional filter by persona
-          if (query.persona) {
-            return stories.filter((s) => s.persona === query.persona);
+          // Optional filter by user type
+          if (query.userType) {
+            return stories.filter((s) => s.userType === query.userType);
           }
           // Optional filter by status
           if (query.status) {
@@ -26,7 +26,7 @@ export function createGovernanceUserStoryRoutes(deps: {
         },
         {
           query: t.Object({
-            persona: t.Optional(t.String()),
+            userType: t.Optional(t.String()),
             status: t.Optional(t.String()),
           }),
           detail: {

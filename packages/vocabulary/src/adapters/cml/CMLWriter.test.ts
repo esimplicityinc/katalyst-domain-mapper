@@ -86,7 +86,9 @@ describe("CMLWriter", () => {
           relationships: [
             {
               targetContext: "upstream",
+              targetContextId: "upstream",
               type: "upstream",
+              communicationPattern: "domain-events",
               description: "Upstream dependency",
             },
           ],
@@ -117,7 +119,10 @@ describe("CMLWriter", () => {
           relationships: [
             {
               targetContext: "partner-b",
+              targetContextId: "partner-b",
               type: "partnership",
+              communicationPattern: undefined,
+              description: undefined,
             },
           ],
           communicationPattern: "domain-events",
@@ -158,7 +163,10 @@ describe("CMLWriter", () => {
           relationships: [
             {
               targetContext: "shared-b",
+              targetContextId: "shared-b",
               type: "shared-kernel",
+              communicationPattern: undefined,
+              description: undefined,
             },
           ],
           communicationPattern: "domain-events",
@@ -199,7 +207,10 @@ describe("CMLWriter", () => {
           relationships: [
             {
               targetContext: "separate-b",
+              targetContextId: "separate-b",
               type: "separate-ways",
+              communicationPattern: undefined,
+              description: undefined,
             },
           ],
           communicationPattern: "domain-events",

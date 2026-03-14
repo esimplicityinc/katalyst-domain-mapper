@@ -21,20 +21,20 @@ export function BusinessLandscapePage() {
   const [error, setError] = useState<string | null>(null);
   const layoutEngine = useRef(new ElkLayoutEngine());
 
-  // ── Persona collapse state ───────────────────────────────────
-  const [collapsedPersonas, setCollapsedPersonas] = useState<Set<string>>(new Set());
+  // ── User type collapse state ──────────────────────────────────
+  const [collapsedUserTypes, setCollapsedUserTypes] = useState<Set<string>>(new Set());
 
-  // Initialize all personas collapsed by default when graph loads
+  // Initialize all user types collapsed by default when graph loads
   useEffect(() => {
     if (graph) {
-      setCollapsedPersonas(new Set(graph.personas.map((p) => p.id)));
+      setCollapsedUserTypes(new Set(graph.userTypes.map((p) => p.id)));
     }
   }, [graph]);
 
-  const togglePersona = useCallback((personaId: string) => {
-    setCollapsedPersonas((prev) => {
+  const toggleUserType = useCallback((userTypeId: string) => {
+    setCollapsedUserTypes((prev) => {
       const next = new Set(prev);
-      if (next.has(personaId)) { next.delete(personaId); } else { next.add(personaId); }
+      if (next.has(userTypeId)) { next.delete(userTypeId); } else { next.add(userTypeId); }
       return next;
     });
   }, []);
@@ -128,8 +128,8 @@ export function BusinessLandscapePage() {
       <LandscapeCanvas
         graph={graph}
         positions={positions}
-        collapsedPersonas={collapsedPersonas}
-        onTogglePersona={togglePersona}
+        collapsedUserTypes={collapsedUserTypes}
+        onToggleUserType={toggleUserType}
       />
     </div>
   );

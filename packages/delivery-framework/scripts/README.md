@@ -32,7 +32,7 @@ node scripts/validate-docs.js --skip-optional
 
 ### governance-linter.js
 
-Comprehensive governance validation for ROAD items, ADRs, capabilities, user stories, and personas.
+Comprehensive governance validation for ROAD items, ADRs, capabilities, user stories, and user types.
 
 ```bash
 # Validate all roadmap items
@@ -53,8 +53,8 @@ node scripts/governance-linter.js --capabilities
 # Validate user stories
 node scripts/governance-linter.js --user-stories
 
-# Validate personas
-node scripts/governance-linter.js --personas
+# Validate user types
+node scripts/governance-linter.js --user types
 
 # JSON output
 node scripts/governance-linter.js --format=json ROAD-001
@@ -67,7 +67,7 @@ node scripts/governance-linter.js --format=json ROAD-001
 - ADR frontmatter
 - Capability references
 - User story structure
-- Persona definitions
+- User Type definitions
 
 ### validate-changes.js
 
@@ -122,19 +122,19 @@ node scripts/capability-coverage-report.js --format=json
 
 **Note:** Gracefully skips if `stack-tests/features/` doesn't exist yet.
 
-### persona-coverage-report.js
+### user-type-coverage-report.js
 
-Generates user story coverage report by persona.
+Generates user story coverage report by user type.
 
 ```bash
 # Human-readable output
-node scripts/persona-coverage-report.js
+node scripts/user-type-coverage-report.js
 
 # JSON output
-node scripts/persona-coverage-report.js --format=json
+node scripts/user-type-coverage-report.js --format=json
 ```
 
-**Note:** Gracefully skips if `personas/` or `user-stories/` directories don't exist yet.
+**Note:** Gracefully skips if `user-types/` or `user-stories/` directories don't exist yet.
 
 ## Utility Scripts
 
@@ -195,7 +195,7 @@ docs/
 ├── nfr/                # NFR-XXX.md files
 ├── capabilities/       # CAP-XXX.md files (optional)
 ├── user-stories/       # US-XXX.md files (optional)
-├── personas/           # PER-XXX.md files (optional)
+├── user-types/           # UT-XXX.md files (optional)
 └── stack-tests/        # BDD tests (optional)
     ├── features/       # .feature files
     └── cucumber-report/  # Test reports

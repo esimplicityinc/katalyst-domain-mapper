@@ -20,7 +20,7 @@ export class IngestTaxonomySnapshot {
 
     let snapshot: StoredTaxonomySnapshot;
     try {
-      snapshot = await this.taxonomyRepo.saveSnapshot(validated);
+      snapshot = await this.taxonomyRepo.saveTaxonomySnapshot(validated);
     } catch (err) {
       if (err instanceof TaxonomyValidationError) {
         throw err;
