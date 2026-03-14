@@ -242,7 +242,9 @@ export const DomainModelWithArtifactsSchema = StoredDomainModelSchema.extend({
   glossaryTerms: z.array(StoredGlossaryTermSchema).default([]),
   workflows: z.array(StoredWorkflowSchema).default([]),
 });
-export type DomainModelWithArtifacts = z.infer<typeof DomainModelWithArtifactsSchema>;
+export type DomainModelWithArtifacts = z.infer<
+  typeof DomainModelWithArtifactsSchema
+>;
 
 // ── Create/Update Inputs ───────────────────────────────────────────────────
 
@@ -250,13 +252,17 @@ export const CreateDomainModelInputSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
 });
-export type CreateDomainModelInput = z.infer<typeof CreateDomainModelInputSchema>;
+export type CreateDomainModelInput = z.infer<
+  typeof CreateDomainModelInputSchema
+>;
 
 export const UpdateDomainModelInputSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
 });
-export type UpdateDomainModelInput = z.infer<typeof UpdateDomainModelInputSchema>;
+export type UpdateDomainModelInput = z.infer<
+  typeof UpdateDomainModelInputSchema
+>;
 
 export const CreateBoundedContextInputSchema = z.object({
   slug: z.string(),
@@ -272,7 +278,9 @@ export const CreateBoundedContextInputSchema = z.object({
   taxonomyNode: z.string().optional(),
   relationships: z.array(z.unknown()).optional(),
 });
-export type CreateBoundedContextInput = z.infer<typeof CreateBoundedContextInputSchema>;
+export type CreateBoundedContextInput = z.infer<
+  typeof CreateBoundedContextInputSchema
+>;
 
 export const UpdateBoundedContextInputSchema = z.object({
   slug: z.string(),
@@ -288,4 +296,6 @@ export const UpdateBoundedContextInputSchema = z.object({
   taxonomyNode: z.string().optional(),
   relationships: z.array(z.unknown()).optional(),
 });
-export type UpdateBoundedContextInput = z.infer<typeof UpdateBoundedContextInputSchema>;
+export type UpdateBoundedContextInput = z.infer<
+  typeof UpdateBoundedContextInputSchema
+>;

@@ -585,7 +585,9 @@ program
 
 program
   .command("coverage:capabilities")
-  .description("Report capability coverage across user types, stories, and roads")
+  .description(
+    "Report capability coverage across user types, stories, and roads",
+  )
   .action(async () => {
     try {
       console.log(chalk.blue("Building capability coverage report...\n"));

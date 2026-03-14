@@ -52,6 +52,8 @@ interface ForceNode extends SimulationNodeDatum {
   kind: "context" | "inferred" | "capability" | "userType";
   group?: string; // subdomain group key
   radius: number;
+  x: number;
+  y: number;
 }
 
 interface ForceLink extends SimulationLinkDatum<ForceNode> {

@@ -197,7 +197,7 @@ describe("TaxonomyRepositorySQLite", () => {
         },
       ]);
 
-      const stored = await repo.saveSnapshot(data);
+      const stored = await repo.saveTaxonomySnapshot(data);
       expect(stored.pluginSummary.capabilities).toBe(2);
 
       // Verify the tree can be queried back
@@ -222,7 +222,7 @@ describe("TaxonomyRepositorySQLite", () => {
         },
       ]);
 
-      const stored = await repo.saveSnapshot(data);
+      const stored = await repo.saveTaxonomySnapshot(data);
       const tree = await repo.getCapabilityTreeBySnapshotId(stored.id);
       // Treated as root since parent doesn't exist in the snapshot
       expect(tree.roots).toHaveLength(1);
@@ -244,7 +244,7 @@ describe("TaxonomyRepositorySQLite", () => {
         { name: "cap-c", description: "C", categories: [], dependsOn: [], parentCapability: "cap-a", tag: null },
       ]);
 
-      await repo.saveSnapshot(data);
+      await repo.saveTaxonomySnapshot(data);
       const tree = await repo.getCapabilityTree();
 
       expect(tree.byName.size).toBe(3);
@@ -263,7 +263,7 @@ describe("TaxonomyRepositorySQLite", () => {
         ],
       );
 
-      await repo.saveSnapshot(data);
+      await repo.saveTaxonomySnapshot(data);
       const tree = await repo.getCapabilityTree();
 
       expect(tree.byName.get("lims-sample-analysis")?.taxonomyNodes).toEqual(["lims-stack"]);
@@ -276,7 +276,7 @@ describe("TaxonomyRepositorySQLite", () => {
         { name: "leaf", description: "Leaf cap", categories: [], dependsOn: [], parentCapability: null, tag: null },
       ]);
 
-      await repo.saveSnapshot(data);
+      await repo.saveTaxonomySnapshot(data);
       const tree = await repo.getCapabilityTree();
       const leaf = tree.byName.get("leaf")!;
       expect(leaf.derivedStatus).toBe("stable");
@@ -290,7 +290,7 @@ describe("TaxonomyRepositorySQLite", () => {
         { name: "child-2", description: "Child 2", categories: [], dependsOn: [], parentCapability: "parent", tag: null },
       ]);
 
-      await repo.saveSnapshot(data);
+      await repo.saveTaxonomySnapshot(data);
       const tree = await repo.getCapabilityTree();
       const parent = tree.byName.get("parent")!;
       expect(parent.children).toHaveLength(2);
@@ -304,7 +304,7 @@ describe("TaxonomyRepositorySQLite", () => {
         { name: "stack", description: "Stack cap", categories: [], dependsOn: [], parentCapability: "subsystem", tag: null },
       ]);
 
-      await repo.saveSnapshot(data);
+      await repo.saveTaxonomySnapshot(data);
       const tree = await repo.getCapabilityTree();
 
       expect(tree.roots).toHaveLength(1);
@@ -321,11 +321,11 @@ describe("TaxonomyRepositorySQLite", () => {
   describe("getCapabilityTreeBySnapshotId", () => {
     it("uses the specified snapshot, not the latest", async () => {
       // First snapshot: 1 root cap
-      const snap1 = await repo.saveSnapshot(
+      const snap1 = await repo.saveTaxonomySnapshot(
         makeSnapshot([{ name: "cap-v1", description: "v1", categories: [], dependsOn: [], parentCapability: null, tag: null }]),
       );
       // Second snapshot: different cap
-      await repo.saveSnapshot(
+      await repo.saveTaxonomySnapshot(
         makeSnapshot([{ name: "cap-v2", description: "v2", categories: [], dependsOn: [], parentCapability: null, tag: null }]),
       );
 
@@ -375,7 +375,7 @@ describe("TaxonomyRepositorySQLite", () => {
         ],
       };
 
-      await repo.saveSnapshot(data);
+      await repo.saveTaxonomySnapshot(data);
       const teams = await repo.getTeams();
 
       expect(teams).toHaveLength(2);
@@ -414,7 +414,7 @@ describe("TaxonomyRepositorySQLite", () => {
         ],
       };
 
-      await repo.saveSnapshot(data);
+      await repo.saveTaxonomySnapshot(data);
       const detail = await repo.getTeamByName("core-team");
 
       expect(detail).not.toBeNull();
@@ -434,7 +434,7 @@ describe("TaxonomyRepositorySQLite", () => {
 
     it("getTeamByName returns null for unknown team", async () => {
       // Save a snapshot with no teams so there IS a latest snapshot
-      await repo.saveSnapshot(makeSnapshot([]));
+      await repo.saveTaxonomySnapshot(makeSnapshot([]));
 
       const result = await repo.getTeamByName("nonexistent");
       expect(result).toBeNull();
@@ -474,7 +474,7 @@ describe("TaxonomyRepositorySQLite", () => {
         ],
       };
 
-      await repo.saveSnapshot(data);
+      await repo.saveTaxonomySnapshot(data);
       const persons = await repo.getPersons();
 
       expect(persons).toHaveLength(1);
@@ -518,7 +518,7 @@ describe("TaxonomyRepositorySQLite", () => {
         ],
       };
 
-      const stored = await repo.saveSnapshot(data);
+      const stored = await repo.saveTaxonomySnapshot(data);
       expect(stored.pluginSummary.teams).toBe(1);
       expect(stored.pluginSummary.persons).toBe(2);
     });

@@ -10,7 +10,9 @@ export const GovernanceSnapshotStatsSchema = z.object({
   integrityStatus: z.string().default("unknown"),
   integrityErrors: z.number().default(0),
 });
-export type GovernanceSnapshotStats = z.infer<typeof GovernanceSnapshotStatsSchema>;
+export type GovernanceSnapshotStats = z.infer<
+  typeof GovernanceSnapshotStatsSchema
+>;
 
 // ── Stored Governance Snapshot ─────────────────────────────────────────────
 
@@ -22,7 +24,9 @@ export const StoredGovernanceSnapshotSchema = z.object({
   createdAt: z.string(),
   stats: GovernanceSnapshotStatsSchema,
 });
-export type StoredGovernanceSnapshot = z.infer<typeof StoredGovernanceSnapshotSchema>;
+export type StoredGovernanceSnapshot = z.infer<
+  typeof StoredGovernanceSnapshotSchema
+>;
 
 // ── Stored Capability ──────────────────────────────────────────────────────
 
@@ -32,7 +36,13 @@ export const StoredCapabilitySchema = z.object({
   status: z.enum(["planned", "stable", "deprecated"]),
   description: z.string().nullable().default(null),
   category: z
-    .enum(["Security", "Observability", "Communication", "Business", "Technical"])
+    .enum([
+      "Security",
+      "Observability",
+      "Communication",
+      "Business",
+      "Technical",
+    ])
     .nullable()
     .default(null),
   parentCapability: z.string().nullable().default(null),
@@ -56,7 +66,13 @@ export const UpdateCapabilityInputSchema = z.object({
   dependsOn: z.array(z.string()).default([]).optional(),
   parentCapability: z.string().nullable().default(null).optional(),
   category: z
-    .enum(["Security", "Observability", "Communication", "Business", "Technical"])
+    .enum([
+      "Security",
+      "Observability",
+      "Communication",
+      "Business",
+      "Technical",
+    ])
     .nullable()
     .default(null)
     .optional(),
@@ -71,7 +87,13 @@ export const StoredUserTypeSchema = z.object({
   name: z.string(),
   type: z.enum(["human", "bot", "system", "external_api"]),
   status: z.enum(["draft", "approved", "deprecated"]),
-  archetype: z.enum(["creator", "operator", "administrator", "consumer", "integrator"]),
+  archetype: z.enum([
+    "creator",
+    "operator",
+    "administrator",
+    "consumer",
+    "integrator",
+  ]),
   description: z.string().nullable().default(null),
   goals: z.array(z.string()).default([]),
   painPoints: z.array(z.string()).default([]),
@@ -80,7 +102,9 @@ export const StoredUserTypeSchema = z.object({
   technicalProfile: z
     .object({
       skillLevel: z.enum(["beginner", "intermediate", "advanced"]).optional(),
-      integrationType: z.enum(["web_ui", "api", "sdk", "webhook", "cli"]).optional(),
+      integrationType: z
+        .enum(["web_ui", "api", "sdk", "webhook", "cli"])
+        .optional(),
       frequency: z.enum(["daily", "weekly", "occasional"]).optional(),
     })
     .nullable()
@@ -103,7 +127,9 @@ export const UpdateUserTypeInputSchema = z.object({
   status: z.enum(["draft", "approved", "deprecated"]).optional(),
   description: z.string().nullable().default(null).optional(),
   name: z.string().optional(),
-  archetype: z.enum(["creator", "operator", "administrator", "consumer", "integrator"]).optional(),
+  archetype: z
+    .enum(["creator", "operator", "administrator", "consumer", "integrator"])
+    .optional(),
   goals: z.array(z.string()).default([]).optional(),
   painPoints: z.array(z.string()).default([]).optional(),
   behaviors: z.array(z.string()).default([]).optional(),
@@ -111,7 +137,9 @@ export const UpdateUserTypeInputSchema = z.object({
   technicalProfile: z
     .object({
       skillLevel: z.enum(["beginner", "intermediate", "advanced"]).optional(),
-      integrationType: z.enum(["web_ui", "api", "sdk", "webhook", "cli"]).optional(),
+      integrationType: z
+        .enum(["web_ui", "api", "sdk", "webhook", "cli"])
+        .optional(),
       frequency: z.enum(["daily", "weekly", "occasional"]).optional(),
     })
     .nullable()
@@ -128,7 +156,13 @@ export const StoredUserStorySchema = z.object({
   id: z.string(),
   title: z.string(),
   userType: z.string(),
-  status: z.enum(["draft", "approved", "implementing", "complete", "deprecated"]),
+  status: z.enum([
+    "draft",
+    "approved",
+    "implementing",
+    "complete",
+    "deprecated",
+  ]),
   capabilities: z.array(z.string()).default([]),
   useCases: z.array(z.string()).default([]),
   acceptanceCriteria: z.array(z.string()).default([]),
@@ -137,7 +171,9 @@ export const StoredUserStorySchema = z.object({
 export type StoredUserStory = z.infer<typeof StoredUserStorySchema>;
 
 export const UpdateUserStoryInputSchema = z.object({
-  status: z.enum(["draft", "approved", "implementing", "complete", "deprecated"]).optional(),
+  status: z
+    .enum(["draft", "approved", "implementing", "complete", "deprecated"])
+    .optional(),
   title: z.string().optional(),
   userType: z.string().optional(),
   capabilities: z.array(z.string()).default([]).optional(),
@@ -319,4 +355,6 @@ export const GovernanceSnapshotInputSchema = z.object({
     )
     .optional(),
 });
-export type GovernanceSnapshotInput = z.infer<typeof GovernanceSnapshotInputSchema>;
+export type GovernanceSnapshotInput = z.infer<
+  typeof GovernanceSnapshotInputSchema
+>;
