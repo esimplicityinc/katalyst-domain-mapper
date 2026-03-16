@@ -9,7 +9,7 @@ Feature: AI Chat Session Management
 
   @smoke
   Scenario: Health check endpoint is available
-    When I GET "/api/v1/config/health"
+    When I GET "/api/v1/health"
     Then the response status should be 200
 
   @detail

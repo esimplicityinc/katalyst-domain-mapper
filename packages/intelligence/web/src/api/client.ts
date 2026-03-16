@@ -20,6 +20,16 @@ import type {
 } from "../types/governance";
 import type { Project, ProjectDetail } from "../types/project";
 import type { ManagedCapability, ManagedUserType, ManagedUserStory } from "../types/taxonomy-management";
+import type {
+  ContributionListParams,
+  ContributionListResponse,
+  ContributionCounts,
+  ContributionDetail,
+  ContributionItem,
+  ContributionVersion,
+  TransitionResponse,
+  FieldDiff,
+} from "../types/contribution";
 import { normalizeRepoUrl } from "../utils/url";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
@@ -703,6 +713,100 @@ export const api = {
   /** Get the latest taxonomy snapshot */
   getTaxonomyLatest(): Promise<{ id: string; project: string; version: string; nodeCount: number; environmentCount: number; createdAt: string }> {
     return request("/api/v1/taxonomy/snapshots/latest");
+  },
+
+  // ── Contributions ─────────────────────────────────────────────────────────
+
+  contributions: {
+    /** List contributions with optional filters */
+    list(params?: ContributionListParams): Promise<ContributionListResponse> {
+      const qs = new URLSearchParams();
+      if (params?.status) qs.set("status", params.status);
+      if (params?.type) qs.set("type", params.type);
+      if (params?.submittedBy) qs.set("submittedBy", params.submittedBy);
+      if (params?.search) qs.set("search", params.search);
+      if (params?.limit) qs.set("limit", String(params.limit));
+      if (params?.offset) qs.set("offset", String(params.offset));
+      const query = qs.toString();
+      return request<ContributionListResponse>(`/api/v1/contributions${query ? `?${query}` : ""}`);
+    },
+
+    /** Get contribution counts for the current user */
+    counts(): Promise<ContributionCounts> {
+      return request<ContributionCounts>("/api/v1/contributions/counts");
+    },
+
+    /** Create an item through the contribution lifecycle */
+    create(input: {
+      itemType: string;
+      parentId?: string;
+      data: Record<string, unknown>;
+      submittedBy: string;
+      contributionNote?: string;
+    }): Promise<{ item: ContributionItem; created: boolean }> {
+      return request<{ item: ContributionItem; created: boolean }>("/api/v1/contributions/create", {
+        method: "POST",
+        body: JSON.stringify(input),
+      });
+    },
+
+    /** Get detailed contribution info including version history */
+    getDetail(type: string, id: string): Promise<ContributionDetail> {
+      return request<ContributionDetail>(`/api/v1/contributions/${type}/${id}`);
+    },
+
+    /** Submit a draft for review */
+    submit(type: string, id: string): Promise<TransitionResponse> {
+      return request<TransitionResponse>(`/api/v1/contributions/${type}/${id}/submit`, { method: "POST" });
+    },
+
+    /** Accept a proposed contribution */
+    accept(type: string, id: string): Promise<TransitionResponse> {
+      return request<TransitionResponse>(`/api/v1/contributions/${type}/${id}/accept`, { method: "POST" });
+    },
+
+    /** Reject a proposed contribution with feedback */
+    reject(type: string, id: string, feedback: string): Promise<TransitionResponse> {
+      return request<TransitionResponse>(`/api/v1/contributions/${type}/${id}/reject`, {
+        method: "POST",
+        body: JSON.stringify({ feedback }),
+      });
+    },
+
+    /** Withdraw a proposed contribution */
+    withdraw(type: string, id: string): Promise<TransitionResponse> {
+      return request<TransitionResponse>(`/api/v1/contributions/${type}/${id}/withdraw`, { method: "POST" });
+    },
+
+    /** Revise a rejected contribution back to draft */
+    revise(type: string, id: string): Promise<TransitionResponse> {
+      return request<TransitionResponse>(`/api/v1/contributions/${type}/${id}/revise`, { method: "POST" });
+    },
+
+    /** Deprecate an accepted contribution */
+    deprecate(type: string, id: string): Promise<TransitionResponse> {
+      return request<TransitionResponse>(`/api/v1/contributions/${type}/${id}/deprecate`, { method: "POST" });
+    },
+
+    /** Reactivate a deprecated contribution */
+    reactivate(type: string, id: string): Promise<TransitionResponse> {
+      return request<TransitionResponse>(`/api/v1/contributions/${type}/${id}/reactivate`, { method: "POST" });
+    },
+
+    /** Create a new version of an accepted contribution */
+    createNewVersion(type: string, id: string): Promise<TransitionResponse> {
+      return request<TransitionResponse>(`/api/v1/contributions/${type}/${id}/new-version`, { method: "POST" });
+    },
+
+    /** Get version history for a contribution */
+    versions(type: string, id: string): Promise<ContributionVersion[]> {
+      return request<ContributionVersion[]>(`/api/v1/contributions/${type}/${id}/versions`);
+    },
+
+    /** Get field-level diff between two versions */
+    diff(type: string, id: string, v1: number, v2: number): Promise<FieldDiff[]> {
+      return request<FieldDiff[]>(`/api/v1/contributions/${type}/${id}/diff/${v1}/${v2}`);
+    },
   },
 
   // ── Projects ───────────────────────────────────────────────────────────────

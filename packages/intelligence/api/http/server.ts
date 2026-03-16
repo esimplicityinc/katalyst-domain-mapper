@@ -19,6 +19,7 @@ import { createLandscapeRoutes } from "./routes/v1/landscape.js";
 import { createLintRoutes } from "./routes/v1/lint.js";
 import { createFlagRoutes } from "./routes/v1/flags.js";
 import { createOrchestratorRoutes } from "./routes/v1/orchestrator.js";
+import { createContributionRoutes } from "./routes/v1/contributions.js";
 import type { Container } from "../bootstrap/container.js";
 import * as path from "node:path";
 import * as fs from "node:fs";
@@ -78,6 +79,7 @@ export function createServer(container: Container) {
             { name: "Domain Models", description: "DDD domain modeling" },
             { name: "Governance", description: "Governance index management" },
             { name: "Taxonomy", description: "Taxonomy snapshot management" },
+            { name: "Contributions", description: "Universal contribution lifecycle" },
           ],
         },
         path: "/swagger",
@@ -182,6 +184,11 @@ export function createServer(container: Container) {
             scanOrchestrator: container.scanOrchestrator,
             chatOrchestrator: container.chatOrchestrator,
             featureFlags: container.featureFlags,
+          }),
+        )
+        .use(
+          createContributionRoutes({
+            contributionUseCase: container.contributionUseCase,
           }),
         ),
     )

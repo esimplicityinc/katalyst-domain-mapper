@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Layout } from "./components/Layout";
+import { ContributionProvider } from "./components/contribution/ContributionProvider";
+import { PageContextProvider } from "./components/contribution/PageContextProvider";
 
 // Legacy pages (will be nested under lifecycle stages)
 import { DomainMapperPage } from "./pages/DomainMapperPage";
@@ -25,8 +27,10 @@ import { UserTypesPage } from "./pages/UserTypesPage";
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
+      <PageContextProvider>
+      <ContributionProvider>
+        <Routes>
+          <Route element={<Layout />}>
           {/* Default route - redirect to Business Domain */}
           <Route index element={<Navigate to="/design/business-domain" replace />} />
 
@@ -61,7 +65,9 @@ function App() {
           {/* 404 catch-all - redirect to Business Domain */}
           <Route path="*" element={<Navigate to="/design/business-domain" replace />} />
         </Route>
-      </Routes>
+        </Routes>
+      </ContributionProvider>
+      </PageContextProvider>
     </BrowserRouter>
   );
 }

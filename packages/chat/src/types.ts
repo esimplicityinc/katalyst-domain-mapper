@@ -109,9 +109,10 @@ export interface UseOpenCodeChatOptions {
   /** Provider and model to use for the session */
   model: ChatModel;
   /**
-   * Called once before the very first message is sent to build the
-   * context preamble that is prepended to the prompt. If omitted, no
-   * preamble is injected.
+   * Called before every message is sent to build the context preamble that
+   * is prepended to the user's prompt text. The function should return a
+   * string (or empty string) — it captures the latest React state via closure.
+   * If omitted, no preamble is injected.
    */
   buildContextPreamble?: () => string;
   /**
@@ -174,8 +175,8 @@ export interface OpenCodeChatProps {
   /** Placeholder for the text input when idle */
   inputPlaceholder?: string;
   /**
-   * Called once before the very first message is sent to build the
-   * context preamble injected into the prompt.
+   * Called before every message is sent to build the context preamble
+   * prepended to the user's prompt text.
    */
   buildContextPreamble?: () => string;
   /**

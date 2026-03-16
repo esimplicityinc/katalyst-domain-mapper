@@ -694,3 +694,52 @@ export const taxonomyLayerHealths = sqliteTable("taxonomy_layer_healths", {
   /** Determined by the worst-performing category status */
   overallStatus: text("overall_status").notNull(), // pass | warn | fail
 });
+
+// ── Contribution Management ───────────────────────────────────────────────────
+// Universal contribution workflow: draft → proposed → accepted/rejected → deprecated/superseded
+// Tracks any taxonomy item type through a review lifecycle with full audit trail.
+
+export const contributionItems = sqliteTable("contribution_items", {
+  id: text("id").primaryKey(),
+  itemType: text("item_type").notNull(), // 'capability' | 'user-type' | etc.
+  itemId: text("item_id").notNull(), // 'CAP-012' | 'UT-003' | etc.
+  version: integer("version").notNull().default(1),
+  status: text("status").notNull().default("draft"), // draft | proposed | rejected | accepted | deprecated | superseded
+  supersedes: text("supersedes"), // 'CAP-012@v1'
+  supersededBy: text("superseded_by"), // 'CAP-012@v2'
+  submittedBy: text("submitted_by"),
+  submittedAt: text("submitted_at"), // ISO-8601
+  reviewedBy: text("reviewed_by"),
+  reviewedAt: text("reviewed_at"), // ISO-8601
+  reviewFeedback: text("review_feedback"),
+  itemData: text("item_data", { mode: "json" }).$type<
+    Record<string, unknown>
+  >(), // JSON snapshot of the item at this version
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export const contributionAuditLog = sqliteTable("contribution_audit_log", {
+  id: text("id").primaryKey(),
+  contribId: text("contrib_id")
+    .notNull()
+    .references(() => contributionItems.id),
+  action: text("action").notNull(), // 'submit' | 'accept' | 'reject' | etc.
+  fromStatus: text("from_status").notNull(),
+  toStatus: text("to_status").notNull(),
+  actor: text("actor"),
+  feedback: text("feedback"),
+  timestamp: text("timestamp").notNull(),
+});
+
+export const contributionVersions = sqliteTable("contribution_versions", {
+  id: text("id").primaryKey(),
+  contribId: text("contrib_id")
+    .notNull()
+    .references(() => contributionItems.id),
+  version: integer("version").notNull(),
+  itemData: text("item_data", { mode: "json" })
+    .$type<Record<string, unknown>>()
+    .notNull(),
+  createdAt: text("created_at").notNull(),
+});

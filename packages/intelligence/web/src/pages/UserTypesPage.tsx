@@ -2,41 +2,58 @@
  * UserTypesPage
  *
  * Tabbed page under /design/user-types/*
- * Tabs: User Types (list/grid), Stories (kanban board), Chat (user type AI)
+ * Tabs: User Types (list/grid), Stories (kanban board)
  */
 
 import { useState, useEffect, useRef } from "react";
 import { Routes, Route, NavLink, Navigate } from "react-router-dom";
-import { Sparkles, Users, BookOpen, Loader2 } from "lucide-react";
+import { Users, BookOpen, Loader2 } from "lucide-react";
 import { api } from "../api/client";
 import { UserTypeListView } from "../components/user-types/UserTypeListView";
 import { UserStoryBoardView } from "../components/user-types/UserStoryBoardView";
-import { UserTypeChat } from "../components/user-types/UserTypeChat";
+import { usePageContextWriter } from "../components/contribution/PageContextProvider";
+import type { ManagedUserType } from "../types/taxonomy-management";
+// Chat tab removed — now handled by the global ContributionPanel
 
 const SUB_NAV = [
   { to: "/design/user-types/list", label: "User Types", icon: Users },
   { to: "/design/user-types/stories", label: "Stories", icon: BookOpen },
 ];
 
-const CHAT_NAV = { to: "/design/user-types/chat", label: "Chat", icon: Sparkles };
-
 export function UserTypesPage() {
-  const [userTypeCount, setUserTypeCount] = useState(0);
+  const [userTypesList, setUserTypesList] = useState<ManagedUserType[]>([]);
   const [storyCount, setStoryCount] = useState(0);
   const [capabilityCount, setCapabilityCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const initialLoadDone = useRef(false);
+  const { setPageContext } = usePageContextWriter();
+
+  // Publish page context for ContributionChat preamble
+  useEffect(() => {
+    setPageContext({
+      currentPage: "user-types",
+      userTypeCount: userTypesList.length,
+      userStoryCount: storyCount,
+      capabilityCount,
+      userTypes: userTypesList.map((ut) => ({
+        id: ut.id,
+        name: ut.name,
+        archetype: ut.archetype,
+        status: ut.status,
+      })),
+    });
+  }, [userTypesList, storyCount, capabilityCount, setPageContext]);
 
   const refresh = async () => {
     try {
-      const [userTypes, stories, capabilities] = await Promise.allSettled([
+      const [userTypes, stories, caps] = await Promise.allSettled([
         api.listUserTypes(),
         api.listUserStories(),
         api.listCapabilities(),
       ]);
-      if (userTypes.status === "fulfilled") setUserTypeCount(userTypes.value.length);
+      if (userTypes.status === "fulfilled") setUserTypesList(userTypes.value);
       if (stories.status === "fulfilled") setStoryCount(stories.value.length);
-      if (capabilities.status === "fulfilled") setCapabilityCount(capabilities.value.length);
+      if (caps.status === "fulfilled") setCapabilityCount(caps.value.length);
     } catch {
       // API may not be available
     }
@@ -82,7 +99,7 @@ export function UserTypesPage() {
             <div className="hidden sm:flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 ml-2">
               <span>
                 <span className="font-semibold text-gray-700 dark:text-gray-200">
-                  {userTypeCount}
+                  {userTypesList.length}
                 </span>{" "}
                 user types
               </span>
@@ -117,40 +134,13 @@ export function UserTypesPage() {
               </NavLink>
             ))}
           </div>
-
-          {/* Chat tab on the right */}
-          <NavLink
-            to={CHAT_NAV.to}
-            className={({ isActive }) =>
-              `flex items-center gap-1.5 px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ml-auto ${
-                isActive
-                  ? "border-brand-accent-lavender text-brand-accent-lavender dark:text-brand-accent-lavender"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600"
-              }`
-            }
-          >
-            <CHAT_NAV.icon className="w-4 h-4" />
-            <span>{CHAT_NAV.label}</span>
-            <span className="text-xs text-brand-accent-steel opacity-70">(Powered by Prima)</span>
-          </NavLink>
         </div>
       </header>
 
       {/* Sub-route content */}
       <div className="flex-1 overflow-auto">
         <Routes>
-          <Route index element={<Navigate to="chat" replace />} />
-          <Route
-            path="chat"
-            element={
-              <UserTypeChat
-                userTypeCount={userTypeCount}
-                storyCount={storyCount}
-                capabilityCount={capabilityCount}
-                onUpdated={refresh}
-              />
-            }
-          />
+          <Route index element={<Navigate to="list" replace />} />
           <Route path="list" element={<UserTypeListView />} />
           <Route path="stories" element={<UserStoryBoardView />} />
         </Routes>

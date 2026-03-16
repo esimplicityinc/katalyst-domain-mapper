@@ -20,6 +20,7 @@ import type {
   DomainWorkflow,
 } from "../../types/domain";
 import { api } from "../../api/client";
+import { ContributeButton } from "../contribution/ContributeButton";
 import { DDDTooltip } from "./DDDTooltip";
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -516,13 +517,16 @@ export function WorkflowView({ model, onModelUpdated }: WorkflowViewProps) {
           <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
             Workflows <DDDTooltip termKey="workflow" position="right" />
           </h2>
-          <button
-            onClick={openCreatePanel}
-            className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Add Workflow
-          </button>
+          <div className="flex items-center gap-2">
+            <ContributeButton itemType="workflow" />
+            <button
+              onClick={openCreatePanel}
+              className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Add Workflow
+            </button>
+          </div>
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8">
           Application lifecycle state machines
@@ -615,6 +619,7 @@ export function WorkflowView({ model, onModelUpdated }: WorkflowViewProps) {
           )}
 
           {/* Add Workflow button */}
+          <ContributeButton itemType="workflow" />
           <button
             onClick={openCreatePanel}
             className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"

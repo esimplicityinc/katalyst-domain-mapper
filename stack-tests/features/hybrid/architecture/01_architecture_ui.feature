@@ -25,11 +25,11 @@ Feature: Architecture Management UI E2E
   @detail
   Scenario: User Types page loads with card layout
     Given I navigate to the web application
-    When I click on the "Personas" navigation item
+    When I click on the "User Types" navigation item
     Then I should see the page content
 
   @detail
   Scenario: User Stories kanban board renders on Personas page
     Given I navigate to the web application
-    When I click on the "Personas" navigation item
+    When I click on the "User Types" navigation item
     Then I should see the page content

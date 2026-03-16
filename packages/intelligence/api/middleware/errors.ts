@@ -19,6 +19,10 @@ import {
   DomainModelValidationError,
   BoundedContextNotFoundError,
 } from "../domain/domain-model/DomainModelErrors.js";
+import {
+  TaxonomyValidationError,
+  TaxonomyNotFoundError,
+} from "../domain/taxonomy/TaxonomyErrors.js";
 
 export const errorMiddleware = new Elysia({ name: "error-handler" }).onError(
   { as: "global" },
@@ -29,7 +33,8 @@ export const errorMiddleware = new Elysia({ name: "error-handler" }).onError(
       error instanceof ScanJobNotFoundError ||
       error instanceof GovernanceNotFoundError ||
       error instanceof DomainModelNotFoundError ||
-      error instanceof BoundedContextNotFoundError
+      error instanceof BoundedContextNotFoundError ||
+      error instanceof TaxonomyNotFoundError
     ) {
       set.status = 404;
       return { error: error.message };
@@ -38,12 +43,13 @@ export const errorMiddleware = new Elysia({ name: "error-handler" }).onError(
     if (
       error instanceof ReportValidationError ||
       error instanceof GovernanceValidationError ||
-      error instanceof DomainModelValidationError
+      error instanceof DomainModelValidationError ||
+      error instanceof TaxonomyValidationError
     ) {
       set.status = 400;
       return {
         error: error.message,
-        details: (error as ReportValidationError | GovernanceValidationError | DomainModelValidationError)
+        details: (error as ReportValidationError | GovernanceValidationError | DomainModelValidationError | TaxonomyValidationError)
           .details,
       };
     }

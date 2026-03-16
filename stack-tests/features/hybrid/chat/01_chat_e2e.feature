@@ -11,13 +11,13 @@ Feature: AI Chat Component E2E
   @smoke
   Scenario: FOE assessment page loads with chat tab
     Given I navigate to the web application
-    When I click on the "Reports" navigation item
+    When I click on the "FOE Projects" navigation item
     Then I should see the page content
 
   @smoke
   Scenario: Domain modeling page loads with chat tab
     Given I navigate to the web application
-    When I click on the "Domain" navigation item
+    When I click on the "Business Domain" navigation item
     Then I should see the page content
 
   @detail
@@ -29,5 +29,5 @@ Feature: AI Chat Component E2E
   @detail
   Scenario: Chat component renders message input area
     Given I navigate to the web application
-    When I click on the "Reports" navigation item
+    When I click on the "FOE Projects" navigation item
     Then I should see the page content

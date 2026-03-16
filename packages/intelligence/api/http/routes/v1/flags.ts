@@ -11,17 +11,13 @@ export function createFlagRoutes(deps: { featureFlags: FeatureFlags }) {
   return new Elysia({ prefix: "/flags" }).get(
     "/",
     async () => {
-      const flags = await deps.featureFlags.getAllFlags();
-      return {
-        flags,
-        evaluatedAt: new Date().toISOString(),
-      };
+      return deps.featureFlags.getAllFlags();
     },
     {
       detail: {
         summary: "Get all feature flag values",
         description:
-          "Returns current feature flag evaluations. Used by the web UI to initialize client-side flags.",
+          "Returns current feature flag evaluations as a flat key-value map. Used by the web UI to initialize client-side flags.",
         tags: ["Config"],
       },
     },

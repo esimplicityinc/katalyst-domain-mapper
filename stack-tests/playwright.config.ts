@@ -1,5 +1,6 @@
 import { defineConfig } from '@playwright/test';
 import { defineBddProject, cucumberReporter } from 'playwright-bdd';
+import { resolveWorkers } from '@esimplicity/stack-tests';
 import dotenv from 'dotenv';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -53,7 +54,7 @@ export default defineConfig({
     cucumberReporter('html', { outputFile: 'cucumber-report/index.html' }),
     cucumberReporter('json', { outputFile: 'cucumber-report/report.json' }),
   ],
-  workers: 1,
+  workers: resolveWorkers({ defaultWorkers: 1 }),
   projects: [
     {
       ...apiBdd,

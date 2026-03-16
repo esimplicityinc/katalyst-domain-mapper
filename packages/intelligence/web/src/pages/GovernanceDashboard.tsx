@@ -10,10 +10,13 @@ import {
   Users,
   MapPin,
   RefreshCw,
+  Inbox,
 } from "lucide-react";
 import { api } from "../api/client";
 import { KanbanBoard } from "../components/domain/KanbanBoard";
 import { CoverageMatrix } from "../components/domain/CoverageMatrix";
+import { useContribution } from "../components/contribution/ContributionProvider";
+import { usePageContextWriter } from "../components/contribution/PageContextProvider";
 import type {
   GovernanceSnapshot,
   RoadItemSummary,
@@ -37,6 +40,20 @@ export function GovernanceDashboard() {
 
   // Kanban filter
   const [kanbanFilter, setKanbanFilter] = useState<string | null>(null);
+  const { setPageContext } = usePageContextWriter();
+
+  // Publish page context for ContributionChat preamble
+  useEffect(() => {
+    const roadsByStatus: Record<string, number> = {};
+    for (const r of roads) {
+      roadsByStatus[r.status] = (roadsByStatus[r.status] ?? 0) + 1;
+    }
+    setPageContext({
+      currentPage: "governance",
+      roadItemCount: roads.length,
+      roadsByStatus,
+    });
+  }, [roads, setPageContext]);
 
   const fetchData = useCallback(async () => {
     setState("loading");
@@ -198,6 +215,9 @@ export function GovernanceDashboard() {
           userTypeCount={userTypes.length}
         />
 
+        {/* ── Contribution Queue Summary ─────────────────────────────── */}
+        <ContributionQueueCard />
+
         {/* ── Kanban Board ────────────────────────────────────────────── */}
         {roads.length > 0 && (
           <DashboardSection title="Road Items" icon={MapPin}>
@@ -225,6 +245,74 @@ export function GovernanceDashboard() {
 
         {/* ── Integrity Report ────────────────────────────────────────── */}
         {integrity && <IntegritySection integrity={integrity} />}
+      </div>
+    </div>
+  );
+}
+
+// ── ContributionQueueCard ────────────────────────────────────────────────────
+
+function ContributionQueueCard() {
+  const contribution = useContribution();
+  const { myDrafts, pendingReview, rejected } = contribution.counts;
+  const total = myDrafts + pendingReview + rejected;
+
+  return (
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Inbox className="w-5 h-5 text-blue-500" />
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+            Contribution Queue
+          </h2>
+          {total > 0 && (
+            <span className="bg-blue-500 text-white text-xs font-semibold rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+              {total}
+            </span>
+          )}
+        </div>
+        <button
+          onClick={() => contribution.open()}
+          className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          View all
+        </button>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <button
+          onClick={() => contribution.open({ tab: "drafts" })}
+          className="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        >
+          <div className="text-2xl font-bold text-gray-700 dark:text-gray-300">
+            {myDrafts}
+          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            My Drafts
+          </div>
+        </button>
+        <button
+          onClick={() => contribution.open({ tab: "pending" })}
+          className="text-center p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+        >
+          <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">
+            {pendingReview}
+          </div>
+          <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+            Pending Review
+          </div>
+        </button>
+        <button
+          onClick={() => contribution.open({ tab: "rejected" })}
+          className="text-center p-3 rounded-lg bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+        >
+          <div className="text-2xl font-bold text-red-700 dark:text-red-300">
+            {rejected}
+          </div>
+          <div className="text-xs text-red-600 dark:text-red-400 mt-1">
+            Rejected
+          </div>
+        </button>
       </div>
     </div>
   );

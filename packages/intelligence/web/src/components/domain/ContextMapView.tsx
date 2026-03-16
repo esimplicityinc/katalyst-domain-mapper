@@ -18,6 +18,7 @@ import { SubdomainOverview } from "./SubdomainOverview";
 import { ContextMapDiagram } from "./ContextMapDiagram";
 import { RELATIONSHIP_LABELS, STATUS_STYLES } from "./constants";
 import { DDDTooltip } from "./DDDTooltip";
+import { ContributeButton } from "../contribution/ContributeButton";
 
 interface ContextMapViewProps {
   model: DomainModelFull;
@@ -193,6 +194,7 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <ContributeButton itemType="bounded-context" />
           {/* View toggle */}
           <div className="flex items-center gap-0.5 bg-gray-100 dark:bg-gray-700 rounded-lg p-0.5">
             <button

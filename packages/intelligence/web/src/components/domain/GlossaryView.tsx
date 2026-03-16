@@ -3,6 +3,7 @@ import { Plus, Loader2, BookOpen, Search, Pencil, Trash2, Check, X } from "lucid
 import { api } from "../../api/client";
 import type { DomainModelFull, GlossaryTerm } from "../../types/domain";
 import { DDDTooltip } from "./DDDTooltip";
+import { ContributeButton } from "../contribution/ContributeButton";
 
 interface GlossaryViewProps {
   model: DomainModelFull;
@@ -97,13 +98,16 @@ export function GlossaryView({ model, onModelUpdated }: GlossaryViewProps) {
             {model.glossaryTerms.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Term
-        </button>
+        <div className="flex items-center gap-2">
+          <ContributeButton itemType="glossary-term" />
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add Term
+          </button>
+        </div>
       </div>
 
       {/* Create form */}

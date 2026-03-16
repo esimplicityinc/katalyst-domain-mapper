@@ -2,7 +2,7 @@
   "tests": [
     {
       "changeId": "CHANGE-050",
-      "roadId": null,
+      "roadId": "ROAD-039",
       "title": "Shared AI Chat Component Library (@katalyst/chat)",
       "date": "2026-03-14",
       "total": 0,
@@ -12,7 +12,7 @@
     },
     {
       "changeId": "CHANGE-049",
-      "roadId": null,
+      "roadId": "ROAD-040",
       "title": "Feature Flags Infrastructure with OpenFeature Integration",
       "date": "2026-03-14",
       "total": 6,
@@ -32,7 +32,7 @@
     },
     {
       "changeId": "CHANGE-047",
-      "roadId": null,
+      "roadId": "ROAD-044",
       "title": "Port/Adapter Pattern for Switchable AI Runtimes",
       "date": "2026-03-14",
       "total": 11,
@@ -42,7 +42,7 @@
     },
     {
       "changeId": "CHANGE-046",
-      "roadId": null,
+      "roadId": "ROAD-041",
       "title": "Teams and Persons as First-Class Taxonomy Entities",
       "date": "2026-03-14",
       "total": 6,
@@ -52,7 +52,7 @@
     },
     {
       "changeId": "CHANGE-045",
-      "roadId": null,
+      "roadId": "ROAD-009",
       "title": "Taxonomy Schema Consolidation — Unified Node + Extension Architecture",
       "date": "2026-03-14",
       "total": 0,
@@ -102,7 +102,7 @@
     },
     {
       "changeId": "CHANGE-040",
-      "roadId": null,
+      "roadId": "ROAD-005",
       "title": "Pre-commit Quality Hooks with Husky",
       "date": "2026-02-17",
       "total": 0,
@@ -112,7 +112,7 @@
     },
     {
       "changeId": "CHANGE-039",
-      "roadId": null,
+      "roadId": "ROAD-001",
       "title": "AWS Bedrock Scanner Support as Alternative LLM Provider",
       "date": "2026-02-17",
       "total": 0,
@@ -122,7 +122,7 @@
     },
     {
       "changeId": "CHANGE-038",
-      "roadId": null,
+      "roadId": "ROAD-002",
       "title": "Domain Events Collapsible Context Groups",
       "date": "2026-02-17",
       "total": 0,
@@ -271,5 +271,5 @@
       "status": "pass"
     }
   ],
-  "generatedAt": "2026-03-14T19:33:13.848Z"
+  "generatedAt": "2026-03-14T20:51:39.730Z"
 }

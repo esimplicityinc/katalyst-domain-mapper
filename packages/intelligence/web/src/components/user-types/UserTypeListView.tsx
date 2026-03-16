@@ -11,11 +11,13 @@ import {
   Trash2,
 } from "lucide-react";
 import { api } from "../../api/client";
+import { ContributeButton } from "../contribution/ContributeButton";
 import type { ManagedUserType } from "../../types/taxonomy-management";
 import {
   ARCHETYPE_COLORS,
   ARCHETYPE_AVATAR_COLORS,
 } from "../../types/taxonomy-management";
+import { ContributionBadge } from "../contribution/ContributionBadge";
 
 // ── Avatar ────────────────────────────────────────────────────────────────────
 
@@ -577,6 +579,7 @@ function UserTypeCard({
                 {userType.archetype}
               </span>
               <StatusBadge status={userType.status} />
+              <ContributionBadge status={userType.contribution.status} size="sm" />
             </div>
           </div>
         </div>
@@ -736,6 +739,7 @@ export function UserTypeListView() {
         </div>
 
         {/* Add button */}
+        <ContributeButton itemType="user-type" />
         <button
           onClick={() => {
             setSelectedUserType(null);

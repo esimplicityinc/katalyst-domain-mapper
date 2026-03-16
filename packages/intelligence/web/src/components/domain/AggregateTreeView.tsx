@@ -20,6 +20,7 @@ import { TreeNode } from "./TreeNode";
 import { TreeLegend } from "./TreeLegend";
 import { DDDTooltip } from "./DDDTooltip";
 import { api } from "../../api/client";
+import { ContributeButton } from "../contribution/ContributeButton";
 import type {
   DomainModelFull,
   Aggregate,
@@ -629,6 +630,7 @@ export function AggregateTreeView({ model, onModelUpdated }: AggregateTreeViewPr
 
         {/* Controls */}
         <div className="flex items-center gap-2">
+          <ContributeButton itemType="aggregate" />
           {totalAggregates > 0 && (
             <>
               <button

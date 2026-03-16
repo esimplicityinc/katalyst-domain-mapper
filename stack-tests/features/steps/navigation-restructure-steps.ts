@@ -156,7 +156,7 @@ Then('I should navigate to the history section', async ({ page }) => {
 });
 
 Then('I should navigate to {string}', async ({ page }, url: string) => {
-  await expect(page).toHaveURL(url);
+  await expect(page).toHaveURL(new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 });
 
 // ============================================================================

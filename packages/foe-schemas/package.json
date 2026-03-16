@@ -23,11 +23,11 @@
     },
     "./taxonomy": {
       "types": "./dist/taxonomy/index.d.ts",
-      "default": "./dist/index.js"
+      "default": "./dist/taxonomy/index.js"
     }
   },
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist --target node --format esm && bun run build:types",
+    "build": "bun build ./src/index.ts --outdir ./dist --target node --format esm && bun build ./src/taxonomy/index.ts --outfile ./dist/taxonomy/index.js --target node --format esm && bun run build:types",
     "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist",
     "dev": "bun --watch src/index.ts",
     "test": "bun test"

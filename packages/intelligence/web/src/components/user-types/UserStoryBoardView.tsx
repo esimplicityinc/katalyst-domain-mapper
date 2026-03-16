@@ -10,6 +10,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { api } from "../../api/client";
+import { ContributeButton } from "../contribution/ContributeButton";
 import type { ManagedUserStory, ManagedUserType } from "../../types/taxonomy-management";
 import {
   STORY_STATUS_COLUMNS,
@@ -17,6 +18,7 @@ import {
   ARCHETYPE_AVATAR_COLORS,
   ARCHETYPE_COLORS,
 } from "../../types/taxonomy-management";
+import { ContributionBadge } from "../contribution/ContributionBadge";
 
 // ── User Type badge ───────────────────────────────────────────────────────────
 
@@ -79,13 +81,16 @@ function StoryCard({
   return (
     <div
       onClick={onClick}
-      className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 border-l-4 ${statusColor} rounded-md p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer`}
+      className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 border-l-4 ${statusColor} rounded-md p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer ${
+        story.contribution.status === "draft" ? "opacity-60 border-dashed" : ""
+      } ${story.contribution.status === "proposed" ? "ring-1 ring-blue-300 dark:ring-blue-700" : ""}`}
     >
       {/* ID */}
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-xs font-mono text-gray-400 dark:text-gray-500">
           {story.id}
         </span>
+        <ContributionBadge status={story.contribution.status} size="sm" />
       </div>
 
       {/* Title */}
@@ -680,6 +685,7 @@ export function UserStoryBoardView() {
         />
 
         {/* Add story */}
+        <ContributeButton itemType="user-story" />
         <button
           onClick={() => {
             setSelectedStory(null);

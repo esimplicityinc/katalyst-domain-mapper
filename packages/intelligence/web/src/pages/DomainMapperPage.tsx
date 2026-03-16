@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Routes, Route, NavLink, Navigate } from "react-router-dom";
 import {
-  Sparkles,
   Layers,
   Box,
   Zap,
@@ -14,9 +13,9 @@ import {
   Pencil,
   X,
 } from "lucide-react";
+// Chat tab removed — now handled by the global ContributionPanel
 import { api } from "../api/client";
 import { DomainModelList } from "../components/domain/DomainModelList";
-import { DDDChat } from "../components/domain/DDDChat";
 import { ContextMapView } from "../components/domain/ContextMapView";
 import { AggregateTreeView } from "../components/domain/AggregateTreeView";
 import { EventFlowView } from "../components/domain/EventFlowView";
@@ -24,7 +23,9 @@ import { GlossaryView } from "../components/domain/GlossaryView";
 import { ValueObjectView } from "../components/domain/ValueObjectView";
 import { WorkflowView } from "../components/domain/WorkflowView";
 import { LandscapeView } from "../components/domain/LandscapeView";
+import { usePageContextWriter } from "../components/contribution/PageContextProvider";
 import type { DomainModel, DomainModelFull } from "../types/domain";
+
 
 const STORAGE_KEY = "foe:selectedModelId";
 
@@ -38,8 +39,6 @@ const SUB_NAV = [
   { to: "/design/business-domain/landscape", label: "Landscape", icon: Map },
 ];
 
-const CHAT_NAV = { to: "/design/business-domain/chat", label: "Chat", icon: Sparkles };
-
 export function DomainMapperPage() {
   const [models, setModels] = useState<DomainModel[]>([]);
   const [activeModel, setActiveModel] = useState<DomainModelFull | null>(null);
@@ -50,6 +49,31 @@ export function DomainMapperPage() {
   const [editDescription, setEditDescription] = useState("");
   const [savingModel, setSavingModel] = useState(false);
   const initialLoadDone = useRef(false);
+  const { setPageContext } = usePageContextWriter();
+
+  // Publish page context for ContributionChat preamble
+  useEffect(() => {
+    if (activeModel) {
+      setPageContext({
+        currentPage: "business-domain",
+        domainModelId: activeModel.id,
+        domainModelName: activeModel.name,
+        domainModelDescription: activeModel.description ?? undefined,
+        boundedContexts: activeModel.boundedContexts.map((c) => ({
+          id: c.id,
+          title: c.title,
+          subdomainType: c.subdomainType,
+        })),
+        boundedContextCount: activeModel.boundedContexts.length,
+        aggregateCount: activeModel.aggregates.length,
+        domainEventCount: activeModel.domainEvents.length,
+        glossaryTermCount: activeModel.glossaryTerms.length,
+        workflowCount: (activeModel.workflows ?? []).length,
+      });
+    } else {
+      setPageContext({ currentPage: "business-domain" });
+    }
+  }, [activeModel, setPageContext]);
 
   useEffect(() => {
     // Only load once on mount
@@ -275,35 +299,13 @@ export function DomainMapperPage() {
               </NavLink>
             ))}
           </div>
-          
-          {/* Chat tab on the right */}
-          <NavLink
-            to={CHAT_NAV.to}
-            className={({ isActive }) =>
-              `flex items-center gap-1.5 px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ml-auto ${
-                isActive
-                  ? "border-brand-accent-lavender text-brand-accent-lavender dark:text-brand-accent-lavender"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600"
-              }`
-            }
-          >
-            <CHAT_NAV.icon className="w-4 h-4" />
-            <span>{CHAT_NAV.label}</span>
-            <span className="text-xs text-brand-accent-steel opacity-70">(Powered by Prima)</span>
-          </NavLink>
         </div>
       </header>
 
       {/* Sub-route content */}
       <div className="flex-1 overflow-auto">
         <Routes>
-          <Route index element={<Navigate to="chat" replace />} />
-          <Route
-            path="chat"
-            element={
-              <DDDChat model={activeModel} onModelUpdated={refreshModel} />
-            }
-          />
+          <Route index element={<Navigate to="contexts" replace />} />
           <Route
             path="contexts"
             element={

@@ -84,7 +84,7 @@ export async function fetchAndInitFlags(
       return {};
     }
     const data = await response.json();
-    const flagValues = data.flags as Record<string, boolean | string | number>;
+    const flagValues = data as Record<string, boolean | string | number>;
     initClientFlags(flagValues);
     return flagValues;
   } catch (error) {

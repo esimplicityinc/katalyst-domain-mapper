@@ -19,10 +19,12 @@ import {
   Shield,
   FolderKanban,
   Building2,
-  Users
+  Users,
+  Inbox
 } from "lucide-react";
 import { ApiKeyPrompt } from "./ApiKeyPrompt";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { useContribution } from "./contribution/ContributionProvider";
 import { api } from "../api/client";
 import KatalystLogo from "../assets/katalyst-logo.png";
 
@@ -117,6 +119,8 @@ type GateState = "loading" | "needs-key" | "ready";
 export function Layout() {
   const [gate, setGate] = useState<GateState>("loading");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const contribution = useContribution();
+  const totalCount = contribution.counts.myDrafts + contribution.counts.pendingReview + contribution.counts.rejected;
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     "/design": true, // Design section expanded by default
     "/strategy": true // Strategy section expanded by default
@@ -372,6 +376,22 @@ export function Layout() {
 
         {/* Footer */}
         <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 space-y-2">
+          {/* Contribution inbox trigger */}
+          <button
+            onClick={() => contribution.open()}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-brand-primary-300/10 dark:hover:bg-gray-700/50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-primary-500"
+            aria-label={`Open contributions panel${totalCount > 0 ? ` (${totalCount} items need attention)` : ""}`}
+          >
+            <span className="flex items-center gap-2">
+              <Inbox className="w-4 h-4" />
+              Contributions
+            </span>
+            {totalCount > 0 && (
+              <span className="bg-blue-500 text-white text-xs font-semibold rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                {totalCount}
+              </span>
+            )}
+          </button>
           <button
             onClick={toggleDarkMode}
             className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-brand-primary-300/10 dark:hover:bg-gray-700/50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-primary-500"
@@ -409,13 +429,26 @@ export function Layout() {
           >
             <Menu className="w-6 h-6" />
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-2">
             <img src={KatalystLogo} alt="Katalyst" className="w-5 h-5" />
             <span className="font-semibold text-gray-900 dark:text-white">Katalyst</span>
             <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 leading-none">
               Alpha
             </span>
           </div>
+          {/* Mobile contribution trigger */}
+          <button
+            onClick={() => contribution.open()}
+            className="relative p-1.5 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label={`Open contributions${totalCount > 0 ? ` (${totalCount})` : ""}`}
+          >
+            <Inbox className="w-5 h-5" />
+            {totalCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-blue-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                {totalCount > 9 ? "9+" : totalCount}
+              </span>
+            )}
+          </button>
         </div>
 
         <main className="flex-1 overflow-auto">

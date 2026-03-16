@@ -12,7 +12,9 @@ import {
   GitBranch,
 } from "lucide-react";
 import { api } from "../../api/client";
+import { ContributeButton } from "../contribution/ContributeButton";
 import type { ManagedCapability } from "../../types/taxonomy-management";
+import { ContributionBadge } from "../contribution/ContributionBadge";
 import {
   CAPABILITY_STATUS_COLORS,
   CATEGORY_COLORS,
@@ -156,6 +158,8 @@ function TreeNodeRow({
         <span className="text-xs font-mono text-gray-400 dark:text-gray-500 flex-shrink-0">
           {node.id}
         </span>
+
+        <ContributionBadge status={node.contribution.status} size="sm" />
 
         {/* Coverage chip */}
         <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
@@ -716,16 +720,19 @@ export function CapabilityTreeView() {
               ({capabilities.length})
             </span>
           </div>
-          <button
-            onClick={() => {
-              setNewFormParentId(undefined);
-              setShowNewForm(true);
-            }}
-            className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
-          >
-            <Plus className="w-3 h-3" />
-            Add Root
-          </button>
+          <div className="flex items-center gap-1.5">
+            <ContributeButton itemType="capability" />
+            <button
+              onClick={() => {
+                setNewFormParentId(undefined);
+                setShowNewForm(true);
+              }}
+              className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
+            >
+              <Plus className="w-3 h-3" />
+              Add Root
+            </button>
+          </div>
         </div>
 
         {error && (

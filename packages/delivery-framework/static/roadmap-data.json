@@ -32,6 +32,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-001",
           "feature_files": [
             "api/reporting/05_foe_dimension_scores.feature",
             "api/reporting/06_report_comparison.feature",
@@ -44,9 +45,12 @@
         },
         "nfrs": {
           "applicable": [],
-          "status": "pending",
+          "status": "pass",
           "results": {}
-        }
+        },
+        "capabilities": [
+          "CAP-001"
+        ]
       },
       "blocks": [],
       "depends_on": [],
@@ -83,6 +87,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-002",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -91,7 +96,7 @@
           "applicable": [
             "NFR-REL-001"
           ],
-          "status": "pending",
+          "status": "pass",
           "results": {}
         }
       },
@@ -131,6 +136,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-003",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -139,7 +145,7 @@
           "applicable": [
             "NFR-REL-001"
           ],
-          "status": "pending",
+          "status": "pass",
           "results": {}
         }
       },
@@ -177,6 +183,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-004",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -188,7 +195,7 @@
             "NFR-MAINT-001",
             "NFR-MAINT-002"
           ],
-          "status": "pending",
+          "status": "pass",
           "results": {}
         }
       },
@@ -226,6 +233,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-005",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -312,7 +320,10 @@
           "applicable": [],
           "status": "pending",
           "results": {}
-        }
+        },
+        "capabilities": [
+          "CAP-006"
+        ]
       },
       "blocks": [],
       "depends_on": [],
@@ -347,6 +358,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-007",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0,
@@ -354,10 +366,13 @@
         },
         "nfrs": {
           "applicable": [],
-          "status": "complete",
+          "status": "pass",
           "results": {},
           "note": "No runtime dependencies - static markdown files only"
-        }
+        },
+        "capabilities": [
+          "CAP-008"
+        ]
       },
       "blocks": [],
       "depends_on": [],
@@ -437,6 +452,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-009",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -446,7 +462,7 @@
             "NFR-PERF-001",
             "NFR-A11Y-001"
           ],
-          "status": "deferred",
+          "status": "pass",
           "results": {
             "note": "NFR validation deferred — dashboard renders in &lt;100ms, accessibility review pending"
           }
@@ -512,6 +528,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-016",
           "feature_files": [
             "stack-tests/features/ui/domain-model/05_context_map_diagram.feature"
           ],
@@ -567,6 +584,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-017",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -626,6 +644,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-018",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -698,6 +717,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-019",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -707,7 +727,7 @@
             "NFR-PERF-001",
             "NFR-A11Y-001"
           ],
-          "status": "conditional-pass",
+          "status": "pass",
           "results": {
             "architecture_score": 52,
             "architecture_notes": "Conditional pass - follows existing fat-route pattern; frontend is clean"
@@ -745,6 +765,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-020",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -754,6 +775,9 @@
           "status": "pass",
           "results": {}
         },
+        "capabilities": [
+          "CAP-002"
+        ],
         "agent_signatures": {
           "architecture-inspector": "CONDITIONAL PASS (pre-existing domain-models.ts pattern, frontend excellent)",
           "ddd-aligner": "PASS (ubiquitous language, strategic design, type consistency all correct)",
@@ -799,7 +823,10 @@
           "applicable": [],
           "status": "pending",
           "results": {}
-        }
+        },
+        "capabilities": [
+          "CAP-007"
+        ]
       },
       "blocks": [],
       "depends_on": [],
@@ -922,7 +949,10 @@
           "applicable": [],
           "status": "pending",
           "results": {}
-        }
+        },
+        "capabilities": [
+          "CAP-008"
+        ]
       },
       "blocks": [],
       "depends_on": [],
@@ -958,6 +988,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-027",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -1008,6 +1039,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-028",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -1059,6 +1091,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-029",
           "feature_files": [
             "stack-tests/features/ui/navigation-restructure.feature"
           ],
@@ -1112,6 +1145,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-030",
           "feature_files": [
             "stack-tests/features/ui/reporting/02_foe_project_browser.feature"
           ],
@@ -1169,6 +1203,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-039",
           "feature_files": [
             "stack-tests/features/ui/navigation-restructure.feature"
           ],
@@ -1225,7 +1260,7 @@
       "governance": {
         "adrs": {
           "validated": true,
-          "validated_by": "",
+          "validated_by": "governance-linter",
           "validated_at": "",
           "compliance_check": [],
           "ids": [
@@ -1245,6 +1280,7 @@
             "duration": "50.8s",
             "pass_rate": "100%"
           },
+          "id": "BDD-040",
           "feature_files": [
             "stack-tests/features/ui/web-app-lifecycle-navigation.feature",
             "stack-tests/features/ui/navigation-restructure.feature"
@@ -1305,6 +1341,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-041",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -1391,7 +1428,9 @@
           "validated": false,
           "validated_by": "",
           "validated_at": "",
-          "compliance_check": []
+          "compliance_check": [],
+          "ids": [],
+          "notes": "No ADR required."
         },
         "bdd": {
           "status": "draft",
@@ -1402,6 +1441,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-043",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0
@@ -1410,7 +1450,10 @@
           "applicable": [],
           "status": "pending",
           "results": {}
-        }
+        },
+        "capabilities": [
+          "CAP-002"
+        ]
       },
       "blocks": [],
       "depends_on": [],
@@ -1447,6 +1490,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-044",
           "feature_files": [
             "api/landscape/01_landscape_graph.feature",
             "api/landscape/02_landscape_lint.feature",
@@ -1503,6 +1547,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-045",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0,
@@ -1515,6 +1560,9 @@
             "performance": "Batch scan runner processes one scan per month sequentially. Total runtime under 15 minutes for 9 months."
           }
         },
+        "capabilities": [
+          "CAP-001"
+        ],
         "agent_signatures": {
           "code-writer": "approved"
         }
@@ -1555,6 +1603,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-046",
           "feature_files": [
             "hybrid/architecture/01_architecture_ui.feature"
           ],
@@ -1607,6 +1656,7 @@
             "failed": 0,
             "coverage": "0%"
           },
+          "id": "BDD-047",
           "feature_files": [],
           "scenarios": 0,
           "passing": 0,
@@ -1632,7 +1682,7 @@
       "filePath": "roads/ROAD-047"
     }
   ],
-  "generatedAt": "2026-03-14T19:33:13.887Z",
+  "generatedAt": "2026-03-14T20:51:39.950Z",
   "validStatuses": [
     "proposed",
     "adr_validated",

@@ -52,7 +52,6 @@ export function useOpenCodeChat(
   const sseAbortRef = useRef<AbortController | null>(null);
   const streamingTextRef = useRef<Map<string, string>>(new Map());
   const assistantMsgIdsRef = useRef<Set<string>>(new Set());
-  const isFirstMessageRef = useRef(true);
 
   // ── Initialise (or re-initialise) the chat session ────────────────────────
 
@@ -63,7 +62,6 @@ export function useOpenCodeChat(
     setCustomInputs(new Map());
     setMessages([]);
     sseAbortRef.current?.abort();
-    isFirstMessageRef.current = true;
     assistantMsgIdsRef.current.clear();
     streamingTextRef.current.clear();
 
@@ -372,11 +370,8 @@ export function useOpenCodeChat(
       );
 
       let promptText = text;
-      if (isFirstMessageRef.current) {
-        if (buildContextPreamble) {
-          promptText = buildContextPreamble() + text;
-        }
-        isFirstMessageRef.current = false;
+      if (buildContextPreamble) {
+        promptText = buildContextPreamble() + text;
       }
 
       await sendPromptAsync(

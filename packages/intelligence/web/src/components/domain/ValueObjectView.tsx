@@ -14,6 +14,7 @@ import {
   Minus,
 } from "lucide-react";
 import { api } from "../../api/client";
+import { ContributeButton } from "../contribution/ContributeButton";
 import type {
   DomainModelFull,
   ValueObject,
@@ -285,13 +286,16 @@ export function ValueObjectView({ model, onModelUpdated }: ValueObjectViewProps)
             {model.boundedContexts.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <button
-          onClick={openCreatePanel}
-          className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Value Object
-        </button>
+        <div className="flex items-center gap-2">
+          <ContributeButton itemType="value-object" />
+          <button
+            onClick={openCreatePanel}
+            className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add Value Object
+          </button>
+        </div>
       </div>
 
       {/* Empty state */}

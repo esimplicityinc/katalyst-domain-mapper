@@ -16,6 +16,7 @@ import {
   Pencil,
 } from "lucide-react";
 import { api } from "../../api/client";
+import { ContributeButton } from "../contribution/ContributeButton";
 import type {
   DomainModelFull,
   DomainEvent,
@@ -211,6 +212,7 @@ export function EventFlowView({ model, onModelUpdated }: EventFlowViewProps) {
           )}
 
           {/* Add Event button */}
+          <ContributeButton itemType="domain-event" />
           <button
             onClick={openCreatePanel}
             className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"

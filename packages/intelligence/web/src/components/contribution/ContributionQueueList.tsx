@@ -5,6 +5,7 @@ import type {
   ContributionStatus,
   ContributionAction,
   ContributionItem,
+  ContributableItemType,
 } from "../../types/contribution";
 import { ITEM_TYPE_LABELS } from "../../types/contribution";
 import { ContributionQueueItem } from "./ContributionQueueItem";
@@ -38,6 +39,8 @@ interface ContributionQueueListProps {
   onTabChange: (tab: TabKey) => void;
   onSelectItem: (item: ContributionItem) => void;
   refreshKey: number;
+  /** Pre-set the type filter dropdown when the panel opens */
+  initialTypeFilter?: ContributableItemType;
 }
 
 export function ContributionQueueList({
@@ -45,13 +48,19 @@ export function ContributionQueueList({
   onTabChange,
   onSelectItem,
   refreshKey,
+  initialTypeFilter,
 }: ContributionQueueListProps) {
   const [items, setItems] = useState<ContributionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [typeFilter, setTypeFilter] = useState<string>("");
+  const [typeFilter, setTypeFilter] = useState<string>(initialTypeFilter ?? "");
   const [counts, setCounts] = useState<Record<string, number>>({});
+
+  // Sync external type filter when the panel reopens with a new filter
+  useEffect(() => {
+    setTypeFilter(initialTypeFilter ?? "");
+  }, [initialTypeFilter]);
 
   const currentTab = TABS.find((t) => t.key === activeTab) ?? TABS[0];
 
@@ -157,6 +166,7 @@ export function ContributionQueueList({
           />
         </div>
         <select
+          aria-label="Filter by type"
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
           className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"

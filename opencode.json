@@ -139,10 +139,10 @@
         "glob": true
       }
     },
-    "ddd-domain-mapper": {
-      "description": "Interactive DDD domain discovery agent. Helps map bounded contexts, aggregates, domain events, value objects, and ubiquitous language through conversational exploration.",
+    "contribution-assistant": {
+      "description": "Unified contribution assistant. Helps discover, create, review, and manage all taxonomy item types through the contribution lifecycle with human-in-the-loop confirmation.",
       "mode": "primary",
-      "prompt": "{file:./.opencode/agents/ddd-domain-mapper.md}",
+      "prompt": "{file:./.opencode/agents/contribution-assistant.md}",
       "model": "amazon-bedrock/us.anthropic.claude-sonnet-4-5-20250929-v1:0",
       "temperature": 0.3,
       "tools": {
@@ -151,7 +151,8 @@
         "grep": true,
         "bash": true,
         "write": false,
-        "edit": false
+        "edit": false,
+        "question": true
       },
       "permission": {
         "bash": {
@@ -159,7 +160,8 @@
           "grep *": "allow",
           "find *": "allow",
           "wc *": "allow",
-          "ls *": "allow"
+          "ls *": "allow",
+          "curl *": "allow"
         }
       }
     },

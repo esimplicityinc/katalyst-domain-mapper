@@ -41,6 +41,10 @@ import { ManageArtifacts } from "../usecases/domain-model/ManageArtifacts.js";
 import { ManageGlossary } from "../usecases/domain-model/ManageGlossary.js";
 import { ManageWorkflows } from "../usecases/domain-model/ManageWorkflows.js";
 import { LintLandscape } from "../usecases/lint/LintLandscape.js";
+import { ContributionUseCase } from "../usecases/contribution/ContributionUseCase.js";
+import { ContributionRepositorySQLite } from "../adapters/sqlite/ContributionRepositorySQLite.js";
+import { TypeRouter } from "../usecases/contribution/TypeRouter.js";
+import type { ContributionRepository } from "../ports/ContributionRepository.js";
 import type { FeatureFlags } from "../ports/FeatureFlags.js";
 import { OpenFeatureAdapter } from "../adapters/openfeature/OpenFeatureAdapter.js";
 import { initServerFlags } from "@foe/feature-flags/server";
@@ -84,6 +88,8 @@ export interface Container {
   manageGlossary: ManageGlossary;
   manageWorkflows: ManageWorkflows;
   lintLandscape: LintLandscape;
+  contributionRepo: ContributionRepository;
+  contributionUseCase: ContributionUseCase;
   healthCheck: () => boolean;
   shutdown: () => void;
   getAnthropicApiKey: () => string | undefined;
@@ -192,6 +198,12 @@ export async function createContainer(config: AppConfig): Promise<Container> {
   const manageWorkflows = new ManageWorkflows(taxonomyRepo);
   const lintLandscape = new LintLandscape(taxonomyRepo as never);
 
+  // Contribution lifecycle
+  const contributionRepo = new ContributionRepositorySQLite(db);
+  const contributionUseCase = new ContributionUseCase(contributionRepo);
+  const typeRouter = new TypeRouter(taxonomyRepo);
+  contributionUseCase.setTypeRouter(typeRouter);
+
   // Feature flags — initialize OpenFeature and create adapter
   const openFeatureClient = await initServerFlags();
   const featureFlags: FeatureFlags = new OpenFeatureAdapter(openFeatureClient);
@@ -264,6 +276,8 @@ export async function createContainer(config: AppConfig): Promise<Container> {
     manageGlossary,
     manageWorkflows,
     lintLandscape,
+    contributionRepo,
+    contributionUseCase,
     healthCheck,
     shutdown,
     getAnthropicApiKey,

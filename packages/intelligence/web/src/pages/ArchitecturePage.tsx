@@ -2,16 +2,17 @@
  * ArchitecturePage
  *
  * Tabbed page under /design/architecture/*
- * Tabs: Systems (existing canvas), Capabilities (tree view), Chat (taxonomy AI)
+ * Tabs: Systems (existing canvas), Capabilities (tree view)
  */
 
 import { useState, useEffect, useRef } from "react";
 import { Routes, Route, NavLink, Navigate } from "react-router-dom";
-import { Sparkles, Building2, Layers, Loader2, RefreshCw } from "lucide-react";
+import { Building2, Layers, Loader2, RefreshCw } from "lucide-react";
 import { api } from "../api/client";
 import { ArchitectureCanvas } from "../components/architecture/ArchitectureCanvas";
 import { CapabilityTreeView } from "../components/taxonomy/CapabilityTreeView";
-import { TaxonomyChat } from "../components/taxonomy/TaxonomyChat";
+// Chat tab removed — now handled by the global ContributionPanel
+import { usePageContextWriter } from "../components/contribution/PageContextProvider";
 import type { LandscapeGraph, TaxonomySystemNode } from "../types/landscape.js";
 import type { DomainModel } from "../types/domain";
 
@@ -39,8 +40,6 @@ const SUB_NAV = [
   { to: "/design/architecture/systems", label: "Systems", icon: Building2 },
   { to: "/design/architecture/capabilities", label: "Capabilities", icon: Layers },
 ];
-
-const CHAT_NAV = { to: "/design/architecture/chat", label: "Chat", icon: Sparkles };
 
 // ── SystemsView sub-component ─────────────────────────────────────────────────
 
@@ -202,6 +201,17 @@ export function ArchitecturePage() {
   const [capabilityCount, setCapabilityCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const initialLoadDone = useRef(false);
+  const { setPageContext } = usePageContextWriter();
+
+  // Publish page context for ContributionChat preamble
+  useEffect(() => {
+    setPageContext({
+      currentPage: "architecture",
+      snapshotId: snapshot?.id,
+      nodeCount: snapshot?.nodeCount ?? 0,
+      capabilityCount,
+    });
+  }, [snapshot, capabilityCount, setPageContext]);
 
   const refresh = async () => {
     try {
@@ -306,40 +316,13 @@ export function ArchitecturePage() {
               </NavLink>
             ))}
           </div>
-
-          {/* Chat tab on the right */}
-          <NavLink
-            to={CHAT_NAV.to}
-            className={({ isActive }) =>
-              `flex items-center gap-1.5 px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ml-auto ${
-                isActive
-                  ? "border-brand-accent-steel text-brand-accent-steel dark:text-brand-accent-steel"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600"
-              }`
-            }
-          >
-            <CHAT_NAV.icon className="w-4 h-4" />
-            <span>{CHAT_NAV.label}</span>
-            <span className="text-xs text-brand-accent-steel opacity-70">(Powered by Prima)</span>
-          </NavLink>
         </div>
       </header>
 
       {/* Sub-route content */}
       <div className="flex-1 overflow-auto">
         <Routes>
-          <Route index element={<Navigate to="chat" replace />} />
-          <Route
-            path="chat"
-            element={
-              <TaxonomyChat
-                snapshotId={snapshot?.id ?? null}
-                nodeCount={snapshot?.nodeCount ?? 0}
-                capabilityCount={capabilityCount}
-                onUpdated={refresh}
-              />
-            }
-          />
+          <Route index element={<Navigate to="systems" replace />} />
           <Route path="systems" element={<SystemsView />} />
           <Route path="capabilities" element={<CapabilityTreeView />} />
         </Routes>
