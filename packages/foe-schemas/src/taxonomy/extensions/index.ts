@@ -14,3 +14,7 @@ export * from "./road-item.js";
 export * from "./adr.js";
 export * from "./nfr.js";
 export * from "./change-entry.js";
+
+// Practice Area extensions
+export * from "./practice-area.js";
+export * from "./competency.js";

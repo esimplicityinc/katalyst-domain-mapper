@@ -4,6 +4,12 @@ export * from "./common.js";
 // Universal contribution lifecycle
 export * from "./contribution.js";
 
+// Entity base (universal foundation for all entities)
+export * from "./entity-base.js";
+
+// Adoption layer (team + individual adoption bridge records)
+export * from "./adoption.js";
+
 // Core taxonomy node + infrastructure schemas
 export * from "./taxonomy-node.js";
 

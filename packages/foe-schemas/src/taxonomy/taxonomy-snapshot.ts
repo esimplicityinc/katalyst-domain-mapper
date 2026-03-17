@@ -14,6 +14,8 @@ import {
 import { LayerHealthSchema } from "./layer-health.js";
 import {
   CapabilityIdPattern,
+  CompetencyIdPattern,
+  PracticeAreaIdPattern,
   UserTypeIdPattern,
   UserStoryIdPattern,
   UseCaseIdPattern,
@@ -37,11 +39,21 @@ import { RoadItemExtSchema } from "./extensions/road-item.js";
 import { AdrExtSchema } from "./extensions/adr.js";
 import { NfrExtSchema } from "./extensions/nfr.js";
 import { ChangeEntryExtSchema } from "./extensions/change-entry.js";
+import { PracticeAreaExtSchema } from "./extensions/practice-area.js";
+import { CompetencyExtSchema } from "./extensions/competency.js";
+
+// Adoption bridge schemas
+import {
+  AdoptionLevelSchema,
+  TeamAdoptionSchema,
+  IndividualAdoptionSchema,
+} from "./adoption.js";
 
 // ── Node Extension Map Schema ──────────────────────────────────────────────
 // Maps node UUIDs to their typed extension data. Each extension is optional;
 // only nodes with domain/governance-specific data have entries here.
 export const NodeExtensionsSchema = z.object({
+  // ── Existing ──
   boundedContexts: z.record(BoundedContextExtSchema).default({}),
   aggregates: z.record(AggregateExtSchema).default({}),
   valueObjects: z.record(ValueObjectExtSchema).default({}),
@@ -55,6 +67,10 @@ export const NodeExtensionsSchema = z.object({
   adrs: z.record(AdrExtSchema).default({}),
   nfrs: z.record(NfrExtSchema).default({}),
   changeEntries: z.record(ChangeEntryExtSchema).default({}),
+
+  // ── NEW: Practice Areas ──
+  practiceAreas: z.record(PracticeAreaExtSchema).default({}),
+  competencies: z.record(CompetencyExtSchema).default({}),
 });
 
 export type NodeExtensions = z.infer<typeof NodeExtensionsSchema>;
@@ -70,6 +86,11 @@ export const TaxonomyPluginSummarySchema = z.object({
   layerHealths: z.number().int().nonnegative().default(0),
   teams: z.number().int().nonnegative().default(0),
   persons: z.number().int().nonnegative().default(0),
+  // ── NEW ──
+  practiceAreas: z.number().int().nonnegative().default(0),
+  competencies: z.number().int().nonnegative().default(0),
+  teamAdoptions: z.number().int().nonnegative().default(0),
+  individualAdoptions: z.number().int().nonnegative().default(0),
 });
 
 export type TaxonomyPluginSummary = z.infer<typeof TaxonomyPluginSummarySchema>;
@@ -123,6 +144,24 @@ export const ReverseIndicesSchema = z.object({
       }),
     )
     .default({}),
+  // ── NEW: Practice Area reverse indices ──
+  byPracticeArea: z
+    .record(
+      z.object({
+        competencies: z.array(CompetencyIdPattern),
+        teams: z.array(z.string()), // team names with adoptions
+        methods: z.array(z.string()), // M-xxx refs
+      }),
+    )
+    .default({}),
+  byTeam: z
+    .record(
+      z.object({
+        practiceAreas: z.array(PracticeAreaIdPattern),
+        adoptionLevels: z.record(PracticeAreaIdPattern, AdoptionLevelSchema),
+      }),
+    )
+    .default({}),
 });
 
 export type ReverseIndices = z.infer<typeof ReverseIndicesSchema>;
@@ -144,6 +183,11 @@ export const TaxonomyStatsSchema = z.object({
   totalValueObjects: z.number().int().default(0),
   totalDomainEvents: z.number().int().default(0),
   totalGlossaryTerms: z.number().int().default(0),
+  // ── NEW ──
+  totalPracticeAreas: z.number().int().default(0),
+  totalCompetencies: z.number().int().default(0),
+  totalTeamAdoptions: z.number().int().default(0),
+  totalIndividualAdoptions: z.number().int().default(0),
   roadsByStatus: z.record(z.number().int()).default({}),
   roadsByPhase: z.record(z.number().int()).default({}),
   referentialIntegrity: z
@@ -185,6 +229,10 @@ export const TaxonomySnapshotSchema = z.object({
   // ── Node type extensions ──
   // Keyed by node UUID, carries domain/governance-specific data.
   extensions: NodeExtensionsSchema.default({}),
+
+  // ── NEW: Adoption records ──
+  teamAdoptions: z.record(TeamAdoptionSchema).default({}),
+  individualAdoptions: z.record(IndividualAdoptionSchema).default({}),
 
   // ── Derived data ──
   pluginSummary: TaxonomyPluginSummarySchema.default({}),

@@ -20,6 +20,8 @@ export const RoadItemIdPattern = z.string().regex(/^ROAD-\d{3,}$/);
 export const AdrIdPattern = z.string().regex(/^ADR-\d{3,}$/);
 export const NfrIdPattern = z.string().regex(/^NFR-[A-Z0-9]+-\d{3,}$/);
 export const ChangeIdPattern = z.string().regex(/^CHANGE-\d{3,}$/);
+export const PracticeAreaIdPattern = z.string().regex(/^PA-\d{3,}$/);
+export const CompetencyIdPattern = z.string().regex(/^COMP-\d{3,}$/);
 
 // ── Shared Enums ───────────────────────────────────────────────────────────
 export const PrioritySchema = z.enum(["critical", "high", "medium", "low"]);
