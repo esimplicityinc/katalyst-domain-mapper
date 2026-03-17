@@ -41,7 +41,6 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
   const [editResponsibility, setEditResponsibility] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editSourceDir, setEditSourceDir] = useState("");
-  const [editTeamOwner, setEditTeamOwner] = useState("");
   const [editSubdomainType, setEditSubdomainType] = useState("");
 
   // Form state
@@ -50,7 +49,6 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
   const [responsibility, setResponsibility] = useState("");
   const [description, setDescription] = useState("");
   const [sourceDir, setSourceDir] = useState("");
-  const [teamOwner, setTeamOwner] = useState("");
   const [subdomainType, setSubdomainType] = useState("");
 
   const toggleExpand = (id: string) => {
@@ -68,7 +66,6 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
     setResponsibility("");
     setDescription("");
     setSourceDir("");
-    setTeamOwner("");
     setSubdomainType("");
     setShowForm(false);
   };
@@ -80,7 +77,6 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
     setEditResponsibility(ctx.responsibility);
     setEditDescription(ctx.description ?? "");
     setEditSourceDir(ctx.sourceDirectory ?? "");
-    setEditTeamOwner(ctx.teamOwnership ?? "");
     setEditSubdomainType(ctx.subdomainType ?? "");
     setShowForm(false);
   };
@@ -92,7 +88,6 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
     setEditResponsibility("");
     setEditDescription("");
     setEditSourceDir("");
-    setEditTeamOwner("");
     setEditSubdomainType("");
   };
 
@@ -107,7 +102,6 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
         responsibility: editResponsibility.trim(),
         description: editDescription.trim() || undefined,
         sourceDirectory: editSourceDir.trim() || undefined,
-        teamOwnership: editTeamOwner.trim() || undefined,
         subdomainType: editSubdomainType
           ? (editSubdomainType as "core" | "supporting" | "generic")
           : null,
@@ -133,7 +127,6 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
         responsibility: responsibility.trim(),
         description: description.trim() || undefined,
         sourceDirectory: sourceDir.trim() || undefined,
-        teamOwnership: teamOwner.trim() || undefined,
         subdomainType: subdomainType
           ? (subdomainType as "core" | "supporting" | "generic")
           : undefined,
@@ -278,13 +271,6 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
               placeholder="Source directory (optional)"
               value={sourceDir}
               onChange={(e) => setSourceDir(e.target.value)}
-              className="px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-            <input
-              type="text"
-              placeholder="Team owner (optional)"
-              value={teamOwner}
-              onChange={(e) => setTeamOwner(e.target.value)}
               className="px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
             <div className="flex items-center gap-1.5">
@@ -489,13 +475,6 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
                               onChange={(e) => setEditSourceDir(e.target.value)}
                               className="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             />
-                            <input
-                              type="text"
-                              placeholder="Team owner (optional)"
-                              value={editTeamOwner}
-                              onChange={(e) => setEditTeamOwner(e.target.value)}
-                              className="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            />
                             <div className="flex items-center gap-1.5">
                               <select
                                 value={editSubdomainType}
@@ -547,16 +526,6 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
                             <code className="text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">
                               {ctx.sourceDirectory}
                             </code>
-                          </div>
-                        )}
-                        {ctx.teamOwnership && (
-                          <div className="text-xs">
-                            <span className="text-gray-500 dark:text-gray-400">
-                              Team:{" "}
-                            </span>
-                            <span className="text-gray-700 dark:text-gray-300">
-                              {ctx.teamOwnership}
-                            </span>
                           </div>
                         )}
 

@@ -14,7 +14,6 @@ import {
 import { api } from "../../api/client";
 import { ContributeButton } from "../contribution/ContributeButton";
 import type { ManagedCapability } from "../../types/taxonomy-management";
-import { ContributionBadge } from "../contribution/ContributionBadge";
 import {
   CAPABILITY_STATUS_COLORS,
   CATEGORY_COLORS,
@@ -71,7 +70,6 @@ function StatusDot({ status }: { status: ManagedCapability["status"] }) {
 // ── Empty form state ──────────────────────────────────────────────────────────
 
 function emptyForm(parentId?: string): Omit<ManagedCapability, "roadCount" | "storyCount"> {
-  const now = new Date().toISOString();
   return {
     id: "",
     title: "",
@@ -81,19 +79,6 @@ function emptyForm(parentId?: string): Omit<ManagedCapability, "roadCount" | "st
     parentCapability: parentId ?? null,
     dependsOn: [],
     taxonomyNode: null,
-    contribution: {
-      status: "draft",
-      version: 1,
-      supersedes: null,
-      supersededBy: null,
-      submittedAt: null,
-      submittedBy: null,
-      reviewedAt: null,
-      reviewedBy: null,
-      reviewFeedback: null,
-      createdAt: now,
-      updatedAt: now,
-    },
   };
 }
 
@@ -158,8 +143,6 @@ function TreeNodeRow({
         <span className="text-xs font-mono text-gray-400 dark:text-gray-500 flex-shrink-0">
           {node.id}
         </span>
-
-        <ContributionBadge status={node.contribution.status} size="sm" />
 
         {/* Coverage chip */}
         <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">

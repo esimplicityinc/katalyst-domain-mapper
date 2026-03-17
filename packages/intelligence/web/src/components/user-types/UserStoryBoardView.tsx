@@ -18,7 +18,6 @@ import {
   ARCHETYPE_AVATAR_COLORS,
   ARCHETYPE_COLORS,
 } from "../../types/taxonomy-management";
-import { ContributionBadge } from "../contribution/ContributionBadge";
 
 // ── User Type badge ───────────────────────────────────────────────────────────
 
@@ -81,16 +80,13 @@ function StoryCard({
   return (
     <div
       onClick={onClick}
-      className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 border-l-4 ${statusColor} rounded-md p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer ${
-        story.contribution.status === "draft" ? "opacity-60 border-dashed" : ""
-      } ${story.contribution.status === "proposed" ? "ring-1 ring-blue-300 dark:ring-blue-700" : ""}`}
+      className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 border-l-4 ${statusColor} rounded-md p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer`}
     >
       {/* ID */}
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-xs font-mono text-gray-400 dark:text-gray-500">
           {story.id}
         </span>
-        <ContributionBadge status={story.contribution.status} size="sm" />
       </div>
 
       {/* Title */}
@@ -145,7 +141,6 @@ function StoryDetailPanel({
   saving: boolean;
 }) {
   const [form, setForm] = useState<ManagedUserStory>(() => {
-    const now = new Date().toISOString();
     return {
       id: story.id ?? "",
       title: story.title ?? "",
@@ -155,19 +150,6 @@ function StoryDetailPanel({
       useCases: story.useCases ?? [],
       acceptanceCriteria: story.acceptanceCriteria ?? [],
       taxonomyNode: story.taxonomyNode ?? null,
-      contribution: story.contribution ?? {
-        status: "draft",
-        version: 1,
-        supersedes: null,
-        supersededBy: null,
-        submittedAt: null,
-        submittedBy: null,
-        reviewedAt: null,
-        reviewedBy: null,
-        reviewFeedback: null,
-        createdAt: now,
-        updatedAt: now,
-      },
     };
   });
   const [newCap, setNewCap] = useState("");

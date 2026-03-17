@@ -17,7 +17,6 @@ import {
   ARCHETYPE_COLORS,
   ARCHETYPE_AVATAR_COLORS,
 } from "../../types/taxonomy-management";
-import { ContributionBadge } from "../contribution/ContributionBadge";
 
 // ── Avatar ────────────────────────────────────────────────────────────────────
 
@@ -222,7 +221,6 @@ function UserTypeDetailPanel({
   saving: boolean;
 }) {
   const [form, setForm] = useState<Omit<ManagedUserType, "storyCount" | "capabilityCount">>(() => {
-    const now = new Date().toISOString();
     return {
       id: userType.id ?? "",
       name: userType.name,
@@ -237,19 +235,6 @@ function UserTypeDetailPanel({
       technicalProfile: userType.technicalProfile ?? null,
       relatedStories: userType.relatedStories ?? [],
       relatedUserTypes: userType.relatedUserTypes ?? [],
-      contribution: userType.contribution ?? {
-        status: "draft",
-        version: 1,
-        supersedes: null,
-        supersededBy: null,
-        submittedAt: null,
-        submittedBy: null,
-        reviewedAt: null,
-        reviewedBy: null,
-        reviewFeedback: null,
-        createdAt: now,
-        updatedAt: now,
-      },
     };
   });
   const [showTechnicalProfile, setShowTechnicalProfile] = useState(false);
@@ -579,7 +564,6 @@ function UserTypeCard({
                 {userType.archetype}
               </span>
               <StatusBadge status={userType.status} />
-              <ContributionBadge status={userType.contribution.status} size="sm" />
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, ArrowRight, FolderOpen, Users, Info, Layers, Pencil, Loader2 } from "lucide-react";
+import { X, ArrowRight, FolderOpen, Info, Layers, Pencil, Loader2 } from "lucide-react";
 import type { BoundedContext, DomainModelFull } from "../../types/domain";
 import { api } from "../../api/client";
 import { SubdomainBadge } from "./SubdomainBadge";
@@ -27,7 +27,6 @@ export function ContextDetailPanel({
   const [editResponsibility, setEditResponsibility] = useState(context.responsibility);
   const [editDescription, setEditDescription] = useState(context.description ?? "");
   const [editSourceDir, setEditSourceDir] = useState(context.sourceDirectory ?? "");
-  const [editTeamOwner, setEditTeamOwner] = useState(context.teamOwnership ?? "");
   const [editSubdomainType, setEditSubdomainType] = useState(context.subdomainType ?? "");
 
   const aggregates = model.aggregates.filter((a) => a.contextId === context.id);
@@ -45,7 +44,6 @@ export function ContextDetailPanel({
     setEditResponsibility(context.responsibility);
     setEditDescription(context.description ?? "");
     setEditSourceDir(context.sourceDirectory ?? "");
-    setEditTeamOwner(context.teamOwnership ?? "");
     setEditSubdomainType(context.subdomainType ?? "");
     setEditing(true);
   };
@@ -65,7 +63,6 @@ export function ContextDetailPanel({
         responsibility: editResponsibility.trim(),
         description: editDescription.trim() || undefined,
         sourceDirectory: editSourceDir.trim() || undefined,
-        teamOwnership: editTeamOwner.trim() || undefined,
         subdomainType: editSubdomainType
           ? (editSubdomainType as "core" | "supporting" | "generic")
           : null,
@@ -184,18 +181,6 @@ export function ContextDetailPanel({
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
-                Team Owner
-              </label>
-              <input
-                type="text"
-                value={editTeamOwner}
-                onChange={(e) => setEditTeamOwner(e.target.value)}
-                placeholder="Optional"
-                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
-            <div>
               <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-1">
                 Subdomain Type
                 <DDDTooltip termKey="core-subdomain" position="right" />
@@ -254,19 +239,6 @@ export function ContextDetailPanel({
                 {context.responsibility}
               </p>
             </div>
-
-            {/* Team ownership */}
-            {context.teamOwnership && (
-              <div>
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
-                  <Users className="w-3 h-3" />
-                  Team
-                </div>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  {context.teamOwnership}
-                </p>
-              </div>
-            )}
 
             {/* Source directory */}
             {context.sourceDirectory && (
