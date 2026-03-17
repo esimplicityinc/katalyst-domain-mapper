@@ -743,3 +743,98 @@ export const contributionVersions = sqliteTable("contribution_versions", {
     .notNull(),
   createdAt: text("created_at").notNull(),
 });
+
+// ── Practice Areas ─────────────────────────────────────────────────────────
+
+export const practiceAreas = sqliteTable("practice_areas", {
+  id: text("id").primaryKey(),
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  labels: text("labels").notNull().default("{}"),
+  owners: text("owners").notNull().default("[]"),
+  dependsOn: text("depends_on").notNull().default("[]"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+  contribution: text("contribution").notNull().default("{}"),
+  // Extension columns
+  title: text("title").notNull(),
+  canonical: integer("canonical", { mode: "boolean" }).notNull().default(false),
+  pillars: text("pillars").notNull().default("[]"),
+  competencies: text("competencies").notNull().default("[]"),
+  methods: text("methods").notNull().default("[]"),
+  tools: text("tools").notNull().default("[]"),
+});
+
+export const competencies = sqliteTable("competencies", {
+  id: text("id").primaryKey(),
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  labels: text("labels").notNull().default("{}"),
+  owners: text("owners").notNull().default("[]"),
+  dependsOn: text("depends_on").notNull().default("[]"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+  contribution: text("contribution").notNull().default("{}"),
+  // Extension columns
+  title: text("title").notNull(),
+  practiceAreaId: text("practice_area_id").notNull(),
+  competencyType: text("competency_type").notNull(),
+  skills: text("skills").notNull().default("[]"),
+  levelDefinitions: text("level_definitions").notNull().default("[]"),
+  dependencies: text("dependencies").notNull().default("[]"),
+});
+
+// ── Adoption Bridge Tables ─────────────────────────────────────────────────
+
+export const teamAdoptions = sqliteTable("team_adoptions", {
+  id: text("id").primaryKey(),
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  labels: text("labels").notNull().default("{}"),
+  owners: text("owners").notNull().default("[]"),
+  dependsOn: text("depends_on").notNull().default("[]"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+  contribution: text("contribution").notNull().default("{}"),
+  // Bridge columns
+  teamName: text("team_name").notNull(),
+  practiceAreaId: text("practice_area_id").notNull(),
+  adoptionLevel: text("adoption_level").notNull(),
+  adoptedAt: text("adopted_at").notNull(),
+  lastAssessedAt: text("last_assessed_at"),
+  assessedBy: text("assessed_by"),
+  competencyProgress: text("competency_progress").notNull().default("[]"),
+  scanEvidence: text("scan_evidence").notNull().default("[]"),
+  notes: text("notes"),
+});
+
+export const individualAdoptions = sqliteTable("individual_adoptions", {
+  id: text("id").primaryKey(),
+  snapshotId: text("snapshot_id")
+    .notNull()
+    .references(() => taxonomySnapshots.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  labels: text("labels").notNull().default("{}"),
+  owners: text("owners").notNull().default("[]"),
+  dependsOn: text("depends_on").notNull().default("[]"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+  contribution: text("contribution").notNull().default("{}"),
+  // Bridge columns
+  personName: text("person_name").notNull(),
+  practiceAreaId: text("practice_area_id").notNull(),
+  role: text("role").notNull(),
+  competencyProgress: text("competency_progress").notNull().default("[]"),
+  skillAssessments: text("skill_assessments").notNull().default("[]"),
+  notes: text("notes"),
+});
