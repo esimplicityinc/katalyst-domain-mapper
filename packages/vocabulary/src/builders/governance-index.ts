@@ -13,6 +13,8 @@ import { parseBoundedContextFile } from "../parsers/governance/bounded-context.j
 import { parseAggregateFile } from "../parsers/governance/aggregate.js";
 import { parseValueObjectFile } from "../parsers/governance/value-object.js";
 import { parseDomainEventFile } from "../parsers/governance/domain-event.js";
+import { parsePracticeAreaFile } from "../parsers/governance/practice-area.js";
+import { parseCompetencyFile } from "../parsers/governance/competency.js";
 import { GOVERNANCE_ROOT } from "../config.js";
 
 /**
@@ -164,6 +166,24 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
   );
   allErrors.push(...deErrors);
 
+  // Practice areas
+  const { records: practiceAreas, errors: paErrors } = await parseAllFiles(
+    "practice-areas/PA-*.md",
+    GOVERNANCE_ROOT,
+    parsePracticeAreaFile,
+    "title",
+  );
+  allErrors.push(...paErrors);
+
+  // Competencies (may not exist as individual markdown files yet)
+  const { records: competencies, errors: compErrors } = await parseAllFiles(
+    "competencies/COMP-*.md",
+    GOVERNANCE_ROOT,
+    parseCompetencyFile,
+    "title",
+  );
+  allErrors.push(...compErrors);
+
   // Log parse errors as warnings
   if (allErrors.length > 0) {
     console.warn(`\nParse warnings (${allErrors.length}):`);
@@ -270,6 +290,19 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
       context: agg.context,
       valueObjects: agg.valueObjects,
       events: agg.events,
+    };
+  }
+
+  // byPracticeArea: for each practice area, its competencies, teams, and methods
+  const byPracticeArea: Record<
+    string,
+    { competencies: string[]; teams: string[]; methods: string[] }
+  > = {};
+  for (const [title, pa] of Object.entries(practiceAreas)) {
+    byPracticeArea[title] = {
+      competencies: pa.competencies,
+      teams: [],
+      methods: pa.methods,
     };
   }
 
@@ -417,7 +450,13 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
       valueObjects,
       domainEvents,
       glossaryTerms: {},
+      practiceAreas,
+      competencies,
     },
+
+    // Adoption records (empty for governance-only build)
+    teamAdoptions: {},
+    individualAdoptions: {},
 
     // Derived data
     pluginSummary: {
@@ -430,6 +469,10 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
       layerHealths: 0,
       teams: 0,
       persons: 0,
+      practiceAreas: Object.keys(practiceAreas).length,
+      competencies: Object.keys(competencies).length,
+      teamAdoptions: 0,
+      individualAdoptions: 0,
     },
     reverseIndices: {
       byCapability,
@@ -437,6 +480,8 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
       byRoad,
       byContext,
       byAggregate,
+      byPracticeArea,
+      byTeam: {},
     },
     stats: {
       totalNodes: 0,
@@ -454,6 +499,10 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
       totalValueObjects: Object.keys(valueObjects).length,
       totalDomainEvents: Object.keys(domainEvents).length,
       totalGlossaryTerms: 0,
+      totalPracticeAreas: Object.keys(practiceAreas).length,
+      totalCompetencies: Object.keys(competencies).length,
+      totalTeamAdoptions: 0,
+      totalIndividualAdoptions: 0,
       roadsByStatus,
       roadsByPhase,
       referentialIntegrity: {
@@ -471,7 +520,9 @@ export async function buildGovernanceIndex(): Promise<taxonomy.TaxonomySnapshot>
       `${Object.keys(userStories).length} stories, ` +
       `${Object.keys(roadItems).length} roads, ` +
       `${Object.keys(adrs).length} ADRs, ` +
-      `${Object.keys(nfrs).length} NFRs`,
+      `${Object.keys(nfrs).length} NFRs, ` +
+      `${Object.keys(practiceAreas).length} practice areas, ` +
+      `${Object.keys(competencies).length} competencies`,
   );
   if (
     Object.keys(boundedContexts).length > 0 ||

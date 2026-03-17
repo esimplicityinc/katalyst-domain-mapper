@@ -36,6 +36,14 @@ export const RelationshipTypes = {
   // FieldGuide relationships
   CONTAINS: "CONTAINS",
   ADOPTED_BY: "ADOPTED_BY",
+
+  // Practice Area relationships
+  HAS_COMPETENCY: "HAS_COMPETENCY",
+  DEPENDS_ON_COMPETENCY: "DEPENDS_ON_COMPETENCY",
+  ADOPTED_BY_TEAM: "ADOPTED_BY_TEAM",
+  ADOPTED_BY_PERSON: "ADOPTED_BY_PERSON",
+  ASSESSED_IN: "ASSESSED_IN",
+  EVIDENCED_BY: "EVIDENCED_BY",
 } as const;
 
 export type RelationshipType =
@@ -73,6 +81,68 @@ export const AdoptedByPropsSchema = z.object({
   foeMaturity: z.enum(["hypothesized", "observing", "validated", "proven"]),
 });
 export type AdoptedByProps = z.infer<typeof AdoptedByPropsSchema>;
+
+/**
+ * Properties for HAS_COMPETENCY relationship (PracticeArea -> Competency)
+ */
+export const HasCompetencyPropsSchema = z.object({
+  required: z.boolean().optional(),
+  order: z.number().int().optional(),
+});
+export type HasCompetencyProps = z.infer<typeof HasCompetencyPropsSchema>;
+
+/**
+ * Properties for DEPENDS_ON_COMPETENCY relationship (Competency -> Competency)
+ */
+export const DependsOnCompetencyPropsSchema = z.object({
+  dependencyType: z.enum(["prerequisite", "corequisite", "recommended"]),
+});
+export type DependsOnCompetencyProps = z.infer<
+  typeof DependsOnCompetencyPropsSchema
+>;
+
+/**
+ * Properties for ADOPTED_BY_TEAM relationship (PracticeArea -> Team)
+ */
+export const AdoptedByTeamPropsSchema = z.object({
+  adoptionDate: z.string().datetime(),
+  adoptionLevel: z.enum(["exploring", "adopting", "proficient", "leading"]),
+  score: z.number().min(0).max(100).optional(),
+});
+export type AdoptedByTeamProps = z.infer<typeof AdoptedByTeamPropsSchema>;
+
+/**
+ * Properties for ADOPTED_BY_PERSON relationship (PracticeArea -> Person)
+ */
+export const AdoptedByPersonPropsSchema = z.object({
+  assessmentDate: z.string().datetime(),
+  proficiencyLevel: z.enum(["awareness", "working", "practitioner", "expert"]),
+  selfAssessed: z.boolean(),
+});
+export type AdoptedByPersonProps = z.infer<typeof AdoptedByPersonPropsSchema>;
+
+/**
+ * Properties for ASSESSED_IN relationship (Person -> Competency)
+ */
+export const AssessedInPropsSchema = z.object({
+  assessmentDate: z.string().datetime(),
+  score: z.number().min(0).max(100).optional(),
+  assessor: z.string().optional(),
+  notes: z.string().optional(),
+});
+export type AssessedInProps = z.infer<typeof AssessedInPropsSchema>;
+
+/**
+ * Properties for EVIDENCED_BY relationship (TeamAdoption -> Scan)
+ */
+export const EvidencedByPropsSchema = z.object({
+  scanDate: z.string().datetime(),
+  relevantDimension: z
+    .enum(["Feedback", "Understanding", "Confidence"])
+    .optional(),
+  evidenceStrength: z.enum(["strong", "moderate", "weak"]).optional(),
+});
+export type EvidencedByProps = z.infer<typeof EvidencedByPropsSchema>;
 
 /**
  * Properties for HAS_SCAN relationship
@@ -169,5 +239,35 @@ export const RELATIONSHIP_DEFINITIONS = {
     from: "FieldGuide",
     to: "Method",
     properties: AdoptedByPropsSchema.optional(),
+  },
+  [RelationshipTypes.HAS_COMPETENCY]: {
+    from: "PracticeArea",
+    to: "Competency",
+    properties: HasCompetencyPropsSchema.optional(),
+  },
+  [RelationshipTypes.DEPENDS_ON_COMPETENCY]: {
+    from: "Competency",
+    to: "Competency",
+    properties: DependsOnCompetencyPropsSchema,
+  },
+  [RelationshipTypes.ADOPTED_BY_TEAM]: {
+    from: "PracticeArea",
+    to: "TeamAdoption",
+    properties: AdoptedByTeamPropsSchema,
+  },
+  [RelationshipTypes.ADOPTED_BY_PERSON]: {
+    from: "PracticeArea",
+    to: "IndividualAdoption",
+    properties: AdoptedByPersonPropsSchema,
+  },
+  [RelationshipTypes.ASSESSED_IN]: {
+    from: "IndividualAdoption",
+    to: "Competency",
+    properties: AssessedInPropsSchema,
+  },
+  [RelationshipTypes.EVIDENCED_BY]: {
+    from: "TeamAdoption",
+    to: "Scan",
+    properties: EvidencedByPropsSchema,
   },
 } as const;

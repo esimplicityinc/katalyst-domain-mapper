@@ -90,6 +90,38 @@ These terms belong to the Governance context — the delivery process infrastruc
 
 ---
 
+## Entity Base Terms
+
+These terms describe the universal foundation shared by all entities in the system.
+
+| Term | Definition | Context(s) | Code Reference |
+|------|-----------|------------|----------------|
+| **Entity Base** | The universal foundation for all entities in the system. Provides identity (`id`, `name`), metadata (`description`, `labels`), ownership (`owners`, `dependsOn`), timestamps (`createdAt`, `updatedAt`), and lifecycle (`contribution`). Every tree node, infrastructure item, and bridge record composes from Entity Base. | All | `EntityBaseSchema` in `@foe/schemas/src/taxonomy/entity-base.ts` |
+
+---
+
+## Practice Area & Adoption Terms
+
+These terms belong to the Practice Area context — tracking how teams and individuals adopt and grow in FOE engineering practices.
+
+| Term | Definition | Context(s) | Code Reference |
+|------|-----------|------------|----------------|
+| **Practice Area** | A universal category of engineering practice (e.g., Testing, CI/CD, DevOps). Contains competencies, references methods and tools. Has 6 standard pillars. Canonical practice areas ship pre-seeded; users can add custom ones. Identified by `PA-xxx`. | Governance, Field Guide | `PracticeAreaExtSchema` in `@foe/schemas/src/taxonomy/extensions/practice-area.ts` |
+| **Pillar** | One of 6 structural facets of a practice area: Strategy, Standards, Frameworks, Libraries, Processes, Measures. Value object embedded in a Practice Area. | Governance | `PracticeAreaPillarSchema` in `@foe/schemas/src/taxonomy/extensions/practice-area.ts` |
+| **Competency** | A named grouping of related skills within a practice area, organized into 3 proficiency levels (basic, intermediate, advanced). Can have cross-competency dependencies forming a DAG. Typed as `practice` (methodology) or `system` (platform/technology). Identified by `COMP-xxx`. | Governance, Scanning | `CompetencyExtSchema` in `@foe/schemas/src/taxonomy/extensions/competency.ts` |
+| **Skill** | A specific, assessable ability within a competency at a particular level. May link to a Method or Tool. Value object embedded in a Competency. | Governance | `SkillSchema` in `@foe/schemas/src/taxonomy/extensions/competency.ts` |
+| **Competency Level** | A proficiency tier within a competency: `basic` (foundational knowledge), `intermediate` (independent application), `advanced` (expert, can teach others). | Governance | `CompetencyLevelSchema` in `@foe/schemas/src/taxonomy/extensions/competency.ts` |
+| **Competency Dependency** | A prerequisite relationship between competency levels, potentially crossing practice area boundaries. All dependencies form a directed acyclic graph (DAG) validated at write time. | Governance | `CompetencyDependencySchema` in `@foe/schemas/src/taxonomy/extensions/competency.ts` |
+| **Adoption Level** | A team's overall maturity in a practice area: `aware` (exploring), `learning` (actively building skills), `practicing` (applying consistently), `mastered` (embedded in culture, teaching others). | Governance | `AdoptionLevelSchema` in `@foe/schemas/src/taxonomy/adoption.ts` |
+| **Team Adoption** | Bridge record connecting a Team to a Practice Area, tracking adoption level, competency progress, and scanner evidence. | Governance, Scanning | `TeamAdoptionSchema` in `@foe/schemas/src/taxonomy/adoption.ts` |
+| **Individual Adoption** | Bridge record connecting a Person to a Practice Area, tracking competency progress, per-skill assessments, and governance role. | Governance | `IndividualAdoptionSchema` in `@foe/schemas/src/taxonomy/adoption.ts` |
+| **Skill Gauge** | The proficiency rating for an individual's specific skill: `strong` (fully proficient), `improving` (growing capability), `weak` (minimal capability), `none` (no capability). | Governance | `SkillGaugeSchema` in `@foe/schemas/src/taxonomy/adoption.ts` |
+| **Adoption Role** | A person's governance function within a practice area: `lead` (implements across teams), `advocate` (champions on a team), `sme` (certifies system knowledge), `member` (participating). | Governance | `AdoptionRoleSchema` in `@foe/schemas/src/taxonomy/adoption.ts` |
+| **Scan Evidence** | A finding from an FOE Report linked to a team's adoption record. Typed as `confirms` (supports declared level), `challenges` (contradicts it), or `neutral` (inconclusive). | Scanning, Governance | `ScanEvidenceSchema` in `@foe/schemas/src/taxonomy/adoption.ts` |
+| **Assessment Status** | The completion state of a competency or skill assessment: `not_started`, `in_progress`, `self_assessed` (awaiting verification), `verified` (formally signed off by assessor). | Governance | `AssessmentStatusSchema` in `@foe/schemas/src/taxonomy/adoption.ts` |
+
+---
+
 ## Technical Infrastructure Terms
 
 These terms describe the system's technical architecture rather than business domain concepts.
@@ -126,6 +158,21 @@ These terms are ambiguous, overloaded, or misaligned with the domain. Use the pr
 | level, tier, stage | **Maturity Level** | The 4-tier classification (Hypothesized → Optimized) is a "Maturity Level," not a generic level |
 | data model, schema | **Domain Model** | In the DDD modeling context, "Domain Model" is the container for bounded contexts, aggregates, etc. "Schema" refers to Zod validation schemas. |
 | context, area, zone | **Bounded Context** | Use the full term "Bounded Context" to be precise about DDD semantics. "Context" alone is ambiguous. |
+| skill, ability, capability (for people) | **Competency** | "Competency" is the term for an assessable skill within a practice area. "Capability" already means a system function (see Governance Terms). "Skill" and "ability" are too informal. |
+| topic, discipline, pillar | **Practice Area** | "Practice Area" is the term for a category of engineering practice. "Topic" is too vague. "Pillar" conflicts with the 6-pillar structure within practice areas. "Discipline" overlaps with external frameworks. |
+| progress, status (for teams) | **Adoption Level** | When describing a team's engagement with a practice area, use "Adoption Level" (`aware → learning → practicing → mastered`). "Progress" and "status" are too generic. |
+| beginner, intermediate, expert (for people) | **Skill Gauge** | Use "Skill Gauge" (`strong → improving → weak → none`) for individual skill assessment. The generic terms don't map to our precise 4-level scale. |
+| proof, validation (for scans) | **Scan Evidence** | When linking scans to adoption claims, use "Scan Evidence" with type (`confirms \| challenges \| neutral`). "Proof" implies certainty; "validation" conflicts with schema validation. |
+| discipline, category, domain | **Practice Area** | "Practice Area" is the established term for a category of engineering practice |
+| skill group, knowledge area | **Competency** | "Competency" conveys a group of related skills with proficiency levels |
+| tier, stage | **Competency Level** | Specifically basic/intermediate/advanced within a competency |
+| prerequisite, requirement | **Competency Dependency** | "Dependency" conveys the DAG structure and is consistent with `dependsOn` on Entity Base |
+| maturity (for team adoption) | **Adoption Level** | Avoids collision with FOE Report maturity levels (Hypothesized/Emerging/Practicing/Optimized) |
+| team practice, practice assignment | **Team Adoption** | "Adoption" conveys the voluntary, progressive nature of the relationship |
+| profile (for individual tracking) | **Individual Adoption** | Consistent with Team Adoption terminology |
+| rating, grade | **Skill Gauge** | "Gauge" conveys measurement rather than judgment |
+| designation, position | **Adoption Role** | Specifically lead/advocate/sme/member within a practice area |
+| base class, abstract entity | **Entity Base** | "Entity Base" is the Katalyst term for the universal schema foundation |
 
 ---
 

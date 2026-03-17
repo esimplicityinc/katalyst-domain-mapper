@@ -10,3 +10,5 @@ export { parseBoundedContextFile } from "./bounded-context.js";
 export { parseAggregateFile } from "./aggregate.js";
 export { parseValueObjectFile } from "./value-object.js";
 export { parseDomainEventFile } from "./domain-event.js";
+export { parsePracticeAreaFile } from "./practice-area.js";
+export { parseCompetencyFile } from "./competency.js";

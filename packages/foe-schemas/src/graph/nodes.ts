@@ -137,6 +137,71 @@ export const FrameworkNodeSchema = z.object({
 export type FrameworkNode = z.infer<typeof FrameworkNodeSchema>;
 
 /**
+ * PracticeArea Node
+ * Represents a high-level FOE practice area (e.g., "Test Automation", "CI/CD Pipeline")
+ * that teams and individuals can adopt
+ */
+export const PracticeAreaNodeSchema = z.object({
+  id: z.string().uuid(),
+  slug: z.string(),
+  title: z.string(),
+  dimension: z.enum(["Feedback", "Understanding", "Confidence"]),
+  description: z.string().optional(),
+  maturityLevel: z.enum([
+    "hypothesized",
+    "emerging",
+    "practicing",
+    "optimized",
+  ]),
+});
+export type PracticeAreaNode = z.infer<typeof PracticeAreaNodeSchema>;
+
+/**
+ * Competency Node
+ * Represents a specific skill or capability within a practice area
+ * that can be assessed and tracked
+ */
+export const CompetencyNodeSchema = z.object({
+  id: z.string().uuid(),
+  slug: z.string(),
+  title: z.string(),
+  description: z.string().optional(),
+  level: z.enum(["foundational", "intermediate", "advanced"]),
+  assessmentCriteria: z.array(z.string()).optional(),
+});
+export type CompetencyNode = z.infer<typeof CompetencyNodeSchema>;
+
+/**
+ * TeamAdoption Node
+ * Represents a team's adoption of a practice area, with evidence and scoring
+ */
+export const TeamAdoptionNodeSchema = z.object({
+  id: z.string().uuid(),
+  teamName: z.string(),
+  adoptionDate: z.string().datetime(),
+  adoptionLevel: z.enum(["exploring", "adopting", "proficient", "leading"]),
+  score: z.number().min(0).max(100).optional(),
+  notes: z.string().optional(),
+});
+export type TeamAdoptionNode = z.infer<typeof TeamAdoptionNodeSchema>;
+
+/**
+ * IndividualAdoption Node
+ * Represents an individual's adoption/assessment of a practice area competency
+ */
+export const IndividualAdoptionNodeSchema = z.object({
+  id: z.string().uuid(),
+  personName: z.string(),
+  assessmentDate: z.string().datetime(),
+  proficiencyLevel: z.enum(["awareness", "working", "practitioner", "expert"]),
+  selfAssessed: z.boolean(),
+  notes: z.string().optional(),
+});
+export type IndividualAdoptionNode = z.infer<
+  typeof IndividualAdoptionNodeSchema
+>;
+
+/**
  * Keyword Node
  * Used for method auto-linking
  */
@@ -160,6 +225,12 @@ export const GraphNodeSchema = z.discriminatedUnion("_label", [
   FieldGuideNodeSchema.extend({ _label: z.literal("FieldGuide") }),
   FrameworkNodeSchema.extend({ _label: z.literal("Framework") }),
   KeywordNodeSchema.extend({ _label: z.literal("Keyword") }),
+  PracticeAreaNodeSchema.extend({ _label: z.literal("PracticeArea") }),
+  CompetencyNodeSchema.extend({ _label: z.literal("Competency") }),
+  TeamAdoptionNodeSchema.extend({ _label: z.literal("TeamAdoption") }),
+  IndividualAdoptionNodeSchema.extend({
+    _label: z.literal("IndividualAdoption"),
+  }),
 ]);
 export type GraphNode = z.infer<typeof GraphNodeSchema>;
 
@@ -178,4 +249,8 @@ export const NodeLabels = {
   FIELD_GUIDE: "FieldGuide",
   FRAMEWORK: "Framework",
   KEYWORD: "Keyword",
+  PRACTICE_AREA: "PracticeArea",
+  COMPETENCY: "Competency",
+  TEAM_ADOPTION: "TeamAdoption",
+  INDIVIDUAL_ADOPTION: "IndividualAdoption",
 } as const;

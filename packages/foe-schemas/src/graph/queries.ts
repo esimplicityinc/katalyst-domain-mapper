@@ -181,6 +181,97 @@ export const CYPHER_QUERIES = {
     CREATE (r)-[:HAS_SCAN {scannedAt: $scanDate}]->(s)
     RETURN s
   `,
+
+  // ─── Practice Area Queries ────────────────────────────────────────────
+
+  /**
+   * Get all practice areas with their competencies
+   */
+  GET_PRACTICE_AREAS_WITH_COMPETENCIES: `
+    MATCH (pa:PracticeArea)
+    OPTIONAL MATCH (pa)-[hc:HAS_COMPETENCY]->(c:Competency)
+    WITH pa, c, hc
+    ORDER BY hc.order ASC
+    RETURN pa,
+      collect({
+        competency: c,
+        required: hc.required,
+        order: hc.order
+      }) as competencies
+    ORDER BY pa.dimension, pa.title
+  `,
+
+  /**
+   * Get team adoption summary across all practice areas
+   */
+  GET_TEAM_ADOPTION_SUMMARY: `
+    MATCH (pa:PracticeArea)-[:ADOPTED_BY_TEAM]->(ta:TeamAdoption)
+    OPTIONAL MATCH (ta)-[ev:EVIDENCED_BY]->(s:Scan)
+    WITH pa, ta, collect(s) as scans
+    RETURN pa.title as practiceArea,
+      pa.dimension as dimension,
+      ta.teamName as team,
+      ta.adoptionLevel as adoptionLevel,
+      ta.score as score,
+      ta.adoptionDate as adoptionDate,
+      size(scans) as evidenceCount
+    ORDER BY pa.dimension, pa.title, ta.teamName
+  `,
+
+  /**
+   * Get competency prerequisite chain for a given competency
+   * Returns the full dependency graph showing what must be learned first
+   */
+  GET_COMPETENCY_PREREQUISITE_CHAIN: `
+    MATCH path = (target:Competency {slug: $competencySlug})<-[:DEPENDS_ON_COMPETENCY*0..]-(prerequisite:Competency)
+    WITH nodes(path) as chain, relationships(path) as deps
+    UNWIND range(0, size(chain) - 1) as idx
+    WITH chain[idx] as competency,
+      CASE WHEN idx < size(deps) THEN deps[idx].dependencyType ELSE null END as dependencyType,
+      idx as depth
+    RETURN DISTINCT competency.slug as slug,
+      competency.title as title,
+      competency.level as level,
+      dependencyType,
+      depth
+    ORDER BY depth DESC
+  `,
+
+  /**
+   * Get team adoption for a specific practice area with evidence
+   */
+  GET_TEAM_ADOPTION_WITH_EVIDENCE: `
+    MATCH (pa:PracticeArea {slug: $practiceAreaSlug})-[:ADOPTED_BY_TEAM]->(ta:TeamAdoption)
+    OPTIONAL MATCH (ta)-[ev:EVIDENCED_BY]->(s:Scan)
+    RETURN ta.teamName as team,
+      ta.adoptionLevel as adoptionLevel,
+      ta.score as score,
+      ta.adoptionDate as adoptionDate,
+      collect({
+        scanDate: s.scanDate,
+        overallScore: s.overallScore,
+        dimension: ev.relevantDimension,
+        strength: ev.evidenceStrength
+      }) as evidence
+    ORDER BY ta.score DESC
+  `,
+
+  /**
+   * Get individual competency assessments for a practice area
+   */
+  GET_INDIVIDUAL_ASSESSMENTS: `
+    MATCH (pa:PracticeArea {slug: $practiceAreaSlug})-[:ADOPTED_BY_PERSON]->(ia:IndividualAdoption)
+    OPTIONAL MATCH (ia)-[:ASSESSED_IN]->(c:Competency)
+    RETURN ia.personName as person,
+      ia.proficiencyLevel as proficiency,
+      ia.assessmentDate as assessmentDate,
+      ia.selfAssessed as selfAssessed,
+      collect({
+        competency: c.title,
+        level: c.level
+      }) as competencyAssessments
+    ORDER BY ia.proficiencyLevel DESC, ia.personName
+  `,
 } as const;
 
 /**
@@ -267,4 +358,24 @@ export interface CreateScanParams {
   scannerVersion: string;
   assessmentMode: "standard" | "critical";
   executiveSummary?: string;
+}
+
+export interface GetPracticeAreasWithCompetenciesParams {
+  // No parameters required — returns all practice areas
+}
+
+export interface GetTeamAdoptionSummaryParams {
+  // No parameters required — returns full summary
+}
+
+export interface GetCompetencyPrerequisiteChainParams {
+  competencySlug: string;
+}
+
+export interface GetTeamAdoptionWithEvidenceParams {
+  practiceAreaSlug: string;
+}
+
+export interface GetIndividualAssessmentsParams {
+  practiceAreaSlug: string;
 }
