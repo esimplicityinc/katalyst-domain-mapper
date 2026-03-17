@@ -77,6 +77,15 @@ Then('the value at {string} should be a number', async ({ world }, path: string)
   }
 });
 
+Then('the value at {string} should contain {string}', async ({ world }, path: string, expected: string) => {
+  const json = world.lastJson as Record<string, unknown>;
+  const value = resolveJsonPath(json, path);
+  const str = String(value);
+  if (!str.includes(expected)) {
+    throw new Error(`Expected value at "${path}" to contain "${expected}", got "${str}"`);
+  }
+});
+
 // ── Generic navigation / content steps (used by chat & architecture features) ──
 
 Given('I navigate to the web application', async ({ page }) => {
