@@ -20,6 +20,10 @@ import { createLintRoutes } from "./routes/v1/lint.js";
 import { createFlagRoutes } from "./routes/v1/flags.js";
 import { createOrchestratorRoutes } from "./routes/v1/orchestrator.js";
 import { createContributionRoutes } from "./routes/v1/contributions.js";
+import { createPracticeAreaRoutes } from "./routes/v1/practice-areas.js";
+import { createCompetencyRoutes } from "./routes/v1/competencies.js";
+import { createTeamAdoptionRoutes } from "./routes/v1/team-adoptions.js";
+import { createIndividualAdoptionRoutes } from "./routes/v1/individual-adoptions.js";
 import type { Container } from "../bootstrap/container.js";
 import * as path from "node:path";
 import * as fs from "node:fs";
@@ -189,6 +193,26 @@ export function createServer(container: Container) {
         .use(
           createContributionRoutes({
             contributionUseCase: container.contributionUseCase,
+          }),
+        )
+        .use(
+          createPracticeAreaRoutes({
+            managePracticeAreas: container.managePracticeAreas,
+          }),
+        )
+        .use(
+          createCompetencyRoutes({
+            manageCompetencies: container.manageCompetencies,
+          }),
+        )
+        .use(
+          createTeamAdoptionRoutes({
+            manageAdoptions: container.manageAdoptions,
+          }),
+        )
+        .use(
+          createIndividualAdoptionRoutes({
+            manageAdoptions: container.manageAdoptions,
           }),
         ),
     )

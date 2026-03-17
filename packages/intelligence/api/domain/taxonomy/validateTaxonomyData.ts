@@ -118,6 +118,8 @@ const VALID_NODE_TYPES = new Set([
   "layer",
   "user",
   "org_unit",
+  "practice_area",
+  "competency",
 ]);
 
 export function validateTaxonomyData(data: unknown): ValidatedTaxonomyData {

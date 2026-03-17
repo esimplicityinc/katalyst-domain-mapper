@@ -41,6 +41,9 @@ import { ManageArtifacts } from "../usecases/domain-model/ManageArtifacts.js";
 import { ManageGlossary } from "../usecases/domain-model/ManageGlossary.js";
 import { ManageWorkflows } from "../usecases/domain-model/ManageWorkflows.js";
 import { LintLandscape } from "../usecases/lint/LintLandscape.js";
+import { ManagePracticeAreas } from "../usecases/taxonomy/ManagePracticeAreas.js";
+import { ManageCompetencies } from "../usecases/taxonomy/ManageCompetencies.js";
+import { ManageAdoptions } from "../usecases/taxonomy/ManageAdoptions.js";
 import { ContributionUseCase } from "../usecases/contribution/ContributionUseCase.js";
 import { ContributionRepositorySQLite } from "../adapters/sqlite/ContributionRepositorySQLite.js";
 import { TypeRouter } from "../usecases/contribution/TypeRouter.js";
@@ -88,6 +91,9 @@ export interface Container {
   manageGlossary: ManageGlossary;
   manageWorkflows: ManageWorkflows;
   lintLandscape: LintLandscape;
+  managePracticeAreas: ManagePracticeAreas;
+  manageCompetencies: ManageCompetencies;
+  manageAdoptions: ManageAdoptions;
   contributionRepo: ContributionRepository;
   contributionUseCase: ContributionUseCase;
   healthCheck: () => boolean;
@@ -198,6 +204,11 @@ export async function createContainer(config: AppConfig): Promise<Container> {
   const manageWorkflows = new ManageWorkflows(taxonomyRepo);
   const lintLandscape = new LintLandscape(taxonomyRepo as never);
 
+  // Practice Area / Competency / Adoption use cases
+  const managePracticeAreas = new ManagePracticeAreas(taxonomyRepo);
+  const manageCompetencies = new ManageCompetencies(taxonomyRepo);
+  const manageAdoptions = new ManageAdoptions(taxonomyRepo);
+
   // Contribution lifecycle
   const contributionRepo = new ContributionRepositorySQLite(db);
   const contributionUseCase = new ContributionUseCase(contributionRepo);
@@ -276,6 +287,9 @@ export async function createContainer(config: AppConfig): Promise<Container> {
     manageGlossary,
     manageWorkflows,
     lintLandscape,
+    managePracticeAreas,
+    manageCompetencies,
+    manageAdoptions,
     contributionRepo,
     contributionUseCase,
     healthCheck,

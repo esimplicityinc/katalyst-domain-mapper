@@ -21,7 +21,11 @@ export type RoutableItemType =
   | "domain-event"
   | "value-object"
   | "glossary-term"
-  | "workflow";
+  | "workflow"
+  | "practice-area"
+  | "competency"
+  | "team-adoption"
+  | "individual-adoption";
 
 const ROUTABLE_TYPES = new Set<string>([
   "capability",
@@ -33,6 +37,10 @@ const ROUTABLE_TYPES = new Set<string>([
   "value-object",
   "glossary-term",
   "workflow",
+  "practice-area",
+  "competency",
+  "team-adoption",
+  "individual-adoption",
 ]);
 
 // ── Input / Output Types ───────────────────────────────────────────────────
@@ -131,6 +139,28 @@ export class TypeRouter {
       case "workflow": {
         this.requireParentId(itemType, parentId);
         const item = await this.taxonomyRepo.addWorkflow(parentId!, data as never);
+        return { id: item.id, itemType, itemData: item as unknown as Record<string, unknown> };
+      }
+
+      // ── Practice area items (require parentId = snapshotId) ───────────
+      case "practice-area": {
+        this.requireParentId(itemType, parentId);
+        const item = await this.taxonomyRepo.createPracticeArea(parentId!, data as never);
+        return { id: item.id, itemType, itemData: item as unknown as Record<string, unknown> };
+      }
+      case "competency": {
+        this.requireParentId(itemType, parentId);
+        const item = await this.taxonomyRepo.createCompetency(parentId!, data as never);
+        return { id: item.id, itemType, itemData: item as unknown as Record<string, unknown> };
+      }
+      case "team-adoption": {
+        this.requireParentId(itemType, parentId);
+        const item = await this.taxonomyRepo.createTeamAdoption(parentId!, data as never);
+        return { id: item.id, itemType, itemData: item as unknown as Record<string, unknown> };
+      }
+      case "individual-adoption": {
+        this.requireParentId(itemType, parentId);
+        const item = await this.taxonomyRepo.createIndividualAdoption(parentId!, data as never);
         return { id: item.id, itemType, itemData: item as unknown as Record<string, unknown> };
       }
 

@@ -45,14 +45,31 @@ import type {
   UpdateGlossaryTermInput,
   CreateWorkflowInput,
   UpdateWorkflowInput,
+  StoredPracticeArea,
+  CreatePracticeAreaInput,
+  UpdatePracticeAreaInput,
+  StoredCompetency,
+  CreateCompetencyInput,
+  UpdateCompetencyInput,
+  StoredTeamAdoption,
+  CreateTeamAdoptionInput,
+  UpdateTeamAdoptionInput,
+  StoredIndividualAdoption,
+  CreateIndividualAdoptionInput,
+  UpdateIndividualAdoptionInput,
 } from "../../ports/TaxonomyRepository.js";
 import type { DrizzleDB } from "../../db/client.js";
+import { PracticeAreaRepositorySQLite } from "./PracticeAreaRepositorySQLite.js";
 import type { ValidatedTaxonomyData } from "../../domain/taxonomy/validateTaxonomyData.js";
 import type { ValidatedSnapshotData } from "../../domain/governance/validateSnapshotData.js";
 import * as schema from "../../db/schema.js";
 
 export class TaxonomyRepositorySQLite implements TaxonomyRepository {
-  constructor(private db: DrizzleDB) {}
+  private practiceAreaHelper: PracticeAreaRepositorySQLite;
+
+  constructor(private db: DrizzleDB) {
+    this.practiceAreaHelper = new PracticeAreaRepositorySQLite(db);
+  }
 
   // ══════════════════════════════════════════════════════════════════════════
   // TAXONOMY SNAPSHOTS
@@ -1747,6 +1764,98 @@ export class TaxonomyRepositorySQLite implements TaxonomyRepository {
       .delete(schema.domainWorkflows)
       .where(eq(schema.domainWorkflows.id, wfId))
       .run();
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // PRACTICE AREAS / COMPETENCIES / ADOPTIONS (delegated)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  // ── Practice Areas ──────────────────────────────────────────────────────────
+
+  async listPracticeAreas(snapshotId: string): Promise<StoredPracticeArea[]> {
+    return this.practiceAreaHelper.listPracticeAreas(snapshotId);
+  }
+
+  async getPracticeAreaById(snapshotId: string, id: string): Promise<StoredPracticeArea | null> {
+    return this.practiceAreaHelper.getPracticeAreaById(snapshotId, id);
+  }
+
+  async createPracticeArea(snapshotId: string, input: CreatePracticeAreaInput): Promise<StoredPracticeArea> {
+    return this.practiceAreaHelper.createPracticeArea(snapshotId, input);
+  }
+
+  async updatePracticeArea(snapshotId: string, id: string, input: UpdatePracticeAreaInput): Promise<StoredPracticeArea> {
+    return this.practiceAreaHelper.updatePracticeArea(snapshotId, id, input);
+  }
+
+  async deletePracticeArea(snapshotId: string, id: string): Promise<void> {
+    return this.practiceAreaHelper.deletePracticeArea(snapshotId, id);
+  }
+
+  // ── Competencies ────────────────────────────────────────────────────────────
+
+  async listCompetencies(snapshotId: string, practiceAreaId?: string): Promise<StoredCompetency[]> {
+    return this.practiceAreaHelper.listCompetencies(snapshotId, practiceAreaId);
+  }
+
+  async getCompetencyById(snapshotId: string, id: string): Promise<StoredCompetency | null> {
+    return this.practiceAreaHelper.getCompetencyById(snapshotId, id);
+  }
+
+  async createCompetency(snapshotId: string, input: CreateCompetencyInput): Promise<StoredCompetency> {
+    return this.practiceAreaHelper.createCompetency(snapshotId, input);
+  }
+
+  async updateCompetency(snapshotId: string, id: string, input: UpdateCompetencyInput): Promise<StoredCompetency> {
+    return this.practiceAreaHelper.updateCompetency(snapshotId, id, input);
+  }
+
+  async deleteCompetency(snapshotId: string, id: string): Promise<void> {
+    return this.practiceAreaHelper.deleteCompetency(snapshotId, id);
+  }
+
+  // ── Team Adoptions ──────────────────────────────────────────────────────────
+
+  async listTeamAdoptions(snapshotId: string, teamName?: string): Promise<StoredTeamAdoption[]> {
+    return this.practiceAreaHelper.listTeamAdoptions(snapshotId, teamName);
+  }
+
+  async getTeamAdoption(snapshotId: string, teamName: string, practiceAreaId: string): Promise<StoredTeamAdoption | null> {
+    return this.practiceAreaHelper.getTeamAdoption(snapshotId, teamName, practiceAreaId);
+  }
+
+  async createTeamAdoption(snapshotId: string, input: CreateTeamAdoptionInput): Promise<StoredTeamAdoption> {
+    return this.practiceAreaHelper.createTeamAdoption(snapshotId, input);
+  }
+
+  async updateTeamAdoption(snapshotId: string, id: string, input: UpdateTeamAdoptionInput): Promise<StoredTeamAdoption> {
+    return this.practiceAreaHelper.updateTeamAdoption(snapshotId, id, input);
+  }
+
+  async deleteTeamAdoption(snapshotId: string, id: string): Promise<void> {
+    return this.practiceAreaHelper.deleteTeamAdoption(snapshotId, id);
+  }
+
+  // ── Individual Adoptions ────────────────────────────────────────────────────
+
+  async listIndividualAdoptions(snapshotId: string, personName?: string): Promise<StoredIndividualAdoption[]> {
+    return this.practiceAreaHelper.listIndividualAdoptions(snapshotId, personName);
+  }
+
+  async getIndividualAdoption(snapshotId: string, personName: string, practiceAreaId: string): Promise<StoredIndividualAdoption | null> {
+    return this.practiceAreaHelper.getIndividualAdoption(snapshotId, personName, practiceAreaId);
+  }
+
+  async createIndividualAdoption(snapshotId: string, input: CreateIndividualAdoptionInput): Promise<StoredIndividualAdoption> {
+    return this.practiceAreaHelper.createIndividualAdoption(snapshotId, input);
+  }
+
+  async updateIndividualAdoption(snapshotId: string, id: string, input: UpdateIndividualAdoptionInput): Promise<StoredIndividualAdoption> {
+    return this.practiceAreaHelper.updateIndividualAdoption(snapshotId, id, input);
+  }
+
+  async deleteIndividualAdoption(snapshotId: string, id: string): Promise<void> {
+    return this.practiceAreaHelper.deleteIndividualAdoption(snapshotId, id);
   }
 
   // ══════════════════════════════════════════════════════════════════════════

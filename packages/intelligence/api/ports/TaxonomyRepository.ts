@@ -32,6 +32,24 @@ export type StoredGlossaryTerm = taxonomy.StoredGlossaryTerm;
 export type StoredWorkflow = taxonomy.StoredWorkflow;
 export type DomainModelWithArtifacts = taxonomy.DomainModelWithArtifacts;
 
+// Practice area types
+export type StoredPracticeArea = taxonomy.StoredPracticeArea;
+export type CreatePracticeAreaInput = taxonomy.CreatePracticeAreaInput;
+export type UpdatePracticeAreaInput = taxonomy.UpdatePracticeAreaInput;
+
+// Competency types
+export type StoredCompetency = taxonomy.StoredCompetency;
+export type CreateCompetencyInput = taxonomy.CreateCompetencyInput;
+export type UpdateCompetencyInput = taxonomy.UpdateCompetencyInput;
+
+// Adoption types
+export type StoredTeamAdoption = taxonomy.StoredTeamAdoption;
+export type CreateTeamAdoptionInput = taxonomy.CreateTeamAdoptionInput;
+export type UpdateTeamAdoptionInput = taxonomy.UpdateTeamAdoptionInput;
+export type StoredIndividualAdoption = taxonomy.StoredIndividualAdoption;
+export type CreateIndividualAdoptionInput = taxonomy.CreateIndividualAdoptionInput;
+export type UpdateIndividualAdoptionInput = taxonomy.UpdateIndividualAdoptionInput;
+
 export type CreateDomainModelInput = taxonomy.CreateDomainModelInput;
 export type UpdateDomainModelInput = taxonomy.UpdateDomainModelInput;
 export type CreateBoundedContextInput = taxonomy.CreateBoundedContextInput;
@@ -317,6 +335,38 @@ export interface TaxonomyRepository {
   updateWorkflow(wfId: string, input: UpdateWorkflowInput): Promise<void>;
   listWorkflows(modelId: string): Promise<StoredWorkflow[]>;
   deleteWorkflow(wfId: string): Promise<void>;
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // PRACTICE AREAS & COMPETENCIES
+  // ══════════════════════════════════════════════════════════════════════════
+
+  // ── Practice Areas ──
+  listPracticeAreas(snapshotId: string): Promise<StoredPracticeArea[]>;
+  getPracticeAreaById(snapshotId: string, id: string): Promise<StoredPracticeArea | null>;
+  createPracticeArea(snapshotId: string, input: CreatePracticeAreaInput): Promise<StoredPracticeArea>;
+  updatePracticeArea(snapshotId: string, id: string, input: UpdatePracticeAreaInput): Promise<StoredPracticeArea>;
+  deletePracticeArea(snapshotId: string, id: string): Promise<void>;
+
+  // ── Competencies ──
+  listCompetencies(snapshotId: string, practiceAreaId?: string): Promise<StoredCompetency[]>;
+  getCompetencyById(snapshotId: string, id: string): Promise<StoredCompetency | null>;
+  createCompetency(snapshotId: string, input: CreateCompetencyInput): Promise<StoredCompetency>;
+  updateCompetency(snapshotId: string, id: string, input: UpdateCompetencyInput): Promise<StoredCompetency>;
+  deleteCompetency(snapshotId: string, id: string): Promise<void>;
+
+  // ── Team Adoptions ──
+  listTeamAdoptions(snapshotId: string, teamName?: string): Promise<StoredTeamAdoption[]>;
+  getTeamAdoption(snapshotId: string, teamName: string, practiceAreaId: string): Promise<StoredTeamAdoption | null>;
+  createTeamAdoption(snapshotId: string, input: CreateTeamAdoptionInput): Promise<StoredTeamAdoption>;
+  updateTeamAdoption(snapshotId: string, id: string, input: UpdateTeamAdoptionInput): Promise<StoredTeamAdoption>;
+  deleteTeamAdoption(snapshotId: string, id: string): Promise<void>;
+
+  // ── Individual Adoptions ──
+  listIndividualAdoptions(snapshotId: string, personName?: string): Promise<StoredIndividualAdoption[]>;
+  getIndividualAdoption(snapshotId: string, personName: string, practiceAreaId: string): Promise<StoredIndividualAdoption | null>;
+  createIndividualAdoption(snapshotId: string, input: CreateIndividualAdoptionInput): Promise<StoredIndividualAdoption>;
+  updateIndividualAdoption(snapshotId: string, id: string, input: UpdateIndividualAdoptionInput): Promise<StoredIndividualAdoption>;
+  deleteIndividualAdoption(snapshotId: string, id: string): Promise<void>;
 }
 
 // ── Backward-compatible aliases ────────────────────────────────────────────
