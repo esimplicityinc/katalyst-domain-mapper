@@ -150,13 +150,13 @@ This matrix maps every git commit to its corresponding governance artifacts (ROA
 | CAP-017 | 1 | AI Assessment Coaching |
 | CAP-018 | 7 | Lifecycle Navigation System |
 | CAP-019 | 3 | Taxonomy CRUD API |
-| CAP-020 | 3 | Hexagonal Architecture Foundation |
+| CAP-020 | 3 | ~~Hexagonal Architecture Foundation~~ → ADR-023 |
 | CAP-021 | 2 | DDD Onboarding Tooltips |
 | CAP-022 | 2 | User State Persistence |
 | CAP-023 | 12 | Business Landscape Visualization |
 | CAP-024 | 1 | Landscape Domain Linter |
 | CAP-025 | 1 | Taxonomy & User Type Management UI |
-| CAP-026 | 7 | Developer Environment Tooling |
+| CAP-026 | 7 | ~~Developer Environment Tooling~~ → ADR-024 |
 
 ### By Commit Type
 

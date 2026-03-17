@@ -87,7 +87,7 @@ User stories define requirements from the perspective of user types interacting 
 | [US-076](US-076) | Manage Capabilities via UI | UT-001 | CAP-025, CAP-019 | complete |
 | [US-077](US-077) | Manage User Types and User Stories via UI | UT-001 | CAP-025 | complete |
 | [US-078](US-078) | Use AI Chat for Taxonomy and User Type Discovery | UT-001 | CAP-025, CAP-017 | complete |
-| [US-079](US-079) | Start Full Dev Environment in One Command | UT-003 | CAP-026 | complete |
+| [US-079](US-079) | Start Full Dev Environment in One Command | UT-003 | ADR-024 | complete |
 | [US-080](US-080) | Use Shared Chat Component Across AI Pages | UT-002 | CAP-027 | complete |
 | [US-081](US-081) | Toggle Features Via Flags Without Redeployment | UT-002 | CAP-028 | complete |
 | [US-082](US-082) | Override Flags Via Environment Variables in CI/CD | UT-008 | CAP-028 | complete |

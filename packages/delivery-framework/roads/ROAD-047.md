@@ -8,8 +8,9 @@ created: 2026-02-19
 completed: 2026-02-19
 tags: [dev, tooling, just, bdd, lint, eslint, husky, quality-gates, dx]
 capabilities:
-  - CAP-026
   - CAP-002
+adrs:
+  - ADR-024
 user_stories:
   - US-079
 dependencies: []
@@ -70,7 +71,7 @@ Unified developer experience for the Intelligence package full-stack environment
 
 ## Capabilities
 
-- **Implements**: CAP-026 (Developer Environment Tooling)
+- **Implements**: ADR-024 (Developer Environment Tooling — reclassified from CAP-026)
 - **Extends**: CAP-002 (Governance Validation — ESLint config improvements)
 
 ## Technical Design

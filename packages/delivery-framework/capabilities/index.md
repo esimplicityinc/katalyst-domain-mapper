@@ -29,13 +29,13 @@ Capabilities represent the core functional areas the system provides. Each capab
 | [CAP-017](CAP-017) | AI Assessment Coaching | Business | stable |
 | [CAP-018](CAP-018) | Lifecycle Navigation System | Technical | stable |
 | [CAP-019](CAP-019) | Taxonomy CRUD API | Business | stable |
-| [CAP-020](CAP-020) | Hexagonal Architecture Foundation | Technical | stable |
+| [CAP-020](CAP-020) | Hexagonal Architecture Foundation | Technical | ~~deprecated~~ → [ADR-023](../adr/ADR-023) |
 | [CAP-021](CAP-021) | DDD Onboarding Tooltips | Business | stable |
 | [CAP-022](CAP-022) | User State Persistence | Technical | stable |
 | [CAP-023](CAP-023) | Business Landscape Visualization | Business | stable |
 | [CAP-024](CAP-024) | Landscape Domain Linter | Technical | stable |
 | [CAP-025](CAP-025) | Taxonomy & User Type Management UI | Business | stable |
-| [CAP-026](CAP-026) | Developer Environment Tooling | Technical | stable |
+| [CAP-026](CAP-026) | Developer Environment Tooling | Technical | ~~deprecated~~ → [ADR-024](../adr/ADR-024) |
 | [CAP-027](CAP-027) | Reusable AI Chat Component Library | Technical | stable |
 | [CAP-028](CAP-028) | Feature Flag Management | Technical | stable |
 | [CAP-029](CAP-029) | Team Topology Management | Business | stable |
