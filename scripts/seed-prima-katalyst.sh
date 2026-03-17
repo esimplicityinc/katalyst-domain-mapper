@@ -456,12 +456,44 @@ post "$API/taxonomy/snapshots" '{
       "tag": "CAP-005"
     },
     {
+      "name": "admin-dashboard",
+      "description": "Astro 5 + React 19 admin dashboard for platform monitoring, user management, workspace configuration, and model governance",
+      "categories": ["governance", "ui"],
+      "dependsOnCapabilities": ["user-workspace-governance", "usage-analytics"],
+      "parentCapability": "governance-and-admin",
+      "tag": "CAP-006"
+    },
+    {
+      "name": "self-service-portal",
+      "description": "Self-service workspace portal for team leads to manage settings, invite members, configure knowledge bases, and browse agent skills",
+      "categories": ["governance", "ui"],
+      "dependsOnCapabilities": ["user-workspace-governance"],
+      "parentCapability": "governance-and-admin",
+      "tag": "CAP-007"
+    },
+    {
       "name": "ai-chat-orchestration",
       "description": "OpenAI-compatible chat completion gateway routing requests through guardrails to LLM providers, MCP tool gateway, and RAG context injection",
       "categories": ["ai"],
       "dependsOnCapabilities": ["llm-model-registry", "guardrail-policy-management"],
       "parentCapability": "ai-engine",
       "tag": "CAP-008"
+    },
+    {
+      "name": "mcp-tool-gateway",
+      "description": "Model Context Protocol tool proxy connecting AI agents to external tools (GitHub, Slack, Atlassian, databases) via stdio and HTTP transports",
+      "categories": ["ai", "integration"],
+      "dependsOnCapabilities": ["ai-chat-orchestration"],
+      "parentCapability": "ai-engine",
+      "tag": "CAP-009"
+    },
+    {
+      "name": "rag-context-injection",
+      "description": "Retrieval-Augmented Generation context injection — retrieves relevant document chunks from vector storage and injects into LLM prompt context",
+      "categories": ["ai", "knowledge"],
+      "dependsOnCapabilities": ["ai-chat-orchestration", "document-vector-storage"],
+      "parentCapability": "ai-engine",
+      "tag": "CAP-010"
     },
     {
       "name": "llm-provider-routing",
@@ -528,12 +560,36 @@ post "$API/taxonomy/snapshots" '{
       "tag": "CAP-018"
     },
     {
+      "name": "data-connector-ui",
+      "description": "UI for configuring and managing data connectors — GitHub, GitLab, Confluence, YouTube, Obsidian, Drupal, and website crawlers",
+      "categories": ["collaboration", "knowledge"],
+      "dependsOnCapabilities": ["data-connector-extensions"],
+      "parentCapability": "workspace-and-collaboration",
+      "tag": "CAP-019"
+    },
+    {
       "name": "web-api-server",
       "description": "Express.js backend handling chat sessions, workspace CRUD, knowledge base management, and OpenAI-compatible endpoints",
       "categories": ["backend"],
       "dependsOnCapabilities": [],
       "parentCapability": "workspace-and-collaboration",
       "tag": "CAP-014"
+    },
+    {
+      "name": "agent-flow-engine",
+      "description": "Visual no-code workflow execution engine supporting 9 node types for chaining LLM calls, API calls, web scraping, and code execution",
+      "categories": ["ai", "collaboration"],
+      "dependsOnCapabilities": ["ai-chat-orchestration"],
+      "parentCapability": "workspace-and-collaboration",
+      "tag": "CAP-015"
+    },
+    {
+      "name": "embeddable-chat-widgets",
+      "description": "Embeddable chat widget SDK allowing external websites to integrate Prima AI chat via configurable iframe or web component",
+      "categories": ["collaboration", "integration"],
+      "dependsOnCapabilities": ["web-api-server"],
+      "parentCapability": "workspace-and-collaboration",
+      "tag": "CAP-016"
     },
     {
       "name": "api-gateway-routing",
@@ -601,9 +657,9 @@ post "$API/taxonomy/snapshots" '{
     }
   ],
   "capabilityRels": [
-    { "name": "control-tower-governs-platform", "node": "control_tower", "relationshipType": "implements", "capabilities": ["user-workspace-governance", "llm-model-registry", "guardrail-policy-management", "tool-provider-management", "usage-analytics"] },
-    { "name": "engine-powers-ai", "node": "engine", "relationshipType": "implements", "capabilities": ["ai-chat-orchestration", "llm-provider-routing", "pii-detection-anonymization", "async-task-execution"] },
-    { "name": "web-enables-collaboration", "node": "web", "relationshipType": "implements", "capabilities": ["workspace-chat-ui", "agent-builder-ui", "web-api-server", "document-ingestion-pipeline", "document-vector-storage"] },
+    { "name": "control-tower-governs-platform", "node": "control_tower", "relationshipType": "implements", "capabilities": ["user-workspace-governance", "llm-model-registry", "guardrail-policy-management", "tool-provider-management", "usage-analytics", "admin-dashboard", "self-service-portal"] },
+    { "name": "engine-powers-ai", "node": "engine", "relationshipType": "implements", "capabilities": ["ai-chat-orchestration", "mcp-tool-gateway", "rag-context-injection", "llm-provider-routing", "pii-detection-anonymization", "async-task-execution"] },
+    { "name": "web-enables-collaboration", "node": "web", "relationshipType": "implements", "capabilities": ["workspace-chat-ui", "agent-builder-ui", "data-connector-ui", "web-api-server", "agent-flow-engine", "embeddable-chat-widgets", "document-ingestion-pipeline", "document-vector-storage"] },
     { "name": "foundation-supports-infra", "node": "foundation", "relationshipType": "supports", "capabilities": ["api-gateway-routing", "shared-database-service", "cache-message-broker", "service-mesh-networking", "dns-certificate-management"] },
     { "name": "delivery-hub-distributes-skills", "node": "prima-delivery-hub", "relationshipType": "implements", "capabilities": ["agent-skill-distribution"] },
     { "name": "atlas-provides-docs", "node": "atlas", "relationshipType": "implements", "capabilities": ["platform-documentation"] },
@@ -729,7 +785,7 @@ post "$API/taxonomy/snapshots" '{
     }
   ]
 }' > /dev/null
-echo "  Taxonomy snapshot ingested (1 system, 6 subsystems, 18 stacks, 1 external system, 29 capabilities, 7 capabilityRels, 13 persons, 7 teams)"
+echo "  Taxonomy snapshot ingested (1 system, 6 subsystems, 17 stacks, 1 external system, 37 capabilities, 7 capabilityRels, 13 persons, 7 teams)"
 echo ""
 
 # =============================================================================
@@ -1515,6 +1571,7 @@ post "$API/taxonomy/governance" '{
     "CAP-001": {
       "id": "CAP-001",
       "title": "User & Workspace Governance",
+      "description": "User registration, JWT/SSO authentication, SCIM provisioning, team/workspace RBAC, and rate limit enforcement",
       "category": "governance",
       "tag": "CAP-001",
       "status": "stable",
@@ -1523,6 +1580,7 @@ post "$API/taxonomy/governance" '{
     "CAP-002": {
       "id": "CAP-002",
       "title": "LLM Model Registry",
+      "description": "Registration of Prima Model abstractions over LLM providers, Fernet-encrypted credential vault, workspace model assignment",
       "category": "governance",
       "tag": "CAP-002",
       "status": "stable",
@@ -1531,6 +1589,7 @@ post "$API/taxonomy/governance" '{
     "CAP-003": {
       "id": "CAP-003",
       "title": "Guardrail Policy Management",
+      "description": "Guardrail rule creation and management, PII policy configuration, content safety policy enforcement across models",
       "category": "governance",
       "tag": "CAP-003",
       "status": "stable",
@@ -1539,6 +1598,7 @@ post "$API/taxonomy/governance" '{
     "CAP-004": {
       "id": "CAP-004",
       "title": "Tool Provider Management",
+      "description": "MCP tool provider registration, instance configuration, workspace-level tool assignments",
       "category": "governance",
       "tag": "CAP-004",
       "status": "stable",
@@ -1547,6 +1607,7 @@ post "$API/taxonomy/governance" '{
     "CAP-005": {
       "id": "CAP-005",
       "title": "Usage Analytics Ingestion",
+      "description": "Token usage ingestion, cost tracking per workspace and provider, analytics dashboards",
       "category": "observability",
       "tag": "CAP-005",
       "status": "stable",
@@ -1555,6 +1616,7 @@ post "$API/taxonomy/governance" '{
     "CAP-006": {
       "id": "CAP-006",
       "title": "Admin Dashboard",
+      "description": "Astro 5 + React 19 admin dashboard for platform monitoring, user management, workspace configuration, and model governance",
       "category": "ui",
       "tag": "CAP-006",
       "status": "stable",
@@ -1563,6 +1625,7 @@ post "$API/taxonomy/governance" '{
     "CAP-007": {
       "id": "CAP-007",
       "title": "Self-Service Portal",
+      "description": "Self-service workspace portal for team leads to manage settings, invite members, configure knowledge bases, and browse agent skills",
       "category": "ui",
       "tag": "CAP-007",
       "status": "stable",
@@ -1571,6 +1634,7 @@ post "$API/taxonomy/governance" '{
     "CAP-008": {
       "id": "CAP-008",
       "title": "AI Chat Orchestration",
+      "description": "OpenAI-compatible chat completion gateway routing requests through guardrails to LLM providers via LiteLLM",
       "category": "ai",
       "tag": "CAP-008",
       "status": "stable",
@@ -1579,6 +1643,7 @@ post "$API/taxonomy/governance" '{
     "CAP-009": {
       "id": "CAP-009",
       "title": "MCP Tool Gateway",
+      "description": "Model Context Protocol tool proxy connecting AI agents to external tools via stdio and HTTP transports",
       "category": "ai",
       "tag": "CAP-009",
       "status": "stable",
@@ -1587,6 +1652,7 @@ post "$API/taxonomy/governance" '{
     "CAP-010": {
       "id": "CAP-010",
       "title": "RAG Context Injection",
+      "description": "Retrieves relevant document chunks from vector storage and injects into LLM prompt context for grounded answers",
       "category": "ai",
       "tag": "CAP-010",
       "status": "stable",
@@ -1595,6 +1661,7 @@ post "$API/taxonomy/governance" '{
     "CAP-011": {
       "id": "CAP-011",
       "title": "LLM Provider Routing",
+      "description": "Unified LLM proxy routing requests to 100+ providers with load balancing, failover, and spend tracking",
       "category": "ai",
       "tag": "CAP-011",
       "status": "stable",
@@ -1603,6 +1670,7 @@ post "$API/taxonomy/governance" '{
     "CAP-012": {
       "id": "CAP-012",
       "title": "PII Detection & Anonymization",
+      "description": "Microsoft Presidio PII entity recognition and anonymization scanning input/output content",
       "category": "safety",
       "tag": "CAP-012",
       "status": "stable",
@@ -1611,6 +1679,7 @@ post "$API/taxonomy/governance" '{
     "CAP-013": {
       "id": "CAP-013",
       "title": "Async Task Execution",
+      "description": "Celery workers for background AI tool calls, document processing, and batch operations",
       "category": "engine",
       "tag": "CAP-013",
       "status": "stable",
@@ -1619,6 +1688,7 @@ post "$API/taxonomy/governance" '{
     "CAP-014": {
       "id": "CAP-014",
       "title": "Web API Server",
+      "description": "Express.js backend handling chat sessions, workspace CRUD, knowledge base management, and OpenAI-compatible endpoints",
       "category": "backend",
       "tag": "CAP-014",
       "status": "stable",
@@ -1627,6 +1697,7 @@ post "$API/taxonomy/governance" '{
     "CAP-015": {
       "id": "CAP-015",
       "title": "Agent Flow Engine",
+      "description": "Visual no-code workflow execution engine supporting 9 node types for chaining LLM, API, and tool calls",
       "category": "ai",
       "tag": "CAP-015",
       "status": "stable",
@@ -1635,6 +1706,7 @@ post "$API/taxonomy/governance" '{
     "CAP-016": {
       "id": "CAP-016",
       "title": "Embeddable Chat Widgets",
+      "description": "Embeddable chat widget SDK allowing external websites to integrate Prima AI chat via iframe or web component",
       "category": "collaboration",
       "tag": "CAP-016",
       "status": "stable",
@@ -1643,6 +1715,7 @@ post "$API/taxonomy/governance" '{
     "CAP-017": {
       "id": "CAP-017",
       "title": "Workspace Chat UI",
+      "description": "Multi-threaded AI chat UI with slash commands, prompt sidebar, citations, TTS/STT, i18n, and community hub",
       "category": "collaboration",
       "tag": "CAP-017",
       "status": "stable",
@@ -1651,6 +1724,7 @@ post "$API/taxonomy/governance" '{
     "CAP-018": {
       "id": "CAP-018",
       "title": "Agent Builder UI",
+      "description": "Visual no-code agent flow builder with 9 node types for chaining LLM, API, and tool calls",
       "category": "collaboration",
       "tag": "CAP-018",
       "status": "stable",
@@ -1659,6 +1733,7 @@ post "$API/taxonomy/governance" '{
     "CAP-019": {
       "id": "CAP-019",
       "title": "Data Connector UI",
+      "description": "UI for configuring and managing data connectors (GitHub, GitLab, Confluence, YouTube, Obsidian, Drupal, websites)",
       "category": "collaboration",
       "tag": "CAP-019",
       "status": "stable",
@@ -1667,6 +1742,7 @@ post "$API/taxonomy/governance" '{
     "CAP-020": {
       "id": "CAP-020",
       "title": "Document Ingestion Pipeline",
+      "description": "Document collector with 9 file converters, OCR, Whisper transcription, web scraping, and chunking/embedding pipeline",
       "category": "knowledge",
       "tag": "CAP-020",
       "status": "stable",
@@ -1675,6 +1751,7 @@ post "$API/taxonomy/governance" '{
     "CAP-021": {
       "id": "CAP-021",
       "title": "Data Connector Extensions",
+      "description": "7 data connectors enabling sync from GitHub, GitLab, Confluence, YouTube, Obsidian, Drupal, and websites",
       "category": "knowledge",
       "tag": "CAP-021",
       "status": "stable",
@@ -1683,6 +1760,7 @@ post "$API/taxonomy/governance" '{
     "CAP-022": {
       "id": "CAP-022",
       "title": "Document & Vector Storage",
+      "description": "PostgreSQL + pgvector document and vector storage with 9 vector DB provider adapters",
       "category": "knowledge",
       "tag": "CAP-022",
       "status": "stable",
@@ -1691,6 +1769,7 @@ post "$API/taxonomy/governance" '{
     "CAP-023": {
       "id": "CAP-023",
       "title": "Platform Documentation",
+      "description": "Prima documentation site with platform guides, API references, and onboarding materials",
       "category": "docs",
       "tag": "CAP-023",
       "status": "stable",
@@ -1699,6 +1778,7 @@ post "$API/taxonomy/governance" '{
     "CAP-024": {
       "id": "CAP-024",
       "title": "CI/CD Bootstrap",
+      "description": "Bootstrap pipeline assets — terragrunt wrappers and shared GitHub/AWS configuration for Prima CI/CD",
       "category": "cicd",
       "tag": "CAP-024",
       "status": "stable",
@@ -1707,6 +1787,7 @@ post "$API/taxonomy/governance" '{
     "CAP-025": {
       "id": "CAP-025",
       "title": "DNS & Certificate Management",
+      "description": "Public DNS zones and wildcard TLS certificates for alvisprima.com domains via Route53",
       "category": "infrastructure",
       "tag": "CAP-025",
       "status": "stable",
@@ -1715,6 +1796,7 @@ post "$API/taxonomy/governance" '{
     "CAP-026": {
       "id": "CAP-026",
       "title": "API Gateway Routing",
+      "description": "Kong API Gateway for request routing, rate limiting, and authentication across Prima services",
       "category": "infrastructure",
       "tag": "CAP-026",
       "status": "stable",
@@ -1723,6 +1805,7 @@ post "$API/taxonomy/governance" '{
     "CAP-027": {
       "id": "CAP-027",
       "title": "Shared Database Service",
+      "description": "Shared PostgreSQL instance for Control Tower and Web services",
       "category": "infrastructure",
       "tag": "CAP-027",
       "status": "stable",
@@ -1731,6 +1814,7 @@ post "$API/taxonomy/governance" '{
     "CAP-028": {
       "id": "CAP-028",
       "title": "Cache & Message Broker",
+      "description": "Redis for caching, Celery task queues, and SSE streaming across Prima services",
       "category": "infrastructure",
       "tag": "CAP-028",
       "status": "stable",
@@ -1739,6 +1823,7 @@ post "$API/taxonomy/governance" '{
     "CAP-029": {
       "id": "CAP-029",
       "title": "Service Mesh Networking",
+      "description": "Istio service mesh for inter-service networking, mTLS, and traffic management",
       "category": "infrastructure",
       "tag": "CAP-029",
       "status": "stable",
@@ -1747,6 +1832,7 @@ post "$API/taxonomy/governance" '{
     "CAP-030": {
       "id": "CAP-030",
       "title": "Agent Skill Distribution",
+      "description": "Distribution hub for 108+ AI agents, 140 skills, and 72 plugins via OpenPackage",
       "category": "delivery",
       "tag": "CAP-030",
       "status": "stable",
@@ -1758,40 +1844,65 @@ post "$API/taxonomy/governance" '{
       "id": "UT-001",
       "name": "Platform Admin",
       "type": "human",
-      "archetype": "IT administrator responsible for managing users, teams, workspaces, LLM models, guardrail policies, tool providers, and monitoring platform usage via Control Tower",
+      "archetype": "administrator",
+      "description": "IT administrator responsible for managing users, teams, workspaces, LLM models, guardrail policies, tool providers, and monitoring platform usage via Control Tower",
+      "goals": ["Ensure platform governance and compliance", "Manage LLM provider costs and budgets", "Provision and deprovision users via SCIM"],
+      "painPoints": ["Too many manual steps for model onboarding", "Lack of cross-workspace usage visibility"],
+      "behaviors": ["Monitors usage dashboards daily", "Reviews guardrail violations weekly", "Configures SCIM integrations quarterly"],
       "typicalCapabilities": ["CAP-001", "CAP-002", "CAP-003", "CAP-005", "CAP-006"],
+      "technicalProfile": {"skillLevel": "advanced", "frequency": "daily"},
       "tag": "UT-001"
     },
     "UT-002": {
       "id": "UT-002",
       "name": "Knowledge Worker",
       "type": "human",
-      "archetype": "Government analyst or enterprise user who chats with AI assistants, uploads documents for RAG, uses agent workflows, and imports data from connectors",
+      "archetype": "consumer",
+      "description": "Government analyst or enterprise user who chats with AI assistants, uploads documents for RAG, uses agent workflows, and imports data from connectors",
+      "goals": ["Get accurate AI-grounded answers quickly", "Automate repetitive research tasks with agent flows", "Import organizational knowledge into workspaces"],
+      "painPoints": ["AI hallucinations on domain-specific questions", "Difficulty building complex agent workflows"],
+      "behaviors": ["Uses AI chat multiple times daily", "Uploads documents for RAG context", "Shares useful agent flows with team"],
       "typicalCapabilities": ["CAP-017", "CAP-018", "CAP-019", "CAP-020"],
+      "technicalProfile": {"skillLevel": "intermediate", "frequency": "daily"},
       "tag": "UT-002"
     },
     "UT-003": {
       "id": "UT-003",
       "name": "Workspace Manager",
       "type": "human",
-      "archetype": "Team lead who configures workspace settings, manages knowledge bases, curates agent skills, configures MCP tool providers, and controls team member access",
+      "archetype": "operator",
+      "description": "Team lead who configures workspace settings, manages knowledge bases, curates agent skills, configures MCP tool providers, and controls team member access",
+      "goals": ["Curate workspace knowledge bases for team accuracy", "Configure appropriate tools and skills for the team", "Manage team member access and permissions"],
+      "painPoints": ["Knowledge base freshness — stale documents reduce AI accuracy", "Complex MCP tool provider configuration"],
+      "behaviors": ["Reviews knowledge base content monthly", "Configures workspace settings for new team members", "Tests agent skills before team rollout"],
       "typicalCapabilities": ["CAP-007", "CAP-017", "CAP-020", "CAP-004"],
+      "technicalProfile": {"skillLevel": "intermediate", "frequency": "weekly"},
       "tag": "UT-003"
     },
     "UT-004": {
       "id": "UT-004",
       "name": "AiOx Service",
       "type": "system",
-      "archetype": "The AI orchestration engine service principal that authenticates to Control Tower to resolve model credentials, invoke MCP tools, inject RAG context, and report usage telemetry",
+      "archetype": "integrator",
+      "description": "The AI orchestration engine service principal that authenticates to Control Tower to resolve model credentials, invoke MCP tools, inject RAG context, and report usage telemetry",
+      "goals": ["Route chat requests with minimal latency", "Enforce guardrails on every request", "Report accurate usage metrics"],
+      "painPoints": ["Credential rotation disrupts active sessions", "Guardrail policy cache invalidation timing"],
+      "behaviors": ["Authenticates via service JWT on every request", "Resolves model credentials from credential vault", "Streams responses via Redis Streams SSE"],
       "typicalCapabilities": ["CAP-008", "CAP-009", "CAP-010", "CAP-012"],
+      "technicalProfile": {"skillLevel": "advanced", "integrationType": "service-to-service", "frequency": "continuous"},
       "tag": "UT-004"
     },
     "UT-005": {
       "id": "UT-005",
       "name": "Developer",
       "type": "human",
-      "archetype": "Software developer who uses Prima Code CLI, installs agent skills from Delivery Hub, builds and publishes agent flows, and integrates via OpenAI-compatible API",
+      "archetype": "creator",
+      "description": "Software developer who uses Prima Code CLI, installs agent skills from Delivery Hub, builds and publishes agent flows, and integrates via OpenAI-compatible API",
+      "goals": ["Build and publish reusable agent skills", "Integrate Prima AI into custom applications via API", "Automate development workflows with AI agents"],
+      "painPoints": ["Agent skill packaging and versioning complexity", "Debugging agent flow execution failures"],
+      "behaviors": ["Uses Prima Code CLI for local development", "Publishes agent skills to Delivery Hub", "Integrates via OpenAI-compatible API endpoints"],
       "typicalCapabilities": ["CAP-030", "CAP-014", "CAP-018"],
+      "technicalProfile": {"skillLevel": "advanced", "frequency": "daily"},
       "tag": "UT-005"
     }
   },
@@ -1801,126 +1912,144 @@ post "$API/taxonomy/governance" '{
       "title": "Register a new LLM provider model with guardrails and assign to workspace",
       "userType": "UT-001",
       "capabilities": ["CAP-002", "CAP-003", "CAP-006", "CAP-011"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Model appears in admin dashboard after registration", "Guardrail rules attached and enforced on first request", "Model available for selection in assigned workspace"]
     },
     "US-002": {
       "id": "US-002",
       "title": "Chat with AI about uploaded documents using RAG context",
       "userType": "UT-002",
       "capabilities": ["CAP-017", "CAP-010", "CAP-008", "CAP-020"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["AI responses cite uploaded documents", "RAG context appears in response metadata", "Irrelevant documents are not injected"]
     },
     "US-003": {
       "id": "US-003",
       "title": "Review usage analytics to identify high-cost workspaces and set budgets",
       "userType": "UT-001",
       "capabilities": ["CAP-005", "CAP-006"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Dashboard shows cost breakdown by workspace", "Budget alerts fire when threshold reached", "Usage data refreshes within 5 minutes"]
     },
     "US-004": {
       "id": "US-004",
       "title": "Upload knowledge base documents and configure workspace RAG settings",
       "userType": "UT-003",
       "capabilities": ["CAP-020", "CAP-022", "CAP-017"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Documents processed and indexed within expected SLA", "RAG settings configurable per workspace", "Knowledge base status visible in UI"]
     },
     "US-005": {
       "id": "US-005",
       "title": "Build a visual agent flow chaining LLM calls with API calls",
       "userType": "UT-002",
       "capabilities": ["CAP-018", "CAP-015", "CAP-008"],
-      "status": "implementing"
+      "status": "implementing",
+      "acceptanceCriteria": ["Agent flow executes all nodes in sequence", "Error handling displays node failure clearly", "Flow can be saved, shared, and re-executed"]
     },
     "US-006": {
       "id": "US-006",
       "title": "Install agent skills from Delivery Hub into workspace",
       "userType": "UT-005",
       "capabilities": ["CAP-030", "CAP-017"],
-      "status": "implementing"
+      "status": "implementing",
+      "acceptanceCriteria": ["Skills browsable by category in Delivery Hub", "One-click install adds skill to workspace", "Installed skill available in chat immediately"]
     },
     "US-007": {
       "id": "US-007",
       "title": "Configure workspace MCP tool providers for team use",
       "userType": "UT-003",
       "capabilities": ["CAP-004", "CAP-009", "CAP-007"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Tool providers configurable in workspace settings", "Tools available to AI agents in chat", "Tool credentials stored securely"]
     },
     "US-008": {
       "id": "US-008",
       "title": "Embed a chat widget on an external website for customer support",
       "userType": "UT-003",
       "capabilities": ["CAP-016", "CAP-014"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Widget renders correctly on external domain", "Chat sessions tracked in workspace", "Widget styling customizable"]
     },
     "US-009": {
       "id": "US-009",
       "title": "Ingest a GitHub repository as a workspace knowledge base",
       "userType": "UT-002",
       "capabilities": ["CAP-021", "CAP-020", "CAP-022"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Repository files indexed and searchable", "Incremental sync on push events", "File types filtered by configuration"]
     },
     "US-010": {
       "id": "US-010",
       "title": "Monitor LLM provider costs and configure fallback routing",
       "userType": "UT-001",
       "capabilities": ["CAP-011", "CAP-005", "CAP-006"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Cost breakdown visible per provider", "Fallback routing triggers on provider failure", "Spend limits enforced per workspace"]
     },
     "US-011": {
       "id": "US-011",
       "title": "Provision users via SCIM from Azure AD identity provider",
       "userType": "UT-001",
       "capabilities": ["CAP-001", "CAP-006"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["SCIM endpoint accepts user provisioning requests", "Users automatically created/deactivated", "Group membership synced to workspace roles"]
     },
     "US-012": {
       "id": "US-012",
       "title": "Use slash commands and prompt presets in workspace chat",
       "userType": "UT-002",
       "capabilities": ["CAP-017", "CAP-014"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Slash commands auto-complete in chat input", "Prompt presets load predefined system prompts", "Custom slash commands configurable per workspace"]
     },
     "US-013": {
       "id": "US-013",
       "title": "Build and publish a reusable agent skill to Delivery Hub",
       "userType": "UT-005",
       "capabilities": ["CAP-030", "CAP-018", "CAP-015"],
-      "status": "implementing"
+      "status": "implementing",
+      "acceptanceCriteria": ["Skill packaged with metadata and version", "Published to Delivery Hub catalog", "Other workspaces can discover and install"]
     },
     "US-014": {
       "id": "US-014",
       "title": "Detect and redact PII in LLM responses via guardrail enforcement",
       "userType": "UT-004",
       "capabilities": ["CAP-012", "CAP-008", "CAP-003"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["PII entities detected with configurable confidence threshold", "Redaction applied before response reaches user", "Violation logged in guardrail audit trail"]
     },
     "US-015": {
       "id": "US-015",
       "title": "Configure TTS/STT for accessibility in workspace chat",
       "userType": "UT-003",
       "capabilities": ["CAP-017", "CAP-014"],
-      "status": "implementing"
+      "status": "implementing",
+      "acceptanceCriteria": ["TTS reads AI responses aloud", "STT converts voice input to text", "Accessibility settings persist per user"]
     },
     "US-016": {
       "id": "US-016",
       "title": "Use the OpenAI-compatible API to integrate Prima with external tools",
       "userType": "UT-005",
       "capabilities": ["CAP-014", "CAP-008"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["API accepts standard OpenAI chat completion format", "API key authentication works", "Streaming responses supported via SSE"]
     },
     "US-017": {
       "id": "US-017",
       "title": "Import Confluence documentation as workspace knowledge base",
       "userType": "UT-002",
       "capabilities": ["CAP-021", "CAP-019", "CAP-022"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Confluence spaces selectable for import", "Documents chunked and embedded", "Incremental sync on schedule"]
     },
     "US-018": {
       "id": "US-018",
       "title": "Review and manage guardrail violations across all workspaces",
       "userType": "UT-001",
       "capabilities": ["CAP-003", "CAP-012", "CAP-005", "CAP-006"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Violations listed with severity and workspace", "Filter by time range and severity", "Drill down to see violating content"]
     }
   },
   "roadItems": {
@@ -2011,7 +2140,7 @@ echo ""
 echo "  Domain Model ID: $MODEL_ID"
 echo ""
 echo "  Created:"
-echo "    - 10 bounded contexts (8 internal, 1 external-system)"
+echo "    - 10 bounded contexts (9 internal, 1 external-system)"
 echo "    - 14 domain events with cap-to-cap cross-stack mappings"
 echo "    -  2 workflows spanning 5-7 contexts each"
 echo "    -  5 aggregates with commands and invariants"

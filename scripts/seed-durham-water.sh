@@ -532,7 +532,7 @@ post "$API/taxonomy/snapshots" '{
     }
   ]
 }' > /dev/null
-echo "  Taxonomy snapshot ingested (3 systems, 7 subsystems, 7 stacks, 13 capabilities, 8 capabilityRels, 15 persons, 9 teams)"
+echo "  Taxonomy snapshot ingested (3 systems, 7 subsystems, 8 stacks, 13 capabilities, 8 capabilityRels, 15 persons, 9 teams)"
 echo ""
 
 # =============================================================================
@@ -1424,6 +1424,7 @@ post "$API/taxonomy/governance" '{
     "CAP-001": {
       "id": "CAP-001",
       "title": "Online Bill Payment",
+      "description": "Calculate tiered water/sewer bills from meter readings, process payments via InfoSend gateway, manage account adjustments",
       "category": "customer-self-service",
       "tag": "CAP-001",
       "status": "stable",
@@ -1432,6 +1433,7 @@ post "$API/taxonomy/governance" '{
     "CAP-002": {
       "id": "CAP-002",
       "title": "Service Start/Stop",
+      "description": "Customer portal for starting new service, stopping existing service, and transferring accounts between addresses",
       "category": "customer-self-service",
       "tag": "CAP-002",
       "status": "stable",
@@ -1440,6 +1442,7 @@ post "$API/taxonomy/governance" '{
     "CAP-003": {
       "id": "CAP-003",
       "title": "Problem Reporting",
+      "description": "Self-service problem reporting for water main breaks, leaks, discolored water, sewer backups, and low pressure issues",
       "category": "customer-self-service",
       "tag": "CAP-003",
       "status": "stable",
@@ -1448,6 +1451,7 @@ post "$API/taxonomy/governance" '{
     "CAP-004": {
       "id": "CAP-004",
       "title": "Field Dispatch & Tracking",
+      "description": "24/7/365 computer-aided dispatch for field crew coordination, emergency response, and work order tracking",
       "category": "operations",
       "tag": "CAP-004",
       "status": "stable",
@@ -1456,6 +1460,7 @@ post "$API/taxonomy/governance" '{
     "CAP-005": {
       "id": "CAP-005",
       "title": "Water Quality Monitoring",
+      "description": "Real-time and periodic water quality parameter monitoring, sample collection, and laboratory analysis against EPA MCLs",
       "category": "compliance",
       "tag": "CAP-005",
       "status": "stable",
@@ -1464,6 +1469,7 @@ post "$API/taxonomy/governance" '{
     "CAP-006": {
       "id": "CAP-006",
       "title": "Automated Meter Reading",
+      "description": "Drive-by AMR data collection from customer meters with anomaly detection for leaks and tampering",
       "category": "infrastructure",
       "tag": "CAP-006",
       "status": "stable",
@@ -1472,6 +1478,7 @@ post "$API/taxonomy/governance" '{
     "CAP-007": {
       "id": "CAP-007",
       "title": "Regulatory Report Submission",
+      "description": "EPA/NC DEQ compliance report generation and electronic submission for SDWA, CWA, LCRR, and PFAS standards",
       "category": "compliance",
       "tag": "CAP-007",
       "status": "stable",
@@ -1480,6 +1487,7 @@ post "$API/taxonomy/governance" '{
     "CAP-008": {
       "id": "CAP-008",
       "title": "Capital Project Tracking",
+      "description": "Infrastructure improvement project tracking, budgeting, contractor management, and milestone reporting",
       "category": "engineering",
       "tag": "CAP-008",
       "status": "planned",
@@ -1488,6 +1496,7 @@ post "$API/taxonomy/governance" '{
     "CAP-009": {
       "id": "CAP-009",
       "title": "Payment Processing",
+      "description": "InfoSend payment gateway for online bill pay, AutoPay, ACH transfers, and credit card processing",
       "category": "external-vendor",
       "tag": "CAP-009",
       "status": "stable",
@@ -1496,6 +1505,7 @@ post "$API/taxonomy/governance" '{
     "CAP-010": {
       "id": "CAP-010",
       "title": "Water Treatment Process Control",
+      "description": "SCADA-based treatment plant process control for chemical dosing, filtration, and disinfection monitoring",
       "category": "operations",
       "tag": "CAP-010",
       "status": "stable",
@@ -1504,6 +1514,7 @@ post "$API/taxonomy/governance" '{
     "CAP-011": {
       "id": "CAP-011",
       "title": "Sewer Overflow Detection",
+      "description": "SCADA monitoring of 47 lift stations for overflow detection, pump status tracking, and alarm management",
       "category": "compliance",
       "tag": "CAP-011",
       "status": "stable",
@@ -1515,48 +1526,78 @@ post "$API/taxonomy/governance" '{
       "id": "UT-001",
       "name": "Durham Resident",
       "type": "human",
-      "archetype": "End customer who receives water/sewer service and pays monthly utility bills",
+      "archetype": "consumer",
+      "description": "End customer who receives water/sewer service and pays monthly utility bills",
+      "goals": ["Pay water bill conveniently online", "Report water issues quickly", "View usage history and conservation tips"],
+      "painPoints": ["Complex tiered billing structure", "Difficulty reaching customer service during peak hours"],
+      "behaviors": ["Pays bill monthly via portal or AutoPay", "Reports water main breaks when observed", "Reviews usage data periodically"],
       "typicalCapabilities": ["CAP-001", "CAP-002", "CAP-003"],
+      "technicalProfile": {"skillLevel": "basic", "frequency": "monthly"},
       "tag": "UT-001"
     },
     "UT-002": {
       "id": "UT-002",
       "name": "Field Crew Supervisor",
       "type": "human",
-      "archetype": "Experienced water/sewer maintenance professional who leads repair crews and manages emergency response",
+      "archetype": "operator",
+      "description": "Experienced water/sewer maintenance professional who leads repair crews and manages emergency response",
+      "goals": ["Respond to emergencies within 30-minute SLA", "Minimize water service interruptions", "Track work order completion rates"],
+      "painPoints": ["Dispatching delays during multi-incident events", "Incomplete location data on service requests"],
+      "behaviors": ["Monitors dispatch queue continuously during shift", "Coordinates with distribution and sewer teams", "Files completion reports after every repair"],
       "typicalCapabilities": ["CAP-004", "CAP-011"],
+      "technicalProfile": {"skillLevel": "intermediate", "frequency": "daily"},
       "tag": "UT-002"
     },
     "UT-003": {
       "id": "UT-003",
       "name": "Lab Technician",
       "type": "human",
-      "archetype": "Water quality specialist who collects samples, runs laboratory analyses, and flags regulatory exceedances",
+      "archetype": "operator",
+      "description": "Water quality specialist who collects samples, runs laboratory analyses, and flags regulatory exceedances",
+      "goals": ["Ensure all samples meet EPA MCL thresholds", "Submit quarterly compliance reports on time", "Detect PFAS contamination trends early"],
+      "painPoints": ["Manual data entry from lab instruments", "Complex PFAS reporting with 6 regulated compounds"],
+      "behaviors": ["Collects water samples from 50+ distribution points", "Runs lab analyses daily", "Reviews results against MCL thresholds before submission"],
       "typicalCapabilities": ["CAP-005", "CAP-007"],
+      "technicalProfile": {"skillLevel": "advanced", "frequency": "daily"},
       "tag": "UT-003"
     },
     "UT-004": {
       "id": "UT-004",
       "name": "Billing Agent",
       "type": "human",
-      "archetype": "Customer service representative who handles billing inquiries, payment processing, adjustments, and financial assistance programs",
+      "archetype": "operator",
+      "description": "Customer service representative who handles billing inquiries, payment processing, adjustments, and financial assistance programs",
+      "goals": ["Resolve customer billing inquiries on first contact", "Process payment adjustments accurately", "Enroll eligible customers in CAFFE assistance program"],
+      "painPoints": ["High call volume during billing cycle", "Complex adjustment calculations for tiered rates"],
+      "behaviors": ["Handles 40-60 customer calls per day", "Processes billing adjustments and credits", "Escalates disputes to supervisor when needed"],
       "typicalCapabilities": ["CAP-001"],
+      "technicalProfile": {"skillLevel": "intermediate", "frequency": "daily"},
       "tag": "UT-004"
     },
     "UT-005": {
       "id": "UT-005",
       "name": "Automated Meter Reader",
       "type": "system",
-      "archetype": "AMR device mounted on city vehicles that wirelessly reads water meters while driving past customer locations",
+      "archetype": "integrator",
+      "description": "AMR device mounted on city vehicles that wirelessly reads water meters while driving past customer locations",
+      "goals": ["Read all meters on route within scheduled window", "Detect anomalous readings automatically", "Transmit data reliably to billing system"],
+      "painPoints": ["RF signal interference in dense urban areas", "Battery degradation in extreme weather conditions"],
+      "behaviors": ["Collects readings wirelessly from drive-by route", "Flags anomalous readings for manual review", "Transmits batch data to billing engine daily"],
       "typicalCapabilities": ["CAP-006"],
+      "technicalProfile": {"skillLevel": "advanced", "integrationType": "device-to-system", "frequency": "daily"},
       "tag": "UT-005"
     },
     "UT-006": {
       "id": "UT-006",
       "name": "Plant Operator",
       "type": "human",
-      "archetype": "Licensed water treatment plant operator monitoring SCADA systems, adjusting chemical dosing, and managing treatment processes",
+      "archetype": "operator",
+      "description": "Licensed water treatment plant operator monitoring SCADA systems, adjusting chemical dosing, and managing treatment processes",
+      "goals": ["Maintain treatment output within EPA standards", "Respond to SCADA alarms within 5 minutes", "Optimize chemical dosing for cost efficiency"],
+      "painPoints": ["Aging SCADA equipment with frequent false alarms", "Manual logbook entries required by regulation"],
+      "behaviors": ["Monitors SCADA dashboards continuously", "Adjusts chemical dosing based on raw water quality", "Logs all process changes in regulatory logbook"],
       "typicalCapabilities": ["CAP-010", "CAP-005"],
+      "technicalProfile": {"skillLevel": "advanced", "frequency": "continuous"},
       "tag": "UT-006"
     }
   },
@@ -1566,56 +1607,64 @@ post "$API/taxonomy/governance" '{
       "title": "Pay my water bill online",
       "userType": "UT-001",
       "capabilities": ["CAP-001"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Payment accepted via credit card, ACH, or AutoPay", "Confirmation email sent within 5 minutes", "Account balance updated immediately"]
     },
     "US-002": {
       "id": "US-002",
       "title": "Report a water main break from my phone",
       "userType": "UT-001",
       "capabilities": ["CAP-003"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Report submitted with GPS location from mobile", "Confirmation number provided immediately", "Report routed to dispatch queue within 2 minutes"]
     },
     "US-003": {
       "id": "US-003",
       "title": "Dispatch crew to emergency water main break",
       "userType": "UT-002",
       "capabilities": ["CAP-004"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Crew assigned within 30 minutes of report", "Work order created with location and priority", "Status updates visible to dispatch supervisor"]
     },
     "US-004": {
       "id": "US-004",
       "title": "Submit quarterly PFAS results to EPA",
       "userType": "UT-003",
       "capabilities": ["CAP-005", "CAP-007"],
-      "status": "implementing"
+      "status": "implementing",
+      "acceptanceCriteria": ["All 6 regulated PFAS compounds included in report", "Results validated against MCL thresholds before submission", "EPA acknowledgment receipt stored in LIMS"]
     },
     "US-005": {
       "id": "US-005",
       "title": "Review customer account for billing adjustment",
       "userType": "UT-004",
       "capabilities": ["CAP-001"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Account history visible with all meter readings", "Adjustment calculated based on tiered rate structure", "Adjustment reason logged in audit trail"]
     },
     "US-006": {
       "id": "US-006",
       "title": "Detect water leak from abnormal meter reading pattern",
       "userType": "UT-005",
       "capabilities": ["CAP-006"],
-      "status": "implementing"
+      "status": "implementing",
+      "acceptanceCriteria": ["Anomaly flagged when reading exceeds 3x average", "Alert sent to distribution team", "Customer notification generated automatically"]
     },
     "US-007": {
       "id": "US-007",
       "title": "Monitor treatment plant SCADA alarms and adjust chemical dosing",
       "userType": "UT-006",
       "capabilities": ["CAP-010"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["SCADA alarms displayed within 5 seconds", "Chemical dosing adjustable from operator console", "All changes logged in regulatory logbook"]
     },
     "US-008": {
       "id": "US-008",
       "title": "Respond to lift station overflow alarm within 30 minutes",
       "userType": "UT-002",
       "capabilities": ["CAP-011", "CAP-004"],
-      "status": "complete"
+      "status": "complete",
+      "acceptanceCriteria": ["Alarm triggers automatic dispatch notification", "Crew arrives on site within 30 minutes", "SSO volume estimated and reported to regulators"]
     }
   },
   "roadItems": {
@@ -1682,7 +1731,7 @@ post "$API/taxonomy/governance" '{
     "UT-006": { "stories": ["US-007"], "capabilities": ["CAP-010", "CAP-005"] }
   }
 }' > /dev/null
-echo "  Governance snapshot ingested (9 capabilities, 6 user types, 8 user stories, 4 road items)"
+echo "  Governance snapshot ingested (11 capabilities, 6 user types, 8 user stories, 4 road items)"
 
 echo ""
 
@@ -1696,7 +1745,7 @@ echo ""
 echo "  Domain Model ID: $MODEL_ID"
 echo ""
 echo "  Created:"
-echo "    - 10 bounded contexts (4 internal, 2 external-system, 1 human-process)"
+echo "    - 10 bounded contexts (7 internal, 2 external-system, 1 human-process)"
 echo "    -  3 subdomain types (4 core, 3 supporting, 3 generic)"
 echo "    - 15 domain events (with cross-context flows)"
 echo "    -  2 inferred unknown systems (emergency-notification-system, nc-deq-system)"
@@ -1704,7 +1753,7 @@ echo "    -  3 workflows spanning 3-5 contexts each"
 echo "    -  5 aggregates with commands, invariants, and events"
 echo "    -  4 value objects (immutable)"
 echo "    - 10 glossary terms (PFAS, MCL, AMR, SSO, FOG, etc.)"
-echo "    -  1 governance snapshot (9 capabilities, 6 user types, 8 user stories)"
+echo "    -  1 governance snapshot (11 capabilities, 6 user types, 8 user stories)"
 echo ""
 echo "  Landscape patterns exercised:"
 echo "    - Internal → Internal event flows"
