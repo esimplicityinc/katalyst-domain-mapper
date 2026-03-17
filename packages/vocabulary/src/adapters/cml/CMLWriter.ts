@@ -143,11 +143,6 @@ export class CMLWriter {
       lines.push(`  domainVisionStatement "${context.responsibility}"`);
     }
 
-    // Add team ownership if present
-    if (context.teamOwnership) {
-      lines.push(`  /* Team: ${context.teamOwnership} */`);
-    }
-
     lines.push("}");
     return lines.join("\n");
   }

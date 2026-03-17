@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { SlugPattern } from "../common.js";
-import { ContributionSchema } from "../contribution.js";
 
 // ── Value Object Property ──────────────────────────────────────────────────
 // Accepts both `constraints` (original schema) and `description` (web UI).
@@ -31,7 +30,6 @@ export const ValueObjectExtSchema = z.object({
   validationRules: z.array(z.string()).default([]),
   immutable: z.boolean().default(true),
   sourceFile: z.string().optional(),
-  contribution: ContributionSchema,
 });
 
 export type ValueObjectExt = z.infer<typeof ValueObjectExtSchema>;

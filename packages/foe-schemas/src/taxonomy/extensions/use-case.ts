@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { UserTypeIdPattern } from "../common.js";
-import { ContributionSchema } from "../contribution.js";
 
 // ── Use Case Extension ─────────────────────────────────────────────────────
 // Carries governance lifecycle fields for taxonomy nodes with nodeType:
@@ -13,7 +12,6 @@ export const UseCaseExtSchema = z.object({
   postconditions: z.array(z.string()).default([]),
   mainFlow: z.array(z.string()).default([]),
   alternativeFlows: z.array(z.string()).default([]),
-  contribution: ContributionSchema,
 });
 
 export type UseCaseExt = z.infer<typeof UseCaseExtSchema>;

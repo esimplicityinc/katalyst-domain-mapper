@@ -4,7 +4,6 @@ import {
   CapabilityIdPattern,
   UseCaseIdPattern,
 } from "../common.js";
-import { ContributionSchema } from "../contribution.js";
 
 // ── User Story Extension ───────────────────────────────────────────────────
 // Carries governance lifecycle fields for taxonomy nodes with nodeType:
@@ -23,7 +22,6 @@ export const UserStoryExtSchema = z.object({
   capabilities: z.array(CapabilityIdPattern).min(1),
   useCases: z.array(UseCaseIdPattern).default([]),
   acceptanceCriteria: z.array(z.string()).default([]),
-  contribution: ContributionSchema,
 });
 
 export type UserStoryExt = z.infer<typeof UserStoryExtSchema>;

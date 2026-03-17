@@ -29,8 +29,7 @@ export const ContributionSchema = z.object({
   reviewedAt: z.string().datetime().nullable().default(null),
   reviewedBy: z.string().nullable().default(null),
   reviewFeedback: z.string().nullable().default(null),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  // NOTE: createdAt/updatedAt REMOVED -- owned by EntityBase
 });
 
 export type Contribution = z.infer<typeof ContributionSchema>;

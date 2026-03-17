@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { PrioritySchema } from "../common.js";
-import { ContributionSchema } from "../contribution.js";
 
 // ── NFR Category ───────────────────────────────────────────────────────────
 export const NfrCategorySchema = z.enum([
@@ -22,10 +21,8 @@ export const NfrExtSchema = z.object({
   category: NfrCategorySchema,
   priority: PrioritySchema,
   status: z.enum(["active", "deprecated"]),
-  created: z.string(),
   threshold: z.string().optional(),
   measurement: z.string().optional(),
-  contribution: ContributionSchema,
 });
 
 export type NfrExt = z.infer<typeof NfrExtSchema>;

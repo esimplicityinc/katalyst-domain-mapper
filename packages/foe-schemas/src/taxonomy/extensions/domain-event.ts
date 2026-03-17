@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { SlugPattern } from "../common.js";
-import { ContributionSchema } from "../contribution.js";
 
 // ── Event Payload Field ────────────────────────────────────────────────────
 export const EventPayloadFieldSchema = z.object({
@@ -25,7 +24,6 @@ export const DomainEventExtSchema = z.object({
   sourceFile: z.string().optional(),
   sourceCapabilityId: z.string().optional(),
   targetCapabilityIds: z.array(z.string()).default([]),
-  contribution: ContributionSchema,
 });
 
 export type DomainEventExt = z.infer<typeof DomainEventExtSchema>;

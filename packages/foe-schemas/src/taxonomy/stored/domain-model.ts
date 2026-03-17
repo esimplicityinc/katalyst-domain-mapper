@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ContributionSchema } from "../contribution.js";
 
 // ── Stored Domain Model ────────────────────────────────────────────────────
 
@@ -61,8 +60,6 @@ export const StoredBoundedContextSchema = z.object({
   description: z.string().nullable().default(null),
   responsibility: z.string(),
   sourceDirectory: z.string().nullable().default(null),
-  teamOwnership: z.string().nullable().default(null),
-  ownerTeam: z.string().nullable().default(null),
   status: z.string().default("active"),
   subdomainType: z
     .enum(["core", "supporting", "generic"])
@@ -76,7 +73,6 @@ export const StoredBoundedContextSchema = z.object({
   relationships: z.array(ContextRelationshipSchema).default([]),
   createdAt: z.string(),
   updatedAt: z.string(),
-  contribution: ContributionSchema,
 });
 export type StoredBoundedContext = z.infer<typeof StoredBoundedContextSchema>;
 
@@ -114,7 +110,6 @@ export const StoredAggregateSchema = z.object({
   status: z.string().default("active"),
   createdAt: z.string(),
   updatedAt: z.string(),
-  contribution: ContributionSchema,
 });
 export type StoredAggregate = z.infer<typeof StoredAggregateSchema>;
 
@@ -145,7 +140,6 @@ export const StoredDomainEventSchema = z.object({
   targetCapabilityIds: z.array(z.string()).default([]),
   createdAt: z.string(),
   updatedAt: z.string(),
-  contribution: ContributionSchema,
 });
 export type StoredDomainEvent = z.infer<typeof StoredDomainEventSchema>;
 
@@ -178,7 +172,6 @@ export const StoredValueObjectSchema = z.object({
   sourceFile: z.string().nullable().default(null),
   createdAt: z.string(),
   updatedAt: z.string(),
-  contribution: ContributionSchema,
 });
 export type StoredValueObject = z.infer<typeof StoredValueObjectSchema>;
 
@@ -196,7 +189,6 @@ export const StoredGlossaryTermSchema = z.object({
   source: z.string().nullable().default(null),
   createdAt: z.string(),
   updatedAt: z.string(),
-  contribution: ContributionSchema,
 });
 export type StoredGlossaryTerm = z.infer<typeof StoredGlossaryTermSchema>;
 
@@ -276,8 +268,6 @@ export const CreateBoundedContextInputSchema = z.object({
   description: z.string().optional(),
   responsibility: z.string(),
   sourceDirectory: z.string().optional(),
-  teamOwnership: z.string().optional(),
-  ownerTeam: z.string().optional(),
   status: z.string().optional(),
   subdomainType: z.string().optional(),
   contextType: z.string().optional(),
@@ -294,8 +284,6 @@ export const UpdateBoundedContextInputSchema = z.object({
   description: z.string().optional(),
   responsibility: z.string(),
   sourceDirectory: z.string().optional(),
-  teamOwnership: z.string().optional(),
-  ownerTeam: z.string().optional(),
   status: z.string().optional(),
   subdomainType: z.string().optional(),
   contextType: z.string().optional(),

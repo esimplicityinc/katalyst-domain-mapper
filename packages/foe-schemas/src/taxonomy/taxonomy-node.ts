@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TaxonomyNodeNamePattern } from "./common.js";
-import { ContributionSchema } from "./contribution.js";
+import { EntityBaseSchema } from "./entity-base.js";
 
 // ── Taxonomy Node Type ─────────────────────────────────────────────────────
 // Expanded to include all entity kinds from the former ddd/ and governance/
@@ -31,6 +31,9 @@ export const TaxonomyNodeTypeSchema = z.enum([
   "adr",
   "nfr",
   "change_entry",
+  // ── Practice Areas (NEW) ──
+  "practice_area",
+  "competency",
 ]);
 
 export type TaxonomyNodeType = z.infer<typeof TaxonomyNodeTypeSchema>;
@@ -62,34 +65,31 @@ export const ActionTypeSchema = z.enum(["shell", "http", "workflow"]);
 export type ActionType = z.infer<typeof ActionTypeSchema>;
 
 // ── Taxonomy Node Schema ───────────────────────────────────────────────────
+// Pattern A: Tree nodes. Extends EntityBase with hierarchy-specific fields.
 // The universal base for every entity in the taxonomy tree.
 // UUID is the primary identity; name is the human-readable slug.
-// The `contribution` block gates the universal contribution lifecycle
-// (draft → proposed → accepted, etc.). Type-specific statuses only
+// The `contribution` block (from EntityBase) gates the universal contribution
+// lifecycle (draft → proposed → accepted, etc.). Type-specific statuses only
 // activate after contribution.status === "accepted".
-export const TaxonomyNodeSchema = z.object({
-  id: z.string().uuid(),
-  name: TaxonomyNodeNamePattern,
+export const TaxonomyNodeSchema = EntityBaseSchema.extend({
   nodeType: TaxonomyNodeTypeSchema,
-  fqtn: z.string(),
-  description: z.string().nullable().default(null),
-  parentNode: z.string().nullable().default(null),
-  owners: z.array(z.string()).default([]),
+  fqtn: z.string(), // fully-qualified taxonomy name
+  parentNode: z.string().nullable().default(null), // parent node ref
   environments: z.array(z.string()).default([]),
-  labels: z.record(z.string()).default({}),
-  dependsOn: z.array(z.string()).default([]),
   path: z.string().default(""),
-  createdAt: z.string().default(""),
-  updatedAt: z.string().default(""),
-  contribution: ContributionSchema,
 });
 
 export type TaxonomyNode = z.infer<typeof TaxonomyNodeSchema>;
 
+// ── Infrastructure Schemas ─────────────────────────────────────────────────
+// Pattern B: Infrastructure items. Extend EntityBase with type-specific fields.
+// These entities aren't tree nodes but need full lifecycle.
+//
+// NOTE: TaxonomyTeamMembershipSchema is NOT refactored -- it's a pure value
+// object (no identity) embedded in TaxonomyTeamSchema.
+
 // ── Taxonomy Environment Schema ────────────────────────────────────────────
-export const TaxonomyEnvironmentSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  description: z.string().nullable().default(null),
+export const TaxonomyEnvironmentSchema = EntityBaseSchema.extend({
   parentEnvironment: z.string().nullable().default(null),
   promotionTargets: z.array(z.string()).default([]),
   templateReplacements: z.record(z.string()).default({}),
@@ -98,9 +98,7 @@ export const TaxonomyEnvironmentSchema = z.object({
 export type TaxonomyEnvironment = z.infer<typeof TaxonomyEnvironmentSchema>;
 
 // ── Taxonomy Layer Type Schema ─────────────────────────────────────────────
-export const TaxonomyLayerTypeSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  description: z.string().nullable().default(null),
+export const TaxonomyLayerTypeSchema = EntityBaseSchema.extend({
   defaultLayerDir: z.string().nullable().default(null),
 });
 
@@ -109,22 +107,18 @@ export type TaxonomyLayerType = z.infer<typeof TaxonomyLayerTypeSchema>;
 // ── Taxonomy Capability Schema ─────────────────────────────────────────────
 // Infrastructure-level capability (not to be confused with CapabilityExtSchema
 // which is the governance lifecycle extension for capability nodes).
-export const TaxonomyCapabilitySchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  description: z.string(),
+// NOTE: `tag` removed -- governance IDs go in `labels` on EntityBase.
+export const TaxonomyCapabilitySchema = EntityBaseSchema.extend({
   categories: z.array(z.string()).default([]),
   dependsOnCapabilities: z.array(z.string()).default([]),
   /** Slug of the parent capability (null = root / system-level capability) */
   parentCapability: z.string().nullable().default(null),
-  /** Optional display tag for traceability, e.g. "CAP-005" */
-  tag: z.string().nullable().default(null),
 });
 
 export type TaxonomyCapability = z.infer<typeof TaxonomyCapabilitySchema>;
 
 // ── Taxonomy Capability Relationship Schema ────────────────────────────────
-export const TaxonomyCapabilityRelSchema = z.object({
-  name: TaxonomyNodeNamePattern,
+export const TaxonomyCapabilityRelSchema = EntityBaseSchema.extend({
   node: z.string(),
   relationshipType: CapabilityRelationshipTypeSchema,
   capabilities: z.array(z.string()).min(1),
@@ -133,8 +127,7 @@ export const TaxonomyCapabilityRelSchema = z.object({
 export type TaxonomyCapabilityRel = z.infer<typeof TaxonomyCapabilityRelSchema>;
 
 // ── Taxonomy Action Schema ─────────────────────────────────────────────────
-export const TaxonomyActionSchema = z.object({
-  name: TaxonomyNodeNamePattern,
+export const TaxonomyActionSchema = EntityBaseSchema.extend({
   actionType: ActionTypeSchema,
   layerType: z.string().nullable().default(null),
   tags: z.array(z.string()).default([]),
@@ -143,26 +136,20 @@ export const TaxonomyActionSchema = z.object({
 export type TaxonomyAction = z.infer<typeof TaxonomyActionSchema>;
 
 // ── Taxonomy Stage Schema ──────────────────────────────────────────────────
-export const TaxonomyStageSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  description: z.string().nullable().default(null),
-  dependsOn: z.array(z.string()).default([]),
-});
+// NOTE: description and dependsOn already exist on EntityBase, no extra fields needed.
+export const TaxonomyStageSchema = EntityBaseSchema;
 
 export type TaxonomyStage = z.infer<typeof TaxonomyStageSchema>;
 
 // ── Taxonomy Tool Schema ───────────────────────────────────────────────────
-export const TaxonomyToolSchema = z.object({
-  name: TaxonomyNodeNamePattern,
-  description: z.string(),
+export const TaxonomyToolSchema = EntityBaseSchema.extend({
   actions: z.array(z.string()).default([]),
 });
 
 export type TaxonomyTool = z.infer<typeof TaxonomyToolSchema>;
 
 // ── Taxonomy Person Schema ─────────────────────────────────────────────────
-export const TaxonomyPersonSchema = z.object({
-  name: TaxonomyNodeNamePattern,
+export const TaxonomyPersonSchema = EntityBaseSchema.extend({
   displayName: z.string(),
   email: z.string().nullable().default(null),
   role: z.string().nullable().default(null),
@@ -172,6 +159,7 @@ export const TaxonomyPersonSchema = z.object({
 export type TaxonomyPerson = z.infer<typeof TaxonomyPersonSchema>;
 
 // ── Taxonomy Team Membership Schema ────────────────────────────────────────
+// Pure value object -- NOT refactored to EntityBase (no identity/lifecycle).
 export const TaxonomyTeamMembershipSchema = z.object({
   personName: TaxonomyNodeNamePattern,
   role: z.string(),
@@ -182,11 +170,9 @@ export type TaxonomyTeamMembership = z.infer<
 >;
 
 // ── Taxonomy Team Schema ───────────────────────────────────────────────────
-export const TaxonomyTeamSchema = z.object({
-  name: TaxonomyNodeNamePattern,
+export const TaxonomyTeamSchema = EntityBaseSchema.extend({
   displayName: z.string(),
   teamType: TeamTopologyTypeSchema,
-  description: z.string().nullable().default(null),
   focusArea: z.string().nullable().default(null),
   communicationChannels: z.array(z.string()).default([]),
   ownedNodes: z.array(z.string()).default([]),

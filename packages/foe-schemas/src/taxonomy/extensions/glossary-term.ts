@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ContributionSchema } from "../contribution.js";
 
 // ── Glossary Term Extension ────────────────────────────────────────────────
 // Carries domain-specific fields for taxonomy nodes with nodeType:
@@ -13,7 +12,6 @@ export const GlossaryTermExtSchema = z.object({
   examples: z.array(z.string()).default([]),
   relatedTerms: z.array(z.string()).default([]),
   source: z.string().optional(),
-  contribution: ContributionSchema,
 });
 
 export type GlossaryTermExt = z.infer<typeof GlossaryTermExtSchema>;
