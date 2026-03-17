@@ -1,4 +1,4 @@
-@api @report-gen @ROAD-001 @CAP-001
+@api @report-gen @ROAD-001 @CAP-001 @US-001
 Feature: FOE Report Raw Retrieval
   As a Platform Engineer
   I want to retrieve the original raw report JSON as it was submitted

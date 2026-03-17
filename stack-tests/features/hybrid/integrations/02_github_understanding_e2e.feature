@@ -1,4 +1,4 @@
-@hybrid @github-integration @ROAD-013 @CAP-007 @CAP-004 @wip
+@hybrid @github-integration @ROAD-013 @CAP-007 @CAP-004 @US-022 @wip
 Feature: GitHub Understanding Integration End-to-End
   As an Engineering Team Lead
   I want GitHub documentation signals to enrich the scanner's Understanding dimension

@@ -1,4 +1,4 @@
-@api @report-gen @ROAD-001 @CAP-001
+@api @report-gen @ROAD-001 @CAP-001 @US-001
 Feature: FOE Report Dimension Scores & Cognitive Triangle
   As an Engineering Team Lead
   I want to ingest FOE reports with full dimension scoring

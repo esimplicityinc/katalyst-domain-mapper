@@ -1,4 +1,4 @@
-@hybrid @landscape @ROAD-044 @CAP-023
+@hybrid @landscape @ROAD-044 @CAP-023 @US-072
 Feature: Business Landscape Visualization E2E
   As a Domain Architect
   I want to view the business landscape visualization in the browser

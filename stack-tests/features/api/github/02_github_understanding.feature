@@ -1,4 +1,4 @@
-@api @github-integration @ROAD-013 @CAP-007 @wip
+@api @github-integration @ROAD-013 @CAP-007 @US-022 @wip
 Feature: GitHub Understanding Dimension Integration
   As an Engineering Team Lead
   I want to import GitHub documentation signals into the scanner

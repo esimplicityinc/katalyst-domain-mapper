@@ -1,4 +1,4 @@
-@api @landscape-lint @ROAD-044 @CAP-024
+@api @landscape-lint @ROAD-044 @CAP-024 @US-075
 Feature: Landscape Domain Linter API
   As a Domain Architect
   I want to lint a domain model's landscape for integrity issues

@@ -1,4 +1,4 @@
-@api @feature-flags @CAP-028
+@api @feature-flags @CAP-028 @US-081 @US-082
 Feature: Feature Flag API
   As a Platform Engineer
   I want to query and control feature flags via the API

@@ -1,4 +1,4 @@
-@hybrid @landscape @CAP-023 @wip
+@hybrid @landscape @CAP-023 @US-091 @wip
 Feature: Landscape v2 Zoned Layout
   As a Domain Architect
   I want to view the business landscape with a zoned trunk layout

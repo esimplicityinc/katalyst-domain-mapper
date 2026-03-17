@@ -1,4 +1,4 @@
-@api @landscape @ROAD-044 @CAP-023
+@api @landscape @ROAD-044 @CAP-023 @US-072
 Feature: Business Landscape Graph API
   As a Domain Architect
   I want to retrieve a complete business landscape graph for a domain model

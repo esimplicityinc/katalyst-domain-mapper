@@ -1,4 +1,4 @@
-@api @sse-streaming @ROAD-015 @CAP-008 @wip
+@api @sse-streaming @ROAD-015 @CAP-008 @US-026 @wip
 Feature: SSE Streaming for Agent Responses
   As a Platform Engineer
   I want to stream agent responses via Server-Sent Events

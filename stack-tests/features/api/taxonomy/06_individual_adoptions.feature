@@ -1,4 +1,4 @@
-@api @individual-adoptions @CAP-032 @ROAD-048
+@api @individual-adoptions @CAP-032 @ROAD-048 @US-096
 Feature: Individual Adoptions CRUD API
   As a Platform Engineer
   I want to track which practice areas individuals have adopted and their roles

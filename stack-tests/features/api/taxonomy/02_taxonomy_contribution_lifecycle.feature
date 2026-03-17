@@ -1,4 +1,4 @@
-@api @taxonomy @CAP-002
+@api @taxonomy @CAP-002 @US-083
 Feature: Taxonomy Contribution Lifecycle
   As a Documentation Author
   I want governance artifacts to follow a universal contribution lifecycle

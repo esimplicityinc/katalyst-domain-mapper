@@ -1,4 +1,4 @@
-@api @github-integration @ROAD-012 @CAP-007 @wip
+@api @github-integration @ROAD-012 @CAP-007 @US-020 @wip
 Feature: GitHub Feedback Dimension Integration
   As an Engineering Team Lead
   I want to import GitHub Actions/CI metrics into the scanner

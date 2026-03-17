@@ -1,4 +1,4 @@
-@api @competencies @CAP-032 @ROAD-048
+@api @competencies @CAP-032 @ROAD-048 @US-094
 Feature: Competencies CRUD API
   As a Platform Engineer
   I want to manage competencies within practice areas

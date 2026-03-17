@@ -1,4 +1,4 @@
-@hybrid @jira-integration @ROAD-010 @CAP-005 @CAP-004 @wip
+@hybrid @jira-integration @ROAD-010 @CAP-005 @CAP-004 @US-017 @wip
 Feature: Jira Integration End-to-End
   As an Engineering Team Lead
   I want Jira metrics to enrich the scanner's Feedback dimension

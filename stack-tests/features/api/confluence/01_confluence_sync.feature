@@ -1,4 +1,4 @@
-@api @confluence-integration @ROAD-011 @CAP-006 @wip
+@api @confluence-integration @ROAD-011 @CAP-006 @US-018 @US-019 @wip
 Feature: Confluence Bidirectional Sync
   As a Platform Engineer
   I want to sync governance documentation with Confluence bidirectionally

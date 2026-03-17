@@ -1,4 +1,4 @@
-@api @jira-integration @ROAD-010 @CAP-005 @wip
+@api @jira-integration @ROAD-010 @CAP-005 @US-016 @US-017 @wip
 Feature: Jira Bidirectional Sync
   As a Platform Engineer
   I want to sync governance artifacts with Jira bidirectionally

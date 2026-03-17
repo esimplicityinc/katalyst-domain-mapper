@@ -1,4 +1,4 @@
-@hybrid @foe-scanner @ROAD-030 @CAP-001
+@hybrid @foe-scanner @ROAD-030 @CAP-001 @US-056 @US-058
 Feature: FOE Project Browser & Report Viewer
   As an Engineering Team Lead
   I want to browse FOE project reports and navigate between tabs

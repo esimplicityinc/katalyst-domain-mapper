@@ -1,4 +1,4 @@
-@hybrid @architecture @CAP-025
+@hybrid @architecture @CAP-025 @US-076 @US-077
 Feature: Architecture Management UI E2E
   As an Engineering Team Lead
   I want to manage system architecture through the web UI

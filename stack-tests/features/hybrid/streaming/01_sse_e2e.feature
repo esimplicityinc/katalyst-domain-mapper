@@ -1,4 +1,4 @@
-@hybrid @sse-streaming @ROAD-015 @CAP-008 @CAP-001 @wip
+@hybrid @sse-streaming @ROAD-015 @CAP-008 @CAP-001 @US-027 @wip
 Feature: SSE Streaming End-to-End
   As an Engineering Team Lead
   I want to see live agent output in the web UI during a scan

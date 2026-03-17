@@ -1,4 +1,4 @@
-@hybrid @report-gen @ROAD-001 @CAP-001
+@hybrid @report-gen @ROAD-001 @CAP-001 @US-001 @US-010
 Feature: FOE Report Upload & Viewer
   As an Engineering Team Lead
   I want to upload and view FOE scan reports in the web interface

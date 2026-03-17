@@ -1,4 +1,4 @@
-@api @chat @CAP-027
+@api @chat @CAP-027 @US-080 @US-088
 Feature: AI Chat Session Management
   As an Engineering Team Lead
   I want to interact with AI chat agents via the API

@@ -1,4 +1,4 @@
-@api @layer-health @CAP-031 @wip
+@api @layer-health @CAP-031 @US-089 @wip
 Feature: Layer Health API
   As an Engineering Team Lead
   I want to ingest and query layer health measurements via the API

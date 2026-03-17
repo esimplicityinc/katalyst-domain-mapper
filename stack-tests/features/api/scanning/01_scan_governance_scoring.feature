@@ -1,4 +1,4 @@
-@api @repo-scanning @ROAD-006 @CAP-004 @CAP-002 @wip
+@api @repo-scanning @ROAD-006 @CAP-004 @CAP-002 @US-011 @wip
 Feature: Scanner Governance Dimension Scoring
   As an AI Agent running the FOE scanner
   I want scans to include governance maturity scoring

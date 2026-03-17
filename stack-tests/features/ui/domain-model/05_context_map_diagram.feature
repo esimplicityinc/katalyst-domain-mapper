@@ -1,4 +1,4 @@
-@hybrid @ddd-modeling @ROAD-016
+@hybrid @ddd-modeling @ROAD-016 @CAP-010 @US-033
 Feature: Interactive Context Map Diagram
   As a Domain Architect (@UT-007)
   I want to see bounded contexts as an interactive SVG diagram

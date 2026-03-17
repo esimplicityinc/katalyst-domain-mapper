@@ -1,4 +1,4 @@
-@api @taxonomy-teams
+@api @taxonomy-teams @CAP-029 @US-084 @US-085
 Feature: Taxonomy Teams and Persons API
   As a Platform Engineer
   I want to ingest taxonomy snapshots and query teams and persons via the API

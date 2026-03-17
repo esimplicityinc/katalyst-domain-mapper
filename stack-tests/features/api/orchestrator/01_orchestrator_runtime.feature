@@ -1,4 +1,4 @@
-@api @orchestrator
+@api @orchestrator @CAP-030 @US-086
 Feature: Agent Orchestrator Runtime Switching
   As a platform operator
   I want to verify the agent orchestrator port/adapter pattern works correctly

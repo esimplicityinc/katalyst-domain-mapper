@@ -1,4 +1,4 @@
-@api @report-gen @ROAD-001 @CAP-001
+@api @report-gen @ROAD-001 @CAP-001 @US-030
 Feature: FOE Report Comparison
   As an Engineering Team Lead
   I want to compare two FOE scan reports side-by-side

@@ -1,4 +1,4 @@
-@hybrid @confluence-integration @ROAD-011 @CAP-006 @CAP-004 @wip
+@hybrid @confluence-integration @ROAD-011 @CAP-006 @CAP-004 @US-019 @wip
 Feature: Confluence Integration End-to-End
   As an Engineering Team Lead
   I want Confluence content to enrich the scanner's Understanding dimension

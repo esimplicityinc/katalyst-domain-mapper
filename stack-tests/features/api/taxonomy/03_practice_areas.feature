@@ -1,4 +1,4 @@
-@api @practice-areas @CAP-032 @ROAD-048
+@api @practice-areas @CAP-032 @ROAD-048 @US-093
 Feature: Practice Areas CRUD API
   As a Platform Engineer
   I want to manage practice areas within a taxonomy snapshot

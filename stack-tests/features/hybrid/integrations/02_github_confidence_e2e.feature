@@ -1,4 +1,4 @@
-@hybrid @github-integration @ROAD-014 @CAP-007 @CAP-004 @wip
+@hybrid @github-integration @ROAD-014 @CAP-007 @CAP-004 @US-024 @wip
 Feature: GitHub Confidence Integration End-to-End
   As an Engineering Team Lead
   I want GitHub quality signals to enrich the scanner's Confidence dimension

@@ -1,4 +1,4 @@
-@api @team-adoptions @CAP-032 @ROAD-048
+@api @team-adoptions @CAP-032 @ROAD-048 @US-095
 Feature: Team Adoptions CRUD API
   As a Platform Engineer
   I want to track which practice areas teams have adopted and at what level

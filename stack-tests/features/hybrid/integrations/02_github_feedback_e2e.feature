@@ -1,4 +1,4 @@
-@hybrid @github-integration @ROAD-012 @CAP-007 @CAP-004 @wip
+@hybrid @github-integration @ROAD-012 @CAP-007 @CAP-004 @US-020 @wip
 Feature: GitHub Feedback Integration End-to-End
   As an Engineering Team Lead
   I want GitHub Actions data to enrich the scanner's Feedback dimension

@@ -1,4 +1,4 @@
-@hybrid @chat @CAP-027
+@hybrid @chat @CAP-027 @US-080
 Feature: AI Chat Component E2E
   As an Engineering Team Lead
   I want to interact with AI chat agents through the web UI

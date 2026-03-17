@@ -1,4 +1,4 @@
-@api @report-gen @ROAD-001 @CAP-001
+@api @report-gen @ROAD-001 @CAP-001 @US-031
 Feature: FOE Report Filtering & Pagination
   As an Engineering Team Lead
   I want to filter and paginate the report listing

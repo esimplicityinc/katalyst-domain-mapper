@@ -1,4 +1,4 @@
-@api @github-integration @ROAD-014 @CAP-007 @wip
+@api @github-integration @ROAD-014 @CAP-007 @US-024 @wip
 Feature: GitHub Confidence Dimension Integration
   As an Engineering Team Lead
   I want to import GitHub quality signals into the scanner
