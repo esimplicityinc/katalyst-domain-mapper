@@ -19,10 +19,20 @@ import { TestingPage } from "./pages/lifecycle/TestingPage";
 import { AutomationPage } from "./pages/lifecycle/AutomationPage";
 import { HistoryPage } from "./pages/lifecycle/HistoryPage";
 
-// Design tools under /design */}
+// Design tools under /design
 import { BusinessLandscapePage } from "./pages/BusinessLandscapePage";
 import { ArchitecturePage } from "./pages/ArchitecturePage";
 import { UserTypesPage } from "./pages/UserTypesPage";
+
+// Organization pages (ROAD-049)
+import { OrganizationPage } from "./pages/lifecycle/OrganizationPage";
+import { TeamsPage } from "./pages/organization/TeamsPage";
+import { PeoplePage } from "./pages/organization/PeoplePage";
+import { AdoptionPage } from "./pages/organization/AdoptionPage";
+
+// Value Streams pages (ROAD-049)
+import { UserTypeJourneyPage } from "./pages/strategy/UserTypeJourneyPage";
+import { OutcomeTraceabilityPage } from "./pages/strategy/OutcomeTraceabilityPage";
 
 function App() {
   return (
@@ -43,6 +53,13 @@ function App() {
           <Route path="automation" element={<AutomationPage />} />
           <Route path="history" element={<HistoryPage />} />
 
+          {/* Organization section (ROAD-049) */}
+          <Route path="organization" element={<OrganizationPage />} />
+          <Route path="organization/overview" element={<OrganizationPage />} />
+          <Route path="organization/teams/*" element={<TeamsPage />} />
+          <Route path="organization/people/*" element={<PeoplePage />} />
+          <Route path="organization/adoption" element={<AdoptionPage />} />
+
           {/* Design tools under /design */}
           <Route path="design/business-domain/*" element={<DomainMapperPage />} />
           <Route path="design/business-landscape/:domainModelId" element={<BusinessLandscapePage />} />
@@ -52,6 +69,8 @@ function App() {
           {/* Strategy tools under /strategy */}
           <Route path="strategy/foe-projects/*" element={<FOEProjectsPage />} />
           <Route path="strategy/governance" element={<GovernanceDashboard />} />
+          <Route path="strategy/value-streams/journeys" element={<UserTypeJourneyPage />} />
+          <Route path="strategy/value-streams/outcomes" element={<OutcomeTraceabilityPage />} />
 
           {/* Legacy redirects (backward compatibility) */}
           <Route path="strategy/foe-scanner" element={<Navigate to="/strategy/foe-projects/scanner" replace />} />

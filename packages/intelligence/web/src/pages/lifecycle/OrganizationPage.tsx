@@ -1,19 +1,19 @@
-import { Target, ArrowRight, Shield, FolderKanban, GitBranch, TreePine } from "lucide-react";
+import { Building2, ArrowRight, Network, Users, UserCheck, Grid3X3 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export function StrategyPage() {
+export function OrganizationPage() {
   return (
     <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
         <div className="flex items-center gap-3">
-          <Target className="w-6 h-6 text-brand-primary-500 dark:text-brand-primary-300" />
+          <Building2 className="w-6 h-6 text-brand-primary-500 dark:text-brand-primary-300" />
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Strategy
+              Organization
             </h1>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Governance, Flow Optimized Engineering, and organizational health
+              Teams, people, adoption, and organizational intelligence
             </p>
           </div>
         </div>
@@ -25,31 +25,32 @@ export function StrategyPage() {
           {/* Intro */}
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Governance & Quality Assurance
+              Organization Intelligence
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Monitor Flow Optimized Engineering practices, track non-functional requirements, 
-              and ensure governance compliance across your organization.
+              Explore team structures, individual competencies, practice area adoption, and
+              how your organization aligns with the systems it builds. Surface relationships
+              between people, teams, and the domains they own.
             </p>
           </div>
 
           {/* Available Tools */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* FOE Projects */}
+            {/* Organization Map */}
             <Link
-              to="/strategy/foe-projects"
+              to="/organization/overview"
               className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:border-brand-primary-400 dark:hover:border-brand-primary-500 transition-colors group"
             >
               <div className="flex items-start justify-between mb-4">
-                <FolderKanban className="w-8 h-8 text-brand-primary-500 dark:text-brand-primary-400" />
+                <Network className="w-8 h-8 text-brand-primary-500 dark:text-brand-primary-400" />
                 <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-brand-primary-500 dark:group-hover:text-brand-primary-400 transition-colors" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                FOE Projects
+                Organization Map
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Scan repositories, upload reports, browse project history with AI coaching chat. 
-                Track engineering health over time and get personalized improvement guidance.
+                Interactive force-directed graph showing teams, people, systems, and user types
+                with their relationships. Visualize Conway's Law alignment at a glance.
               </p>
               <div className="flex items-center gap-2 text-sm text-brand-primary-600 dark:text-brand-primary-400">
                 <span className="font-medium">Open Tool</span>
@@ -57,56 +58,21 @@ export function StrategyPage() {
               </div>
             </Link>
 
-            {/* Governance Dashboard */}
+            {/* Teams */}
             <Link
-              to="/strategy/governance"
+              to="/organization/teams"
               className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:border-brand-primary-400 dark:hover:border-brand-primary-500 transition-colors group"
             >
               <div className="flex items-start justify-between mb-4">
-                <Shield className="w-8 h-8 text-brand-primary-500 dark:text-brand-primary-400" />
+                <Users className="w-8 h-8 text-brand-primary-500 dark:text-brand-primary-400" />
                 <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-brand-primary-500 dark:group-hover:text-brand-primary-400 transition-colors" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                Governance Dashboard
+                Teams
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Monitor non-functional requirements (NFRs), architecture decision records (ADRs), 
-                roadmap items, and capability coverage across your system.
-              </p>
-              <div className="flex items-center gap-2 text-sm text-brand-primary-600 dark:text-brand-primary-400">
-                <span className="font-medium">Open Tool</span>
-                <ArrowRight className="w-4 h-4" />
-              </div>
-            </Link>
-          </div>
-
-          {/* Value Streams Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Value Streams
-            </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Trace how user value flows through your organization — from user types through
-              capabilities and systems to the teams and people who deliver it.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* User Type Journeys */}
-            <Link
-              to="/strategy/value-streams/journeys"
-              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:border-brand-primary-400 dark:hover:border-brand-primary-500 transition-colors group"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <GitBranch className="w-8 h-8 text-brand-primary-500 dark:text-brand-primary-400" />
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-brand-primary-500 dark:group-hover:text-brand-primary-400 transition-colors" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                User Type Journeys
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Trace user types through stories, capabilities, systems, and teams.
-                Identify broken chains and verify team-value alignment.
+                Browse team profiles with members, owned systems, users served, and
+                practice area adoption dashboards. Team Topologies classification included.
               </p>
               <div className="flex items-center gap-2 text-sm text-brand-primary-600 dark:text-brand-primary-400">
                 <span className="font-medium">Open Tool</span>
@@ -114,21 +80,43 @@ export function StrategyPage() {
               </div>
             </Link>
 
-            {/* Outcome Traceability */}
+            {/* People */}
             <Link
-              to="/strategy/value-streams/outcomes"
+              to="/organization/people"
               className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:border-brand-primary-400 dark:hover:border-brand-primary-500 transition-colors group"
             >
               <div className="flex items-start justify-between mb-4">
-                <TreePine className="w-8 h-8 text-brand-primary-500 dark:text-brand-primary-400" />
+                <UserCheck className="w-8 h-8 text-brand-primary-500 dark:text-brand-primary-400" />
                 <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-brand-primary-500 dark:group-hover:text-brand-primary-400 transition-colors" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                Outcome Traceability
+                People
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Trace contributions from people through road items to capabilities
-                and user outcomes. Measure engineering investment ROI.
+                Individual competency profiles with radar charts, team memberships,
+                and contribution activity. Track skill growth across practice areas.
+              </p>
+              <div className="flex items-center gap-2 text-sm text-brand-primary-600 dark:text-brand-primary-400">
+                <span className="font-medium">Open Tool</span>
+                <ArrowRight className="w-4 h-4" />
+              </div>
+            </Link>
+
+            {/* Adoption Heatmap */}
+            <Link
+              to="/organization/adoption"
+              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:border-brand-primary-400 dark:hover:border-brand-primary-500 transition-colors group"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <Grid3X3 className="w-8 h-8 text-brand-primary-500 dark:text-brand-primary-400" />
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-brand-primary-500 dark:group-hover:text-brand-primary-400 transition-colors" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                Adoption Heatmap
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Teams vs. practice areas grid with color-coded adoption levels.
+                Identify organizational skill gaps at a glance with drill-down detail.
               </p>
               <div className="flex items-center gap-2 text-sm text-brand-primary-600 dark:text-brand-primary-400">
                 <span className="font-medium">Open Tool</span>
@@ -145,19 +133,19 @@ export function StrategyPage() {
             <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
               <div className="flex items-start gap-2">
                 <span className="text-brand-primary-500 dark:text-brand-primary-400 font-medium">1.</span>
-                <span>Open <strong>FOE Projects</strong> and use the Scanner tab to upload or scan a repository</span>
+                <span>Create <strong>Teams</strong> in the Architecture view and assign members</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-brand-primary-500 dark:text-brand-primary-400 font-medium">2.</span>
-                <span>View comprehensive reports across Overview, Dimensions, Triangle, Strengths, and Gaps tabs</span>
+                <span>Define <strong>Practice Areas</strong> and <strong>Competencies</strong> your organization tracks</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-brand-primary-500 dark:text-brand-primary-400 font-medium">3.</span>
-                <span>Use the <strong>AI Chat</strong> tab to get personalized improvement recommendations</span>
+                <span>Record <strong>Adoptions</strong> to track which teams and people are learning which practices</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-brand-primary-500 dark:text-brand-primary-400 font-medium">4.</span>
-                <span>Monitor governance compliance with the <strong>Governance Dashboard</strong></span>
+                <span>Explore the <strong>Adoption Heatmap</strong> for an executive overview of skill gaps</span>
               </div>
             </div>
           </div>

@@ -20,6 +20,10 @@ import {
   FolderKanban,
   Building2,
   Users,
+  UserCheck,
+  Grid3X3,
+  GitBranch,
+  TreePine,
   Inbox
 } from "lucide-react";
 import { ApiKeyPrompt } from "./ApiKeyPrompt";
@@ -57,6 +61,39 @@ const NAV_ITEMS = [
     ]
   },
   {
+    to: "/organization",
+    label: "Organization",
+    icon: Building2,
+    description: "Teams, people & adoption",
+    comingSoon: false,
+    children: [
+      {
+        to: "/organization/overview",
+        label: "Overview",
+        icon: Network,
+        description: "Organization map graph"
+      },
+      {
+        to: "/organization/teams",
+        label: "Teams",
+        icon: Users,
+        description: "Team profiles & systems"
+      },
+      {
+        to: "/organization/people",
+        label: "People",
+        icon: UserCheck,
+        description: "Competency profiles"
+      },
+      {
+        to: "/organization/adoption",
+        label: "Adoption",
+        icon: Grid3X3,
+        description: "Practice area heatmap"
+      }
+    ]
+  },
+  {
     to: "/strategy",
     label: "Strategy",
     icon: Target,
@@ -74,6 +111,18 @@ const NAV_ITEMS = [
         label: "Governance Dashboard",
         icon: Shield,
         description: "NFRs & governance metrics"
+      },
+      {
+        to: "/strategy/value-streams/journeys",
+        label: "User Type Journeys",
+        icon: GitBranch,
+        description: "User-to-team traceability"
+      },
+      {
+        to: "/strategy/value-streams/outcomes",
+        label: "Outcome Traceability",
+        icon: TreePine,
+        description: "Contribution-to-outcome chains"
       }
     ]
   },
@@ -123,6 +172,7 @@ export function Layout() {
   const totalCount = contribution.counts.myDrafts + contribution.counts.pendingReview + contribution.counts.rejected;
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     "/design": true, // Design section expanded by default
+    "/organization": true, // Organization section expanded by default
     "/strategy": true // Strategy section expanded by default
   });
   const [darkMode, setDarkMode] = useState<boolean>(() => {
