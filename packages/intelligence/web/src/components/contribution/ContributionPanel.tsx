@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, MessageSquare, ListTodo } from "lucide-react";
 import type { ContributionItem, ContributableItemType } from "../../types/contribution";
+import type { FocusedContextData } from "./ContributionProvider";
 import { ContributionQueueList } from "./ContributionQueueList";
 import { ContributionDetail } from "./ContributionDetail";
 import { ContributionChat } from "./ContributionChat";
@@ -17,6 +18,10 @@ interface ContributionPanelProps {
   initialItemId?: string;
   /** Pre-filter the queue to only show items of this type */
   initialItemType?: ContributableItemType;
+  /** Open directly to "chat" mode instead of the default "queue" */
+  initialMode?: "queue" | "chat";
+  /** Bounded context to attach as chat context when opening from a card */
+  focusedContext?: FocusedContextData;
 }
 
 export function ContributionPanel({
@@ -25,12 +30,15 @@ export function ContributionPanel({
   initialTab,
   initialItemId: _initialItemId,
   initialItemType,
+  initialMode,
+  focusedContext: initialFocusedContext,
 }: ContributionPanelProps) {
   const [mode, setMode] = useState<PanelMode>("queue");
   const [queueView, setQueueView] = useState<QueueView>("list");
   const [selectedItem, setSelectedItem] = useState<ContributionItem | null>(null);
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab ?? "pending");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [focusedContext, setFocusedContext] = useState<FocusedContextData | undefined>();
   const { counts, notifyChange } = useContribution();
 
   // Handle Escape key
@@ -66,8 +74,13 @@ export function ContributionPanel({
       setQueueView("list");
       setSelectedItem(null);
       if (initialTab) setActiveTab(initialTab);
+      if (initialMode === "chat") setMode("chat");
+      setFocusedContext(initialFocusedContext);
+    } else {
+      // Clear focused context when panel closes
+      setFocusedContext(undefined);
     }
-  }, [open, initialTab, initialItemType]);
+  }, [open, initialTab, initialItemType, initialMode, initialFocusedContext]);
 
   const handleSelectItem = useCallback((item: ContributionItem) => {
     setSelectedItem(item);
@@ -177,6 +190,8 @@ export function ContributionPanel({
             <ContributionChat
               queueCounts={counts}
               onContributionChanged={notifyChange}
+              focusedContext={focusedContext}
+              onDismissFocusedContext={() => setFocusedContext(undefined)}
             />
           )}
         </div>

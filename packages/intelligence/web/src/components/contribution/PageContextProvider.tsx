@@ -19,6 +19,12 @@ export interface BoundedContextSummary {
   subdomainType: string | null;
 }
 
+/** Extended bounded context data for focused-context chat preamble */
+export interface FocusedBoundedContextSummary extends BoundedContextSummary {
+  responsibility: string;
+  description?: string;
+}
+
 /** Lightweight summary of a user type for preamble injection */
 export interface UserTypeSummary {
   id: string;
@@ -59,6 +65,8 @@ export interface PageContext {
   domainEventCount?: number;
   glossaryTermCount?: number;
   workflowCount?: number;
+  /** A specific bounded context the user wants to discuss in the AI chat */
+  focusedBoundedContext?: FocusedBoundedContextSummary;
 
   // ── Architecture (Taxonomy) ────────────────────────────────────────────
   /** Taxonomy snapshot ID if on the architecture page */

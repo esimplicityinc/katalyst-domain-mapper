@@ -10,6 +10,7 @@ import {
   Eye,
   List,
   Pencil,
+  Sparkles,
 } from "lucide-react";
 import { api } from "../../api/client";
 import type { DomainModelFull, BoundedContext } from "../../types/domain";
@@ -19,6 +20,8 @@ import { ContextMapDiagram } from "./ContextMapDiagram";
 import { RELATIONSHIP_LABELS, STATUS_STYLES } from "./constants";
 import { DDDTooltip } from "./DDDTooltip";
 import { ContributeButton } from "../contribution/ContributeButton";
+import { useContribution } from "../contribution/ContributionProvider";
+import { usePageContextWriter } from "../contribution/PageContextProvider";
 
 interface ContextMapViewProps {
   model: DomainModelFull;
@@ -43,6 +46,10 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
   const [editSourceDir, setEditSourceDir] = useState("");
   const [editSubdomainType, setEditSubdomainType] = useState("");
 
+  // AI chat integration
+  const contribution = useContribution();
+  const { setPageContext } = usePageContextWriter();
+
   // Form state
   const [slug, setSlug] = useState("");
   const [title, setTitle] = useState("");
@@ -50,6 +57,31 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
   const [description, setDescription] = useState("");
   const [sourceDir, setSourceDir] = useState("");
   const [subdomainType, setSubdomainType] = useState("");
+
+  /** Open the AI chat sidebar with a specific bounded context loaded as conversation context */
+  const handleOpenChat = (ctx: BoundedContext) => {
+    // Set focused context in page context so the preamble builder includes it
+    setPageContext({
+      focusedBoundedContext: {
+        id: ctx.id,
+        title: ctx.title,
+        subdomainType: ctx.subdomainType,
+        responsibility: ctx.responsibility,
+        description: ctx.description ?? undefined,
+      },
+    });
+    // Open the contribution panel directly to the chat tab with the context card
+    contribution.open({
+      mode: "chat",
+      focusedContext: {
+        id: ctx.id,
+        title: ctx.title,
+        subdomainType: ctx.subdomainType,
+        responsibility: ctx.responsibility,
+        description: ctx.description ?? undefined,
+      },
+    });
+  };
 
   const toggleExpand = (id: string) => {
     setExpanded((prev) => {
@@ -408,6 +440,14 @@ export function ContextMapView({ model, onModelUpdated }: ContextMapViewProps) {
                         </div>
                       ) : (
                         <div className="flex items-center gap-0.5">
+                          <button
+                            onClick={() => handleOpenChat(ctx)}
+                            className="p-1 text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors"
+                            title={`Discuss ${ctx.title} with AI`}
+                            aria-label={`Discuss ${ctx.title} with AI`}
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                          </button>
                           <button
                             onClick={() => startEditing(ctx)}
                             className="p-1 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"

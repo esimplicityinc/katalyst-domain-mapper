@@ -80,6 +80,21 @@ Glossary Terms: ${ctx.glossaryTermCount ?? 0}
 Workflows: ${ctx.workflowCount ?? 0}
 When creating domain artifacts, use DOMAIN_MODEL_ID above as the parent.`;
 
+  // Focused bounded context (when chat was opened from a specific context card)
+  if (ctx.focusedBoundedContext) {
+    const fc = ctx.focusedBoundedContext;
+    section += `\n\n== FOCUSED BOUNDED CONTEXT ==
+ID: ${fc.id}
+Title: ${fc.title}
+Subdomain Type: ${fc.subdomainType ?? "unclassified"}
+Responsibility: ${fc.responsibility}`;
+    if (fc.description) {
+      section += `\nDescription: ${fc.description}`;
+    }
+    section += `\nThe user opened the chat from this specific bounded context card.
+Help them explore, refine, or discuss this context.`;
+  }
+
   return section;
 }
 

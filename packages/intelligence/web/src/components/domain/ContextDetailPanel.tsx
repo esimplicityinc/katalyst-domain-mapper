@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { X, ArrowRight, FolderOpen, Info, Layers, Pencil, Loader2 } from "lucide-react";
+import { X, ArrowRight, FolderOpen, Info, Layers, Pencil, Loader2, Sparkles } from "lucide-react";
 import type { BoundedContext, DomainModelFull } from "../../types/domain";
 import { api } from "../../api/client";
 import { SubdomainBadge } from "./SubdomainBadge";
 import { RELATIONSHIP_LABELS, STATUS_STYLES } from "./constants";
 import { DDDTooltip } from "./DDDTooltip";
+import { useContribution } from "../contribution/ContributionProvider";
+import { usePageContextWriter } from "../contribution/PageContextProvider";
 
 interface ContextDetailPanelProps {
   context: BoundedContext;
@@ -21,6 +23,32 @@ export function ContextDetailPanel({
 }: ContextDetailPanelProps) {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // AI chat integration
+  const contribution = useContribution();
+  const { setPageContext } = usePageContextWriter();
+
+  const handleOpenChat = () => {
+    setPageContext({
+      focusedBoundedContext: {
+        id: context.id,
+        title: context.title,
+        subdomainType: context.subdomainType,
+        responsibility: context.responsibility,
+        description: context.description ?? undefined,
+      },
+    });
+    contribution.open({
+      mode: "chat",
+      focusedContext: {
+        id: context.id,
+        title: context.title,
+        subdomainType: context.subdomainType,
+        responsibility: context.responsibility,
+        description: context.description ?? undefined,
+      },
+    });
+  };
 
   // Edit form state
   const [editTitle, setEditTitle] = useState(context.title);
@@ -109,14 +137,24 @@ export function ContextDetailPanel({
         </div>
         <div className="flex items-center gap-1">
           {!editing && (
-            <button
-              onClick={startEditing}
-              className="p-1 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-              aria-label="Edit context"
-              title="Edit context"
-            >
-              <Pencil className="w-4 h-4" />
-            </button>
+            <>
+              <button
+                onClick={handleOpenChat}
+                className="p-1 text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors"
+                aria-label="Discuss with AI"
+                title="Discuss with AI"
+              >
+                <Sparkles className="w-4 h-4" />
+              </button>
+              <button
+                onClick={startEditing}
+                className="p-1 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                aria-label="Edit context"
+                title="Edit context"
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+            </>
           )}
           <button
             onClick={onClose}

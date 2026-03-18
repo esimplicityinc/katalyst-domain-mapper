@@ -13,11 +13,24 @@ import { ContributionPanel } from "./ContributionPanel";
 
 type TabKey = "drafts" | "pending" | "rejected" | "accepted" | "all";
 
+/** Lightweight data passed when opening the chat from a specific bounded context card */
+export interface FocusedContextData {
+  id: string;
+  title: string;
+  subdomainType: string | null;
+  responsibility: string;
+  description?: string;
+}
+
 export interface ContributionOpenOptions {
   tab?: TabKey;
   itemId?: string;
   /** Pre-filter the queue to show only items of this type */
   itemType?: ContributableItemType;
+  /** Open directly to the "chat" tab instead of the default "queue" tab */
+  mode?: "queue" | "chat";
+  /** When opening to chat, optionally attach a focused bounded context */
+  focusedContext?: FocusedContextData;
 }
 
 interface ContributionContextValue {
@@ -61,6 +74,8 @@ export function ContributionProvider({ children }: ContributionProviderProps) {
   const [initialTab, setInitialTab] = useState<TabKey | undefined>();
   const [initialItemId, setInitialItemId] = useState<string | undefined>();
   const [initialItemType, setInitialItemType] = useState<ContributableItemType | undefined>();
+  const [initialMode, setInitialMode] = useState<"queue" | "chat" | undefined>();
+  const [focusedContext, setFocusedContext] = useState<FocusedContextData | undefined>();
   const [lastChangeTimestamp, setLastChangeTimestamp] = useState(Date.now());
 
   // Subscriber list for change notifications
@@ -107,6 +122,8 @@ export function ContributionProvider({ children }: ContributionProviderProps) {
       setInitialTab(options?.tab);
       setInitialItemId(options?.itemId);
       setInitialItemType(options?.itemType);
+      setInitialMode(options?.mode);
+      setFocusedContext(options?.focusedContext);
       setIsOpen(true);
     },
     [],
@@ -138,6 +155,8 @@ export function ContributionProvider({ children }: ContributionProviderProps) {
         initialTab={initialTab}
         initialItemId={initialItemId}
         initialItemType={initialItemType}
+        initialMode={initialMode}
+        focusedContext={focusedContext}
       />
     </ContributionContext.Provider>
   );
