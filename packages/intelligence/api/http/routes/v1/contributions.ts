@@ -13,6 +13,37 @@ import {
   MissingParentIdError,
 } from "../../../usecases/contribution/TypeRouter.js";
 import type { ContributionStatus } from "@foe/schemas/taxonomy";
+import type { StoredContributionItem } from "../../../ports/ContributionRepository.js";
+
+// ── Response Mapper ─────────────────────────────────────────────────────────
+// Transforms the flat StoredContributionItem into the nested shape the UI
+// expects: { itemType, itemId, title, contribution: {...}, metadata: {...} }
+
+function toContributionResponse(stored: StoredContributionItem) {
+  const itemData = (stored.itemData ?? {}) as Record<string, unknown>;
+  return {
+    itemType: stored.itemType,
+    itemId: stored.itemId,
+    title: (itemData.title as string) ?? (itemData.name as string) ?? stored.itemId,
+    contribution: {
+      status: stored.status,
+      version: stored.version,
+      supersedes: stored.supersedes,
+      supersededBy: stored.supersededBy,
+      submittedBy: stored.submittedBy,
+      submittedAt: stored.submittedAt,
+      reviewedBy: stored.reviewedBy,
+      reviewedAt: stored.reviewedAt,
+      reviewFeedback: stored.reviewFeedback,
+      createdAt: stored.createdAt,
+      updatedAt: stored.updatedAt,
+    },
+    metadata: {
+      ...(itemData.subdomainType ? { category: itemData.subdomainType } : {}),
+      ...(itemData.description ? { description: itemData.description } : {}),
+    },
+  };
+}
 
 export function createContributionRoutes(deps: {
   contributionUseCase: ContributionUseCase;
@@ -31,7 +62,12 @@ export function createContributionRoutes(deps: {
           limit: query.limit ? Number(query.limit) : 20,
           offset: query.offset ? Number(query.offset) : 0,
         };
-        return deps.contributionUseCase.list(filters);
+        const result = await deps.contributionUseCase.list(filters);
+        return {
+          items: result.items.map(toContributionResponse),
+          total: result.total,
+          counts: result.counts,
+        };
       },
       {
         query: t.Object({
@@ -76,7 +112,7 @@ export function createContributionRoutes(deps: {
             contributionNote: body.contributionNote,
           });
           set.status = 201;
-          return { item: result.item, created: true };
+          return { item: toContributionResponse(result.item), created: true };
         } catch (err) {
           if (err instanceof UnsupportedItemTypeError) {
             set.status = 400;
@@ -109,7 +145,12 @@ export function createContributionRoutes(deps: {
       "/:type/:id",
       async ({ params, set }) => {
         try {
-          return await deps.contributionUseCase.getDetail(params.type, params.id);
+          const detail = await deps.contributionUseCase.getDetail(params.type, params.id);
+          return {
+            ...toContributionResponse(detail.item),
+            versions: detail.versions,
+            auditLog: detail.auditLog,
+          };
         } catch (err) {
           if (err instanceof ContributionNotFoundError) {
             set.status = 404;
