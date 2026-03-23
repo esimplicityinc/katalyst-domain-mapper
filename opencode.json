@@ -353,6 +353,87 @@
         "edit": "ask",
         "write": "ask"
       }
+    },
+    "kdf-user-type": {
+      "description": "Deep persona workshop for user type design. Guides structured discovery through interviews and codebase scanning with 6 reusable kdf-scan-* sub-agents.",
+      "mode": "primary",
+      "prompt": "{file:./.opencode/agents/kdf-user-type.md}",
+      "temperature": 0.3,
+      "tools": {
+        "read": true,
+        "glob": true,
+        "grep": true,
+        "bash": true,
+        "write": true,
+        "edit": true,
+        "question": true,
+        "task": true
+      },
+      "permission": {
+        "bash": {
+          "*": "deny",
+          "grep *": "allow",
+          "find *": "allow",
+          "wc *": "allow",
+          "ls *": "allow",
+          "curl *": "allow"
+        },
+        "task": {
+          "kdf-scan-*": "allow"
+        },
+        "write": {
+          "packages/delivery-framework/user-types/*": "allow",
+          "*": "ask"
+        }
+      }
+    },
+    "kdf-scan-auth": {
+      "description": "Scans for auth/RBAC patterns to discover implicit user types. Part of the kdf-scan-* reusable scanner family.",
+      "mode": "subagent",
+      "prompt": "{file:./.opencode/agents/kdf-scan-auth.md}",
+      "temperature": 0.2,
+      "tools": { "read": true, "glob": true, "grep": true, "bash": true },
+      "permission": { "bash": { "*": "deny", "grep *": "allow", "find *": "allow", "ls *": "allow", "wc *": "allow" } }
+    },
+    "kdf-scan-api": {
+      "description": "Scans for API route patterns and endpoint consumers to discover implicit user types. Part of the kdf-scan-* reusable scanner family.",
+      "mode": "subagent",
+      "prompt": "{file:./.opencode/agents/kdf-scan-api.md}",
+      "temperature": 0.2,
+      "tools": { "read": true, "glob": true, "grep": true, "bash": true },
+      "permission": { "bash": { "*": "deny", "grep *": "allow", "find *": "allow", "ls *": "allow", "wc *": "allow" } }
+    },
+    "kdf-scan-ui": {
+      "description": "Scans for UI component patterns and role-based rendering to discover implicit user types. Part of the kdf-scan-* reusable scanner family.",
+      "mode": "subagent",
+      "prompt": "{file:./.opencode/agents/kdf-scan-ui.md}",
+      "temperature": 0.2,
+      "tools": { "read": true, "glob": true, "grep": true, "bash": true },
+      "permission": { "bash": { "*": "deny", "grep *": "allow", "find *": "allow", "ls *": "allow", "wc *": "allow" } }
+    },
+    "kdf-scan-domain": {
+      "description": "Scans for domain model patterns and user/actor entities to discover implicit user types. Part of the kdf-scan-* reusable scanner family.",
+      "mode": "subagent",
+      "prompt": "{file:./.opencode/agents/kdf-scan-domain.md}",
+      "temperature": 0.2,
+      "tools": { "read": true, "glob": true, "grep": true, "bash": true },
+      "permission": { "bash": { "*": "deny", "grep *": "allow", "find *": "allow", "ls *": "allow", "wc *": "allow" } }
+    },
+    "kdf-scan-docs": {
+      "description": "Scans documentation for explicit and implicit user type references. Part of the kdf-scan-* reusable scanner family.",
+      "mode": "subagent",
+      "prompt": "{file:./.opencode/agents/kdf-scan-docs.md}",
+      "temperature": 0.2,
+      "tools": { "read": true, "glob": true, "grep": true, "bash": true },
+      "permission": { "bash": { "*": "deny", "grep *": "allow", "find *": "allow", "ls *": "allow", "wc *": "allow" } }
+    },
+    "kdf-scan-config": {
+      "description": "Scans configuration files for environment and role-specific settings to discover implicit user types. Part of the kdf-scan-* reusable scanner family.",
+      "mode": "subagent",
+      "prompt": "{file:./.opencode/agents/kdf-scan-config.md}",
+      "temperature": 0.2,
+      "tools": { "read": true, "glob": true, "grep": true, "bash": true },
+      "permission": { "bash": { "*": "deny", "grep *": "allow", "find *": "allow", "ls *": "allow", "wc *": "allow" } }
     }
   },
   "mcp": {
