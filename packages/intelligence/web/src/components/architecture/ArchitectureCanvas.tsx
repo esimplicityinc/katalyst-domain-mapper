@@ -1,9 +1,9 @@
 /**
  * ArchitectureCanvas
  *
- * Renders the TaxonomySystemNode hierarchy as a nested-box SVG diagram.
- * Each system/subsystem/stack/layer node becomes a labeled box containing
- * its children. No ELK — layout is computed recursively in-component.
+ * Renders the TaxonomySystemNode hierarchy as a top-down tree SVG diagram.
+ * Each node is a box whose width auto-fits its name (no truncation / wrapping).
+ * Parent→child relationships are drawn with vertical connector lines.
  *
  * Supports:
  *  - Zoom/pan via mouse wheel + drag
@@ -19,11 +19,14 @@ import { X, Building2 } from "lucide-react";
 
 // ── Layout constants ─────────────────────────────────────────────────────────
 
-const PADDING = 20;        // Inner padding within each container
-const HEADER_H = 36;       // Height of the node label header
-const MIN_NODE_W = 180;    // Minimum width for a leaf node
-const MIN_NODE_H = 80;     // Minimum height for a leaf node
-const GAP = 16;            // Gap between sibling nodes
+const NODE_H = 40;            // Height of each tree node box
+const CHAR_WIDTH = 7.8;       // Approximate px per character at fontSize 13
+const BADGE_EXTRA = 80;       // Extra width for the nodeType badge + padding
+const NODE_PAD_X = 24;        // Horizontal padding inside node
+const H_GAP = 24;             // Horizontal gap between siblings
+const V_GAP = 56;             // Vertical gap between depth levels
+const TREE_GAP = 48;          // Gap between separate root trees
+const MIN_NODE_W = 140;       // Minimum node width
 
 // ── Color palette per nodeType ───────────────────────────────────────────────
 
@@ -38,40 +41,39 @@ interface NodeStyle {
 
 const NODE_STYLES: Record<string, NodeStyle> = {
   system: {
-    headerBg: "#4f46e5",      // indigo-600
+    headerBg: "#4f46e5",
     headerText: "#ffffff",
-    border: "#4338ca",        // indigo-700
-    bodyBg: "#eef2ff",        // indigo-50
-    badge: "#c7d2fe",         // indigo-200
-    badgeText: "#3730a3",     // indigo-800
+    border: "#4338ca",
+    bodyBg: "#eef2ff",
+    badge: "#c7d2fe",
+    badgeText: "#3730a3",
   },
   subsystem: {
-    headerBg: "#0284c7",      // sky-600
+    headerBg: "#0284c7",
     headerText: "#ffffff",
-    border: "#0369a1",        // sky-700
-    bodyBg: "#f0f9ff",        // sky-50
-    badge: "#bae6fd",         // sky-200
-    badgeText: "#0c4a6e",     // sky-900
+    border: "#0369a1",
+    bodyBg: "#f0f9ff",
+    badge: "#bae6fd",
+    badgeText: "#0c4a6e",
   },
   stack: {
-    headerBg: "#0d9488",      // teal-600
+    headerBg: "#0d9488",
     headerText: "#ffffff",
-    border: "#0f766e",        // teal-700
-    bodyBg: "#f0fdfa",        // teal-50
-    badge: "#99f6e4",         // teal-200
-    badgeText: "#134e4a",     // teal-900
+    border: "#0f766e",
+    bodyBg: "#f0fdfa",
+    badge: "#99f6e4",
+    badgeText: "#134e4a",
   },
   layer: {
-    headerBg: "#64748b",      // slate-500
+    headerBg: "#64748b",
     headerText: "#ffffff",
-    border: "#475569",        // slate-600
-    bodyBg: "#f8fafc",        // slate-50
-    badge: "#cbd5e1",         // slate-300
-    badgeText: "#1e293b",     // slate-800
+    border: "#475569",
+    bodyBg: "#f8fafc",
+    badge: "#cbd5e1",
+    badgeText: "#1e293b",
   },
 };
 
-// Dark-mode overrides (applied via CSS variables)
 const NODE_STYLES_DARK: Record<string, NodeStyle> = {
   system: {
     headerBg: "#4338ca",
@@ -107,231 +109,233 @@ const NODE_STYLES_DARK: Record<string, NodeStyle> = {
   },
 };
 
-// ── Layout types ─────────────────────────────────────────────────────────────
+// ── Tree layout types ────────────────────────────────────────────────────────
 
-interface LayoutNode {
+interface TreeNode {
   node: TaxonomySystemNode;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  children: LayoutNode[];
+  x: number;        // center x of this node
+  y: number;        // top y of this node
+  width: number;    // width of this node box
+  subtreeWidth: number;  // total width of subtree rooted here
+  children: TreeNode[];
   depth: number;
 }
 
-// ── Recursive layout computation ─────────────────────────────────────────────
+// ── Compute node width from its name ─────────────────────────────────────────
 
-function measureNode(node: TaxonomySystemNode, depth: number): LayoutNode {
+function nodeWidth(name: string): number {
+  return Math.max(MIN_NODE_W, name.length * CHAR_WIDTH + BADGE_EXTRA + NODE_PAD_X);
+}
+
+// ── Recursive tree layout ────────────────────────────────────────────────────
+
+/** Phase 1: measure subtree widths bottom-up */
+function measure(node: TaxonomySystemNode, depth: number): TreeNode {
+  const w = nodeWidth(node.name);
+
   if (node.children.length === 0) {
     return {
       node,
       x: 0,
       y: 0,
-      width: MIN_NODE_W,
-      height: MIN_NODE_H,
+      width: w,
+      subtreeWidth: w,
       children: [],
       depth,
     };
   }
 
-  const childLayouts = node.children.map((child) =>
-    measureNode(child, depth + 1)
-  );
-
-  // Lay children out left-to-right
-  let cx = PADDING;
-  const childY = HEADER_H + PADDING;
-  let maxChildH = 0;
-
-  for (const cl of childLayouts) {
-    cl.x = cx;
-    cl.y = childY;
-    cx += cl.width + GAP;
-    if (cl.height > maxChildH) maxChildH = cl.height;
-  }
-
-  // Normalize child heights to the tallest sibling
-  for (const cl of childLayouts) {
-    cl.height = maxChildH;
-  }
-
-  const totalChildW = childLayouts.reduce((s, cl) => s + cl.width, 0) +
-    GAP * (childLayouts.length - 1);
-  const innerW = Math.max(totalChildW, MIN_NODE_W - PADDING * 2);
-  const innerH = maxChildH;
+  const childTrees = node.children.map((c) => measure(c, depth + 1));
+  const totalChildW = childTrees.reduce((s, c) => s + c.subtreeWidth, 0) +
+    H_GAP * (childTrees.length - 1);
 
   return {
     node,
     x: 0,
     y: 0,
-    width: innerW + PADDING * 2,
-    height: HEADER_H + innerH + PADDING * 2,
-    children: childLayouts,
+    width: w,
+    subtreeWidth: Math.max(w, totalChildW),
+    children: childTrees,
     depth,
   };
 }
 
+/** Phase 2: assign x/y positions top-down, given the center-x and top-y */
+function position(tree: TreeNode, cx: number, ty: number): void {
+  tree.x = cx;
+  tree.y = ty;
+
+  if (tree.children.length === 0) return;
+
+  const childY = ty + NODE_H + V_GAP;
+  const totalChildW = tree.children.reduce((s, c) => s + c.subtreeWidth, 0) +
+    H_GAP * (tree.children.length - 1);
+  let startX = cx - totalChildW / 2;
+
+  for (const child of tree.children) {
+    const childCx = startX + child.subtreeWidth / 2;
+    position(child, childCx, childY);
+    startX += child.subtreeWidth + H_GAP;
+  }
+}
+
+/** Layout a forest of root nodes, placing them left-to-right */
 function layoutForest(roots: TaxonomySystemNode[]): {
-  nodes: LayoutNode[];
+  trees: TreeNode[];
   totalW: number;
   totalH: number;
 } {
-  const measured = roots.map((r) => measureNode(r, 0));
+  const measured = roots.map((r) => measure(r, 0));
+  const totalW = measured.reduce((s, t) => s + t.subtreeWidth, 0) +
+    TREE_GAP * (measured.length - 1);
 
-  // Place root nodes top-to-bottom with gap
-  let cy = PADDING;
-  for (const m of measured) {
-    m.x = PADDING;
-    m.y = cy;
-    cy += m.height + GAP * 2;
+  // Position each root
+  let startX = 0;
+  for (const tree of measured) {
+    const cx = startX + tree.subtreeWidth / 2;
+    position(tree, cx, 0);
+    startX += tree.subtreeWidth + TREE_GAP;
   }
 
-  const totalW = Math.max(...measured.map((m) => m.x + m.width)) + PADDING;
-  const totalH = cy + PADDING;
+  // Compute total height from max depth
+  let maxDepth = 0;
+  function findMaxDepth(t: TreeNode) {
+    if (t.depth > maxDepth) maxDepth = t.depth;
+    t.children.forEach(findMaxDepth);
+  }
+  measured.forEach(findMaxDepth);
+  const totalH = (maxDepth + 1) * NODE_H + maxDepth * V_GAP;
 
-  return { nodes: measured, totalW, totalH };
+  return { trees: measured, totalW, totalH };
 }
 
-// ── SVG node renderer ─────────────────────────────────────────────────────────
+// ── SVG tree node renderer ───────────────────────────────────────────────────
 
-interface RenderNodeProps {
-  layout: LayoutNode;
-  offsetX: number;
-  offsetY: number;
+interface RenderTreeNodeProps {
+  tree: TreeNode;
   isDark: boolean;
   selected: TaxonomySystemNode | null;
   onSelect: (node: TaxonomySystemNode) => void;
 }
 
-function RenderNode({
-  layout,
-  offsetX,
-  offsetY,
-  isDark,
-  selected,
-  onSelect,
-}: RenderNodeProps) {
-  const { node, x, y, width, height, children, depth } = layout;
-  const ax = offsetX + x;
-  const ay = offsetY + y;
-
+function RenderTreeNode({ tree, isDark, selected, onSelect }: RenderTreeNodeProps) {
+  const { node, x, y, width, children } = tree;
   const styles = isDark
     ? NODE_STYLES_DARK[node.nodeType] ?? NODE_STYLES_DARK.layer
     : NODE_STYLES[node.nodeType] ?? NODE_STYLES.layer;
 
   const isSelected = selected?.fqtn === node.fqtn;
-  const cornerR = depth === 0 ? 10 : 8;
+  const boxX = x - width / 2;
+  const boxY = y;
+  const connectorColor = isDark ? "#475569" : "#94a3b8";
 
-  // Truncate description to 40 chars for leaf display
-  const descSnippet =
-    node.description && node.description.length > 40
-      ? node.description.slice(0, 40) + "…"
-      : node.description;
-
-  const isLeaf = children.length === 0;
+  // Badge dimensions
+  const badgeW = 64;
+  const badgeH = 18;
+  const badgeX = boxX + width - badgeW - 8;
+  const badgeY = boxY + (NODE_H - badgeH) / 2;
 
   return (
-    <g
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(node);
-      }}
-      style={{ cursor: "pointer" }}
-    >
-      {/* Body */}
-      <rect
-        x={ax}
-        y={ay}
-        width={width}
-        height={height}
-        rx={cornerR}
-        ry={cornerR}
-        fill={styles.bodyBg}
-        stroke={isSelected ? "#f59e0b" : styles.border}
-        strokeWidth={isSelected ? 2.5 : 1.5}
-      />
+    <>
+      {/* Connector lines from this node to children */}
+      {children.map((child) => {
+        const parentBottomX = x;
+        const parentBottomY = y + NODE_H;
+        const childTopX = child.x;
+        const childTopY = child.y;
+        const midY = parentBottomY + V_GAP / 2;
 
-      {/* Header */}
-      <rect
-        x={ax}
-        y={ay}
-        width={width}
-        height={HEADER_H}
-        rx={cornerR}
-        ry={cornerR}
-        fill={styles.headerBg}
-      />
-      {/* Cover bottom radius of header */}
-      <rect
-        x={ax}
-        y={ay + HEADER_H - cornerR}
-        width={width}
-        height={cornerR}
-        fill={styles.headerBg}
-      />
+        return (
+          <path
+            key={child.node.fqtn}
+            d={`M ${parentBottomX} ${parentBottomY} L ${parentBottomX} ${midY} L ${childTopX} ${midY} L ${childTopX} ${childTopY}`}
+            fill="none"
+            stroke={connectorColor}
+            strokeWidth={1.5}
+            strokeLinejoin="round"
+          />
+        );
+      })}
 
-      {/* Node label */}
-      <text
-        x={ax + 12}
-        y={ay + HEADER_H / 2 + 5}
-        fontSize={13}
-        fontWeight={600}
-        fill={styles.headerText}
-        dominantBaseline="middle"
-        style={{ pointerEvents: "none", userSelect: "none" }}
+      {/* Node box */}
+      <g
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect(node);
+        }}
+        style={{ cursor: "pointer" }}
       >
-        {node.name.length > 22 ? node.name.slice(0, 22) + "…" : node.name}
-      </text>
+        {/* Shadow */}
+        <rect
+          x={boxX + 1}
+          y={boxY + 2}
+          width={width}
+          height={NODE_H}
+          rx={8}
+          ry={8}
+          fill={isDark ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.06)"}
+        />
 
-      {/* nodeType badge */}
-      <rect
-        x={ax + width - 72}
-        y={ay + 8}
-        width={64}
-        height={20}
-        rx={4}
-        fill={styles.badge}
-      />
-      <text
-        x={ax + width - 72 + 32}
-        y={ay + 18}
-        fontSize={10}
-        fontWeight={600}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fill={styles.badgeText}
-        style={{ pointerEvents: "none", userSelect: "none", textTransform: "uppercase" }}
-      >
-        {node.nodeType.toUpperCase()}
-      </text>
+        {/* Background */}
+        <rect
+          x={boxX}
+          y={boxY}
+          width={width}
+          height={NODE_H}
+          rx={8}
+          ry={8}
+          fill={styles.headerBg}
+          stroke={isSelected ? "#f59e0b" : styles.border}
+          strokeWidth={isSelected ? 2.5 : 1.5}
+        />
 
-      {/* Leaf: show description snippet */}
-      {isLeaf && descSnippet && (
+        {/* Name text */}
         <text
-          x={ax + 12}
-          y={ay + HEADER_H + 20}
-          fontSize={11}
-          fill={isDark ? "#94a3b8" : "#64748b"}
-          dominantBaseline="middle"
+          x={boxX + 12}
+          y={boxY + NODE_H / 2}
+          fontSize={13}
+          fontWeight={600}
+          fill={styles.headerText}
+          dominantBaseline="central"
           style={{ pointerEvents: "none", userSelect: "none" }}
         >
-          {descSnippet}
+          {node.name}
         </text>
-      )}
 
-      {/* Render children recursively */}
-      {children.map((cl) => (
-        <RenderNode
-          key={cl.node.fqtn}
-          layout={cl}
-          offsetX={ax}
-          offsetY={ay}
+        {/* Type badge */}
+        <rect
+          x={badgeX}
+          y={badgeY}
+          width={badgeW}
+          height={badgeH}
+          rx={4}
+          fill={styles.badge}
+        />
+        <text
+          x={badgeX + badgeW / 2}
+          y={badgeY + badgeH / 2}
+          fontSize={9}
+          fontWeight={700}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fill={styles.badgeText}
+          style={{ pointerEvents: "none", userSelect: "none", letterSpacing: "0.05em" }}
+        >
+          {node.nodeType.toUpperCase()}
+        </text>
+      </g>
+
+      {/* Render children */}
+      {children.map((child) => (
+        <RenderTreeNode
+          key={child.node.fqtn}
+          tree={child}
           isDark={isDark}
           selected={selected}
           onSelect={onSelect}
         />
       ))}
-    </g>
+    </>
   );
 }
 
@@ -577,14 +581,15 @@ export function ArchitectureCanvas({ systems }: ArchitectureCanvasProps) {
   }, []);
 
   // Compute layout
-  const { nodes, totalW, totalH } = layoutForest(systems);
+  const { trees, totalW, totalH } = layoutForest(systems);
 
   // Fit to viewport on first load
   useEffect(() => {
     if (!containerRef.current || systems.length === 0) return;
     const { width, height } = containerRef.current.getBoundingClientRect();
-    const scaleX = (width - 40) / totalW;
-    const scaleY = (height - 40) / totalH;
+    const padded = 60;
+    const scaleX = (width - padded) / totalW;
+    const scaleY = (height - padded) / totalH;
     const fit = Math.min(scaleX, scaleY, 1);
     setScale(fit);
     setTranslate({
@@ -697,12 +702,10 @@ export function ArchitectureCanvas({ systems }: ArchitectureCanvasProps) {
 
         {/* Main transform group */}
         <g transform={`translate(${translate.x},${translate.y}) scale(${scale})`}>
-          {nodes.map((layout) => (
-            <RenderNode
-              key={layout.node.fqtn}
-              layout={layout}
-              offsetX={0}
-              offsetY={0}
+          {trees.map((tree) => (
+            <RenderTreeNode
+              key={tree.node.fqtn}
+              tree={tree}
               isDark={isDark}
               selected={selected}
               onSelect={setSelected}

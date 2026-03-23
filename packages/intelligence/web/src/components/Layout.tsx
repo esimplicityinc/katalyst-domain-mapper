@@ -274,10 +274,10 @@ export function Layout() {
         {/* Logo */}
         <div className="px-4 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <img src={KatalystLogo} alt="Katalyst" className="w-7 h-7" />
+            <img src={KatalystLogo} alt="Katalyst Bard" className="w-7 h-7" />
             <div>
               <h1 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">
-                Katalyst
+                Katalyst Bard
               </h1>
               <div className="flex items-center gap-1.5">
                 <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -480,8 +480,8 @@ export function Layout() {
             <Menu className="w-6 h-6" />
           </button>
           <div className="flex-1 flex items-center gap-2">
-            <img src={KatalystLogo} alt="Katalyst" className="w-5 h-5" />
-            <span className="font-semibold text-gray-900 dark:text-white">Katalyst</span>
+            <img src={KatalystLogo} alt="Katalyst Bard" className="w-5 h-5" />
+            <span className="font-semibold text-gray-900 dark:text-white">Katalyst Bard</span>
             <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 leading-none">
               Alpha
             </span>
