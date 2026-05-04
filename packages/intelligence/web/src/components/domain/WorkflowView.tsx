@@ -29,6 +29,11 @@ const NODE_WIDTH = 160;
 const NODE_HEIGHT = 56;
 const VIEWBOX_PADDING = 60;
 const ARROW_SIZE = 8;
+const MAX_LABEL_CHARS = 40;
+const LABEL_OVERLAP_THRESHOLD_X = 80;
+const LABEL_OVERLAP_THRESHOLD_Y = 30;
+const LABEL_OFFSET_STEP = 18;
+const BACK_EDGE_CURVE_OFFSET = 70;
 
 // ── Auto-layout for states without x/y positions ────────────────────────────
 
@@ -77,7 +82,12 @@ function autoLayoutStates(
     return states as PositionedState[];
   }
 
-  const H_GAP = 220;
+  // Dynamic H_GAP based on max transition label length
+  const maxLabelLen = transitions.reduce(
+    (max, t) => Math.max(max, (t.label ?? "").length),
+    0,
+  );
+  const H_GAP = maxLabelLen > 50 ? 340 : maxLabelLen > 30 ? 280 : 220;
   const V_GAP = 100;
 
   // Build adjacency from transitions (which reference states by name/id)
@@ -299,7 +309,49 @@ export function WorkflowView({ model, onModelUpdated }: WorkflowViewProps) {
     return { state, incoming, outgoing };
   }, [selectedState, activeWorkflow, stateById]);
 
-  // Compute viewBox from state positions
+  // Pre-compute label Y offsets to avoid overlapping labels.
+  // Group edges by midpoint proximity, then stagger labels vertically.
+  const labelOffsets = useMemo(() => {
+    if (!activeWorkflow) return new Map<string, number>();
+    const offsets = new Map<string, number>();
+    type MidInfo = { key: string; mx: number; my: number };
+    const mids: MidInfo[] = [];
+
+    for (const tr of activeWorkflow.transitions) {
+      const fromState = stateById.get(tr.from);
+      const toState = stateById.get(tr.to);
+      if (!fromState || !toState) continue;
+      const fromCx = fromState.x + NODE_WIDTH / 2;
+      const fromCy = fromState.y + NODE_HEIGHT / 2;
+      const toCx = toState.x + NODE_WIDTH / 2;
+      const toCy = toState.y + NODE_HEIGHT / 2;
+      const p1 = edgePoint(fromState, toCx, toCy);
+      const p2 = edgePoint(toState, fromCx, fromCy);
+      const key = `${tr.from}->${tr.to}`;
+      mids.push({ key, mx: (p1.x + p2.x) / 2, my: (p1.y + p2.y) / 2 });
+    }
+
+    // Sort by X so we can detect horizontal neighbors
+    mids.sort((a, b) => a.mx - b.mx || a.my - b.my);
+    for (let i = 0; i < mids.length; i++) {
+      let offset = 0;
+      for (let j = 0; j < i; j++) {
+        const dx = Math.abs(mids[i].mx - mids[j].mx);
+        const dy = Math.abs(mids[i].my - mids[j].my);
+        if (dx < LABEL_OVERLAP_THRESHOLD_X && dy < LABEL_OVERLAP_THRESHOLD_Y) {
+          // Stagger: alternate above/below from the previously assigned offset
+          const prevOff = offsets.get(mids[j].key) ?? 0;
+          offset = prevOff <= 0
+            ? prevOff + LABEL_OFFSET_STEP
+            : prevOff - LABEL_OFFSET_STEP;
+        }
+      }
+      offsets.set(mids[i].key, offset);
+    }
+    return offsets;
+  }, [activeWorkflow, stateById]);
+
+  // Compute viewBox from state positions (include extra room for curves + labels)
   const viewBox = useMemo(() => {
     if (positionedStates.length === 0) return "0 0 600 400";
     let minX = Infinity,
@@ -312,10 +364,12 @@ export function WorkflowView({ model, onModelUpdated }: WorkflowViewProps) {
       if (s.x + NODE_WIDTH > maxX) maxX = s.x + NODE_WIDTH;
       if (s.y + NODE_HEIGHT > maxY) maxY = s.y + NODE_HEIGHT;
     }
+    const LABEL_HEADROOM = 30; // room above topmost nodes for edge labels
     const x = minX - VIEWBOX_PADDING;
-    const y = minY - VIEWBOX_PADDING;
+    const y = minY - VIEWBOX_PADDING - LABEL_HEADROOM;
     const w = maxX - minX + NODE_WIDTH + VIEWBOX_PADDING * 2;
-    const h = maxY - minY + NODE_HEIGHT + VIEWBOX_PADDING * 2;
+    // Add extra room at the bottom for back-edge curves + top for labels
+    const h = maxY - minY + NODE_HEIGHT + VIEWBOX_PADDING * 2 + BACK_EDGE_CURVE_OFFSET + LABEL_HEADROOM;
     return `${x} ${y} ${w} ${h}`;
   }, [positionedStates]);
 
@@ -710,10 +764,10 @@ export function WorkflowView({ model, onModelUpdated }: WorkflowViewProps) {
                 </marker>
               </defs>
 
-              {/* Transitions */}
+              {/* Transition lines (rendered first, behind everything) */}
               {activeWorkflow.transitions.map((tr, i) => (
-                <TransitionPath
-                  key={`${tr.from}->${tr.to}-${i}`}
+                <TransitionLine
+                  key={`line-${tr.from}->${tr.to}-${i}`}
                   transition={tr}
                   states={stateById}
                   highlighted={connectedTransitions.has(
@@ -726,7 +780,7 @@ export function WorkflowView({ model, onModelUpdated }: WorkflowViewProps) {
                 />
               ))}
 
-              {/* State nodes */}
+              {/* State nodes (middle layer) */}
               {positionedStates.map((state) => (
                 <StateNode
                   key={state.id}
@@ -746,6 +800,20 @@ export function WorkflowView({ model, onModelUpdated }: WorkflowViewProps) {
                   }
                   onHover={handleStateHover}
                   onClick={handleStateClick}
+                />
+              ))}
+
+              {/* Transition labels (rendered last, on top of everything) */}
+              {activeWorkflow.transitions.map((tr, i) => (
+                <TransitionLabel
+                  key={`label-${tr.from}->${tr.to}-${i}`}
+                  transition={tr}
+                  states={stateById}
+                  dimmed={
+                    (hoveredState !== null || selectedState !== null) &&
+                    !connectedTransitions.has(`${tr.from}->${tr.to}`)
+                  }
+                  labelYOffset={labelOffsets.get(`${tr.from}->${tr.to}`) ?? 0}
                 />
               ))}
             </svg>
@@ -1477,74 +1545,139 @@ function StateNode({
 
 // ── TransitionPath (SVG) ─────────────────────────────────────────────────────
 
-interface TransitionPathProps {
+interface TransitionLineProps {
   transition: WorkflowTransition;
   states: Map<string, PositionedState>;
   highlighted: boolean;
   dimmed: boolean;
 }
 
-function TransitionPath({
+/** Renders only the line / curve for a transition (no label). */
+function TransitionLine({
   transition,
   states,
   highlighted,
   dimmed,
-}: TransitionPathProps) {
+}: TransitionLineProps) {
   const fromState = states.get(transition.from);
   const toState = states.get(transition.to);
   if (!fromState || !toState) return null;
 
-  // Compute edge points (center of nearest edge)
   const fromCx = fromState.x + NODE_WIDTH / 2;
   const fromCy = fromState.y + NODE_HEIGHT / 2;
   const toCx = toState.x + NODE_WIDTH / 2;
   const toCy = toState.y + NODE_HEIGHT / 2;
-
-  // Determine best edge to connect from/to
-  const { x: x1, y: y1 } = edgePoint(fromState, toCx, toCy);
-  const { x: x2, y: y2 } = edgePoint(toState, fromCx, fromCy);
-
-  // Simple straight line with offset for label
-  const midX = (x1 + x2) / 2;
-  const midY = (x1 + x2) / 2 === x1 ? (y1 + y2) / 2 - 14 : (y1 + y2) / 2;
+  const isBackEdge = toState.x < fromState.x;
 
   const strokeColor = highlighted ? "#A855F7" : "#9CA3AF";
   const markerEnd = highlighted
     ? "url(#arrowhead-highlight)"
     : "url(#arrowhead)";
 
-  return (
-    <g
-      opacity={dimmed ? 0.2 : 1}
-      style={{ transition: "opacity 0.2s" }}
-    >
-      <line
-        x1={x1}
-        y1={y1}
-        x2={x2}
-        y2={y2}
+  if (isBackEdge) {
+    const { x: x1, y: y1 } = edgePoint(fromState, fromCx, fromCy + NODE_HEIGHT);
+    const { x: x2, y: y2 } = edgePoint(toState, toCx, toCy + NODE_HEIGHT);
+    const midX = (x1 + x2) / 2;
+    const curveY = Math.max(y1, y2) + BACK_EDGE_CURVE_OFFSET;
+    const pathD = `M ${x1} ${y1} Q ${midX} ${curveY}, ${x2} ${y2}`;
+    return (
+      <path
+        d={pathD}
+        fill="none"
         stroke={strokeColor}
         strokeWidth={highlighted ? 2 : 1.5}
         strokeDasharray={transition.isAsync ? "6 3" : undefined}
         markerEnd={markerEnd}
+        opacity={dimmed ? 0.2 : 1}
+        style={{ transition: "opacity 0.2s" }}
       />
-      {/* Label */}
-      <text
-        x={midX}
-        y={midY - 6}
-        textAnchor="middle"
-        fontSize={10}
-        fontWeight={500}
-        className="pointer-events-none"
-      >
-        <tspan className="dark:hidden" fill="#6B7280">
-          {transition.label}
-        </tspan>
-        <tspan className="hidden dark:inline" fill="#9CA3AF">
-          {transition.label}
-        </tspan>
-      </text>
-    </g>
+    );
+  }
+
+  const { x: x1, y: y1 } = edgePoint(fromState, toCx, toCy);
+  const { x: x2, y: y2 } = edgePoint(toState, fromCx, fromCy);
+  return (
+    <line
+      x1={x1} y1={y1} x2={x2} y2={y2}
+      stroke={strokeColor}
+      strokeWidth={highlighted ? 2 : 1.5}
+      strokeDasharray={transition.isAsync ? "6 3" : undefined}
+      markerEnd={markerEnd}
+      opacity={dimmed ? 0.2 : 1}
+      style={{ transition: "opacity 0.2s" }}
+    />
+  );
+}
+
+interface TransitionLabelProps {
+  transition: WorkflowTransition;
+  states: Map<string, PositionedState>;
+  dimmed: boolean;
+  labelYOffset: number;
+}
+
+/** Renders only the label text for a transition (painted on top of nodes). */
+function TransitionLabel({
+  transition,
+  states,
+  dimmed,
+  labelYOffset,
+}: TransitionLabelProps) {
+  const fromState = states.get(transition.from);
+  const toState = states.get(transition.to);
+  if (!fromState || !toState) return null;
+
+  const fullLabel = transition.label ?? "";
+  if (!fullLabel) return null;
+
+  const displayLabel =
+    fullLabel.length > MAX_LABEL_CHARS
+      ? fullLabel.slice(0, MAX_LABEL_CHARS - 1) + "\u2026"
+      : fullLabel;
+
+  const fromCx = fromState.x + NODE_WIDTH / 2;
+  const fromCy = fromState.y + NODE_HEIGHT / 2;
+  const toCx = toState.x + NODE_WIDTH / 2;
+  const toCy = toState.y + NODE_HEIGHT / 2;
+  const isBackEdge = toState.x < fromState.x;
+
+  let labelX: number;
+  let labelY: number;
+
+  if (isBackEdge) {
+    const { x: x1, y: y1 } = edgePoint(fromState, fromCx, fromCy + NODE_HEIGHT);
+    const { x: x2, y: y2 } = edgePoint(toState, toCx, toCy + NODE_HEIGHT);
+    labelX = (x1 + x2) / 2;
+    labelY = Math.max(y1, y2) + BACK_EDGE_CURVE_OFFSET - 8 + labelYOffset;
+  } else {
+    const { x: x1, y: y1 } = edgePoint(fromState, toCx, toCy);
+    const { x: x2, y: y2 } = edgePoint(toState, fromCx, fromCy);
+    labelX = (x1 + x2) / 2;
+    const isHorizontal = Math.abs(y2 - y1) < NODE_HEIGHT / 2;
+    labelY = isHorizontal
+      ? Math.min(fromState.y, toState.y) - 8 + labelYOffset   // above nodes
+      : (y1 + y2) / 2 + labelYOffset;                          // midpoint for diagonal
+  }
+
+  return (
+    <text
+      x={labelX}
+      y={labelY}
+      textAnchor="middle"
+      fontSize={10}
+      fontWeight={500}
+      opacity={dimmed ? 0.2 : 1}
+      className="pointer-events-none"
+      style={{ transition: "opacity 0.2s" }}
+    >
+      {fullLabel !== displayLabel && <title>{fullLabel}</title>}
+      <tspan className="dark:hidden" fill="#6B7280">
+        {displayLabel}
+      </tspan>
+      <tspan className="hidden dark:inline" fill="#9CA3AF">
+        {displayLabel}
+      </tspan>
+    </text>
   );
 }
 
