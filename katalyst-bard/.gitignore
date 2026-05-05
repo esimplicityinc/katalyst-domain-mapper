@@ -1,0 +1,10 @@
+.DS_Store
+node_modules/
+.env
+.databricks/
+.smoke-test/
+test-results/
+playwright-report/
+
+# Auto-generated types (endpoint-specific, varies per developer)
+shared/appkit-types/serving.d.ts

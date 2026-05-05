@@ -1,0 +1,109 @@
+/*
+ * Dark mode overrides for original Katalyst components.
+ * These are plain CSS rules (not Tailwind) that activate when .dark is on <html>.
+ * They complement the AppKit dark theme by handling components that use
+ * hardcoded Tailwind color classes like bg-white, text-gray-900, etc.
+ */
+
+/* Backgrounds */
+.dark .bg-white { background-color: rgb(31 41 55) !important; }
+.dark .bg-gray-50 { background-color: rgb(17 24 39) !important; }
+.dark .bg-gray-100 { background-color: rgb(55 65 81) !important; }
+
+/* Text */
+.dark .text-gray-900 { color: rgb(255 255 255) !important; }
+.dark .text-gray-800 { color: rgb(229 231 235) !important; }
+.dark .text-gray-700 { color: rgb(209 213 219) !important; }
+.dark .text-gray-600 { color: rgb(156 163 175) !important; }
+.dark .text-gray-500 { color: rgb(156 163 175) !important; }
+.dark .text-gray-400 { color: rgb(107 114 128) !important; }
+
+/* Borders */
+.dark .border-gray-200 { border-color: rgb(55 65 81) !important; }
+.dark .border-gray-100 { border-color: rgb(55 65 81) !important; }
+.dark .border-gray-300 { border-color: rgb(75 85 99) !important; }
+
+/* Hover states */
+.dark .hover\:bg-gray-50:hover { background-color: rgba(31 41 55 / 0.5) !important; }
+.dark .hover\:bg-gray-100:hover { background-color: rgb(55 65 81) !important; }
+.dark .hover\:bg-gray-800\/50:hover { background-color: rgba(31 41 55 / 0.5) !important; }
+
+/* Badge backgrounds (light tint → dark tint) */
+.dark .bg-blue-50 { background-color: rgba(30 58 138 / 0.2) !important; }
+.dark .bg-blue-100 { background-color: rgba(30 58 138 / 0.3) !important; }
+.dark .bg-green-50 { background-color: rgba(20 83 45 / 0.2) !important; }
+.dark .bg-green-100 { background-color: rgba(20 83 45 / 0.3) !important; }
+.dark .bg-amber-50 { background-color: rgba(120 53 15 / 0.2) !important; }
+.dark .bg-amber-100 { background-color: rgba(120 53 15 / 0.3) !important; }
+.dark .bg-purple-50 { background-color: rgba(88 28 135 / 0.2) !important; }
+.dark .bg-purple-100 { background-color: rgba(88 28 135 / 0.3) !important; }
+.dark .bg-red-50 { background-color: rgba(127 29 29 / 0.2) !important; }
+.dark .bg-red-100 { background-color: rgba(127 29 29 / 0.3) !important; }
+.dark .bg-gray-700 { background-color: rgb(55 65 81) !important; }
+
+/* Badge text (dark → light) */
+.dark .text-blue-700 { color: rgb(147 197 253) !important; }
+.dark .text-green-700 { color: rgb(134 239 172) !important; }
+.dark .text-amber-700 { color: rgb(252 211 77) !important; }
+.dark .text-amber-600 { color: rgb(252 211 77) !important; }
+.dark .text-purple-700 { color: rgb(196 181 253) !important; }
+.dark .text-red-700 { color: rgb(252 165 165) !important; }
+
+/* Tooltip inversion (dark background → light background in dark mode) */
+.dark .bg-gray-900:where([role="note"] *) { background-color: rgb(243 244 246) !important; }
+
+/* Ring / focus */
+.dark .ring-purple-300 { --tw-ring-color: rgba(196 181 253 / 0.4); }
+.dark .hover\:ring-purple-300:hover { --tw-ring-color: rgba(196 181 253 / 0.4); }
+
+/* Inline code / mono backgrounds */
+.dark .bg-gray-800\/50 { background-color: rgba(31 41 55 / 0.5) !important; }
+
+/*
+ * Light mode reset.
+ * When .light is on <html>, force AppKit CSS variables back to light values.
+ * This overrides @media (prefers-color-scheme: dark) { :root:not(.light) }
+ * for users whose OS is dark but who chose light mode in the app.
+ */
+:root.light {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.21 0.006 285.885);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.965 0.001 285.823);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.965 0.001 285.823);
+  --muted-foreground: oklch(0.556 0.016 285.938);
+  --accent: oklch(0.965 0.001 285.823);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0.004 285.979);
+  --input: oklch(0.922 0.004 285.979);
+  --ring: oklch(0.871 0.006 286.029);
+  --sidebar-background: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-primary: oklch(0.21 0.006 285.885);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.965 0.001 285.823);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.922 0.004 285.979);
+  --sidebar-ring: oklch(0.871 0.006 286.029);
+  color-scheme: light;
+}
+
+/* Also undo our own dark overrides when .light is active */
+.light .bg-white { background-color: rgb(255 255 255) !important; }
+.light .bg-gray-50 { background-color: rgb(249 250 251) !important; }
+.light .bg-gray-100 { background-color: rgb(243 244 246) !important; }
+.light .text-gray-900 { color: rgb(17 24 39) !important; }
+.light .text-gray-800 { color: rgb(31 41 55) !important; }
+.light .text-gray-700 { color: rgb(55 65 81) !important; }
+.light .text-gray-600 { color: rgb(75 85 99) !important; }
+.light .text-gray-500 { color: rgb(107 114 128) !important; }
+.light .border-gray-200 { border-color: rgb(229 231 235) !important; }
+.light .border-gray-100 { border-color: rgb(243 244 246) !important; }
+.light .border-gray-300 { border-color: rgb(209 213 219) !important; }

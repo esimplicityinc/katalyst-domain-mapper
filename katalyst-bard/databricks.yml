@@ -1,0 +1,36 @@
+bundle:
+  name: katalyst-bard
+
+variables:
+  postgres_branch:
+    description: Full Lakebase Postgres branch resource name. Obtain by running `databricks postgres list-branches projects/{project-id}`, select the desired item from the output array and use its .name value.
+  postgres_database:
+    description: Full Lakebase Postgres database resource name. Obtain by running `databricks postgres list-databases {branch-name}`, select the desired item from the output array and use its .name value. Requires the branch resource name.
+
+resources:
+  apps:
+    app:
+      name: "katalyst-bard"
+      description: "Katalyst Bard - Domain Mapper for Flow Optimized Engineering"
+      source_code_path: ./
+      # Enable API scopes for serving endpoints (AI Gateway)
+      user_api_scopes:
+        - serving.serving-endpoints
+
+      # The resources which this app has access to.
+      resources:
+        - name: postgres
+          postgres:
+            branch: ${var.postgres_branch}
+            database: ${var.postgres_database}
+            permission: CAN_CONNECT_AND_CREATE
+
+targets:
+  default:
+    default: true
+    workspace:
+      host: https://dbc-bad72b2f-9f59.cloud.databricks.com
+
+    variables:
+      postgres_branch: projects/katalyst-bard/branches/production
+      postgres_database: projects/katalyst-bard/branches/production/databases/db-q0wc-4x500k83sx
