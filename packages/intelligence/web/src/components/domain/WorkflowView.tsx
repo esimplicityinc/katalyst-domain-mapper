@@ -108,12 +108,16 @@ function autoLayoutStates(
   }));
   for (const s of initials) rank.set(s.id, 0);
 
+  // BFS with cycle protection: cap rank at number of states to prevent infinite loops
+  const maxPossibleRank = states.length;
   while (queue.length > 0) {
     const { id, r } = queue.shift()!;
     for (const next of adj.get(id) ?? []) {
-      if (!rank.has(next) || rank.get(next)! < r + 1) {
-        rank.set(next, r + 1);
-        queue.push({ id: next, r: r + 1 });
+      const newRank = r + 1;
+      if (newRank > maxPossibleRank) continue; // cycle detected, skip
+      if (!rank.has(next) || rank.get(next)! < newRank) {
+        rank.set(next, newRank);
+        queue.push({ id: next, r: newRank });
       }
     }
   }
